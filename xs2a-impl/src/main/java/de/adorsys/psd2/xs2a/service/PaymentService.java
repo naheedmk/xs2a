@@ -29,6 +29,7 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.pis.*;
+import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.consent.PisAspspDataService;
 import de.adorsys.psd2.xs2a.service.consent.PisPsuDataService;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
@@ -95,12 +96,12 @@ public class PaymentService {
      * @param paymentInitiationParameters Parameters for payment initiation
      * @return Response containing information about created payment or corresponding error
      */
-    public ResponseObject createPayment(Object payment, PaymentInitiationParameters paymentInitiationParameters) {
+    public ResponseObject<PaymentInitiationResponse> createPayment(Object payment, PaymentInitiationParameters paymentInitiationParameters) {
         xs2aEventService.recordTppRequest(EventType.PAYMENT_INITIATION_REQUEST_RECEIVED, payment);
 
         ValidationResult validationResult = createPaymentValidator.validate(new CreatePaymentRequestObject(payment, paymentInitiationParameters));
         if (validationResult.isNotValid()) {
-            return ResponseObject.builder()
+            return ResponseObject.<PaymentInitiationResponse>builder()
                        .fail(validationResult.getMessageError())
                        .build();
         }
@@ -119,13 +120,42 @@ public class PaymentService {
             return createCommonPaymentService.createPayment(request, paymentInitiationParameters, tppInfo);
         }
 
+        PaymentInitiationResponse paymentInitiationResponse;
+        Optional<MessageError> messageError = Optional.empty();
         if (paymentInitiationParameters.getPaymentType() == PaymentType.SINGLE) {
-            return processSinglePayment((SinglePayment) payment, paymentInitiationParameters, tppInfo);
+            ResponseObject<SinglePaymentInitiationResponse> singlePaymentInitiationResponseResponseObject = processSinglePayment((SinglePayment) payment, paymentInitiationParameters, tppInfo);
+            if (singlePaymentInitiationResponseResponseObject.hasError()) {
+                messageError = Optional.of(singlePaymentInitiationResponseResponseObject.getError());
+            }
+
+            paymentInitiationResponse = singlePaymentInitiationResponseResponseObject.getBody();
         } else if (paymentInitiationParameters.getPaymentType() == PaymentType.PERIODIC) {
-            return processPeriodicPayment((PeriodicPayment) payment, paymentInitiationParameters, tppInfo);
+            ResponseObject<PeriodicPaymentInitiationResponse> periodicPaymentInitiationResponseResponseObject = processPeriodicPayment((PeriodicPayment) payment, paymentInitiationParameters, tppInfo);
+
+            if (periodicPaymentInitiationResponseResponseObject.hasError()) {
+                messageError = Optional.of(periodicPaymentInitiationResponseResponseObject.getError());
+            }
+
+            paymentInitiationResponse = periodicPaymentInitiationResponseResponseObject.getBody();
         } else {
-            return processBulkPayment((BulkPayment) payment, paymentInitiationParameters, tppInfo);
+            ResponseObject<BulkPaymentInitiationResponse> bulkPaymentInitiationResponseResponseObject = processBulkPayment((BulkPayment) payment, paymentInitiationParameters, tppInfo);
+
+            if (bulkPaymentInitiationResponseResponseObject.hasError()) {
+                messageError = Optional.of(bulkPaymentInitiationResponseResponseObject.getError());
+            }
+
+            paymentInitiationResponse = bulkPaymentInitiationResponseResponseObject.getBody();
         }
+
+        if (messageError.isPresent()) {
+            return ResponseObject.<PaymentInitiationResponse>builder()
+                       .fail(messageError.get())
+                       .build();
+        }
+
+        return ResponseObject.<PaymentInitiationResponse>builder()
+                   .body(paymentInitiationResponse)
+                   .build();
     }
 
     /**
@@ -344,15 +374,15 @@ public class PaymentService {
         return null;
     }
 
-    private ResponseObject processSinglePayment(SinglePayment singePayment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo) {
+    private ResponseObject<SinglePaymentInitiationResponse> processSinglePayment(SinglePayment singePayment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo) {
         return createSinglePaymentService.createPayment(singePayment, paymentInitiationParameters, tppInfo);
     }
 
-    private ResponseObject processPeriodicPayment(PeriodicPayment periodicPayment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo) {
+    private ResponseObject<PeriodicPaymentInitiationResponse> processPeriodicPayment(PeriodicPayment periodicPayment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo) {
         return createPeriodicPaymentService.createPayment(periodicPayment, paymentInitiationParameters, tppInfo);
     }
 
-    private ResponseObject processBulkPayment(BulkPayment bulkPayment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo) {
+    private ResponseObject<BulkPaymentInitiationResponse> processBulkPayment(BulkPayment bulkPayment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo) {
         return createBulkPaymentService.createPayment(bulkPayment, paymentInitiationParameters, tppInfo);
     }
 }

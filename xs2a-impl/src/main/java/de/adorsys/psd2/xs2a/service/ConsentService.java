@@ -23,6 +23,7 @@ import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
+import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.*;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
@@ -316,13 +317,20 @@ public class ConsentService {
                    .build();
     }
 
-    public ResponseObject createAisAuthorisation(PsuIdData psuData, String consentId, String password) {
+    public ResponseObject<AuthorisationResponse> createAisAuthorisation(PsuIdData psuData, String consentId, String password) {
         ResponseObject<CreateConsentAuthorizationResponse> createAisAuthorizationResponse = createConsentAuthorizationWithResponse(psuData, consentId);
 
-        if (createAisAuthorizationResponse.hasError()
-                || psuData.isEmpty()
+        if (createAisAuthorizationResponse.hasError()) {
+            return ResponseObject.<AuthorisationResponse>builder()
+                       .fail(createAisAuthorizationResponse.getError())
+                       .build();
+        }
+
+        if (psuData.isEmpty()
                 || StringUtils.isBlank(password)) {
-            return createAisAuthorizationResponse;
+            return ResponseObject.<AuthorisationResponse>builder()
+                       .body(createAisAuthorizationResponse.getBody())
+                       .build();
         }
 
         String authorisationId = createAisAuthorizationResponse.getBody().getAuthorizationId();
@@ -333,7 +341,16 @@ public class ConsentService {
         updatePsuData.setAuthorizationId(authorisationId);
         updatePsuData.setPassword(password);
 
-        return updateConsentPsuData(updatePsuData);
+        ResponseObject<UpdateConsentPsuDataResponse> updatePsuDataResponse = updateConsentPsuData(updatePsuData);
+        if (updatePsuDataResponse.hasError()) {
+            return ResponseObject.<AuthorisationResponse>builder()
+                       .fail(updatePsuDataResponse.getError())
+                       .build();
+        }
+
+        return ResponseObject.<AuthorisationResponse>builder()
+                   .body(updatePsuDataResponse.getBody())
+                   .build();
     }
 
     private ResponseObject<CreateConsentAuthorizationResponse> createConsentAuthorizationWithResponse(PsuIdData psuData, String consentId) {

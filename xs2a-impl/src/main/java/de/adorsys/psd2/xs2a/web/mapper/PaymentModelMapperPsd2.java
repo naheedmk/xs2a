@@ -117,17 +117,16 @@ public class PaymentModelMapperPsd2 {
                    .orElse(null);
     }
 
-    public PaymentInitationRequestResponse201 mapToPaymentInitiationResponse12(Object response) {
+    public PaymentInitationRequestResponse201 mapToPaymentInitiationResponse12(PaymentInitiationResponse response) {
         PaymentInitationRequestResponse201 response201 = new PaymentInitationRequestResponse201();
-        PaymentInitiationResponse specificResponse = (PaymentInitiationResponse) response;
-        response201.setTransactionStatus(mapToTransactionStatus12(specificResponse.getTransactionStatus()));
-        response201.setPaymentId(specificResponse.getPaymentId());
-        response201.setTransactionFees(amountModelMapper.mapToAmount(specificResponse.getTransactionFees()));
-        response201.setTransactionFeeIndicator(specificResponse.isTransactionFeeIndicator());
-        response201.setScaMethods(mapToScaMethods(specificResponse.getScaMethods()));
-        response201.setChallengeData(coreObjectsMapper.mapToChallengeData(specificResponse.getChallengeData()));
-        response201.setLinks(hrefLinkMapper.mapToLinksMap(((PaymentInitiationResponse) response).getLinks()));
-        response201.setPsuMessage(specificResponse.getPsuMessage());
+        response201.setTransactionStatus(mapToTransactionStatus12(response.getTransactionStatus()));
+        response201.setPaymentId(response.getPaymentId());
+        response201.setTransactionFees(amountModelMapper.mapToAmount(response.getTransactionFees()));
+        response201.setTransactionFeeIndicator(response.isTransactionFeeIndicator());
+        response201.setScaMethods(mapToScaMethods(response.getScaMethods()));
+        response201.setChallengeData(coreObjectsMapper.mapToChallengeData(response.getChallengeData()));
+        response201.setLinks(hrefLinkMapper.mapToLinksMap(response.getLinks()));
+        response201.setPsuMessage(response.getPsuMessage());
         return response201;
     }
 

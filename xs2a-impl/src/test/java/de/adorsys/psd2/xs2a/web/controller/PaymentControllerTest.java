@@ -19,15 +19,14 @@ package de.adorsys.psd2.xs2a.web.controller;
 import de.adorsys.psd2.model.*;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
+import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.MessageErrorCode;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aPaymentCancellationAuthorisationSubResource;
-import de.adorsys.psd2.xs2a.domain.pis.CancelPaymentResponse;
-import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
-import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
+import de.adorsys.psd2.xs2a.domain.pis.*;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.ConsentService;
 import de.adorsys.psd2.xs2a.service.PaymentAuthorisationService;
@@ -38,6 +37,8 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ResponseErrorMapper;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
+import de.adorsys.psd2.xs2a.web.header.PaymentHeadersBuilder;
+import de.adorsys.psd2.xs2a.web.header.ResponseHeaders;
 import de.adorsys.psd2.xs2a.web.mapper.AuthorisationMapper;
 import de.adorsys.psd2.xs2a.web.mapper.ConsentModelMapper;
 import de.adorsys.psd2.xs2a.web.mapper.PaymentModelMapperPsd2;
@@ -91,7 +92,9 @@ public class PaymentControllerTest {
     private static final boolean TPP_REDIRECT_PREFERRED_TRUE = true;
     private static final ValidationResult VALID_VALIDATION_RESULT = ValidationResult.valid();
     private static final ValidationResult INVALID_VALIDATION_RESULT = ValidationResult.invalid(PIS_400_MESSAGE_ERROR);
+    private static final PaymentInitiationResponse PAYMENT_INITIATION_RESPONSE = new SinglePaymentInitiationResponse();
     private static final PaymentInitationRequestResponse201 PAYMENT_OBJECT = new PaymentInitationRequestResponse201();
+    private static final ResponseHeaders RESPONSE_HEADERS = ResponseHeaders.builder().aspspScaApproach(ScaApproach.REDIRECT).build();
 
     @InjectMocks
     private PaymentController paymentController;
@@ -119,9 +122,10 @@ public class PaymentControllerTest {
     private ResponseErrorMapper responseErrorMapper;
     @Mock
     private PaymentService xs2aPaymentService;
-
     @Mock
     private PaymentInitiationParameters paymentInitiationParameters;
+    @Mock
+    private PaymentHeadersBuilder paymentHeadersBuilder;
 
     @Before
     public void setUp() {
@@ -595,6 +599,7 @@ public class PaymentControllerTest {
 
     @Test
     public void initiatePayment_Success() {
+        // Given
         when(paymentModelMapperPsd2.mapToPaymentRequestParameters(PRODUCT, CORRECT_PAYMENT_SERVICE, null, REDIRECT_LINK, REDIRECT_LINK, true, buildPsuIdData()))
             .thenReturn(paymentInitiationParameters);
 
@@ -604,13 +609,15 @@ public class PaymentControllerTest {
         when(xs2aPaymentService.createPayment(PAYMENT_OBJECT, paymentInitiationParameters))
             .thenReturn(buildSuccessResponseObject());
 
-        when(paymentModelMapperPsd2.mapToPaymentInitiationResponse12(PAYMENT_OBJECT))
+        when(paymentModelMapperPsd2.mapToPaymentInitiationResponse12(PAYMENT_INITIATION_RESPONSE))
             .thenReturn(PAYMENT_OBJECT);
 
         ResponseObject expectedResponseObject = buildSuccessResponseObject();
 
-        when(responseMapper.created(any(ResponseObject.class)))
+        when(responseMapper.created(any(ResponseObject.class), eq(RESPONSE_HEADERS)))
             .thenReturn(new ResponseEntity<>(expectedResponseObject, CREATED));
+
+        when(paymentHeadersBuilder.buildInitiatePaymentHeaders(any(), any())).thenReturn(RESPONSE_HEADERS);
 
         Object jsonRequestObject = new Object();
 
@@ -679,12 +686,14 @@ public class PaymentControllerTest {
         when(xs2aPaymentService.createPayment(PAYMENT_OBJECT, paymentInitiationParameters))
             .thenReturn(buildSuccessResponseObject());
 
-        when(paymentModelMapperPsd2.mapToPaymentInitiationResponse12(PAYMENT_OBJECT))
+        when(paymentModelMapperPsd2.mapToPaymentInitiationResponse12(PAYMENT_INITIATION_RESPONSE))
             .thenReturn(PAYMENT_OBJECT);
 
         ResponseObject expectedResponseObject = buildSuccessResponseObject();
 
-        when(responseMapper.created(any(ResponseObject.class)))
+        when(paymentHeadersBuilder.buildInitiatePaymentHeaders(any(), any())).thenReturn(RESPONSE_HEADERS);
+
+        when(responseMapper.created(any(ResponseObject.class), eq(RESPONSE_HEADERS)))
             .thenReturn(new ResponseEntity<>(expectedResponseObject, CREATED));
 
         // When
@@ -760,9 +769,9 @@ public class PaymentControllerTest {
                    .build();
     }
 
-    private ResponseObject buildSuccessResponseObject() {
-        return ResponseObject.builder()
-                   .body(PAYMENT_OBJECT)
+    private ResponseObject<PaymentInitiationResponse> buildSuccessResponseObject() {
+        return ResponseObject.<PaymentInitiationResponse>builder()
+                   .body(PAYMENT_INITIATION_RESPONSE)
                    .build();
     }
 }

@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.service.mapper;
 
 import de.adorsys.psd2.xs2a.domain.CustomContentTypeProvider;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
+import de.adorsys.psd2.xs2a.web.header.ResponseHeaders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,18 @@ public class ResponseMapper {
         return generateResponse(response, NO_CONTENT, mapper);
     }
 
+    public <T, R> ResponseEntity<?> ok(ResponseObject<T> response, Function<T, R> mapper, ResponseHeaders responseHeaders) { //NOPMD short method name ok corresponds to status code
+        return generateResponse(response, OK, mapper, responseHeaders);
+    }
+
+    public <T, R> ResponseEntity<?> created(ResponseObject<T> response, Function<T, R> mapper, ResponseHeaders responseHeaders) {
+        return generateResponse(response, CREATED, mapper, responseHeaders);
+    }
+
+    public <T> ResponseEntity created(ResponseObject<T> response, ResponseHeaders responseHeaders) {
+        return generateResponse(response, CREATED, null, responseHeaders);
+    }
+
     public <T> ResponseEntity ok(ResponseObject<T> response) { //NOPMD short method name ok corresponds to status code
         return generateResponse(response, OK);
     }
@@ -66,7 +79,17 @@ public class ResponseMapper {
         return generateResponse(response, positiveStatus, null);
     }
 
-    private <T, R> ResponseEntity generateResponse(ResponseObject<T> response, HttpStatus positiveStatus, Function<T, R> mapper) {
+    private <T, R> ResponseEntity generateResponse(ResponseObject<T> response,
+                                                   HttpStatus positiveStatus,
+                                                   Function<T, R> mapper) {
+        ResponseHeaders emptyHeaders = ResponseHeaders.builder().build();
+        return generateResponse(response, positiveStatus, mapper, emptyHeaders);
+    }
+
+    private <T, R> ResponseEntity generateResponse(ResponseObject<T> response,
+                                                   HttpStatus positiveStatus,
+                                                   Function<T, R> mapper,
+                                                   ResponseHeaders responseHeaders) {
         if (response.hasError()) {
             throw new IllegalArgumentException("Response includes an error: " + response.getError());
         }
@@ -83,6 +106,7 @@ public class ResponseMapper {
         }
 
         return responseBuilder
+                   .headers(responseHeaders.getHttpHeaders())
                    .body(getBody(body, mapper));
     }
 
