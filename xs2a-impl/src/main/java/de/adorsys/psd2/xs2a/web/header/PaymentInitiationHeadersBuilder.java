@@ -25,10 +25,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ConsentHeadersBuilder {
+public class PaymentInitiationHeadersBuilder {
     private final ScaApproachResolver scaApproachResolver;
 
-    public ResponseHeaders buildCreateConsentHeaders(@Nullable String authorisationId, @NotNull String selfLink) {
+    public ResponseHeaders buildInitiatePaymentHeaders(@Nullable String authorisationId, @NotNull String selfLink) {
         if (authorisationId == null) {
             return ResponseHeaders.builder()
                        .location(selfLink)
@@ -42,23 +42,23 @@ public class ConsentHeadersBuilder {
                    .build();
     }
 
-    public ResponseHeaders buildErrorCreateConsentHeaders() {
+    public ResponseHeaders buildErrorInitiatePaymentHeaders() {
         return buildScaApproachHeader(scaApproachResolver.resolveScaApproach());
     }
 
-    public ResponseHeaders buildStartConsentAuthorisationHeaders(@NotNull String authorisationId) {
+    public ResponseHeaders buildStartPaymentAuthorisationHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
-    public ResponseHeaders buildErrorStartConsentAuthorisationHeaders() {
+    public ResponseHeaders buildErrorStartPaymentAuthorisationHeaders() {
         return buildScaApproachHeader(scaApproachResolver.resolveScaApproach());
     }
 
-    public ResponseHeaders buildUpdateConsentsPsuDataHeaders(@NotNull String authorisationId) {
+    public ResponseHeaders buildUpdatePaymentInitiationPsuDataHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
-    public ResponseHeaders buildErrorUpdateConsentsPsuDataHeaders(@NotNull String authorisationId) {
+    public ResponseHeaders buildErrorUpdatePaymentInitiationPsuDataHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 

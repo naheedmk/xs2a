@@ -16,6 +16,9 @@
 
 package de.adorsys.psd2.xs2a.domain.authorisation;
 
+/**
+ * Common authorisation response to be used in AIS and PIS on creation or updating the authorisation
+ */
 public interface AuthorisationResponse {
     String getAuthorisationId();
 }

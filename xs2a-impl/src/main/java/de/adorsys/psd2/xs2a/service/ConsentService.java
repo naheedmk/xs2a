@@ -317,6 +317,14 @@ public class ConsentService {
                    .build();
     }
 
+    /**
+     * Creates new authorisation for given consent and updates it if PSU Data or password are present in the request
+     *
+     * @param psuData   PSU authorisation data, can be empty
+     * @param consentId String representation of AccountConsent identification
+     * @param password  PSU password, can be omitted
+     * @return authorisation response
+     */
     public ResponseObject<AuthorisationResponse> createAisAuthorisation(PsuIdData psuData, String consentId, String password) {
         ResponseObject<CreateConsentAuthorizationResponse> createAisAuthorizationResponse = createConsentAuthorizationWithResponse(psuData, consentId);
 
@@ -333,7 +341,7 @@ public class ConsentService {
                        .build();
         }
 
-        String authorisationId = createAisAuthorizationResponse.getBody().getAuthorizationId();
+        String authorisationId = createAisAuthorizationResponse.getBody().getAuthorisationId();
 
         UpdateConsentPsuDataReq updatePsuData = new UpdateConsentPsuDataReq();
         updatePsuData.setPsuData(psuData);
@@ -518,7 +526,7 @@ public class ConsentService {
 
     private void proceedImplicitCaseForCreateConsent(CreateConsentResponse response, PsuIdData psuData, String consentId) {
         aisScaAuthorisationServiceResolver.getService().createConsentAuthorization(psuData, consentId)
-            .ifPresent(a -> response.setAuthorizationId(a.getAuthorizationId()));
+            .ifPresent(a -> response.setAuthorizationId(a.getAuthorisationId()));
     }
 
     private SpiContextData getSpiContextData(List<PsuIdData> psuIdDataList) {

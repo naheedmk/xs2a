@@ -109,7 +109,6 @@ public class ConsentControllerTest {
         when(consentService.deleteAccountConsentsById(eq(CONSENT_ID))).thenReturn(ResponseObject.<Void>builder().build());
         when(consentService.deleteAccountConsentsById(eq(WRONG_CONSENT_ID))).thenReturn(ResponseObject.<Void>builder().fail(MESSAGE_ERROR_AIS_404).build());
         when(responseErrorMapper.generateErrorResponse(MESSAGE_ERROR_AIS_400_FORMAT_ERROR)).thenReturn(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
-        when(responseErrorMapper.generateErrorResponse(MESSAGE_ERROR_AIS_400)).thenReturn(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
         when(responseErrorMapper.generateErrorResponse(MESSAGE_ERROR_AIS_403)).thenReturn(new ResponseEntity<>(HttpStatus.FORBIDDEN));
         when(responseErrorMapper.generateErrorResponse(MESSAGE_ERROR_AIS_404)).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -140,6 +139,9 @@ public class ConsentControllerTest {
     @Test
     public void createAccountConsent_Failure() {
         //Given:
+        when(consentHeadersBuilder.buildErrorCreateConsentHeaders()).thenReturn(RESPONSE_HEADERS);
+        when(responseErrorMapper.generateErrorResponse(MESSAGE_ERROR_AIS_404, RESPONSE_HEADERS))
+            .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
         Consents consents = getConsents();
         //When:
         ResponseEntity responseEntity = consentController.createConsent(null, consents,
@@ -213,6 +215,9 @@ public class ConsentControllerTest {
             .thenReturn(ResponseObject.<AuthorisationResponse>builder()
                             .fail(MESSAGE_ERROR_AIS_400)
                             .build());
+        when(consentHeadersBuilder.buildErrorStartConsentAuthorisationHeaders()).thenReturn(RESPONSE_HEADERS);
+        when(responseErrorMapper.generateErrorResponse(MESSAGE_ERROR_AIS_400, RESPONSE_HEADERS))
+            .thenReturn(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
 
         // When
         ResponseEntity responseEntity = consentController.startConsentAuthorisation(null, WRONG_CONSENT_ID,
@@ -379,7 +384,7 @@ public class ConsentControllerTest {
     private CreateConsentAuthorizationResponse getCreateConsentAuthorizationResponse(String consentId) {
         CreateConsentAuthorizationResponse response = new CreateConsentAuthorizationResponse();
         response.setConsentId(consentId);
-        response.setAuthorizationId(AUTHORISATION_ID);
+        response.setAuthorisationId(AUTHORISATION_ID);
         response.setScaStatus(ScaStatus.RECEIVED);
         return response;
     }

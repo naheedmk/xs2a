@@ -74,7 +74,8 @@ public class ConsentController implements ConsentApi {
             consentService.createAccountConsentsWithResponse(createConsent, psuData, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred), tppRedirectUri);
 
         if (createConsentResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(createConsentResponse.getError());
+            return responseErrorMapper.generateErrorResponse(createConsentResponse.getError(),
+                                                             consentHeadersBuilder.buildErrorCreateConsentHeaders());
         }
 
         CreateConsentResponse serviceBody = createConsentResponse.getBody();
@@ -114,7 +115,8 @@ public class ConsentController implements ConsentApi {
         ResponseObject<AuthorisationResponse> createResponse = consentService.createAisAuthorisation(psuData, consentId, password);
 
         if (createResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(createResponse.getError());
+            return responseErrorMapper.generateErrorResponse(createResponse.getError(),
+                                                             consentHeadersBuilder.buildErrorStartConsentAuthorisationHeaders());
         }
 
         AuthorisationResponse authorisationResponse = createResponse.getBody();
@@ -143,7 +145,8 @@ public class ConsentController implements ConsentApi {
         ResponseObject<UpdateConsentPsuDataResponse> updateConsentPsuDataResponse = consentService.updateConsentPsuData(updatePsuDataRequest);
 
         if (updateConsentPsuDataResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(updateConsentPsuDataResponse.getError());
+            return responseErrorMapper.generateErrorResponse(updateConsentPsuDataResponse.getError(),
+                                                             consentHeadersBuilder.buildErrorUpdateConsentsPsuDataHeaders(authorisationId));
         }
 
         ResponseHeaders responseHeaders = consentHeadersBuilder.buildUpdateConsentsPsuDataHeaders(authorisationId);

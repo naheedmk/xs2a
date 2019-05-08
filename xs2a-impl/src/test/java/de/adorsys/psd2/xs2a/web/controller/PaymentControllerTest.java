@@ -37,7 +37,7 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ResponseErrorMapper;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
-import de.adorsys.psd2.xs2a.web.header.PaymentHeadersBuilder;
+import de.adorsys.psd2.xs2a.web.header.PaymentInitiationHeadersBuilder;
 import de.adorsys.psd2.xs2a.web.header.ResponseHeaders;
 import de.adorsys.psd2.xs2a.web.mapper.AuthorisationMapper;
 import de.adorsys.psd2.xs2a.web.mapper.ConsentModelMapper;
@@ -125,7 +125,7 @@ public class PaymentControllerTest {
     @Mock
     private PaymentInitiationParameters paymentInitiationParameters;
     @Mock
-    private PaymentHeadersBuilder paymentHeadersBuilder;
+    private PaymentInitiationHeadersBuilder paymentInitiationHeadersBuilder;
 
     @Before
     public void setUp() {
@@ -581,7 +581,10 @@ public class PaymentControllerTest {
         when(xs2aPaymentService.createPayment(PAYMENT_OBJECT, paymentInitiationParameters))
             .thenReturn(buildFailResponseObject());
 
-        when(responseErrorMapper.generateErrorResponse(PIS_400_MESSAGE_ERROR))
+        when(paymentInitiationHeadersBuilder.buildErrorInitiatePaymentHeaders())
+            .thenReturn(RESPONSE_HEADERS);
+
+        when(responseErrorMapper.generateErrorResponse(PIS_400_MESSAGE_ERROR, RESPONSE_HEADERS))
             .thenReturn(new ResponseEntity<>(BAD_REQUEST));
 
         Object jsonRequestObject = new Object();
@@ -617,7 +620,7 @@ public class PaymentControllerTest {
         when(responseMapper.created(any(ResponseObject.class), eq(RESPONSE_HEADERS)))
             .thenReturn(new ResponseEntity<>(expectedResponseObject, CREATED));
 
-        when(paymentHeadersBuilder.buildInitiatePaymentHeaders(any(), any())).thenReturn(RESPONSE_HEADERS);
+        when(paymentInitiationHeadersBuilder.buildInitiatePaymentHeaders(any(), any())).thenReturn(RESPONSE_HEADERS);
 
         Object jsonRequestObject = new Object();
 
@@ -661,7 +664,10 @@ public class PaymentControllerTest {
         when(xs2aPaymentService.createPayment(PAYMENT_OBJECT, paymentInitiationParameters))
             .thenReturn(buildFailResponseObject());
 
-        when(responseErrorMapper.generateErrorResponse(PIS_400_MESSAGE_ERROR))
+        when(paymentInitiationHeadersBuilder.buildErrorInitiatePaymentHeaders())
+            .thenReturn(RESPONSE_HEADERS);
+
+        when(responseErrorMapper.generateErrorResponse(PIS_400_MESSAGE_ERROR, RESPONSE_HEADERS))
             .thenReturn(new ResponseEntity<>(BAD_REQUEST));
 
         // When
@@ -691,7 +697,7 @@ public class PaymentControllerTest {
 
         ResponseObject expectedResponseObject = buildSuccessResponseObject();
 
-        when(paymentHeadersBuilder.buildInitiatePaymentHeaders(any(), any())).thenReturn(RESPONSE_HEADERS);
+        when(paymentInitiationHeadersBuilder.buildInitiatePaymentHeaders(any(), any())).thenReturn(RESPONSE_HEADERS);
 
         when(responseMapper.created(any(ResponseObject.class), eq(RESPONSE_HEADERS)))
             .thenReturn(new ResponseEntity<>(expectedResponseObject, CREATED));

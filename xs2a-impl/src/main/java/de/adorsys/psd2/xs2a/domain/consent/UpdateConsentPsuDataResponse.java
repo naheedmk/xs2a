@@ -32,7 +32,7 @@ import java.util.List;
 public class UpdateConsentPsuDataResponse implements AuthorisationResponse {
 
     private String consentId;
-    private String authorizationId;
+    private String authorisationId;
 
     private ScaStatus scaStatus;
     private List<Xs2aAuthenticationObject> availableScaMethods;
@@ -62,10 +62,5 @@ public class UpdateConsentPsuDataResponse implements AuthorisationResponse {
      */
     public Xs2aAuthenticationObject getChosenScaMethodForPsd2Response() {
         return getChosenScaMethod();
-    }
-
-    @Override
-    public String getAuthorisationId() {
-        return authorizationId;
     }
 }

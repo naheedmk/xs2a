@@ -23,13 +23,8 @@ import lombok.Data;
 @Data
 public class CreateConsentAuthorizationResponse implements AuthorisationResponse {
     private String consentId;
-    private String authorizationId;
+    private String authorisationId;
     private ScaStatus scaStatus;
     private ConsentAuthorizationResponseLinkType responseLinkType;
     private String psuMessage;
-
-    @Override
-    public String getAuthorisationId() {
-        return authorizationId;
-    }
 }

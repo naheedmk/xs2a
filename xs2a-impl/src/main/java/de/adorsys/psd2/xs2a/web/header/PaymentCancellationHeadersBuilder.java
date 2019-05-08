@@ -20,50 +20,31 @@ import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ConsentHeadersBuilder {
+public class PaymentCancellationHeadersBuilder {
     private final ScaApproachResolver scaApproachResolver;
 
-    public ResponseHeaders buildCreateConsentHeaders(@Nullable String authorisationId, @NotNull String selfLink) {
-        if (authorisationId == null) {
-            return ResponseHeaders.builder()
-                       .location(selfLink)
-                       .build();
-        }
-
-        ScaApproach scaApproach = scaApproachResolver.getInitiationScaApproach(authorisationId);
-        return ResponseHeaders.builder()
-                   .aspspScaApproach(scaApproach)
-                   .location(selfLink)
-                   .build();
-    }
-
-    public ResponseHeaders buildErrorCreateConsentHeaders() {
-        return buildScaApproachHeader(scaApproachResolver.resolveScaApproach());
-    }
-
-    public ResponseHeaders buildStartConsentAuthorisationHeaders(@NotNull String authorisationId) {
+    public ResponseHeaders buildStartPaymentCancellationAuthorisationHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
-    public ResponseHeaders buildErrorStartConsentAuthorisationHeaders() {
+    public ResponseHeaders buildErrorStartPaymentCancellationAuthorisationHeaders() {
         return buildScaApproachHeader(scaApproachResolver.resolveScaApproach());
     }
 
-    public ResponseHeaders buildUpdateConsentsPsuDataHeaders(@NotNull String authorisationId) {
+    public ResponseHeaders buildUpdatePaymentCancellationPsuDataHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
-    public ResponseHeaders buildErrorUpdateConsentsPsuDataHeaders(@NotNull String authorisationId) {
+    public ResponseHeaders buildErrorUpdatePaymentCancellationPsuDataHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
     private ResponseHeaders buildHeadersForExistingAuthorisation(String authorisationId) {
-        ScaApproach authorisationScaApproach = scaApproachResolver.getInitiationScaApproach(authorisationId);
+        ScaApproach authorisationScaApproach = scaApproachResolver.getCancellationScaApproach(authorisationId);
         return buildScaApproachHeader(authorisationScaApproach);
     }
 

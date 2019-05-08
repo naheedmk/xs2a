@@ -42,7 +42,8 @@ import de.adorsys.psd2.xs2a.service.PaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.ResponseMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ResponseErrorMapper;
-import de.adorsys.psd2.xs2a.web.header.PaymentHeadersBuilder;
+import de.adorsys.psd2.xs2a.web.header.PaymentCancellationHeadersBuilder;
+import de.adorsys.psd2.xs2a.web.header.PaymentInitiationHeadersBuilder;
 import de.adorsys.psd2.xs2a.web.header.ResponseHeaders;
 import de.adorsys.psd2.xs2a.web.mapper.AuthorisationMapper;
 import de.adorsys.psd2.xs2a.web.mapper.ConsentModelMapper;
@@ -76,7 +77,8 @@ public class PaymentController implements PaymentApi {
     private final PaymentAuthorisationService paymentAuthorisationService;
     private final PaymentCancellationAuthorisationService paymentCancellationAuthorisationService;
     private final AuthorisationMapper authorisationMapper;
-    private final PaymentHeadersBuilder paymentHeadersBuilder;
+    private final PaymentInitiationHeadersBuilder paymentInitiationHeadersBuilder;
+    private final PaymentCancellationHeadersBuilder paymentCancellationHeadersBuilder;
 
     @Override
     public ResponseEntity getPaymentInitiationStatus(String paymentService, String paymentProduct,
@@ -137,7 +139,8 @@ public class PaymentController implements PaymentApi {
             xs2aPaymentService.createPayment(paymentModelMapperXs2a.mapToXs2aPayment(body, paymentInitiationParameters), paymentInitiationParameters);
 
         if (serviceResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(serviceResponse.getError());
+            return responseErrorMapper.generateErrorResponse(serviceResponse.getError(),
+                                                             paymentInitiationHeadersBuilder.buildErrorInitiatePaymentHeaders());
         }
 
         PaymentInitiationResponse serviceResponseBody = serviceResponse.getBody();
@@ -178,7 +181,8 @@ public class PaymentController implements PaymentApi {
             xs2aPaymentService.createPayment(paymentModelMapperXs2a.mapToXs2aRawPayment(paymentInitiationParameters, xmlSct, jsonStandingorderType), paymentInitiationParameters);
 
         if (serviceResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(serviceResponse.getError());
+            return responseErrorMapper.generateErrorResponse(serviceResponse.getError(),
+                                                             paymentInitiationHeadersBuilder.buildErrorInitiatePaymentHeaders());
         }
 
         PaymentInitiationResponse serviceResponseBody = serviceResponse.getBody();
@@ -206,7 +210,8 @@ public class PaymentController implements PaymentApi {
             xs2aPaymentService.createPayment(paymentModelMapperXs2a.mapToXs2aRawPayment(body), paymentInitiationParameters);
 
         if (serviceResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(serviceResponse.getError());
+            return responseErrorMapper.generateErrorResponse(serviceResponse.getError(),
+                                                             paymentInitiationHeadersBuilder.buildErrorInitiatePaymentHeaders());
         }
 
         PaymentInitiationResponse serviceResponseBody = serviceResponse.getBody();
@@ -312,11 +317,12 @@ public class PaymentController implements PaymentApi {
         ResponseObject<AuthorisationResponse> createAuthResponse = paymentAuthorisationService.createPisAuthorisation(createRequest);
 
         if (createAuthResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(createAuthResponse.getError());
+            return responseErrorMapper.generateErrorResponse(createAuthResponse.getError(),
+                                                             paymentInitiationHeadersBuilder.buildErrorStartPaymentAuthorisationHeaders());
         }
 
         AuthorisationResponse authResponse = createAuthResponse.getBody();
-        ResponseHeaders responseHeaders = paymentHeadersBuilder.buildStartPaymentAuthorisationHeaders(authResponse.getAuthorisationId());
+        ResponseHeaders responseHeaders = paymentInitiationHeadersBuilder.buildStartPaymentAuthorisationHeaders(authResponse.getAuthorisationId());
 
         return responseMapper.created(ResponseObject.builder()
                                           .body(authorisationMapper.mapToPisCreateOrUpdateAuthorisationResponse(createAuthResponse))
@@ -340,11 +346,12 @@ public class PaymentController implements PaymentApi {
         ResponseObject<Xs2aCreatePisCancellationAuthorisationResponse> serviceResponse = paymentCancellationAuthorisationService.createPisCancellationAuthorization(paymentId, psuData, PaymentType.getByValue(paymentService).get(), paymentProduct);
 
         if (serviceResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(serviceResponse.getError());
+            return responseErrorMapper.generateErrorResponse(serviceResponse.getError(),
+                                                             paymentCancellationHeadersBuilder.buildErrorStartPaymentCancellationAuthorisationHeaders());
         }
 
         Xs2aCreatePisCancellationAuthorisationResponse body = serviceResponse.getBody();
-        ResponseHeaders responseHeaders = paymentHeadersBuilder.buildStartPaymentCancellationAuthorisationHeaders(body.getAuthorisationId());
+        ResponseHeaders responseHeaders = paymentCancellationHeadersBuilder.buildStartPaymentCancellationAuthorisationHeaders(body.getAuthorisationId());
 
         return responseMapper.created(serviceResponse, consentModelMapper::mapToStartScaProcessResponse, responseHeaders);
     }
@@ -362,10 +369,11 @@ public class PaymentController implements PaymentApi {
         ResponseObject<Xs2aUpdatePisCommonPaymentPsuDataResponse> serviceResponse = paymentCancellationAuthorisationService.updatePisCancellationPsuData(consentModelMapper.mapToPisUpdatePsuData(psuData, paymentId, cancellationId, paymentService, paymentProduct, (Map) body));
 
         if (serviceResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(serviceResponse.getError());
+            return responseErrorMapper.generateErrorResponse(serviceResponse.getError(),
+                                                             paymentCancellationHeadersBuilder.buildErrorUpdatePaymentCancellationPsuDataHeaders(cancellationId));
         }
 
-        ResponseHeaders responseHeaders = paymentHeadersBuilder.buildUpdatePaymentCancellationPsuDataHeaders(cancellationId);
+        ResponseHeaders responseHeaders = paymentCancellationHeadersBuilder.buildUpdatePaymentCancellationPsuDataHeaders(cancellationId);
 
         return responseMapper.ok(serviceResponse, authorisationMapper::mapToPisUpdatePsuAuthenticationResponse, responseHeaders);
     }
@@ -388,15 +396,16 @@ public class PaymentController implements PaymentApi {
         ResponseObject<Xs2aUpdatePisCommonPaymentPsuDataResponse> serviceResponse = paymentAuthorisationService.updatePisCommonPaymentPsuData(request);
 
         if (serviceResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(serviceResponse.getError());
+            return responseErrorMapper.generateErrorResponse(serviceResponse.getError(),
+                                                             paymentInitiationHeadersBuilder.buildErrorUpdatePaymentInitiationPsuDataHeaders(authorisationId));
         }
 
-        ResponseHeaders responseHeaders = paymentHeadersBuilder.buildUpdatePaymentInitiationPsuDataHeaders(authorisationId);
+        ResponseHeaders responseHeaders = paymentInitiationHeadersBuilder.buildUpdatePaymentInitiationPsuDataHeaders(authorisationId);
 
         return responseMapper.ok(serviceResponse, authorisationMapper::mapToPisUpdatePsuAuthenticationResponse, responseHeaders);
     }
 
     private ResponseHeaders buildPaymentInitiationResponseHeaders(PaymentInitiationResponse paymentInitiationResponse) {
-        return paymentHeadersBuilder.buildInitiatePaymentHeaders(paymentInitiationResponse.getAuthorizationId(), paymentInitiationResponse.getLinks().getSelf());
+        return paymentInitiationHeadersBuilder.buildInitiatePaymentHeaders(paymentInitiationResponse.getAuthorizationId(), paymentInitiationResponse.getLinks().getSelf());
     }
 }
