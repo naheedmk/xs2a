@@ -21,3 +21,11 @@ pages : prepare_pages
 
 clean :
 	-rm -r pages
+	mvn clean
+
+build: maven_build pages
+
+maven_build:
+	mvn install
+
+all: clean build
