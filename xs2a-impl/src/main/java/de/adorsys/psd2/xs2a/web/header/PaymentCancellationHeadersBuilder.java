@@ -27,18 +27,41 @@ import org.springframework.stereotype.Component;
 public class PaymentCancellationHeadersBuilder {
     private final ScaApproachResolver scaApproachResolver;
 
+    /**
+     * Builds response headers for successful start payment cancellation authorisation request
+     *
+     * @param authorisationId id of the created cancellation authorisation
+     * @return response headers
+     */
     public ResponseHeaders buildStartPaymentCancellationAuthorisationHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
+    /**
+     * Builds response headers for start payment cancellation authorisation request that resulted in some error
+     *
+     * @return response headers
+     */
     public ResponseHeaders buildErrorStartPaymentCancellationAuthorisationHeaders() {
         return buildScaApproachHeader(scaApproachResolver.resolveScaApproach());
     }
 
+    /**
+     * Builds response headers for successful update payment cancellation PSU Data request
+     *
+     * @param authorisationId id of the cancellation authorisation, used in the request
+     * @return response headers
+     */
     public ResponseHeaders buildUpdatePaymentCancellationPsuDataHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
+    /**
+     * Builds response headers for update payment cancellation PSU Data request that resulted in some error
+     *
+     * @param authorisationId id of the cancellation authorisation, used in the request
+     * @return response headers
+     */
     public ResponseHeaders buildErrorUpdatePaymentCancellationPsuDataHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }

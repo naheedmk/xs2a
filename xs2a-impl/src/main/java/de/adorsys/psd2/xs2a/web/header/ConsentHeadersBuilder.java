@@ -28,6 +28,13 @@ import org.springframework.stereotype.Component;
 public class ConsentHeadersBuilder {
     private final ScaApproachResolver scaApproachResolver;
 
+    /**
+     * Builds response headers for successful create consent request
+     *
+     * @param authorisationId id of the authorisation, if it was created implicitly
+     * @param selfLink        link to the newly created consent
+     * @return response headers
+     */
     public ResponseHeaders buildCreateConsentHeaders(@Nullable String authorisationId, @NotNull String selfLink) {
         if (authorisationId == null) {
             return ResponseHeaders.builder()
@@ -42,22 +49,50 @@ public class ConsentHeadersBuilder {
                    .build();
     }
 
+    /**
+     * Builds response headers for create consent request that resulted in some error
+     *
+     * @return response headers
+     */
     public ResponseHeaders buildErrorCreateConsentHeaders() {
         return buildScaApproachHeader(scaApproachResolver.resolveScaApproach());
     }
 
+    /**
+     * Builds response headers for successful start consent authorisation request
+     *
+     * @param authorisationId id of the created authorisation
+     * @return response headers
+     */
     public ResponseHeaders buildStartConsentAuthorisationHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
+    /**
+     * Builds response headers for start consent authorisation request that resulted in some error
+     *
+     * @return response headers
+     */
     public ResponseHeaders buildErrorStartConsentAuthorisationHeaders() {
         return buildScaApproachHeader(scaApproachResolver.resolveScaApproach());
     }
 
+    /**
+     * Builds response headers for successful update consents PSU Data request
+     *
+     * @param authorisationId id of the authorisation, used in the request
+     * @return response headers
+     */
     public ResponseHeaders buildUpdateConsentsPsuDataHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
+    /**
+     * Builds response headers for start consent authorisation request that resulted in some error
+     *
+     * @param authorisationId id of the authorisation, used in the request
+     * @return response headers
+     */
     public ResponseHeaders buildErrorUpdateConsentsPsuDataHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }

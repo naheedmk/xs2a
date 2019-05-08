@@ -28,6 +28,13 @@ import org.springframework.stereotype.Component;
 public class PaymentInitiationHeadersBuilder {
     private final ScaApproachResolver scaApproachResolver;
 
+    /**
+     * Builds response headers for successful initiate payment request
+     *
+     * @param authorisationId id of the authorisation, if it was created implicitly
+     * @param selfLink        link to the newly created payment
+     * @return response headers
+     */
     public ResponseHeaders buildInitiatePaymentHeaders(@Nullable String authorisationId, @NotNull String selfLink) {
         if (authorisationId == null) {
             return ResponseHeaders.builder()
@@ -42,22 +49,50 @@ public class PaymentInitiationHeadersBuilder {
                    .build();
     }
 
+    /**
+     * Builds response headers for initiate payment request that resulted in some error
+     *
+     * @return response headers
+     */
     public ResponseHeaders buildErrorInitiatePaymentHeaders() {
         return buildScaApproachHeader(scaApproachResolver.resolveScaApproach());
     }
 
+    /**
+     * Builds response headers for successful start payment authorisation request
+     *
+     * @param authorisationId id of the created authorisation
+     * @return response headers
+     */
     public ResponseHeaders buildStartPaymentAuthorisationHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
+    /**
+     * Builds response headers for start payment authorisation request that resulted in some error
+     *
+     * @return response headers
+     */
     public ResponseHeaders buildErrorStartPaymentAuthorisationHeaders() {
         return buildScaApproachHeader(scaApproachResolver.resolveScaApproach());
     }
 
+    /**
+     * Builds response headers for successful update payment initiation PSU Data request
+     *
+     * @param authorisationId id of the authorisation, used in the request
+     * @return response headers
+     */
     public ResponseHeaders buildUpdatePaymentInitiationPsuDataHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
 
+    /**
+     * Builds response headers for update payment initiation PSU Data request that resulted in some error
+     *
+     * @param authorisationId id of the authorisation, used in the request
+     * @return response headers
+     */
     public ResponseHeaders buildErrorUpdatePaymentInitiationPsuDataHeaders(@NotNull String authorisationId) {
         return buildHeadersForExistingAuthorisation(authorisationId);
     }
