@@ -6,7 +6,7 @@ This means our versions follow the model *A.B.C*, where:
 
 * *A* - major version, pointing out mainline.
 * *B* - minor version, points out next release in the mainline. Minimum 2 versions backward compatibility is guaranteed for _stable_ mainlines.
-* *C* - hotfix version, used to deliver patches between releases in case of need. May be omitted, therefore version `4.5` would equal to `4.5.0`.
+* *C* - hotfix version, used to deliver patches between releases in case of need. May be omitted, therefore version `4.5` will be equal to `4.5.0`.
 
 We support one stable and one development version at glance.
 

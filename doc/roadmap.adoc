@@ -1,5 +1,4 @@
 == Roadmap
-:ext-relative: .html
 
 === Versions in progress
 
@@ -53,7 +52,7 @@ Stable branch 2.x will be supported at least till 01.09.2019
 * Bugfix: Retrieve payment data by redirect-id with correct endpoint
 * Bugfix: Accept Authentication Type from ASPSP
 * Bugfix: Get consent status request do not return mandated lastActionDate attribute in response body
-* Bugfix: startAuthorisationWithPsuAuthentication link not available in response for  start the authorisation process for a payment initiation
+* Bugfix: startAuthorisationWithPsuAuthentication link not available in response for start the authorisation process for a payment initiation
 
 ==== version 2.9 (Planned date 05.07.2019)
 
@@ -68,9 +67,9 @@ Stable branch 2.x will be supported at least till 01.09.2019
 ==== Upcoming features 2.x/3.x (Priorities may be changed)
 
 * Bugfix: Get account response is empty for Consent on Account List of Available Accounts
-* Payment Authorisations and Payment Cancellation Authorisations should be separated from AIS Consent Authorisations (507)
-* Provide creation date and time in SPIrequest (750)
-* add the request execution duration to the log  (Consors) (687)
+* Payment Authorisations and Payment Cancellation Authorisations should be separated from AIS Consent Authorisations
+* Provide creation date and time in SPIrequest
+* Add the request execution duration to the log
 
 === Development branch 3.x
 

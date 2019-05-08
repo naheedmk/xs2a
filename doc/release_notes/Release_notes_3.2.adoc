@@ -20,7 +20,7 @@ The following versions were updated:
 * hibernate-core > 5.4.2.Final
 * mockito-core > 2.27.0
 
-See  link:../doc/Spring_Boot_2_0_migration_guide{ext-relative}[Spring_Boot_2_0_migration_guide{ext-relative}] for more details.
+See xref:../Spring_Boot_2_0_migration_guide.adoc[Spring_Boot_2_0_migration_guide] for more details.
 
 == Bugfix: Fix update authorisation status endpoint in CMS-PSU-API not working with lowercase values for authorisation status
 

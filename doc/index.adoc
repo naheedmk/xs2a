@@ -3,7 +3,6 @@
 :toc-title: XS2A Documentation
 :imagesdir: images
 :toc: left
-:ext-relative: .html
 
 //additional style for arc42 help callouts
 ifdef::basebackend-html[]
@@ -26,7 +25,7 @@ endif::basebackend-html[]
 toc::[]
 
 == Architecture
-link:architecture/index{ext-relative}[Architecture documentation]
+xref:architecture/index.adoc[Architecture documentation]
 
 
 == Use cases
@@ -37,13 +36,13 @@ include::version_policy.adoc[]
 
 == Upcoming and existing Versions
 === Roadmap
-link:roadmap{ext-relative}[Roadmap] contains brief information about upcoming features and bugfixes.
+xref:roadmap.adoc[Roadmap] contains brief information about upcoming features and bugfixes.
 May be changed without a note.
 
 === Change log and Release notes
 
 For the versions available, see the https://github.com/your/project/tags[tags on this repository]
-and xref:releasenotes{ext-relative}[Release notes for each version].
+and xref:releasenotes.adoc[Release notes for each version].
 
-link:releasenotes{ext-relative}[Release notes] contain information about changes included into releases.
+xref:releasenotes.adoc[Release notes] contain information about changes included into releases.
 Might contain also important migration information for the developers, how to migrate to a new version and how to use it.
