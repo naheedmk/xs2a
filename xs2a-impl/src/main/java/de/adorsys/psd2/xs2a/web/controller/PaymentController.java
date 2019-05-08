@@ -95,7 +95,7 @@ public class PaymentController implements PaymentApi {
                                                                                .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404))::build);
         return serviceResponse.hasError()
                    ? responseErrorMapper.generateErrorResponse(serviceResponse.getError())
-                   : responseMapper.ok(serviceResponse, PaymentModelMapperPsd2::mapToStatusResponse12);
+                   : responseMapper.ok(serviceResponse, PaymentModelMapperPsd2::mapToStatusResponse);
     }
 
     @Override
@@ -111,8 +111,8 @@ public class PaymentController implements PaymentApi {
 
         return serviceResponse.hasError()
                    ? responseErrorMapper.generateErrorResponse(serviceResponse.getError())
-                   : responseMapper.ok(ResponseObject.builder().body(paymentModelMapperPsd2.mapToGetPaymentResponse12(serviceResponse.getBody(), PaymentType.getByValue(paymentService).get(),
-                                                                                                                      paymentProduct)).build());
+                   : responseMapper.ok(ResponseObject.builder().body(paymentModelMapperPsd2.mapToGetPaymentResponse(serviceResponse.getBody(), PaymentType.getByValue(paymentService).get(),
+                                                                                                                    paymentProduct)).build());
     }
 
     //Method for JSON format payments
@@ -148,7 +148,7 @@ public class PaymentController implements PaymentApi {
 
         return responseMapper.created(ResponseObject
                                           .builder()
-                                          .body(paymentModelMapperPsd2.mapToPaymentInitiationResponse12(serviceResponseBody))
+                                          .body(paymentModelMapperPsd2.mapToPaymentInitiationResponse(serviceResponseBody))
                                           .build(), responseHeaders);
     }
 
@@ -190,7 +190,7 @@ public class PaymentController implements PaymentApi {
 
         return responseMapper.created(ResponseObject
                                           .builder()
-                                          .body(paymentModelMapperPsd2.mapToPaymentInitiationResponse12(serviceResponseBody))
+                                          .body(paymentModelMapperPsd2.mapToPaymentInitiationResponse(serviceResponseBody))
                                           .build(), responseHeaders);
     }
 
@@ -219,7 +219,7 @@ public class PaymentController implements PaymentApi {
 
         return responseMapper.created(ResponseObject
                                           .builder()
-                                          .body(paymentModelMapperPsd2.mapToPaymentInitiationResponse12(serviceResponseBody))
+                                          .body(paymentModelMapperPsd2.mapToPaymentInitiationResponse(serviceResponseBody))
                                           .build(), responseHeaders);
     }
 

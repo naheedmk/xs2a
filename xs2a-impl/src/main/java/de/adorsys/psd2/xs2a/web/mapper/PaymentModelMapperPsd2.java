@@ -56,7 +56,7 @@ public class PaymentModelMapperPsd2 {
     private final HrefLinkMapper hrefLinkMapper;
     private final StandardPaymentProductsResolver standardPaymentProductsResolver;
 
-    public Object mapToGetPaymentResponse12(Object payment, PaymentType type, String paymentProduct) {
+    public Object mapToGetPaymentResponse(Object payment, PaymentType type, String paymentProduct) {
         if (standardPaymentProductsResolver.isRawPaymentProduct(paymentProduct)) {
             PisPaymentInfo paymentInfo = (PisPaymentInfo) payment;
             return convertResponseToRawData(paymentInfo.getPaymentData());
@@ -73,7 +73,7 @@ public class PaymentModelMapperPsd2 {
             paymentResponse.setCreditorName(xs2aPayment.getCreditorName());
             paymentResponse.setCreditorAddress(accountModelMapper.mapToAddress12(xs2aPayment.getCreditorAddress()));
             paymentResponse.setRemittanceInformationUnstructured(xs2aPayment.getRemittanceInformationUnstructured());
-            paymentResponse.setTransactionStatus(mapToTransactionStatus12(xs2aPayment.getTransactionStatus()));
+            paymentResponse.setTransactionStatus(mapToTransactionStatus(xs2aPayment.getTransactionStatus()));
             return paymentResponse;
         } else if (type == PERIODIC) {
             PeriodicPayment xs2aPayment = (PeriodicPayment) payment;
@@ -92,7 +92,7 @@ public class PaymentModelMapperPsd2 {
             paymentResponse.setExecutionRule(mapToExecutionRule(xs2aPayment.getExecutionRule()).orElse(null));
             paymentResponse.setFrequency(FrequencyCode.valueOf(xs2aPayment.getFrequency().name()));
             paymentResponse.setDayOfExecution(mapToDayOfExecution(xs2aPayment.getDayOfExecution()).orElse(null));
-            paymentResponse.setTransactionStatus(mapToTransactionStatus12(xs2aPayment.getTransactionStatus()));
+            paymentResponse.setTransactionStatus(mapToTransactionStatus(xs2aPayment.getTransactionStatus()));
             return paymentResponse;
         } else {
             BulkPayment xs2aPayment = (BulkPayment) payment;
@@ -101,25 +101,25 @@ public class PaymentModelMapperPsd2 {
             paymentResponse.setBatchBookingPreferred(xs2aPayment.getBatchBookingPreferred());
             paymentResponse.setRequestedExecutionDate(xs2aPayment.getRequestedExecutionDate());
             paymentResponse.setDebtorAccount(accountModelMapper.mapToAccountReference12(xs2aPayment.getDebtorAccount()));
-            paymentResponse.setPayments(mapToBulkPartList12(xs2aPayment.getPayments()));
-            paymentResponse.setTransactionStatus(mapToTransactionStatus12(xs2aPayment.getTransactionStatus()));
+            paymentResponse.setPayments(mapToBulkPartList(xs2aPayment.getPayments()));
+            paymentResponse.setTransactionStatus(mapToTransactionStatus(xs2aPayment.getTransactionStatus()));
             return paymentResponse;
         }
     }
 
-    public static PaymentInitiationStatusResponse200Json mapToStatusResponse12(de.adorsys.psd2.xs2a.core.pis.TransactionStatus status) {
-        return new PaymentInitiationStatusResponse200Json().transactionStatus(mapToTransactionStatus12(status));
+    public static PaymentInitiationStatusResponse200Json mapToStatusResponse(de.adorsys.psd2.xs2a.core.pis.TransactionStatus status) {
+        return new PaymentInitiationStatusResponse200Json().transactionStatus(mapToTransactionStatus(status));
     }
 
-    public static TransactionStatus mapToTransactionStatus12(de.adorsys.psd2.xs2a.core.pis.TransactionStatus responseObject) {
+    public static TransactionStatus mapToTransactionStatus(de.adorsys.psd2.xs2a.core.pis.TransactionStatus responseObject) {
         return Optional.ofNullable(responseObject)
                    .map(r -> TransactionStatus.valueOf(r.name()))
                    .orElse(null);
     }
 
-    public PaymentInitationRequestResponse201 mapToPaymentInitiationResponse12(PaymentInitiationResponse response) {
+    public PaymentInitationRequestResponse201 mapToPaymentInitiationResponse(PaymentInitiationResponse response) {
         PaymentInitationRequestResponse201 response201 = new PaymentInitationRequestResponse201();
-        response201.setTransactionStatus(mapToTransactionStatus12(response.getTransactionStatus()));
+        response201.setTransactionStatus(mapToTransactionStatus(response.getTransactionStatus()));
         response201.setPaymentId(response.getPaymentId());
         response201.setTransactionFees(amountModelMapper.mapToAmount(response.getTransactionFees()));
         response201.setTransactionFeeIndicator(response.isTransactionFeeIndicator());
@@ -143,7 +143,7 @@ public class PaymentModelMapperPsd2 {
 
     public PaymentInitiationCancelResponse202 mapToPaymentInitiationCancelResponse(CancelPaymentResponse cancelPaymentResponse) {
         PaymentInitiationCancelResponse202 response = new PaymentInitiationCancelResponse202();
-        response.setTransactionStatus(mapToTransactionStatus12(cancelPaymentResponse.getTransactionStatus()));
+        response.setTransactionStatus(mapToTransactionStatus(cancelPaymentResponse.getTransactionStatus()));
         response.setScaMethods(mapToScaMethods(cancelPaymentResponse.getScaMethods()));
         response.setChosenScaMethod(mapToChosenScaMethod(cancelPaymentResponse.getChosenScaMethod()));
         response.setChallengeData(coreObjectsMapper.mapToChallengeData(cancelPaymentResponse.getChallengeData()));
@@ -151,13 +151,13 @@ public class PaymentModelMapperPsd2 {
         return response;
     }
 
-    private List<PaymentInitiationBulkElementJson> mapToBulkPartList12(List<SinglePayment> payments) {
+    private List<PaymentInitiationBulkElementJson> mapToBulkPartList(List<SinglePayment> payments) {
         return payments.stream()
-                   .map(this::mapToBulkPart12)
+                   .map(this::mapToBulkPart)
                    .collect(Collectors.toList());
     }
 
-    private PaymentInitiationBulkElementJson mapToBulkPart12(SinglePayment payment) {
+    private PaymentInitiationBulkElementJson mapToBulkPart(SinglePayment payment) {
         PaymentInitiationBulkElementJson bulkPart = new PaymentInitiationBulkElementJson().endToEndIdentification(payment.getEndToEndIdentification());
         bulkPart.setInstructedAmount(amountModelMapper.mapToAmount(payment.getInstructedAmount()));
         bulkPart.setCreditorAccount(accountModelMapper.mapToAccountReference12(payment.getCreditorAccount()));

@@ -612,7 +612,7 @@ public class PaymentControllerTest {
         when(xs2aPaymentService.createPayment(PAYMENT_OBJECT, paymentInitiationParameters))
             .thenReturn(buildSuccessResponseObject());
 
-        when(paymentModelMapperPsd2.mapToPaymentInitiationResponse12(PAYMENT_INITIATION_RESPONSE))
+        when(paymentModelMapperPsd2.mapToPaymentInitiationResponse(PAYMENT_INITIATION_RESPONSE))
             .thenReturn(PAYMENT_OBJECT);
 
         ResponseObject expectedResponseObject = buildSuccessResponseObject();
@@ -692,7 +692,7 @@ public class PaymentControllerTest {
         when(xs2aPaymentService.createPayment(PAYMENT_OBJECT, paymentInitiationParameters))
             .thenReturn(buildSuccessResponseObject());
 
-        when(paymentModelMapperPsd2.mapToPaymentInitiationResponse12(PAYMENT_INITIATION_RESPONSE))
+        when(paymentModelMapperPsd2.mapToPaymentInitiationResponse(PAYMENT_INITIATION_RESPONSE))
             .thenReturn(PAYMENT_OBJECT);
 
         ResponseObject expectedResponseObject = buildSuccessResponseObject();
