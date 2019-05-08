@@ -70,18 +70,19 @@ public class ConsentController implements ConsentApi {
 
         PsuIdData psuData = new PsuIdData(PSU_ID, psUIDType, psUCorporateID, psUCorporateIDType);
         TppRedirectUri tppRedirectUri = tppRedirectUriMapper.mapToTppRedirectUri(tpPRedirectURI, tpPNokRedirectURI);
-        ResponseObject<CreateConsentResponse> createConsentResponse =
+        ResponseObject<CreateConsentResponse> createResponse =
             consentService.createAccountConsentsWithResponse(createConsent, psuData, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred), tppRedirectUri);
 
-        if (createConsentResponse.hasError()) {
-            return responseErrorMapper.generateErrorResponse(createConsentResponse.getError(),
+        if (createResponse.hasError()) {
+            return responseErrorMapper.generateErrorResponse(createResponse.getError(),
                                                              consentHeadersBuilder.buildErrorCreateConsentHeaders());
         }
 
-        CreateConsentResponse serviceBody = createConsentResponse.getBody();
-        ResponseHeaders headers = consentHeadersBuilder.buildCreateConsentHeaders(serviceBody.getAuthorizationId(), serviceBody.getLinks().getSelf());
+        CreateConsentResponse createConsentResponse = createResponse.getBody();
+        ResponseHeaders headers = consentHeadersBuilder.buildCreateConsentHeaders(createConsentResponse.getAuthorizationId(),
+                                                                                  createConsentResponse.getLinks().getSelf());
 
-        return responseMapper.created(createConsentResponse, consentModelMapper::mapToConsentsResponse201, headers);
+        return responseMapper.created(createResponse, consentModelMapper::mapToConsentsResponse201, headers);
     }
 
     @Override

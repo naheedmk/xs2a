@@ -29,7 +29,6 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.pis.*;
-import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.consent.PisAspspDataService;
 import de.adorsys.psd2.xs2a.service.consent.PisPsuDataService;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
@@ -120,41 +119,23 @@ public class PaymentService {
             return createCommonPaymentService.createPayment(request, paymentInitiationParameters, tppInfo);
         }
 
-        PaymentInitiationResponse paymentInitiationResponse;
-        Optional<MessageError> messageError = Optional.empty();
+        ResponseObject<? extends PaymentInitiationResponse> responseObject;
         if (paymentInitiationParameters.getPaymentType() == PaymentType.SINGLE) {
-            ResponseObject<SinglePaymentInitiationResponse> singlePaymentInitiationResponseResponseObject = processSinglePayment((SinglePayment) payment, paymentInitiationParameters, tppInfo);
-            if (singlePaymentInitiationResponseResponseObject.hasError()) {
-                messageError = Optional.of(singlePaymentInitiationResponseResponseObject.getError());
-            }
-
-            paymentInitiationResponse = singlePaymentInitiationResponseResponseObject.getBody();
+            responseObject = createSinglePaymentService.createPayment((SinglePayment) payment, paymentInitiationParameters, tppInfo);
         } else if (paymentInitiationParameters.getPaymentType() == PaymentType.PERIODIC) {
-            ResponseObject<PeriodicPaymentInitiationResponse> periodicPaymentInitiationResponseResponseObject = processPeriodicPayment((PeriodicPayment) payment, paymentInitiationParameters, tppInfo);
-
-            if (periodicPaymentInitiationResponseResponseObject.hasError()) {
-                messageError = Optional.of(periodicPaymentInitiationResponseResponseObject.getError());
-            }
-
-            paymentInitiationResponse = periodicPaymentInitiationResponseResponseObject.getBody();
+            responseObject = createPeriodicPaymentService.createPayment((PeriodicPayment) payment, paymentInitiationParameters, tppInfo);
         } else {
-            ResponseObject<BulkPaymentInitiationResponse> bulkPaymentInitiationResponseResponseObject = processBulkPayment((BulkPayment) payment, paymentInitiationParameters, tppInfo);
-
-            if (bulkPaymentInitiationResponseResponseObject.hasError()) {
-                messageError = Optional.of(bulkPaymentInitiationResponseResponseObject.getError());
-            }
-
-            paymentInitiationResponse = bulkPaymentInitiationResponseResponseObject.getBody();
+            responseObject = createBulkPaymentService.createPayment((BulkPayment) payment, paymentInitiationParameters, tppInfo);
         }
 
-        if (messageError.isPresent()) {
+        if (responseObject.hasError()) {
             return ResponseObject.<PaymentInitiationResponse>builder()
-                       .fail(messageError.get())
+                       .fail(responseObject.getError())
                        .build();
         }
 
         return ResponseObject.<PaymentInitiationResponse>builder()
-                   .body(paymentInitiationResponse)
+                   .body(responseObject.getBody())
                    .build();
     }
 
@@ -372,17 +353,5 @@ public class PaymentService {
             return psuIdDataList.get(0);
         }
         return null;
-    }
-
-    private ResponseObject<SinglePaymentInitiationResponse> processSinglePayment(SinglePayment singePayment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo) {
-        return createSinglePaymentService.createPayment(singePayment, paymentInitiationParameters, tppInfo);
-    }
-
-    private ResponseObject<PeriodicPaymentInitiationResponse> processPeriodicPayment(PeriodicPayment periodicPayment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo) {
-        return createPeriodicPaymentService.createPayment(periodicPayment, paymentInitiationParameters, tppInfo);
-    }
-
-    private ResponseObject<BulkPaymentInitiationResponse> processBulkPayment(BulkPayment bulkPayment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo) {
-        return createBulkPaymentService.createPayment(bulkPayment, paymentInitiationParameters, tppInfo);
     }
 }
