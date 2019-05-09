@@ -41,7 +41,7 @@ May be changed without a note.
 
 === Change log and Release notes
 
-For the versions available, see the https://github.com/your/project/tags[tags on this repository]
+For the versions available, see the https://github.com/adorsys/xs2a/tags[tags on this repository]
 and xref:releasenotes.adoc[Release notes for each version].
 
 xref:releasenotes.adoc[Release notes] contain information about changes included into releases.
