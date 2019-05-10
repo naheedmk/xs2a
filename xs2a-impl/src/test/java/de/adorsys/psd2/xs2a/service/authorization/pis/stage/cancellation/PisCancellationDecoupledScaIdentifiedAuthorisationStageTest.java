@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PisCancellationDecoupledScaIdentifiedAuthorisationStageTest {
-    private final static String DECOUPLED_SERVICE_NAME = PisScaStageAuthorisationFactory.getServiceName(ScaApproach.DECOUPLED, ScaStatus.RECEIVED);
+    private final static String DECOUPLED_SERVICE_NAME = PisScaStageAuthorisationFactory.getCancellationServiceName(ScaApproach.DECOUPLED, ScaStatus.RECEIVED);
 
     @InjectMocks
     private PisCancellationDecoupledScaIdentifiedAuthorisationStage pisCancellationDecoupledScaIdentifiedAuthorisationStage;
