@@ -85,6 +85,7 @@ public class AccountServiceTest {
     private static final String MASKED_PAN = "Test MASKED_PAN";
     private static final String MSISDN = "Test MSISDN";
     private static final String REQUEST_URI = "request/uri";
+    private static final String IP_ADDRESS = "192.168.7.40";
     private static final Currency EUR_CURRENCY = Currency.getInstance("EUR");
     private static final LocalDate DATE_FROM = LocalDate.of(2018, 1, 1);
     private static final LocalDate DATE_TO = LocalDate.now();
@@ -167,6 +168,8 @@ public class AccountServiceTest {
     private GetTransactionsReportValidator getTransactionsReportValidator;
     @Mock
     private GetTransactionDetailsValidator getTransactionDetailsValidator;
+    @Mock
+    private RequestProviderService requestProviderService;
 
     @Before
     public void setUp() {
@@ -174,7 +177,7 @@ public class AccountServiceTest {
             .when(aisConsentDataService).updateAspspConsentData(ASPSP_CONSENT_DATA);
 
         doNothing()
-            .when(aisConsentService).consentActionLog(anyString(), anyString(), any(ActionStatus.class), anyString());
+            .when(aisConsentService).consentActionLog(anyString(), anyString(), any(ActionStatus.class), anyString(), anyBoolean());
 
         when(spiContextDataProvider.provideWithPsuIdData(any(PsuIdData.class)))
             .thenReturn(SPI_CONTEXT_DATA);
@@ -1012,6 +1015,78 @@ public class AccountServiceTest {
         assertThat(actualResponse.getError()).isEqualTo(VALIDATION_ERROR);
     }
 
+    @Test
+    public void consentActionLog_recurringConsentWithIpAddress_updateUsageFalse() {
+        // Given
+        AccountConsent accountConsent = createConsent(CONSENT_ID, true);
+        prepationForGetAccountListRequest(accountConsent);
+        when(requestProviderService.getPsuIpAddress()).thenReturn(IP_ADDRESS);
+
+        // When
+        accountService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
+
+        // Then
+        verify(aisConsentService, atLeastOnce()).consentActionLog(null, CONSENT_ID, ActionStatus.SUCCESS, REQUEST_URI, false);
+    }
+
+    @Test
+    public void consentActionLog_recurringConsentWithoutIpAddress_updateUsageTrue() {
+        // Given
+        AccountConsent accountConsent = createConsent(CONSENT_ID, true);
+        prepationForGetAccountListRequest(accountConsent);
+        when(requestProviderService.getPsuIpAddress()).thenReturn(null);
+
+        // When
+        accountService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
+
+        // Then
+        verify(aisConsentService, atLeastOnce()).consentActionLog(null, CONSENT_ID, ActionStatus.SUCCESS, REQUEST_URI, true);
+    }
+
+    @Test
+    public void consentActionLog_oneOffConsentWithIpAddress_updateUsageTrue() {
+        // Given
+        AccountConsent accountConsent = createConsent(CONSENT_ID, false);
+        prepationForGetAccountListRequest(accountConsent);
+        when(requestProviderService.getPsuIpAddress()).thenReturn(IP_ADDRESS);
+
+        // When
+        accountService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
+
+        // Then
+        verify(aisConsentService, atLeastOnce()).consentActionLog(null, CONSENT_ID, ActionStatus.SUCCESS, REQUEST_URI, true);
+    }
+
+    @Test
+    public void consentActionLog_oneOffConsentWithoutIpAddress_updateUsageTrue() {
+        // Given
+        AccountConsent accountConsent = createConsent(CONSENT_ID, false);
+        prepationForGetAccountListRequest(accountConsent);
+        when(requestProviderService.getPsuIpAddress()).thenReturn(null);
+
+        // When
+        accountService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
+
+        // Then
+        verify(aisConsentService, atLeastOnce()).consentActionLog(null, CONSENT_ID, ActionStatus.SUCCESS, REQUEST_URI, true);
+    }
+
+    private void prepationForGetAccountListRequest(AccountConsent accountConsent) {
+        when(aisConsentService.getAccountConsentById(CONSENT_ID))
+            .thenReturn(Optional.of(accountConsent));
+        when(aisConsentDataService.getAspspConsentDataByConsentId(CONSENT_ID))
+            .thenReturn(ASPSP_CONSENT_DATA);
+        List<SpiAccountDetails> spiAccountDetailsList = Collections.singletonList(spiAccountDetails);
+        when(consentMapper.mapToSpiAccountConsent(any()))
+            .thenReturn(SPI_ACCOUNT_CONSENT);
+        when(accountSpi.requestAccountList(SPI_CONTEXT_DATA, WITH_BALANCE, SPI_ACCOUNT_CONSENT, ASPSP_CONSENT_DATA))
+            .thenReturn(buildSuccessSpiResponse(spiAccountDetailsList));
+        List<Xs2aAccountDetails> xs2aAccountDetailsList = Collections.singletonList(xs2aAccountDetails);
+        when(accountDetailsMapper.mapToXs2aAccountDetailsList(spiAccountDetailsList))
+            .thenReturn(xs2aAccountDetailsList);
+        when(accountReferenceUpdater.updateAccountReferences(eq(CONSENT_ID), any(), anyList())).thenReturn(Optional.of(accountConsent));
+    }
+
     // Needed because SpiResponse is final, so it's impossible to mock it
     private <T> SpiResponse<T> buildSuccessSpiResponse(T payload) {
         return SpiResponse.<T>builder()
@@ -1063,6 +1138,12 @@ public class AccountServiceTest {
     private static AccountConsent createConsent(String id, Xs2aAccountAccess access) {
         return new AccountConsent(id, access, false, LocalDate.now(), 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap());
     }
+
+    private static AccountConsent createConsent(String id, boolean recurringIndicator) {
+        return new AccountConsent(id, createAccountAccess(XS2A_ACCOUNT_REFERENCE), recurringIndicator, LocalDate.now(), 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap());
+    }
+
+
 
     private static TppInfo createTppInfo() {
         TppInfo tppInfo = new TppInfo();

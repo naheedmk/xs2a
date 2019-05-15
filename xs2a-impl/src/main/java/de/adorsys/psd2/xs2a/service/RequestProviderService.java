@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.service;
 
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.domain.RequestData;
+import de.adorsys.psd2.xs2a.web.validator.constants.Xs2aHeaderConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -72,6 +73,10 @@ public class RequestProviderService {
 
     public UUID getRequestId() {
         return getRequestData().getRequestId();
+    }
+
+    public String getPsuIpAddress() {
+        return getHeader(Xs2aHeaderConstant.PSU_IP_ADDRESS);
     }
 
     private Map<String, String> getRequestHeaders(HttpServletRequest request) {

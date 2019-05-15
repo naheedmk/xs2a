@@ -226,7 +226,9 @@ public class AisConsentServiceInternal implements AisConsentService {
             // In this method sonar claims that NPE is possible:
             // https://rules.sonarsource.com/java/RSPEC-3655
             // but we have isPresent in the code before.
-            updateAisConsentUsage(consent, request.getRequestUri()); //NOSONAR
+            if (request.isUpdateUsage()) {
+                updateAisConsentUsage(consent, request.getRequestUri()); //NOSONAR
+            }
             logConsentAction(consent.getExternalId(), resolveConsentActionStatus(request, consent), request.getTppId());
         }
     }
