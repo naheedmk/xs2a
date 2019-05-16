@@ -924,7 +924,6 @@ public class AccountServiceTest {
         assertThat(actualResponse.getError()).isEqualTo(CONSENT_INVALID_MESSAGE_ERROR);
     }
 
-
     @Test
     public void getTransactionDetails_Success() {
         AccountConsent accountConsent = createConsent(CONSENT_ID, createAccountAccess(XS2A_ACCOUNT_REFERENCE));
@@ -1142,8 +1141,6 @@ public class AccountServiceTest {
     private static AccountConsent createConsent(String id, boolean recurringIndicator) {
         return new AccountConsent(id, createAccountAccess(XS2A_ACCOUNT_REFERENCE), recurringIndicator, LocalDate.now(), 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap());
     }
-
-
 
     private static TppInfo createTppInfo() {
         TppInfo tppInfo = new TppInfo();
