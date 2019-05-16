@@ -18,46 +18,61 @@ package de.adorsys.psd2.consent.service.security.provider;
 
 import de.adorsys.psd2.consent.domain.CryptoAlgorithm;
 import de.adorsys.psd2.consent.repository.CryptoAlgorithmRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class CryptoProviderFactory {
     private final CryptoAlgorithmRepository cryptoAlgorithmRepository;
-    private CryptoProvider aesEcbCryptoProviderId = new AesEcbCryptoProviderImpl();
-    private CryptoProvider jweCryptoProviderConsentData = new JweCryptoProviderImpl();
+    private final Map<String, AbstractCryptoProvider> algorithmMap;
 
-    public Optional<CryptoProvider> getCryptoProviderByAlgorithmVersion(String algorithmVersion) {
-        Optional<CryptoProvider> provider = cryptoAlgorithmRepository.findByExternalId(algorithmVersion)
-                                                .map(CryptoAlgorithm::getAlgorithm)
-                                                .flatMap(this::mapCryptoProviderByAlgorithmName);
+    public CryptoProviderFactory(CryptoAlgorithmRepository cryptoAlgorithmRepository) {
+        this.cryptoAlgorithmRepository = cryptoAlgorithmRepository;
+        this.algorithmMap = generateAlgorithmMap();
+    }
+
+    public Optional<AbstractCryptoProvider> getCryptoProviderByAlgorithmVersion(String algorithmVersion) {
+        Optional<AbstractCryptoProvider> provider = cryptoAlgorithmRepository.findByExternalId(algorithmVersion)
+                                                        .map(this::mapCryptoProviderByAlgorithmName);
+
         if (!provider.isPresent()) {
             log.info("Crypto Algorithm ID: {{}}. Crypto provider can not be identify by id", algorithmVersion);
         }
         return provider;
     }
 
-    public CryptoProvider actualIdentifierCryptoProvider() {
-        return aesEcbCryptoProviderId;
+    public AbstractCryptoProvider actualIdentifierCryptoProvider() {
+        return algorithmMap.get("psGLvQpt9Q"); // AES/ECB/PKCS5Padding 256 1024
     }
 
-    public CryptoProvider actualConsentDataCryptoProvider() {
-        return jweCryptoProviderConsentData;
+    public AbstractCryptoProvider actualConsentDataCryptoProvider() {
+        return algorithmMap.get("JcHZwvJMuc"); // JWE/GCM/256	256	1024
     }
 
-    private Optional<CryptoProvider> mapCryptoProviderByAlgorithmName(String algorithm) {
-        if (algorithm.equals(aesEcbCryptoProviderId.getAlgorithmVersion().getAlgorithmName())) {
-            return Optional.of(aesEcbCryptoProviderId);
-        } else if (algorithm.equals(jweCryptoProviderConsentData.getAlgorithmVersion().getAlgorithmName())) {
-            return Optional.of(jweCryptoProviderConsentData);
-        } else {
-            log.info("Crypto provider can not be identify by algorithm: {}", algorithm);
-            return Optional.empty();
-        }
+    public AbstractCryptoProvider oldDefaultVersionDataCryptoProvider() {
+        return algorithmMap.get("gQ8wkMeo93"); // JWE/GCM/256	256	65536
+    }
+
+    private AbstractCryptoProvider mapCryptoProviderByAlgorithmName(CryptoAlgorithm cryptoAlgorithm) {
+        return algorithmMap.get(cryptoAlgorithm.getExternalId());
+    }
+
+    private Map<String, AbstractCryptoProvider> generateAlgorithmMap() {
+        Map<String, AbstractCryptoProvider> algorithmMap = new HashMap<>();
+
+        // 65536 hashIterations
+        algorithmMap.put("bS6p6XvTWI", new AesEcbCryptoProviderImpl("bS6p6XvTWI", "AES/ECB/PKCS5Padding", "2", 256, 65536, "PBKDF2WithHmacSHA256"));
+        algorithmMap.put("gQ8wkMeo93", new JweCryptoProviderImpl("gQ8wkMeo93", "JWE/GCM/256", "3", 256, 65536, "PBKDF2WithHmacSHA256"));
+
+        // 1024 hashIterations
+        algorithmMap.put("psGLvQpt9Q", new AesEcbCryptoProviderImpl("psGLvQpt9Q", "AES/ECB/PKCS5Padding", "5", 256, 1024, "PBKDF2WithHmacSHA256"));
+        algorithmMap.put("JcHZwvJMuc", new JweCryptoProviderImpl("JcHZwvJMuc", "JWE/GCM/256", "6", 256, 1024, "PBKDF2WithHmacSHA256"));
+
+        return algorithmMap;
     }
 }
