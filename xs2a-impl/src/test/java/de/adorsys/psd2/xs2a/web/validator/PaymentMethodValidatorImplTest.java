@@ -18,6 +18,8 @@ package de.adorsys.psd2.xs2a.web.validator;
 
 import de.adorsys.psd2.xs2a.web.validator.body.payment.PaymentBodyValidator;
 import de.adorsys.psd2.xs2a.web.validator.header.PaymentHeaderValidator;
+import de.adorsys.psd2.xs2a.web.validator.path.payment.PaymentInitiationPathValidatorImpl;
+import de.adorsys.psd2.xs2a.web.validator.path.payment.PaymentPathParameterValidator;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -32,7 +34,9 @@ public class PaymentMethodValidatorImplTest {
     public void init() {
         List<PaymentHeaderValidator> headerValidators = new ArrayList<>();
         List<PaymentBodyValidator> bodyValidators = new ArrayList<>();
-        PaymentMethodValidatorImpl methodValidator = new PaymentMethodValidatorImpl(headerValidators, bodyValidators);
+        List<PaymentPathParameterValidator> pathParameterValidators = new ArrayList<>();
+
+        PaymentMethodValidatorImpl methodValidator = new PaymentMethodValidatorImpl(headerValidators, bodyValidators, pathParameterValidators);
 
         assertEquals("_initiatePayment", methodValidator.getMethodName());
         assertSame(headerValidators, methodValidator.getHeaderValidators());

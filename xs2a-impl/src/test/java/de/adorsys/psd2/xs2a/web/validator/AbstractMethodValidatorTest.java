@@ -19,6 +19,7 @@ package de.adorsys.psd2.xs2a.web.validator;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.web.validator.body.BodyValidator;
 import de.adorsys.psd2.xs2a.web.validator.header.HeaderValidator;
+import de.adorsys.psd2.xs2a.web.validator.path.PathParameterValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +34,8 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AbstractMethodValidatorTest {
@@ -42,6 +44,8 @@ public class AbstractMethodValidatorTest {
     private HeaderValidator headerValidator;
     @Mock
     private BodyValidator bodyValidator;
+    @Mock
+    private PathParameterValidator pathParameterValidator;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> headersCaptor;
@@ -59,7 +63,8 @@ public class AbstractMethodValidatorTest {
         request.addHeader("Content-Type", "application/json");
 
         methodValidator = new AbstractMethodValidator(Collections.singletonList(headerValidator),
-                                                      Collections.singletonList(bodyValidator)) {
+                                                      Collections.singletonList(bodyValidator),
+                                                      Collections.singletonList(pathParameterValidator)) {
             @Override
             public String getMethodName() {
                 return "method_name";

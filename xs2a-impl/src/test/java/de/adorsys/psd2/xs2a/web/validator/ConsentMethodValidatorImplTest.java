@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.web.validator;
 
 import de.adorsys.psd2.xs2a.web.validator.body.consent.ConsentBodyValidator;
 import de.adorsys.psd2.xs2a.web.validator.header.ConsentHeaderValidator;
+import de.adorsys.psd2.xs2a.web.validator.path.consent.ConsentPathParameterValidator;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -31,7 +32,9 @@ public class ConsentMethodValidatorImplTest {
     public void init() {
         List<ConsentHeaderValidator> headerValidators = new ArrayList<>();
         List<ConsentBodyValidator> bodyValidators = new ArrayList<>();
-        ConsentMethodValidatorImpl methodValidator = new ConsentMethodValidatorImpl(headerValidators, bodyValidators);
+        List<ConsentPathParameterValidator> pathParameterValidators = new ArrayList<>();
+
+        ConsentMethodValidatorImpl methodValidator = new ConsentMethodValidatorImpl(headerValidators, bodyValidators, pathParameterValidators);
 
         assertEquals("_createConsent", methodValidator.getMethodName());
         assertSame(headerValidators, methodValidator.getHeaderValidators());

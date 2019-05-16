@@ -19,6 +19,7 @@ package de.adorsys.psd2.xs2a.web.validator;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.web.validator.body.BodyValidator;
 import de.adorsys.psd2.xs2a.web.validator.header.HeaderValidator;
+import de.adorsys.psd2.xs2a.web.validator.path.PathParameterValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
@@ -27,14 +28,16 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-public abstract class AbstractMethodValidator<H extends HeaderValidator, B extends BodyValidator> implements MethodValidator {
+public abstract class AbstractMethodValidator<H extends HeaderValidator, B extends BodyValidator, P extends PathParameterValidator> implements MethodValidator {
 
     private final List<H> headerValidators;
     private final List<B> bodyValidators;
+    private final List<P> pathParameterValidators;
 
-    protected AbstractMethodValidator(List<H> headerValidators, List<B> bodyValidators) {
+    protected AbstractMethodValidator(List<H> headerValidators, List<B> bodyValidators, List<P> pathParameterValidators) {
         this.headerValidators = headerValidators;
         this.bodyValidators = bodyValidators;
+        this.pathParameterValidators = pathParameterValidators;
     }
 
     List<H> getHeaderValidators() {
@@ -43,6 +46,10 @@ public abstract class AbstractMethodValidator<H extends HeaderValidator, B exten
 
     List<B> getBodyValidators() {
         return bodyValidators;
+    }
+
+    List<P> getPathParameterValidators() {
+        return pathParameterValidators;
     }
 
     /**
@@ -61,6 +68,7 @@ public abstract class AbstractMethodValidator<H extends HeaderValidator, B exten
         TreeMap<String, String> caseInsensitiveHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         caseInsensitiveHeaders.putAll(headers);
 
+        getPathParameterValidators().forEach(v -> v.validate(request, messageError));
         getHeaderValidators().forEach(v -> v.validate(caseInsensitiveHeaders, messageError));
         getBodyValidators().forEach(v -> v.validate(request, messageError));
     }

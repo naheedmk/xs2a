@@ -29,8 +29,8 @@ public class MethodValidatorControllerTest {
     @Test
     public void getMethod() {
         List<MethodValidator> methodValidators = new ArrayList<>();
-        methodValidators.add(new ConsentMethodValidatorImpl(null, null));
-        methodValidators.add(new PaymentMethodValidatorImpl(null, null));
+        methodValidators.add(new ConsentMethodValidatorImpl(null, null, null));
+        methodValidators.add(new PaymentMethodValidatorImpl(null, null, null));
         MethodValidatorController controller = new MethodValidatorController(methodValidators);
 
         Optional<MethodValidator> methodValidator = controller.getMethod("_createConsent");
