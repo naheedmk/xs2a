@@ -37,7 +37,7 @@ public interface SpiToXs2aPaymentMapper {
     @Mapping(target = "psuMessage", ignore = true)
     @Mapping(target = "tppMessages", ignore = true)
     @Mapping(target = "transactionFeeIndicator", source = "spi.spiTransactionFeeIndicator")
-    @Mapping(target = "aspspConsentData", source = "aspspConsentData")
+    @Mapping(target = "aspspConsentDataProvider", source = "aspspConsentDataProvider")
     SinglePaymentInitiationResponse mapToPaymentInitiateResponse(SpiSinglePaymentInitiationResponse spi,
                                                                  InitialSpiAspspConsentDataProvider aspspConsentDataProvider);
 
@@ -45,7 +45,7 @@ public interface SpiToXs2aPaymentMapper {
     @Mapping(target = "psuMessage", ignore = true)
     @Mapping(target = "tppMessages", ignore = true)
     @Mapping(target = "transactionFeeIndicator", source = "spi.spiTransactionFeeIndicator")
-    @Mapping(target = "aspspConsentData", source = "aspspConsentData")
+    @Mapping(target = "aspspConsentDataProvider", source = "aspspConsentDataProvider")
     PeriodicPaymentInitiationResponse mapToPaymentInitiateResponse(SpiPeriodicPaymentInitiationResponse spi,
                                                                    InitialSpiAspspConsentDataProvider aspspConsentDataProvider);
 
@@ -53,7 +53,7 @@ public interface SpiToXs2aPaymentMapper {
     @Mapping(target = "psuMessage", ignore = true)
     @Mapping(target = "tppMessages", ignore = true)
     @Mapping(target = "transactionFeeIndicator", source = "spi.spiTransactionFeeIndicator")
-    @Mapping(target = "aspspConsentData", source = "aspspConsentData")
+    @Mapping(target = "aspspConsentDataProvider", source = "aspspConsentDataProvider")
     BulkPaymentInitiationResponse mapToPaymentInitiateResponse(SpiBulkPaymentInitiationResponse spi,
                                                                InitialSpiAspspConsentDataProvider aspspConsentDataProvider);
 
@@ -62,7 +62,7 @@ public interface SpiToXs2aPaymentMapper {
     @Mapping(target = "tppMessages", ignore = true)
     @Mapping(target = "paymentType", source = "type")
     @Mapping(target = "transactionFeeIndicator", source = "spi.spiTransactionFeeIndicator")
-    @Mapping(target = "aspspConsentData", source = "aspspConsentData")
+    @Mapping(target = "aspspConsentDataProvider", source = "aspspConsentDataProvider")
     CommonPaymentInitiationResponse mapToCommonPaymentInitiateResponse(SpiPaymentInitiationResponse spi,
                                                                        PaymentType type, InitialSpiAspspConsentDataProvider aspspConsentDataProvider);
 }

@@ -16,12 +16,12 @@
 
 package de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers;
 
-import de.adorsys.psd2.xs2a.core.consent.AspspConsentData;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.domain.pis.CommonPaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePaymentInitiationResponse;
+import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiBulkPaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPeriodicPaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiSinglePaymentInitiationResponse;
@@ -33,6 +33,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {SpiToXs2aPaymentMapperImpl.class})
@@ -41,6 +42,8 @@ public class SpiToXs2aPaymentMapperTest {
     @Autowired
     private SpiToXs2aPaymentMapper mapper;
     private JsonReader jsonReader = new JsonReader();
+    private InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider =
+        mock(InitialSpiAspspConsentDataProvider.class);
 
     @Test
     public void mapSingleToCommonPaymentInitiateResponse_success() {
@@ -48,10 +51,12 @@ public class SpiToXs2aPaymentMapperTest {
             jsonReader.getObjectFromFile("json/service/mapper/single-payment-initial-response.json", SpiSinglePaymentInitiationResponse.class);
 
         CommonPaymentInitiationResponse actualResponse =
-            mapper.mapToCommonPaymentInitiateResponse(singlePaymentInitiationResponse, PaymentType.SINGLE, AspspConsentData.emptyConsentData());
+            mapper.mapToCommonPaymentInitiateResponse(singlePaymentInitiationResponse, PaymentType.SINGLE, initialSpiAspspConsentDataProvider);
 
         CommonPaymentInitiationResponse expectedResponse =
             jsonReader.getObjectFromFile("json/service/mapper/common-payment-initial-response.json", CommonPaymentInitiationResponse.class);
+        expectedResponse.setAspspConsentDataProvider(initialSpiAspspConsentDataProvider);
+
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -62,11 +67,13 @@ public class SpiToXs2aPaymentMapperTest {
         singlePaymentInitiationResponse.setSpiTransactionFeeIndicator(null);
 
         CommonPaymentInitiationResponse actualResponse =
-            mapper.mapToCommonPaymentInitiateResponse(singlePaymentInitiationResponse, PaymentType.SINGLE, AspspConsentData.emptyConsentData());
+            mapper.mapToCommonPaymentInitiateResponse(singlePaymentInitiationResponse, PaymentType.SINGLE, initialSpiAspspConsentDataProvider);
 
         CommonPaymentInitiationResponse expectedResponse =
             jsonReader.getObjectFromFile("json/service/mapper/common-payment-initial-response.json", CommonPaymentInitiationResponse.class);
         expectedResponse.setTransactionFeeIndicator(null);
+        expectedResponse.setAspspConsentDataProvider(initialSpiAspspConsentDataProvider);
+
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -76,10 +83,12 @@ public class SpiToXs2aPaymentMapperTest {
             jsonReader.getObjectFromFile("json/service/mapper/single-payment-initial-response.json", SpiSinglePaymentInitiationResponse.class);
 
         SinglePaymentInitiationResponse actualResponse = mapper.mapToPaymentInitiateResponse(
-            spiSinglePaymentInitiationResponse, AspspConsentData.emptyConsentData());
+            spiSinglePaymentInitiationResponse, initialSpiAspspConsentDataProvider);
 
         SinglePaymentInitiationResponse expectedResponse =
             jsonReader.getObjectFromFile("json/service/mapper/payment-initial-response.json", SinglePaymentInitiationResponse.class);
+        expectedResponse.setAspspConsentDataProvider(initialSpiAspspConsentDataProvider);
+
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -89,10 +98,12 @@ public class SpiToXs2aPaymentMapperTest {
             jsonReader.getObjectFromFile("json/service/mapper/periodic-payment-initial-response.json", SpiPeriodicPaymentInitiationResponse.class);
 
         PeriodicPaymentInitiationResponse actualResponse = mapper.mapToPaymentInitiateResponse(
-            spiPeriodicPaymentInitiationResponse, AspspConsentData.emptyConsentData());
+            spiPeriodicPaymentInitiationResponse, initialSpiAspspConsentDataProvider);
 
         PeriodicPaymentInitiationResponse expectedResponse =
             jsonReader.getObjectFromFile("json/service/mapper/payment-initial-response.json", PeriodicPaymentInitiationResponse.class);
+        expectedResponse.setAspspConsentDataProvider(initialSpiAspspConsentDataProvider);
+
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -102,10 +113,12 @@ public class SpiToXs2aPaymentMapperTest {
             jsonReader.getObjectFromFile("json/service/mapper/bulk-payment-initial-response.json", SpiBulkPaymentInitiationResponse.class);
 
         BulkPaymentInitiationResponse actualResponse = mapper.mapToPaymentInitiateResponse(
-            spiBulkPaymentInitiationResponse, AspspConsentData.emptyConsentData());
+            spiBulkPaymentInitiationResponse, initialSpiAspspConsentDataProvider);
 
         BulkPaymentInitiationResponse expectedResponse =
             jsonReader.getObjectFromFile("json/service/mapper/payment-initial-response.json", BulkPaymentInitiationResponse.class);
+        expectedResponse.setAspspConsentDataProvider(initialSpiAspspConsentDataProvider);
+
         assertEquals(expectedResponse, actualResponse);
     }
 }
