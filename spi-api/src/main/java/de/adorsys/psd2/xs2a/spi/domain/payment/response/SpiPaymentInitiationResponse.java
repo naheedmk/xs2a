@@ -45,6 +45,9 @@ public abstract class SpiPaymentInitiationResponse {
      */
     @Deprecated //TODO remove deprecated method in 2.9 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/844
     public boolean isTransactionFeeIndicator() {
-        return spiTransactionFeeIndicator != null ? spiTransactionFeeIndicator : false;
+        if (spiTransactionFeeIndicator == null) {
+            return false;
+        }
+        return spiTransactionFeeIndicator;
     }
 }
