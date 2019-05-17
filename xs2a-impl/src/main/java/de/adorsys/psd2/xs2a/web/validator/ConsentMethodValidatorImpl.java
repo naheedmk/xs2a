@@ -18,10 +18,10 @@ package de.adorsys.psd2.xs2a.web.validator;
 
 import de.adorsys.psd2.xs2a.web.validator.body.consent.ConsentBodyValidator;
 import de.adorsys.psd2.xs2a.web.validator.header.ConsentHeaderValidator;
-import de.adorsys.psd2.xs2a.web.validator.path.consent.ConsentPathParameterValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -31,9 +31,8 @@ public class ConsentMethodValidatorImpl extends AbstractMethodValidator {
 
     @Autowired
     public ConsentMethodValidatorImpl(List<ConsentHeaderValidator> headerValidators,
-                                      List<ConsentBodyValidator> bodyValidators,
-                                      List<ConsentPathParameterValidator> pathParameterValidators) {
-        super(headerValidators, bodyValidators, pathParameterValidators);
+                                      List<ConsentBodyValidator> bodyValidators) {
+        super(headerValidators, bodyValidators, Collections.emptyList());
     }
 
     @Override

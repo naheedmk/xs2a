@@ -18,13 +18,13 @@ package de.adorsys.psd2.xs2a.web.validator;
 
 import de.adorsys.psd2.xs2a.web.validator.body.consent.ConsentBodyValidator;
 import de.adorsys.psd2.xs2a.web.validator.header.ConsentHeaderValidator;
-import de.adorsys.psd2.xs2a.web.validator.path.consent.ConsentPathParameterValidator;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 public class ConsentMethodValidatorImplTest {
 
@@ -32,9 +32,8 @@ public class ConsentMethodValidatorImplTest {
     public void init() {
         List<ConsentHeaderValidator> headerValidators = new ArrayList<>();
         List<ConsentBodyValidator> bodyValidators = new ArrayList<>();
-        List<ConsentPathParameterValidator> pathParameterValidators = new ArrayList<>();
 
-        ConsentMethodValidatorImpl methodValidator = new ConsentMethodValidatorImpl(headerValidators, bodyValidators, pathParameterValidators);
+        ConsentMethodValidatorImpl methodValidator = new ConsentMethodValidatorImpl(headerValidators, bodyValidators);
 
         assertEquals("_createConsent", methodValidator.getMethodName());
         assertSame(headerValidators, methodValidator.getHeaderValidators());
