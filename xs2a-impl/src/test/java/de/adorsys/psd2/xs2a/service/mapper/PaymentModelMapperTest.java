@@ -106,7 +106,6 @@ public class PaymentModelMapperTest {
 
     @Before
     public void setUp() {
-        when(amountModelMapper.mapToXs2aAmount(getAmount12(true, true))).thenReturn(buildXs2aAmount());
         when(amountModelMapper.mapToAmount(buildXs2aAmount())).thenReturn(getAmount12(true, true));
         when(standardPaymentProductsResolver.isRawPaymentProduct(STANDARD_PAYMENT_TYPE)).thenReturn(false);
         when(standardPaymentProductsResolver.isRawPaymentProduct(NON_STANDARD_PAYMENT_TYPE)).thenReturn(true);
