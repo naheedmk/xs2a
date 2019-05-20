@@ -24,10 +24,7 @@ import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
-import de.adorsys.psd2.xs2a.service.validator.BusinessValidator;
-import de.adorsys.psd2.xs2a.service.validator.PsuDataInInitialRequestValidator;
-import de.adorsys.psd2.xs2a.service.validator.SupportedAccountReferenceValidator;
-import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
+import de.adorsys.psd2.xs2a.service.validator.*;
 import de.adorsys.psd2.xs2a.service.validator.pis.payment.dto.CreatePaymentRequestObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,10 +44,12 @@ public class CreatePaymentValidator implements BusinessValidator<CreatePaymentRe
     private final PsuDataInInitialRequestValidator psuDataInInitialRequestValidator;
     private final SupportedAccountReferenceValidator supportedAccountReferenceValidator;
     private final StandardPaymentProductsResolver standardPaymentProductsResolver;
+    private final PaymentTypeAndProductValidator paymentProductAndTypeValidator;
 
     /**
      * Validates create payment request by checking whether:
      * <ul>
+     * <li>Payment product and payment type are correct</li>
      * <li>PSU Data is present in the request if it's mandated by the profile</li>
      * <li>Account references are supported by ASPSP</li>
      * </ul>
@@ -62,6 +61,12 @@ public class CreatePaymentValidator implements BusinessValidator<CreatePaymentRe
     @Override
     public ValidationResult validate(@NotNull CreatePaymentRequestObject createPaymentRequestObject) {
         PaymentInitiationParameters paymentInitiationParameters = createPaymentRequestObject.getPaymentInitiationParameters();
+
+        ValidationResult productAndTypeValidationResult = paymentProductAndTypeValidator.validate(paymentInitiationParameters);
+        if (productAndTypeValidationResult.isNotValid()) {
+            return productAndTypeValidationResult;
+        }
+
         ValidationResult psuDataValidationResult = psuDataInInitialRequestValidator.validate(paymentInitiationParameters.getPsuData());
         if (psuDataValidationResult.isNotValid()) {
             return psuDataValidationResult;

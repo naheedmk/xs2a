@@ -28,6 +28,7 @@ import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
+import de.adorsys.psd2.xs2a.service.validator.PaymentTypeAndProductValidator;
 import de.adorsys.psd2.xs2a.service.validator.PsuDataInInitialRequestValidator;
 import de.adorsys.psd2.xs2a.service.validator.SupportedAccountReferenceValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
@@ -73,7 +74,8 @@ public class CreatePaymentValidatorTest {
     private SupportedAccountReferenceValidator supportedAccountReferenceValidator;
     @Mock
     private StandardPaymentProductsResolver standardPaymentProductsResolver;
-
+    @Mock
+    private PaymentTypeAndProductValidator paymentProductAndTypeValidator;
 
     @InjectMocks
     private CreatePaymentValidator createPaymentValidator;
@@ -83,6 +85,8 @@ public class CreatePaymentValidatorTest {
         when(supportedAccountReferenceValidator.validate(anyCollectionOf(AccountReference.class)))
             .thenReturn(ValidationResult.valid());
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class))).thenReturn(ValidationResult.valid());
+        when(paymentProductAndTypeValidator.validate(any(PaymentInitiationParameters.class)))
+            .thenReturn(ValidationResult.valid());
     }
 
     @Test
@@ -201,7 +205,7 @@ public class CreatePaymentValidatorTest {
     }
 
     private PaymentInitiationParameters buildPaymentInitiationParameters(PsuIdData psuIdData, PaymentType paymentType) {
-        return buildPaymentInitiationParameters(psuIdData, paymentType, null);
+        return buildPaymentInitiationParameters(psuIdData, paymentType, "sepa-credit-transfers");
     }
 
     private PaymentInitiationParameters buildPaymentInitiationParameters(PsuIdData psuIdData, PaymentType paymentType, String paymentProduct) {

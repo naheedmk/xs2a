@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.integration.builder.payment;
 
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
+import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.integration.builder.PsuIdDataBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.TppInfoBuilder;
 
@@ -29,6 +30,8 @@ public class PisCommonPaymentResponseBuilder {
     public static PisCommonPaymentResponse buildPisCommonPaymentResponse() {
         PisCommonPaymentResponse commonPaymentResponse = new PisCommonPaymentResponse();
         commonPaymentResponse.setTransactionStatus(TRANSACTION_STATUS);
+        commonPaymentResponse.setPaymentType(PaymentType.SINGLE);
+        commonPaymentResponse.setPaymentProduct("sepa-credit-transfers");
         commonPaymentResponse.setTppInfo(TppInfoBuilder.buildTppInfo());
         commonPaymentResponse.setPsuData(Collections.singletonList(PsuIdDataBuilder.buildPsuIdData()));
         return commonPaymentResponse;

@@ -17,12 +17,15 @@
 package de.adorsys.psd2.xs2a.service.validator.pis.authorisation.cancellation;
 
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
+import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
+import de.adorsys.psd2.xs2a.service.validator.PaymentTypeAndProductValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.tpp.PisTppInfoValidator;
 import org.junit.Before;
@@ -35,8 +38,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.UUID;
 
-import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.PSU_CREDENTIALS_INVALID;
-import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.UNAUTHORIZED;
+import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.*;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
 import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.PIS_401;
 import static org.junit.Assert.*;
@@ -56,11 +58,21 @@ public class CreatePisCancellationAuthorisationValidatorTest {
     private static final MessageError TPP_VALIDATION_ERROR =
         new MessageError(ErrorType.PIS_401, TppMessageInformation.of(UNAUTHORIZED));
     private static final MessageError INVALID_PSU_ERROR = new MessageError(PIS_401, of(PSU_CREDENTIALS_INVALID));
+    private static final MessageError PAYMENT_PRODUCT_VALIDATION_ERROR =
+        new MessageError(ErrorType.PIS_404, TppMessageInformation.of(PRODUCT_UNKNOWN));
+
+    private static final String CORRECT_PAYMENT_PRODUCT = "sepa-credit-transfers";
+    private static final String WRONG_PAYMENT_PRODUCT = "sepa-credit-transfers111";
+
+    private static final PaymentInitiationParameters CORRECT_PAYMENT_TYPE_AND_PRODUCT = buildCorrectPaymentTypeAndProduct();
+    private static final PaymentInitiationParameters WRONG_PAYMENT_TYPE_AND_PRODUCT = buildWrongPaymentTypeAndProduct();
 
     @Mock
     private PisTppInfoValidator pisTppInfoValidator;
     @Mock
     private RequestProviderService requestProviderService;
+    @Mock
+    PaymentTypeAndProductValidator paymentProductAndTypeValidator;
 
     @InjectMocks
     private CreatePisCancellationAuthorisationValidator createPisCancellationAuthorisationValidator;
@@ -68,7 +80,7 @@ public class CreatePisCancellationAuthorisationValidatorTest {
     @Before
     public void setUp() {
         // Inject pisTppInfoValidator via setter
-        createPisCancellationAuthorisationValidator.setPisTppInfoValidator(pisTppInfoValidator);
+        createPisCancellationAuthorisationValidator.setPisTppInfoValidator(pisTppInfoValidator, paymentProductAndTypeValidator);
 
         when(requestProviderService.getRequestId()).thenReturn(X_REQUEST_ID);
 
@@ -76,6 +88,10 @@ public class CreatePisCancellationAuthorisationValidatorTest {
             .thenReturn(ValidationResult.valid());
         when(pisTppInfoValidator.validateTpp(INVALID_TPP_INFO))
             .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
+        when(paymentProductAndTypeValidator.validate(CORRECT_PAYMENT_TYPE_AND_PRODUCT))
+            .thenReturn(ValidationResult.valid());
+        when(paymentProductAndTypeValidator.validate(WRONG_PAYMENT_TYPE_AND_PRODUCT))
+            .thenReturn(ValidationResult.invalid(PAYMENT_PRODUCT_VALIDATION_ERROR));
     }
 
     @Test
@@ -92,6 +108,20 @@ public class CreatePisCancellationAuthorisationValidatorTest {
         assertNotNull(validationResult);
         assertTrue(validationResult.isValid());
         assertNull(validationResult.getMessageError());
+    }
+
+    @Test
+    public void validate_withInvalidPaymentProduct_shouldReturnPaymentProductValidationError() {
+        // Given
+        PisCommonPaymentResponse commonPaymentResponse = buildPisCommonPaymentResponse(TPP_INFO);
+        commonPaymentResponse.setPaymentProduct(WRONG_PAYMENT_PRODUCT);
+        // When
+        ValidationResult validationResult = createPisCancellationAuthorisationValidator.validate(new CreatePisCancellationAuthorisationPO(commonPaymentResponse, PSU_DATA));
+
+        // Then
+        assertNotNull(validationResult);
+        assertTrue(validationResult.isNotValid());
+        assertEquals(PAYMENT_PRODUCT_VALIDATION_ERROR, validationResult.getMessageError());
     }
 
     @Test
@@ -165,6 +195,22 @@ public class CreatePisCancellationAuthorisationValidatorTest {
         PisCommonPaymentResponse pisCommonPaymentResponse = new PisCommonPaymentResponse();
         pisCommonPaymentResponse.setTppInfo(tppInfo);
         pisCommonPaymentResponse.setPsuData(Collections.singletonList(PSU_DATA));
+        pisCommonPaymentResponse.setPaymentProduct(CORRECT_PAYMENT_PRODUCT);
+        pisCommonPaymentResponse.setPaymentType(PaymentType.SINGLE);
         return pisCommonPaymentResponse;
+    }
+
+    private static PaymentInitiationParameters buildCorrectPaymentTypeAndProduct() {
+        PaymentInitiationParameters parameters = new PaymentInitiationParameters();
+        parameters.setPaymentType(PaymentType.SINGLE);
+        parameters.setPaymentProduct(CORRECT_PAYMENT_PRODUCT);
+        return parameters;
+    }
+
+    private static PaymentInitiationParameters buildWrongPaymentTypeAndProduct() {
+        PaymentInitiationParameters parameters = new PaymentInitiationParameters();
+        parameters.setPaymentType(PaymentType.SINGLE);
+        parameters.setPaymentProduct(WRONG_PAYMENT_PRODUCT);
+        return parameters;
     }
 }
