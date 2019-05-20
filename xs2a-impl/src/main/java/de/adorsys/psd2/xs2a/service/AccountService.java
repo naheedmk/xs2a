@@ -478,16 +478,12 @@ public class AccountService {
     }
 
     private void writeLogAndCheckConsent(String consentId, boolean withBalance, AccountConsent accountConsent, TypeAccess typeAccess, ResponseObject response, String requestUri) {
-        aisConsentService.consentActionLog(tppService.getTppId(), consentId, createActionStatus(withBalance, typeAccess, response), requestUri, updateUsage(accountConsent));
+        aisConsentService.consentActionLog(tppService.getTppId(), consentId, createActionStatus(withBalance, typeAccess, response), requestUri, needsToUpdateUsage(accountConsent));
         checkAndExpireConsentIfOneAccessType(accountConsent, consentId);
     }
 
-    private boolean updateUsage(AccountConsent accountConsent) {
-        if (accountConsent.isOneAccessType()) {
-            return true;
-        }
-
-        return StringUtils.isBlank(requestProviderService.getPsuIpAddress());
+    private boolean needsToUpdateUsage(AccountConsent accountConsent) {
+        return accountConsent.isOneAccessType() || requestProviderService.isRequestFromTPP();
     }
 
     private ActionStatus createActionStatus(boolean withBalance, TypeAccess access, ResponseObject response) {

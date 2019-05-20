@@ -53,6 +53,7 @@ import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponseStatus;
 import de.adorsys.psd2.xs2a.spi.service.AccountSpi;
+import de.adorsys.psd2.xs2a.util.reader.JsonReader;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -106,6 +107,8 @@ public class AccountServiceTest {
     private static final BookingStatus BOOKING_STATUS = BookingStatus.BOTH;
     private static final MessageError VALIDATION_ERROR =
         new MessageError(ErrorType.AIS_401, TppMessageInformation.of(MessageErrorCode.CONSENT_INVALID));
+
+    private static final JsonReader jsonReader = new JsonReader();
 
     @InjectMocks
     private AccountService accountService;
@@ -1015,11 +1018,11 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void consentActionLog_recurringConsentWithIpAddress_updateUsageFalse() {
+    public void consentActionLog_recurringConsentWithIpAddress_needsToUpdateUsageFalse() {
         // Given
-        AccountConsent accountConsent = createConsent(CONSENT_ID, true);
+        AccountConsent accountConsent = createConsent(true);
         prepationForGetAccountListRequest(accountConsent);
-        when(requestProviderService.getPsuIpAddress()).thenReturn(IP_ADDRESS);
+        when(requestProviderService.isRequestFromTPP()).thenReturn(false);
 
         // When
         accountService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
@@ -1029,11 +1032,11 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void consentActionLog_recurringConsentWithoutIpAddress_updateUsageTrue() {
+    public void consentActionLog_recurringConsentWithoutIpAddress_needsToUpdateUsageTrue() {
         // Given
-        AccountConsent accountConsent = createConsent(CONSENT_ID, true);
+        AccountConsent accountConsent = createConsent( true);
         prepationForGetAccountListRequest(accountConsent);
-        when(requestProviderService.getPsuIpAddress()).thenReturn(null);
+        when(requestProviderService.isRequestFromTPP()).thenReturn(true);
 
         // When
         accountService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
@@ -1043,11 +1046,11 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void consentActionLog_oneOffConsentWithIpAddress_updateUsageTrue() {
+    public void consentActionLog_oneOffConsentWithIpAddress_needsToUpdateUsageTrue() {
         // Given
-        AccountConsent accountConsent = createConsent(CONSENT_ID, false);
+        AccountConsent accountConsent = createConsent(false);
         prepationForGetAccountListRequest(accountConsent);
-        when(requestProviderService.getPsuIpAddress()).thenReturn(IP_ADDRESS);
+        when(requestProviderService.isRequestFromTPP()).thenReturn(false);
 
         // When
         accountService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
@@ -1057,11 +1060,11 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void consentActionLog_oneOffConsentWithoutIpAddress_updateUsageTrue() {
+    public void consentActionLog_oneOffConsentWithoutIpAddress_needsToUpdateUsageTrue() {
         // Given
-        AccountConsent accountConsent = createConsent(CONSENT_ID, false);
+        AccountConsent accountConsent = createConsent( false);
         prepationForGetAccountListRequest(accountConsent);
-        when(requestProviderService.getPsuIpAddress()).thenReturn(null);
+        when(requestProviderService.isRequestFromTPP()).thenReturn(true);
 
         // When
         accountService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
@@ -1138,8 +1141,11 @@ public class AccountServiceTest {
         return new AccountConsent(id, access, false, LocalDate.now(), 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap());
     }
 
-    private static AccountConsent createConsent(String id, boolean recurringIndicator) {
-        return new AccountConsent(id, createAccountAccess(XS2A_ACCOUNT_REFERENCE), recurringIndicator, LocalDate.now(), 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap());
+    private static AccountConsent createConsent(boolean recurringIndicator) {
+        String fileName = recurringIndicator
+                              ? "json/AccountConsentRecurringIndicatorTrue.json"
+                              : "json/AccountConsentRecurringIndicatorFalse.json";
+        return jsonReader.getObjectFromFile(fileName, AccountConsent.class);
     }
 
     private static TppInfo createTppInfo() {

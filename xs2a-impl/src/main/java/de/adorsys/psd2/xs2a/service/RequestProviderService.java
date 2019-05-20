@@ -20,6 +20,7 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.domain.RequestData;
 import de.adorsys.psd2.xs2a.web.validator.constants.Xs2aHeaderConstant;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,6 +74,14 @@ public class RequestProviderService {
 
     public UUID getRequestId() {
         return getRequestData().getRequestId();
+    }
+
+    public boolean isRequestFromPsu() {
+        return StringUtils.isNotBlank(getPsuIpAddress());
+    }
+
+    public boolean isRequestFromTPP() {
+        return !isRequestFromPsu();
     }
 
     public String getPsuIpAddress() {
