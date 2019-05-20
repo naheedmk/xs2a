@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Component
 public class ConsentBodyFieldsValidatorImpl extends AbstractBodyValidatorImpl implements ConsentBodyValidator {
@@ -101,32 +102,26 @@ public class ConsentBodyFieldsValidatorImpl extends AbstractBodyValidatorImpl im
         Map<String, Object> access = extractConsentAccessMap(request, messageError);
 
         Object allPsd2 = access.get(ALL_PSD2_FIELD_NAME);
-        if (allPsd2 != null) {
-            validateAllPsd2(allPsd2, messageError);
-        }
+        validateEnumValue(allPsd2, AccountAccess.AllPsd2Enum::fromValue,
+                          messageError, ALL_PSD2_WRONG_VALUE_ERROR);
 
         Object availableAccounts = access.get(AVAILABLE_ACCOUNTS_FIELD_NAME);
-        if (availableAccounts != null) {
-            validateAvailableAccounts(availableAccounts, messageError);
-        }
+        validateEnumValue(availableAccounts, AccountAccess.AvailableAccountsEnum::fromValue,
+                          messageError, AVAILABLE_ACCOUNTS_WRONG_VALUE_ERROR);
     }
 
-    private void validateAllPsd2(@NotNull Object allPsd2, MessageError messageError) {
-        if (allPsd2 instanceof String
-                && AccountAccess.AllPsd2Enum.fromValue((String) allPsd2) != null) {
+    private void validateEnumValue(Object value, Function<String, Enum> mapperToEnum,
+                                   MessageError messageError, String errorText) {
+        if (value == null || isValidEnumValue(value, mapperToEnum)) {
             return;
         }
 
-        errorBuildingService.enrichMessageError(messageError, ALL_PSD2_WRONG_VALUE_ERROR);
+        errorBuildingService.enrichMessageError(messageError, errorText);
     }
 
-    private void validateAvailableAccounts(@NotNull Object availableAccounts, MessageError messageError) {
-        if (availableAccounts instanceof String
-                && AccountAccess.AvailableAccountsEnum.fromValue((String) availableAccounts) != null) {
-            return;
-        }
-
-        errorBuildingService.enrichMessageError(messageError, AVAILABLE_ACCOUNTS_WRONG_VALUE_ERROR);
+    private boolean isValidEnumValue(@NotNull Object value, Function<String, Enum> mapperToEnum) {
+        return value instanceof String
+                   && mapperToEnum.apply((String) value) != null;
     }
 
     private Map<String, Object> extractConsentAccessMap(HttpServletRequest request, MessageError messageError) {
