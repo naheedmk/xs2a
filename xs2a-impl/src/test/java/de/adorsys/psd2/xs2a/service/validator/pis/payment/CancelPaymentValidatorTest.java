@@ -175,7 +175,6 @@ public class CancelPaymentValidatorTest {
         return pisCommonPaymentResponse;
     }
 
-
     private static PaymentInitiationParameters buildCorrectPaymentTypeAndProduct() {
         PaymentInitiationParameters parameters = new PaymentInitiationParameters();
         parameters.setPaymentType(PAYMENT_TYPE);

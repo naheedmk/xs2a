@@ -26,12 +26,14 @@ import java.util.Collections;
 
 public class PisCommonPaymentResponseBuilder {
     private static final TransactionStatus TRANSACTION_STATUS = TransactionStatus.RCVD;
+    private static final PaymentType PAYMENT_TYPE = PaymentType.SINGLE;
+    private static final String PAYMENT_PRODUCT = "sepa-credit-transfers";
 
     public static PisCommonPaymentResponse buildPisCommonPaymentResponse() {
         PisCommonPaymentResponse commonPaymentResponse = new PisCommonPaymentResponse();
         commonPaymentResponse.setTransactionStatus(TRANSACTION_STATUS);
-        commonPaymentResponse.setPaymentType(PaymentType.SINGLE);
-        commonPaymentResponse.setPaymentProduct("sepa-credit-transfers");
+        commonPaymentResponse.setPaymentType(PAYMENT_TYPE);
+        commonPaymentResponse.setPaymentProduct(PAYMENT_PRODUCT);
         commonPaymentResponse.setTppInfo(TppInfoBuilder.buildTppInfo());
         commonPaymentResponse.setPsuData(Collections.singletonList(PsuIdDataBuilder.buildPsuIdData()));
         return commonPaymentResponse;

@@ -29,6 +29,7 @@ import de.adorsys.psd2.xs2a.service.validator.PaymentTypeAndProductValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.pis.CommonPaymentObject;
 import de.adorsys.psd2.xs2a.service.validator.tpp.PisTppInfoValidator;
+import de.adorsys.psd2.xs2a.util.reader.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,9 +63,6 @@ public class CreatePisAuthorisationValidatorTest {
     private static final String CORRECT_PAYMENT_PRODUCT = "sepa-credit-transfers";
     private static final String WRONG_PAYMENT_PRODUCT = "sepa-credit-transfers111";
 
-    private static final PaymentInitiationParameters CORRECT_PAYMENT_TYPE_AND_PRODUCT = buildCorrectPaymentTypeAndProduct();
-    private static final PaymentInitiationParameters WRONG_PAYMENT_TYPE_AND_PRODUCT = buildWrongPaymentTypeAndProduct();
-
     @Mock
     private PisTppInfoValidator pisTppInfoValidator;
     @Mock
@@ -80,15 +78,20 @@ public class CreatePisAuthorisationValidatorTest {
         // Inject pisTppInfoValidator via setter
         createPisAuthorisationValidator.setPisTppInfoValidator(pisTppInfoValidator, paymentProductAndTypeValidator);
 
+        JsonReader jsonReader = new JsonReader();
+        PaymentInitiationParameters paymentInitiationParametersCorrect = jsonReader.getObjectFromFile("json/validation/payment-init-params-correct.json",
+                                                                                                      PaymentInitiationParameters.class);
+        PaymentInitiationParameters paymentInitiationParametersWrong = jsonReader.getObjectFromFile("json/validation/payment-init-params-wrong.json",
+                                                                                                    PaymentInitiationParameters.class);
         when(requestProviderService.getRequestId()).thenReturn(X_REQUEST_ID);
 
         when(pisTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
         when(pisTppInfoValidator.validateTpp(INVALID_TPP_INFO))
             .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
-        when(paymentProductAndTypeValidator.validate(CORRECT_PAYMENT_TYPE_AND_PRODUCT))
+        when(paymentProductAndTypeValidator.validate(paymentInitiationParametersCorrect))
             .thenReturn(ValidationResult.valid());
-        when(paymentProductAndTypeValidator.validate(WRONG_PAYMENT_TYPE_AND_PRODUCT))
+        when(paymentProductAndTypeValidator.validate(paymentInitiationParametersWrong))
             .thenReturn(ValidationResult.invalid(PAYMENT_PRODUCT_VALIDATION_ERROR));
     }
 
@@ -184,19 +187,4 @@ public class CreatePisAuthorisationValidatorTest {
         pisCommonPaymentResponse.setPaymentType(PaymentType.SINGLE);
         return pisCommonPaymentResponse;
     }
-
-    private static PaymentInitiationParameters buildCorrectPaymentTypeAndProduct() {
-        PaymentInitiationParameters parameters = new PaymentInitiationParameters();
-        parameters.setPaymentType(PaymentType.SINGLE);
-        parameters.setPaymentProduct(CORRECT_PAYMENT_PRODUCT);
-        return parameters;
-    }
-
-    private static PaymentInitiationParameters buildWrongPaymentTypeAndProduct() {
-        PaymentInitiationParameters parameters = new PaymentInitiationParameters();
-        parameters.setPaymentType(PaymentType.SINGLE);
-        parameters.setPaymentProduct(WRONG_PAYMENT_PRODUCT);
-        return parameters;
-    }
-
 }

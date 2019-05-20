@@ -17,9 +17,7 @@
 package de.adorsys.psd2.xs2a.web.validator;
 
 import de.adorsys.psd2.xs2a.exception.MessageError;
-import de.adorsys.psd2.xs2a.web.validator.body.consent.ConsentBodyValidator;
 import de.adorsys.psd2.xs2a.web.validator.constants.Xs2aHeaderConstant;
-import de.adorsys.psd2.xs2a.web.validator.header.ConsentHeaderValidator;
 import de.adorsys.psd2.xs2a.web.validator.header.XRequestIdHeaderValidatorImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
-import java.util.List;
 
 @Component
 public class DefaultMethodValidatorImpl extends AbstractMethodValidator {
@@ -35,10 +32,8 @@ public class DefaultMethodValidatorImpl extends AbstractMethodValidator {
     private XRequestIdHeaderValidatorImpl xRequestIdHeaderValidator;
 
     @Autowired
-    public DefaultMethodValidatorImpl(List<ConsentHeaderValidator> headerValidators,
-                                      List<ConsentBodyValidator> bodyValidators,
-                                      XRequestIdHeaderValidatorImpl xRequestIdHeaderValidator) {
-        super(headerValidators, bodyValidators);
+    public DefaultMethodValidatorImpl(XRequestIdHeaderValidatorImpl xRequestIdHeaderValidator) {
+        super(Collections.emptyList(), Collections.emptyList());
         this.xRequestIdHeaderValidator = xRequestIdHeaderValidator;
     }
 
