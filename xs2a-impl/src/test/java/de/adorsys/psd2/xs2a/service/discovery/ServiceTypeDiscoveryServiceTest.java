@@ -23,10 +23,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import static org.junit.Assert.assertEquals;
 
 public class ServiceTypeDiscoveryServiceTest {
-
     private MockHttpServletRequest request;
     private ServiceTypeDiscoveryService cut;
-
 
     @Test
     public void getServiceType() {
