@@ -73,7 +73,7 @@ public class GetPaymentStatusByIdValidatorTest {
     @Before
     public void setUp() {
         // Inject pisTppInfoValidator via setter
-        getPaymentStatusByIdValidator.setPisTppInfoValidator(pisTppInfoValidator, paymentProductAndTypeValidator);
+        getPaymentStatusByIdValidator.setPisValidators(pisTppInfoValidator, paymentProductAndTypeValidator);
 
         JsonReader jsonReader = new JsonReader();
         PaymentInitiationParameters paymentInitiationParametersCorrect = jsonReader.getObjectFromFile("json/validation/payment-init-params-correct.json",

@@ -65,7 +65,7 @@ public class GetPaymentInitiationAuthorisationScaStatusValidatorTest {
     @Before
     public void setUp() {
         // Inject pisTppInfoValidator via setter
-        getPaymentInitiationAuthorisationScaStatusValidator.setPisTppInfoValidator(pisTppInfoValidator, paymentProductAndTypeValidator);
+        getPaymentInitiationAuthorisationScaStatusValidator.setPisValidators(pisTppInfoValidator, paymentProductAndTypeValidator);
 
         JsonReader jsonReader = new JsonReader();
         PaymentInitiationParameters paymentInitiationParametersCorrect = jsonReader.getObjectFromFile("json/validation/payment-init-params-correct.json",

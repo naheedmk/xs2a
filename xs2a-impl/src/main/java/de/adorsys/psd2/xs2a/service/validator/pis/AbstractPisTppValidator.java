@@ -68,7 +68,7 @@ public abstract class AbstractPisTppValidator<T extends PaymentTypeAndInfoProvid
     protected abstract ValidationResult executeBusinessValidation(T paymentObject);
 
     @Autowired
-    public void setPisTppInfoValidator(PisTppInfoValidator pisTppInfoValidator, PaymentTypeAndProductValidator paymentProductAndTypeValidator) {
+    public void setPisValidators(PisTppInfoValidator pisTppInfoValidator, PaymentTypeAndProductValidator paymentProductAndTypeValidator) {
         this.pisTppInfoValidator = pisTppInfoValidator;
         this.paymentProductAndTypeValidator = paymentProductAndTypeValidator;
     }

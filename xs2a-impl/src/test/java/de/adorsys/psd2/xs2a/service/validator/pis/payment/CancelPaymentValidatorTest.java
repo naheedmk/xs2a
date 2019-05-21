@@ -74,7 +74,7 @@ public class CancelPaymentValidatorTest {
     @Before
     public void setUp() {
         // Inject pisTppInfoValidator via setter
-        cancelPaymentValidator.setPisTppInfoValidator(pisTppInfoValidator, paymentProductAndTypeValidator);
+        cancelPaymentValidator.setPisValidators(pisTppInfoValidator, paymentProductAndTypeValidator);
 
         JsonReader jsonReader = new JsonReader();
         PaymentInitiationParameters paymentInitiationParametersCorrect = jsonReader.getObjectFromFile("json/validation/payment-init-params-correct.json",

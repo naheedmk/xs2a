@@ -53,13 +53,13 @@ public class PaymentTypeAndProductValidator implements BusinessValidator<Payment
             if (supportedPaymentTypeAndProductMatrix.get(paymentType).contains(paymentProduct)) {
                 return ValidationResult.valid();
             }
-            // Case when URL contains something like "/sepa-credit-transfers111/".
+            // Case when URL contains something like "/sepa-credit-transfers111/". Bad product.
             ErrorType errorType = errorTypeMapper.mapToErrorType(serviceTypeDiscoveryService.getServiceType(), PRODUCT_UNKNOWN.getCode());
             return ValidationResult.invalid(errorType, TppMessageInformation.of(PRODUCT_UNKNOWN, "Wrong payment product: " + paymentProduct));
         }
-        // Case when URL contains correct type "/v1/payments/", but it is not supported by ASPSP.
+        // Case when URL contains correct type "/v1/payments/", but it is not supported by ASPSP. Bad type.
         ErrorType errorType = errorTypeMapper.mapToErrorType(serviceTypeDiscoveryService.getServiceType(), PARAMETER_NOT_SUPPORTED.getCode());
-        return ValidationResult.invalid(errorType, TppMessageInformation.of(PARAMETER_NOT_SUPPORTED, "Wrong payment type: " + paymentProduct));
+        return ValidationResult.invalid(errorType, TppMessageInformation.of(PARAMETER_NOT_SUPPORTED, "Wrong payment type: " + paymentType));
     }
 
 }
