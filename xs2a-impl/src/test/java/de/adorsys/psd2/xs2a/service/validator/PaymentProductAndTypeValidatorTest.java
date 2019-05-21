@@ -111,7 +111,6 @@ public class PaymentProductAndTypeValidatorTest {
         ValidationResult actual = paymentProductAndTypeValidator.validate(parameters);
 
         //Then:
-        //Then:
         assertTrue(actual.isNotValid());
         assertEquals(1, actual.getMessageError().getTppMessages().size());
         assertEquals(PARAMETER_NOT_SUPPORTED, actual.getMessageError().getTppMessage().getMessageErrorCode());
