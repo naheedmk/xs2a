@@ -49,7 +49,7 @@ public class SecurityDataServiceTest {
     private static final String NON_EXISTING_CRYPT_PROVIDER_ID = "nonExisting";
     private static final AbstractCryptoProvider CRYPTO_PROVIDER = new MockCryptoProvider(CRYPTO_PROVIDER_ID, false);
     private static final AbstractCryptoProvider FAILING_CRYPTO_PROVIDER = new MockCryptoProvider(FAILING_CRYPTO_PROVIDER_ID,
-                                                                                         true);
+                                                                                                 true);
 
     @Mock
     private CryptoProviderFactory cryptoProviderFactory;
@@ -73,7 +73,7 @@ public class SecurityDataServiceTest {
             .thenReturn(Optional.of(FAILING_CRYPTO_PROVIDER));
         when(cryptoProviderFactory.getCryptoProviderByAlgorithmVersion(NON_EXISTING_CRYPT_PROVIDER_ID))
             .thenReturn(Optional.empty());
-        when( cryptoProviderFactory.oldDefaultVersionDataCryptoProvider())
+        when(cryptoProviderFactory.oldDefaultVersionDataCryptoProvider())
             .thenReturn(CRYPTO_PROVIDER);
     }
 

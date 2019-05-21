@@ -191,14 +191,6 @@ public class SecurityDataService {
     }
 
     private String concatWithSeparator(String... parts) {
-        StringBuilder sb = new StringBuilder();
-        String prefix = "";
-
-        for (String part : parts) {
-            sb.append(prefix);
-            prefix = SEPARATOR;
-            sb.append(part);
-        }
-        return sb.toString();
+        return StringUtils.join(parts, SEPARATOR);
     }
 }

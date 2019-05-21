@@ -29,7 +29,7 @@ import java.util.Optional;
 @Service
 public class CryptoProviderFactory {
     private final CryptoAlgorithmRepository cryptoAlgorithmRepository;
-    private final Map<String, AbstractCryptoProvider> algorithmMap;
+    private final Map<CryptoProviderCode, AbstractCryptoProvider> algorithmMap;
 
     public CryptoProviderFactory(CryptoAlgorithmRepository cryptoAlgorithmRepository) {
         this.cryptoAlgorithmRepository = cryptoAlgorithmRepository;
@@ -47,32 +47,32 @@ public class CryptoProviderFactory {
     }
 
     public AbstractCryptoProvider actualIdentifierCryptoProvider() {
-        return algorithmMap.get("psGLvQpt9Q"); // AES/ECB/PKCS5Padding 256 1024
+        return algorithmMap.get(CryptoProviderCode.AES_ECB_PKCS5_256_1K);
     }
 
     public AbstractCryptoProvider actualConsentDataCryptoProvider() {
-        return algorithmMap.get("JcHZwvJMuc"); // JWE/GCM/256	256	1024
+        return algorithmMap.get(CryptoProviderCode.JWE_GCM_256_1K);
     }
 
     public AbstractCryptoProvider oldDefaultVersionDataCryptoProvider() {
-        return algorithmMap.get("gQ8wkMeo93"); // JWE/GCM/256	256	65536
+        return algorithmMap.get(CryptoProviderCode.JWE_GCM_256_65K);
     }
 
     private AbstractCryptoProvider mapCryptoProviderByAlgorithmName(CryptoAlgorithm cryptoAlgorithm) {
-        return algorithmMap.get(cryptoAlgorithm.getExternalId());
+        return algorithmMap.get(CryptoProviderCode.fromValue(cryptoAlgorithm.getExternalId()));
     }
 
-    private Map<String, AbstractCryptoProvider> generateAlgorithmMap() {
-        Map<String, AbstractCryptoProvider> algorithmMap = new HashMap<>();
+    private Map<CryptoProviderCode, AbstractCryptoProvider> generateAlgorithmMap() {
+        Map<CryptoProviderCode, AbstractCryptoProvider> generatedAlgorithmMap = new HashMap<>();
 
         // 65536 hashIterations
-        algorithmMap.put("bS6p6XvTWI", new AesEcbCryptoProviderImpl("bS6p6XvTWI", "AES/ECB/PKCS5Padding", "2", 256, 65536, "PBKDF2WithHmacSHA256"));
-        algorithmMap.put("gQ8wkMeo93", new JweCryptoProviderImpl("gQ8wkMeo93", "JWE/GCM/256", "3", 256, 65536, "PBKDF2WithHmacSHA256"));
+        generatedAlgorithmMap.put(CryptoProviderCode.AES_ECB_PKCS5_256_65K, new AesEcbCryptoProviderImpl("bS6p6XvTWI", "AES/ECB/PKCS5Padding", "2", 256, 65536, "PBKDF2WithHmacSHA256"));
+        generatedAlgorithmMap.put(CryptoProviderCode.JWE_GCM_256_65K, new JweCryptoProviderImpl("gQ8wkMeo93", "JWE/GCM/256", "3", 256, 65536, "PBKDF2WithHmacSHA256"));
 
         // 1024 hashIterations
-        algorithmMap.put("psGLvQpt9Q", new AesEcbCryptoProviderImpl("psGLvQpt9Q", "AES/ECB/PKCS5Padding", "5", 256, 1024, "PBKDF2WithHmacSHA256"));
-        algorithmMap.put("JcHZwvJMuc", new JweCryptoProviderImpl("JcHZwvJMuc", "JWE/GCM/256", "6", 256, 1024, "PBKDF2WithHmacSHA256"));
+        generatedAlgorithmMap.put(CryptoProviderCode.AES_ECB_PKCS5_256_1K, new AesEcbCryptoProviderImpl("psGLvQpt9Q", "AES/ECB/PKCS5Padding", "5", 256, 1024, "PBKDF2WithHmacSHA256"));
+        generatedAlgorithmMap.put(CryptoProviderCode.JWE_GCM_256_1K, new JweCryptoProviderImpl("JcHZwvJMuc", "JWE/GCM/256", "6", 256, 1024, "PBKDF2WithHmacSHA256"));
 
-        return algorithmMap;
+        return generatedAlgorithmMap;
     }
 }

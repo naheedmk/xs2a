@@ -20,23 +20,31 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet author="rye@adorsys.com.ua" id="2019-05-17-1">
-        <comment>Extend table crypto_algorithm with columns 'key_length_in_bytes' and 'hash_iterations' </comment>
+        <comment>Extend table crypto_algorithm with columns 'key_length_in_bytes' and 'hash_iterations'</comment>
 
         <addColumn tableName="crypto_algorithm">
-            <column name="key_length_in_bytes" type="INTEGER"/>
+            <column name="key_length_in_bytes" type="INTEGER" defaultValue="256">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
 
         <addColumn tableName="crypto_algorithm">
-            <column name="hash_iterations" type="INTEGER"/>
+            <column name="hash_iterations" type="INTEGER" defaultValue="65536">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
 
         <addColumn tableName="crypto_algorithm">
-            <column name="skf_algorithm" type="VARCHAR(35)"/>
+            <column name="skf_algorithm" type="VARCHAR(35)" defaultValue="PBKDF2WithHmacSHA256">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
     </changeSet>
 
     <changeSet author="rye@adorsys.com.ua" id="2019-05-17-2">
-        <comment>Set fields value to 'hash_iterations', 'key_length_in_bytes' and 'skf_algorithm' fields in crypto_algorithm</comment>
+        <comment>Set fields value to 'hash_iterations', 'key_length_in_bytes' and 'skf_algorithm' fields in
+            crypto_algorithm
+        </comment>
 
         <sql>
             UPDATE crypto_algorithm
