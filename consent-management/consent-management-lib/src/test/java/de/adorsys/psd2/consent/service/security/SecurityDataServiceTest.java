@@ -171,9 +171,6 @@ public class SecurityDataServiceTest {
 
     @Test
     public void encryptConsentData_Success() {
-        when(cryptoProviderFactory.actualConsentDataCryptoProvider())
-            .thenReturn(CRYPTO_PROVIDER);
-
         // Given
         String encryptedId = getEncryptedConsentId(CRYPTO_PROVIDER_ID);
         byte[] dataWithKey = ArrayUtils.addAll(CONSENT_DATA, CONSENT_KEY.getBytes());
@@ -214,9 +211,6 @@ public class SecurityDataServiceTest {
 
     @Test
     public void decryptConsentData_Success() throws Exception {
-        when(cryptoProviderFactory.actualConsentDataCryptoProvider())
-            .thenReturn(CRYPTO_PROVIDER);
-
         // Given
         String encryptedId = getEncryptedConsentId(CRYPTO_PROVIDER_ID);
         byte[] encryptedConsentData = CRYPTO_PROVIDER.encryptData(CONSENT_DATA, CONSENT_KEY).get().getData();
