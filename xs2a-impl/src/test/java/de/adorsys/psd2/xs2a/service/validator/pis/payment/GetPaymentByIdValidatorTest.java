@@ -27,6 +27,7 @@ import de.adorsys.psd2.xs2a.service.validator.GetCommonPaymentByIdResponseValida
 import de.adorsys.psd2.xs2a.service.validator.PaymentTypeAndProductValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.tpp.PisTppInfoValidator;
+import de.adorsys.psd2.xs2a.util.reader.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,8 +44,8 @@ import static org.mockito.Mockito.when;
 public class GetPaymentByIdValidatorTest {
     private static final PaymentType PAYMENT_TYPE = PaymentType.SINGLE;
     private static final PaymentType INVALID_PAYMENT_TYPE = PaymentType.BULK;
-    private static final String PAYMENT_PRODUCT = "payment product";
-    private static final String INVALID_PAYMENT_PRODUCT = "invalid payment product";
+    private static final String PAYMENT_PRODUCT = "sepa-credit-transfers";
+    private static final String INVALID_PAYMENT_PRODUCT = "sepa-credit-transfers111";
     private static final TppInfo TPP_INFO = buildTppInfo("authorisation number");
     private static final TppInfo INVALID_TPP_INFO = buildTppInfo("invalid authorisation number");
 
@@ -54,8 +55,6 @@ public class GetPaymentByIdValidatorTest {
         new MessageError(ErrorType.PIS_401, TppMessageInformation.of(UNAUTHORIZED));
     private static final MessageError GET_COMMON_PAYMENT_VALIDATION_ERROR =
         new MessageError(ErrorType.PIS_405, TppMessageInformation.of(SERVICE_INVALID_405));
-    private static final PaymentInitiationParameters CORRECT_PAYMENT_TYPE_AND_PRODUCT = buildCorrectPaymentTypeAndProduct();
-    private static final PaymentInitiationParameters WRONG_PAYMENT_TYPE_AND_PRODUCT = buildWrongPaymentTypeAndProduct();
 
     @Mock
     private PisTppInfoValidator pisTppInfoValidator;
@@ -69,11 +68,18 @@ public class GetPaymentByIdValidatorTest {
     @InjectMocks
     private GetPaymentByIdValidator getPaymentByIdValidator;
 
+    private PaymentInitiationParameters paymentInitiationParametersWrong;
+
     @Before
     public void setUp() {
         // Inject pisTppInfoValidator via setter
         getPaymentByIdValidator.setPisTppInfoValidator(pisTppInfoValidator, paymentProductAndTypeValidator);
 
+        JsonReader jsonReader = new JsonReader();
+        PaymentInitiationParameters paymentInitiationParametersCorrect = jsonReader.getObjectFromFile("json/validation/payment-init-params-correct.json",
+                                                                                                      PaymentInitiationParameters.class);
+        paymentInitiationParametersWrong = jsonReader.getObjectFromFile("json/validation/payment-init-params-wrong.json",
+                                                                        PaymentInitiationParameters.class);
         when(pisTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
         when(pisTppInfoValidator.validateTpp(INVALID_TPP_INFO))
@@ -84,11 +90,15 @@ public class GetPaymentByIdValidatorTest {
 
         when(getCommonPaymentByIdResponseValidator.validateRequest(buildPisCommonPaymentResponse(TPP_INFO), INVALID_PAYMENT_TYPE, INVALID_PAYMENT_PRODUCT))
             .thenReturn(ValidationResult.invalid(GET_COMMON_PAYMENT_VALIDATION_ERROR));
+        when(getCommonPaymentByIdResponseValidator.validateRequest(buildPisCommonPaymentResponse(TPP_INFO), PAYMENT_TYPE, INVALID_PAYMENT_PRODUCT))
+            .thenReturn(ValidationResult.invalid(GET_COMMON_PAYMENT_VALIDATION_ERROR));
         when(getCommonPaymentByIdResponseValidator.validateRequest(buildPisCommonPaymentResponse(INVALID_TPP_INFO), INVALID_PAYMENT_TYPE, INVALID_PAYMENT_PRODUCT))
             .thenReturn(ValidationResult.invalid(GET_COMMON_PAYMENT_VALIDATION_ERROR));
-        when(paymentProductAndTypeValidator.validate(CORRECT_PAYMENT_TYPE_AND_PRODUCT))
+        when(getCommonPaymentByIdResponseValidator.validateRequest(buildPisCommonPaymentResponse(INVALID_TPP_INFO), PAYMENT_TYPE, INVALID_PAYMENT_PRODUCT))
+            .thenReturn(ValidationResult.invalid(GET_COMMON_PAYMENT_VALIDATION_ERROR));
+        when(paymentProductAndTypeValidator.validate(paymentInitiationParametersCorrect))
             .thenReturn(ValidationResult.valid());
-        when(paymentProductAndTypeValidator.validate(WRONG_PAYMENT_TYPE_AND_PRODUCT))
+        when(paymentProductAndTypeValidator.validate(paymentInitiationParametersWrong))
             .thenReturn(ValidationResult.invalid(PAYMENT_PRODUCT_VALIDATION_ERROR));
     }
 
@@ -129,11 +139,11 @@ public class GetPaymentByIdValidatorTest {
     public void validate_withInvalidPaymentObject_shouldReturnGetCommonPaymentValidationError() {
         // Given
         PisCommonPaymentResponse commonPaymentResponse = buildPisCommonPaymentResponse(TPP_INFO);
-        when(paymentProductAndTypeValidator.validate(WRONG_PAYMENT_TYPE_AND_PRODUCT))
+        when(paymentProductAndTypeValidator.validate(paymentInitiationParametersWrong))
             .thenReturn(ValidationResult.valid());
 
         // When
-        ValidationResult validationResult = getPaymentByIdValidator.validate(new GetPaymentByIdPO(commonPaymentResponse, INVALID_PAYMENT_TYPE, INVALID_PAYMENT_PRODUCT));
+        ValidationResult validationResult = getPaymentByIdValidator.validate(new GetPaymentByIdPO(commonPaymentResponse, PAYMENT_TYPE, INVALID_PAYMENT_PRODUCT));
 
         // Then
         assertNotNull(validationResult);
@@ -168,19 +178,4 @@ public class GetPaymentByIdValidatorTest {
         pisCommonPaymentResponse.setTppInfo(tppInfo);
         return pisCommonPaymentResponse;
     }
-
-    private static PaymentInitiationParameters buildCorrectPaymentTypeAndProduct() {
-        PaymentInitiationParameters parameters = new PaymentInitiationParameters();
-        parameters.setPaymentType(PaymentType.SINGLE);
-        parameters.setPaymentProduct(PAYMENT_PRODUCT);
-        return parameters;
-    }
-
-    private static PaymentInitiationParameters buildWrongPaymentTypeAndProduct() {
-        PaymentInitiationParameters parameters = new PaymentInitiationParameters();
-        parameters.setPaymentType(PaymentType.BULK);
-        parameters.setPaymentProduct(INVALID_PAYMENT_PRODUCT);
-        return parameters;
-    }
-
 }
