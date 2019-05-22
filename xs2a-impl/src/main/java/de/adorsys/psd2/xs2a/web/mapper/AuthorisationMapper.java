@@ -184,7 +184,7 @@ public class AuthorisationMapper {
                    );
     }
 
-    private ScaMethods getAvailableScaMethods(List<Xs2aAuthenticationObject> availableScaMethods) {
+    ScaMethods getAvailableScaMethods(List<Xs2aAuthenticationObject> availableScaMethods) {
         ScaMethods scaMethods = new ScaMethods();
         if (CollectionUtils.isNotEmpty(availableScaMethods)) {
             availableScaMethods.forEach(a -> scaMethods.add(new AuthenticationObject()

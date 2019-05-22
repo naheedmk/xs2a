@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.web.mapper;
 
 import de.adorsys.psd2.model.Authorisations;
 import de.adorsys.psd2.model.ChosenScaMethod;
+import de.adorsys.psd2.model.ScaMethods;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthorisationSubResources;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.AuthorisationMapper1;
@@ -55,10 +56,10 @@ public class AuthorisationMapperTest {
     @Test
     public void mapToChosenScaMethod() {
 
-        Xs2aAuthenticationObject authenticationObject = jsonReader.getObjectFromFile("json/service/mapper/Xs2aAuthenticationObject-initial.json", Xs2aAuthenticationObject.class);
+        Xs2aAuthenticationObject authenticationObject = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-Xs2aAuthenticationObject-initial.json", Xs2aAuthenticationObject.class);
         ChosenScaMethod actualChosenScaMethod = mapper.mapToChosenScaMethod(authenticationObject);
 
-        ChosenScaMethod expectedChosenScaMethod = jsonReader.getObjectFromFile("json/service/mapper/ChosenScaMethod.json", ChosenScaMethod.class);
+        ChosenScaMethod expectedChosenScaMethod = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-ChosenScaMethod.json", ChosenScaMethod.class);
 
         assertEquals(expectedChosenScaMethod.getAuthenticationMethodId(), actualChosenScaMethod.getAuthenticationMethodId());
         assertEquals(expectedChosenScaMethod.getAuthenticationType(), actualChosenScaMethod.getAuthenticationType());
@@ -86,5 +87,15 @@ public class AuthorisationMapperTest {
         Authorisations expectedAuthorisations = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-Authorisations-notEqual.json", Authorisations.class);
 
         assertNotEquals(expectedAuthorisations.toString(), actualAuthorisations.toString());
+    }
+
+    @Test
+    public void getAvailableScaMethods() {
+        List<Xs2aAuthenticationObject> availableScaMethods = jsonReader.getListFromFile("json/service/mapper/AuthorisationMapper-Xs2aAuthenticationObjects-List.json", Xs2aAuthenticationObject.class);
+        ScaMethods actualScaMethods = oldMapper.getAvailableScaMethods(availableScaMethods);
+
+        ScaMethods expectedScaMethods = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-ScaMethods.json", ScaMethods.class);
+
+        assertNotEquals(expectedScaMethods.toString(), actualScaMethods.toString());
     }
 }
