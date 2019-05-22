@@ -27,10 +27,11 @@ import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.*;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
+import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.AuthorisationMapper1;
 import de.adorsys.psd2.xs2a.web.RedirectLinkBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -51,13 +52,10 @@ public class AuthorisationMapper {
     private final RedirectLinkBuilder redirectLinkBuilder;
     private final AspspProfileService aspspProfileService;
     private final HrefLinkMapper hrefLinkMapper;
+    private final AuthorisationMapper1 authorisationMapper1;
 
     public Authorisations mapToAuthorisations(Xs2aAuthorisationSubResources xs2AAuthorisationSubResources) {
-        Authorisations authorisations = new Authorisations();
-        AuthorisationsList authorisationsList = new AuthorisationsList();
-        authorisationsList.addAll(xs2AAuthorisationSubResources.getAuthorisationIds());
-        authorisations.setAuthorisationIds(authorisationsList);
-        return authorisations;
+        return authorisationMapper1.mapToAuthorisations(xs2AAuthorisationSubResources);
     }
 
     public Object mapToPisCreateOrUpdateAuthorisationResponse(ResponseObject responseObject) {
@@ -67,10 +65,8 @@ public class AuthorisationMapper {
         }
 
         if (body instanceof Xs2aCreatePisAuthorisationResponse) {
-
             return mapToStartScaProcessResponseFromPis((Xs2aCreatePisAuthorisationResponse) body);
         } else if (body instanceof Xs2aUpdatePisCommonPaymentPsuDataResponse) {
-
             return mapToPisUpdatePsuAuthenticationResponse((Xs2aUpdatePisCommonPaymentPsuDataResponse) body);
         } else {
             return null;
@@ -201,16 +197,7 @@ public class AuthorisationMapper {
         return scaMethods;
     }
 
-    private ChosenScaMethod mapToChosenScaMethod(Xs2aAuthenticationObject xs2aAuthenticationObject) {
-        return Optional.ofNullable(xs2aAuthenticationObject)
-                   .map(ch -> {
-                       ChosenScaMethod method = new ChosenScaMethod();
-                       method.setAuthenticationMethodId(ch.getAuthenticationMethodId());
-                       method.setAuthenticationType(AuthenticationType.fromValue(ch.getAuthenticationType()));
-                       method.setAuthenticationVersion(ch.getAuthenticationVersion());
-                       method.setName(ch.getName());
-                       method.setExplanation(ch.getExplanation());
-                       return method;
-                   }).orElse(null);
+    ChosenScaMethod mapToChosenScaMethod(Xs2aAuthenticationObject xs2aAuthenticationObject) {
+        return authorisationMapper1.mapToChosenScaMethod(xs2aAuthenticationObject);
     }
 }
