@@ -32,11 +32,16 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
+import de.adorsys.psd2.xs2a.domain.ResponseObject;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
+import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
+import de.adorsys.psd2.xs2a.domain.pis.SinglePaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.integration.builder.AspspSettingsBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.TppInfoBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.payment.PisCommonPaymentResponseBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
+import de.adorsys.psd2.xs2a.service.payment.CreateSinglePaymentService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +65,7 @@ import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -86,10 +92,13 @@ public class PaymentControllerTest {
     private static final String AUTHORISATION_ID = "e8356ea7-8e3e-474f-b5ea-2b89346cb2dc";
     private static final String CANCELLATION_ID = "cancellationId";
     private static final TppInfo TPP_INFO = TppInfoBuilder.buildTppInfo();
-    private static final ScaApproach SCA_APPROACH = ScaApproach.REDIRECT;
+    private static final ScaApproach REDIRECT_SCA_APPROACH = ScaApproach.REDIRECT;
+    private static final ScaApproach EMBEDDED_SCA_APPROACH = ScaApproach.EMBEDDED;
     private HttpHeaders httpHeadersExplicit = new HttpHeaders();
 
     private static final String CANCELLATION_AUTHORISATIONS_RESP = "/json/payment/res/explicit/SinglePaymentCancellationAuth_response.json";
+    private static final String PAYMENT_REQ = "/json/payment/req/SinglePaymentInitiate_request.json";
+    private static final String PAYMENT_RESP = "/json/payment/res/explicit/SinglePaymentInitiate_response.json";
 
     @Autowired
     private MockMvc mockMvc;
@@ -104,17 +113,16 @@ public class PaymentControllerTest {
     private EventServiceEncrypted eventServiceEncrypted;
     @MockBean
     private PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
+    @MockBean
+    private CreateSinglePaymentService createSinglePaymentService;
 
     @Before
     public void init() {
         // common actions for all tests
-        given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(SCA_APPROACH));
         given(aspspProfileService.getAspspSettings())
             .willReturn(AspspSettingsBuilder.buildAspspSettings());
-        given(tppService.getTppInfo())
-            .willReturn(TPP_INFO);
-        given(tppService.getTppId())
-            .willReturn(TPP_INFO.getAuthorisationNumber());
+        given(tppService.getTppInfo()).willReturn(TPP_INFO);
+        given(tppService.getTppId()).willReturn(TPP_INFO.getAuthorisationNumber());
         given(tppStopListService.checkIfTppBlocked(TppInfoBuilder.buildTppUniqueParamsHolder()))
             .willReturn(false);
         given(eventServiceEncrypted.recordEvent(any(Event.class)))
@@ -142,12 +150,13 @@ public class PaymentControllerTest {
     @Test
     public void getPaymentInitiationScaStatus_successful() throws Exception {
         // Given
+        given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(REDIRECT_SCA_APPROACH));
         given(pisCommonPaymentServiceEncrypted.getAuthorisationScaStatus(ENCRYPT_PAYMENT_ID, AUTHORISATION_ID, CmsAuthorisationType.CREATED))
             .willReturn(Optional.of(ScaStatus.RECEIVED));
         given(pisCommonPaymentServiceEncrypted.getCommonPaymentById(ENCRYPT_PAYMENT_ID))
             .willReturn(Optional.of(PisCommonPaymentResponseBuilder.buildPisCommonPaymentResponse()));
         given(pisCommonPaymentServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, CmsAuthorisationType.CREATED))
-            .willReturn(Optional.of(new AuthorisationScaApproachResponse(SCA_APPROACH)));
+            .willReturn(Optional.of(new AuthorisationScaApproachResponse(REDIRECT_SCA_APPROACH)));
 
         MockHttpServletRequestBuilder requestBuilder = get(UrlBuilder.buildGetPaymentInitiationScaStatusUrl(SINGLE_PAYMENT_TYPE.getValue(), SEPA_PAYMENT_PRODUCT, ENCRYPT_PAYMENT_ID, AUTHORISATION_ID));
         requestBuilder.headers(httpHeadersExplicit);
@@ -162,14 +171,40 @@ public class PaymentControllerTest {
     }
 
     @Test
+    public void getPaymentInitiationEmbeddedScaStatus_multilevelScaTrue_successful() throws Exception {
+        // Given
+        String request = IOUtils.resourceToString(PAYMENT_REQ, UTF_8);
+
+        given(createSinglePaymentService.createPayment(any(SinglePayment.class), any(PaymentInitiationParameters.class), eq(TPP_INFO)))
+            .willReturn(ResponseObject.<SinglePaymentInitiationResponse>builder().body(buildSinglePaymentInitiationResponse()).build());
+        given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(EMBEDDED_SCA_APPROACH));
+        given(pisCommonPaymentServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, CmsAuthorisationType.CREATED))
+            .willReturn(Optional.of(new AuthorisationScaApproachResponse(EMBEDDED_SCA_APPROACH)));
+
+
+        MockHttpServletRequestBuilder requestBuilder = post(UrlBuilder.buildInitiatePaymentUrl(SINGLE_PAYMENT_TYPE.getValue(), SEPA_PAYMENT_PRODUCT));
+        requestBuilder.headers(httpHeadersExplicit);
+        requestBuilder.content(request);
+
+        // When
+        ResultActions resultActions = mockMvc.perform(requestBuilder);
+
+        //Then
+        resultActions.andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(content().json(IOUtils.resourceToString(PAYMENT_RESP, UTF_8)));
+    }
+
+    @Test
     public void cancelPaymentAuthorisation_successful() throws Exception {
         // Given
+        given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(REDIRECT_SCA_APPROACH));
         given(pisCommonPaymentServiceEncrypted.getAuthorisationScaStatus(ENCRYPT_PAYMENT_ID, AUTHORISATION_ID, CmsAuthorisationType.CREATED))
             .willReturn(Optional.of(ScaStatus.RECEIVED));
         given(pisCommonPaymentServiceEncrypted.getCommonPaymentById(ENCRYPT_PAYMENT_ID))
             .willReturn(Optional.of(PisCommonPaymentResponseBuilder.buildPisCommonPaymentResponse()));
         given(pisCommonPaymentServiceEncrypted.getAuthorisationScaApproach(CANCELLATION_ID, CmsAuthorisationType.CANCELLED))
-            .willReturn(Optional.of(new AuthorisationScaApproachResponse(SCA_APPROACH)));
+            .willReturn(Optional.of(new AuthorisationScaApproachResponse(REDIRECT_SCA_APPROACH)));
 
         MockHttpServletRequestBuilder requestBuilder = post(UrlBuilder.buildGetPaymentCancellationAuthorisationUrl(SINGLE_PAYMENT_TYPE.getValue(), SEPA_PAYMENT_PRODUCT, ENCRYPT_PAYMENT_ID));
         requestBuilder.headers(httpHeadersExplicit);
@@ -185,5 +220,13 @@ public class PaymentControllerTest {
 
     private PsuIdData getPsuIdData() {
         return new PsuIdData("PSU-123", "Some type", "Some corporate id", "Some corporate id type");
+    }
+
+    private SinglePaymentInitiationResponse buildSinglePaymentInitiationResponse() {
+        SinglePaymentInitiationResponse response = new SinglePaymentInitiationResponse();
+        response.setMultilevelScaRequired(true);
+        response.setPaymentId(ENCRYPT_PAYMENT_ID);
+        response.setAuthorizationId(AUTHORISATION_ID);
+        return response;
     }
 }

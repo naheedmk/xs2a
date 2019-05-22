@@ -44,4 +44,8 @@ public class UrlBuilder {
     public static String buildConsentCreation() {
         return "/v1/consents/";
     }
+
+    public static String buildPaymentStartAuthorisationUrl(String paymentType, String paymentProduct, String paymentId) {
+        return "/v1/" + paymentType + "/" + paymentProduct + "/" + paymentId + "/authorisations";
+    }
 }
