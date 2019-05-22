@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.validator;
+package de.adorsys.psd2.xs2a.service.validator.pis;
 
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
+import de.adorsys.psd2.xs2a.service.validator.TppInfoProvider;
 
 public interface PaymentTypeAndInfoProvider extends TppInfoProvider {
     PaymentType getPaymentType();

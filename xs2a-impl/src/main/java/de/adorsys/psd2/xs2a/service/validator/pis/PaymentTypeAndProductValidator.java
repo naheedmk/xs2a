@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.validator;
+package de.adorsys.psd2.xs2a.service.validator.pis;
 
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
-import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
+import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -33,29 +33,30 @@ import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.PRODUCT_UNKNOWN;
 
 @Component
 @RequiredArgsConstructor
-public class PaymentTypeAndProductValidator implements BusinessValidator<PaymentInitiationParameters> {
-
+public class PaymentTypeAndProductValidator {
     private final AspspProfileServiceWrapper aspspProfileServiceWrapper;
 
-    @Override
-    public @NotNull ValidationResult validate(@NotNull PaymentInitiationParameters parameters) {
-        return validatePaymentTypeAndProduct(parameters.getPaymentType(), parameters.getPaymentProduct());
-    }
-
-    private ValidationResult validatePaymentTypeAndProduct(PaymentType paymentType, String paymentProduct) {
+    /**
+     * Validates payment type and payment product by checking whether it's supported by the ASPSP profile
+     *
+     * @param paymentType    payment type
+     * @param paymentProduct payment product
+     * @return valid result if the payment type and product are supported by the ASPSP, invalid result with an
+     * appropriate error otherwise
+     */
+    public @NotNull ValidationResult validateTypeAndProduct(@NotNull PaymentType paymentType, String paymentProduct) {
         Map<PaymentType, Set<String>> supportedPaymentTypeAndProductMatrix = aspspProfileServiceWrapper.getSupportedPaymentTypeAndProductMatrix();
 
         if (supportedPaymentTypeAndProductMatrix.containsKey(paymentType)) {
             if (supportedPaymentTypeAndProductMatrix.get(paymentType).contains(paymentProduct)) {
                 return ValidationResult.valid();
             }
-            // Case when URL contains something like "/sepa-credit-transfers111/". Bad product.
-            ErrorType errorType = ErrorType.PIS_404;
-            return ValidationResult.invalid(errorType, TppMessageInformation.of(PRODUCT_UNKNOWN, "Wrong payment product: " + paymentProduct));
-        }
-        // Case when URL contains correct type "/v1/payments/", but it is not supported by ASPSP. Bad type.
-        ErrorType errorType = ErrorType.PIS_400;
-        return ValidationResult.invalid(errorType, TppMessageInformation.of(PARAMETER_NOT_SUPPORTED, "Wrong payment type: " + paymentType));
-    }
 
+            // Case when URL contains something like "/sepa-credit-transfers111/". Bad product.
+            return ValidationResult.invalid(ErrorType.PIS_404, TppMessageInformation.of(PRODUCT_UNKNOWN, "Wrong payment product: " + paymentProduct));
+        }
+
+        // Case when URL contains correct type "/v1/payments/", but it is not supported by ASPSP. Bad type.
+        return ValidationResult.invalid(ErrorType.PIS_400, TppMessageInformation.of(PARAMETER_NOT_SUPPORTED, "Wrong payment type: " + paymentType));
+    }
 }

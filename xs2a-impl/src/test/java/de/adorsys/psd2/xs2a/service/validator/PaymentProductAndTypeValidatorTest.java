@@ -18,12 +18,8 @@ package de.adorsys.psd2.xs2a.service.validator;
 
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.domain.MessageErrorCode;
-import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
-import de.adorsys.psd2.xs2a.service.discovery.ServiceTypeDiscoveryService;
-import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
-import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
-import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceTypeToErrorTypeMapper;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
+import de.adorsys.psd2.xs2a.service.validator.pis.PaymentTypeAndProductValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +30,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.*;
 
 import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.PARAMETER_NOT_SUPPORTED;
-import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.PRODUCT_UNKNOWN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -42,7 +37,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentProductAndTypeValidatorTest {
 
-    private static final ServiceType SERVICE_TYPE = ServiceType.PIS;
     private static final String CORRECT_PAYMENT_PRODUCT = "sepa-credit-transfers";
     private static final String WRONG_PAYMENT_PRODUCT = "sepa-credit-transfers111";
     private static final PaymentType UNSUPPORTED_PAYMENT_TYPE = PaymentType.PERIODIC;
@@ -51,30 +45,18 @@ public class PaymentProductAndTypeValidatorTest {
     private PaymentTypeAndProductValidator paymentProductAndTypeValidator;
 
     @Mock
-    private ServiceTypeDiscoveryService serviceTypeDiscoveryService;
-    @Mock
-    private ServiceTypeToErrorTypeMapper errorTypeMapper;
-    @Mock
     private AspspProfileServiceWrapper aspspProfileService;
 
     @Before
     public void setUp() {
         Map<PaymentType, Set<String>> matrix = getSupportedPaymentTypeAndProductMatrix();
         when(aspspProfileService.getSupportedPaymentTypeAndProductMatrix()).thenReturn(matrix);
-        when(serviceTypeDiscoveryService.getServiceType()).thenReturn(SERVICE_TYPE);
     }
 
     @Test
     public void validatePaymentInitiationParams_correct() {
-        //Given:
-        when(errorTypeMapper.mapToErrorType(SERVICE_TYPE, PRODUCT_UNKNOWN.getCode())).thenReturn(ErrorType.PIS_404);
-
-        PaymentInitiationParameters parameters = new PaymentInitiationParameters();
-        parameters.setPaymentType(PaymentType.SINGLE);
-        parameters.setPaymentProduct(CORRECT_PAYMENT_PRODUCT);
-
         //When:
-        ValidationResult actual = paymentProductAndTypeValidator.validate(parameters);
+        ValidationResult actual = paymentProductAndTypeValidator.validateTypeAndProduct(PaymentType.SINGLE, CORRECT_PAYMENT_PRODUCT);
 
         //Then:
         assertTrue(actual.isValid());
@@ -82,15 +64,8 @@ public class PaymentProductAndTypeValidatorTest {
 
     @Test
     public void validatePaymentInitiationParams_wrongProduct() {
-        //Given:
-        when(errorTypeMapper.mapToErrorType(SERVICE_TYPE, PRODUCT_UNKNOWN.getCode())).thenReturn(ErrorType.PIS_404);
-
-        PaymentInitiationParameters parameters = new PaymentInitiationParameters();
-        parameters.setPaymentType(PaymentType.SINGLE);
-        parameters.setPaymentProduct(WRONG_PAYMENT_PRODUCT);
-
         //When:
-        ValidationResult actual = paymentProductAndTypeValidator.validate(parameters);
+        ValidationResult actual = paymentProductAndTypeValidator.validateTypeAndProduct(PaymentType.SINGLE, WRONG_PAYMENT_PRODUCT);
 
         //Then:
         assertTrue(actual.isNotValid());
@@ -100,15 +75,8 @@ public class PaymentProductAndTypeValidatorTest {
 
     @Test
     public void validatePaymentInitiationParams_unsupportedType() {
-        //Given:
-        when(errorTypeMapper.mapToErrorType(SERVICE_TYPE, PARAMETER_NOT_SUPPORTED.getCode())).thenReturn(ErrorType.PIS_400);
-
-        PaymentInitiationParameters parameters = new PaymentInitiationParameters();
-        parameters.setPaymentType(UNSUPPORTED_PAYMENT_TYPE);
-        parameters.setPaymentProduct(CORRECT_PAYMENT_PRODUCT);
-
         //When:
-        ValidationResult actual = paymentProductAndTypeValidator.validate(parameters);
+        ValidationResult actual = paymentProductAndTypeValidator.validateTypeAndProduct(UNSUPPORTED_PAYMENT_TYPE, CORRECT_PAYMENT_PRODUCT);
 
         //Then:
         assertTrue(actual.isNotValid());

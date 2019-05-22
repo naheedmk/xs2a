@@ -17,10 +17,7 @@
 package de.adorsys.psd2.xs2a.service.validator.pis;
 
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.service.validator.BusinessValidator;
-import de.adorsys.psd2.xs2a.service.validator.PaymentTypeAndProductValidator;
-import de.adorsys.psd2.xs2a.service.validator.PaymentTypeAndInfoProvider;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.tpp.PisTppInfoValidator;
 import org.jetbrains.annotations.NotNull;
@@ -41,11 +38,8 @@ public abstract class AbstractPisTppValidator<T extends PaymentTypeAndInfoProvid
     @NotNull
     @Override
     public ValidationResult validate(@NotNull T object) {
-
-        PaymentInitiationParameters paramsForChecking = new PaymentInitiationParameters();
-        paramsForChecking.setPaymentProduct(object.getPaymentProduct());
-        paramsForChecking.setPaymentType(object.getPaymentType());
-        ValidationResult productAndTypeValidationResult = paymentProductAndTypeValidator.validate(paramsForChecking);
+        ValidationResult productAndTypeValidationResult =
+            paymentProductAndTypeValidator.validateTypeAndProduct(object.getPaymentType(), object.getPaymentProduct());
         if (productAndTypeValidationResult.isNotValid()) {
             return productAndTypeValidationResult;
         }

@@ -24,7 +24,11 @@ import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
-import de.adorsys.psd2.xs2a.service.validator.*;
+import de.adorsys.psd2.xs2a.service.validator.BusinessValidator;
+import de.adorsys.psd2.xs2a.service.validator.PsuDataInInitialRequestValidator;
+import de.adorsys.psd2.xs2a.service.validator.SupportedAccountReferenceValidator;
+import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
+import de.adorsys.psd2.xs2a.service.validator.pis.PaymentTypeAndProductValidator;
 import de.adorsys.psd2.xs2a.service.validator.pis.payment.dto.CreatePaymentRequestObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,8 +65,10 @@ public class CreatePaymentValidator implements BusinessValidator<CreatePaymentRe
     @Override
     public ValidationResult validate(@NotNull CreatePaymentRequestObject createPaymentRequestObject) {
         PaymentInitiationParameters paymentInitiationParameters = createPaymentRequestObject.getPaymentInitiationParameters();
+        PaymentType paymentType = paymentInitiationParameters.getPaymentType();
+        String paymentProduct = paymentInitiationParameters.getPaymentProduct();
 
-        ValidationResult productAndTypeValidationResult = paymentProductAndTypeValidator.validate(paymentInitiationParameters);
+        ValidationResult productAndTypeValidationResult = paymentProductAndTypeValidator.validateTypeAndProduct(paymentType, paymentProduct);
         if (productAndTypeValidationResult.isNotValid()) {
             return productAndTypeValidationResult;
         }
@@ -72,8 +78,8 @@ public class CreatePaymentValidator implements BusinessValidator<CreatePaymentRe
             return psuDataValidationResult;
         }
 
-        Set<AccountReference> accountReferences = extractAccountReferencesFromPayment(paymentInitiationParameters.getPaymentProduct(),
-                                                                                      paymentInitiationParameters.getPaymentType(),
+        Set<AccountReference> accountReferences = extractAccountReferencesFromPayment(paymentProduct,
+                                                                                      paymentType,
                                                                                       createPaymentRequestObject.getPayment());
         ValidationResult supportedAccountReferenceValidationResult = supportedAccountReferenceValidator.validate(accountReferences);
         if (supportedAccountReferenceValidationResult.isNotValid()) {
