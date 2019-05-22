@@ -19,9 +19,7 @@ package de.adorsys.psd2.xs2a.service.validator;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
-import de.adorsys.psd2.xs2a.service.discovery.ServiceTypeDiscoveryService;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
-import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceTypeToErrorTypeMapper;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -37,16 +35,14 @@ import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.PRODUCT_UNKNOWN;
 @RequiredArgsConstructor
 public class PaymentTypeAndProductValidator implements BusinessValidator<PaymentInitiationParameters> {
 
-    private final ServiceTypeDiscoveryService serviceTypeDiscoveryService;
-    private final ServiceTypeToErrorTypeMapper errorTypeMapper;
     private final AspspProfileServiceWrapper aspspProfileServiceWrapper;
 
     @Override
     public @NotNull ValidationResult validate(@NotNull PaymentInitiationParameters parameters) {
-        return arePaymentTypeAndProductCorrect(parameters.getPaymentType(), parameters.getPaymentProduct());
+        return validatePaymentTypeAndProduct(parameters.getPaymentType(), parameters.getPaymentProduct());
     }
 
-    private ValidationResult arePaymentTypeAndProductCorrect(PaymentType paymentType, String paymentProduct) {
+    private ValidationResult validatePaymentTypeAndProduct(PaymentType paymentType, String paymentProduct) {
         Map<PaymentType, Set<String>> supportedPaymentTypeAndProductMatrix = aspspProfileServiceWrapper.getSupportedPaymentTypeAndProductMatrix();
 
         if (supportedPaymentTypeAndProductMatrix.containsKey(paymentType)) {
@@ -54,11 +50,11 @@ public class PaymentTypeAndProductValidator implements BusinessValidator<Payment
                 return ValidationResult.valid();
             }
             // Case when URL contains something like "/sepa-credit-transfers111/". Bad product.
-            ErrorType errorType = errorTypeMapper.mapToErrorType(serviceTypeDiscoveryService.getServiceType(), PRODUCT_UNKNOWN.getCode());
+            ErrorType errorType = ErrorType.PIS_404;
             return ValidationResult.invalid(errorType, TppMessageInformation.of(PRODUCT_UNKNOWN, "Wrong payment product: " + paymentProduct));
         }
         // Case when URL contains correct type "/v1/payments/", but it is not supported by ASPSP. Bad type.
-        ErrorType errorType = errorTypeMapper.mapToErrorType(serviceTypeDiscoveryService.getServiceType(), PARAMETER_NOT_SUPPORTED.getCode());
+        ErrorType errorType = ErrorType.PIS_400;
         return ValidationResult.invalid(errorType, TppMessageInformation.of(PARAMETER_NOT_SUPPORTED, "Wrong payment type: " + paymentType));
     }
 

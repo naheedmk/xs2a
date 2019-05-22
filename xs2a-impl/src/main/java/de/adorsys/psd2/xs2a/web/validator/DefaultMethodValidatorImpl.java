@@ -17,7 +17,9 @@
 package de.adorsys.psd2.xs2a.web.validator;
 
 import de.adorsys.psd2.xs2a.exception.MessageError;
+import de.adorsys.psd2.xs2a.web.validator.body.BodyValidator;
 import de.adorsys.psd2.xs2a.web.validator.constants.Xs2aHeaderConstant;
+import de.adorsys.psd2.xs2a.web.validator.header.HeaderValidator;
 import de.adorsys.psd2.xs2a.web.validator.header.XRequestIdHeaderValidatorImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 
 @Component
-public class DefaultMethodValidatorImpl extends AbstractMethodValidator {
+public class DefaultMethodValidatorImpl extends AbstractMethodValidator<HeaderValidator, BodyValidator> {
 
     private XRequestIdHeaderValidatorImpl xRequestIdHeaderValidator;
 
