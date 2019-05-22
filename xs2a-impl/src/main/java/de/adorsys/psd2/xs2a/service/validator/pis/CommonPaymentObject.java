@@ -27,6 +27,13 @@ import org.jetbrains.annotations.NotNull;
  */
 @Value
 public class CommonPaymentObject implements PaymentTypeAndInfoProvider {
+    //
+    // TODO: this validation should be implemented not only for the pisCommonPaymentResponse, but for all methods in the
+    //  payment controller including authorisation, cancellation etc. To do that we need to pass the PaymentType and PaymentProduct
+    //  from the controller to all those methods.
+    //  https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/849
+    //
+
     @NotNull
     private PisCommonPaymentResponse pisCommonPaymentResponse;
 
