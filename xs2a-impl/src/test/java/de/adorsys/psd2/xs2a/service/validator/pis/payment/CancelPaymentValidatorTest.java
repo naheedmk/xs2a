@@ -41,7 +41,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class CancelPaymentValidatorTest {
     private static final PaymentType PAYMENT_TYPE = PaymentType.SINGLE;
-    private static final PaymentType INVALID_PAYMENT_TYPE = PaymentType.BULK;
     private static final TppInfo TPP_INFO = buildTppInfo("authorisation number");
     private static final TppInfo INVALID_TPP_INFO = buildTppInfo("invalid authorisation number");
 
@@ -80,14 +79,8 @@ public class CancelPaymentValidatorTest {
 
         when(getCommonPaymentByIdResponseValidator.validateRequest(buildPisCommonPaymentResponse(TPP_INFO), PAYMENT_TYPE, CORRECT_PAYMENT_PRODUCT))
             .thenReturn(ValidationResult.valid());
-        when(getCommonPaymentByIdResponseValidator.validateRequest(buildPisCommonPaymentResponse(INVALID_TPP_INFO), PAYMENT_TYPE, CORRECT_PAYMENT_PRODUCT))
-            .thenReturn(ValidationResult.valid());
 
-        when(getCommonPaymentByIdResponseValidator.validateRequest(buildPisCommonPaymentResponse(TPP_INFO), INVALID_PAYMENT_TYPE, INVALID_PAYMENT_PRODUCT))
-            .thenReturn(ValidationResult.invalid(GET_COMMON_PAYMENT_VALIDATION_ERROR));
         when(getCommonPaymentByIdResponseValidator.validateRequest(buildPisCommonPaymentResponse(TPP_INFO), PAYMENT_TYPE, INVALID_PAYMENT_PRODUCT))
-            .thenReturn(ValidationResult.invalid(GET_COMMON_PAYMENT_VALIDATION_ERROR));
-        when(getCommonPaymentByIdResponseValidator.validateRequest(buildPisCommonPaymentResponse(INVALID_TPP_INFO), INVALID_PAYMENT_TYPE, INVALID_PAYMENT_PRODUCT))
             .thenReturn(ValidationResult.invalid(GET_COMMON_PAYMENT_VALIDATION_ERROR));
 
         when(paymentProductAndTypeValidator.validateTypeAndProduct(PAYMENT_TYPE, CORRECT_PAYMENT_PRODUCT))
@@ -159,6 +152,20 @@ public class CancelPaymentValidatorTest {
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
         assertEquals(TPP_VALIDATION_ERROR, validationResult.getMessageError());
+    }
+
+    @Test
+    public void validate_withWrongPaymentProduct_shouldReturnPaymentProductValidationError() {
+        // Given
+        PisCommonPaymentResponse commonPaymentResponse = buildPisCommonPaymentResponse(TPP_INFO);
+
+        // When
+        ValidationResult validationResult = cancelPaymentValidator.validate(new CancelPaymentPO(commonPaymentResponse, PAYMENT_TYPE, WRONG_PAYMENT_PRODUCT));
+
+        // Then
+        assertNotNull(validationResult);
+        assertTrue(validationResult.isNotValid());
+        assertEquals(PAYMENT_PRODUCT_VALIDATION_ERROR, validationResult.getMessageError());
     }
 
     private static TppInfo buildTppInfo(String authorisationNumber) {
