@@ -30,7 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+    imports = AuthenticationType.class)
 @DecoratedWith(AuthorisationMapperDecorator2.class)
 public abstract class AuthorisationMapper2 {
 
@@ -56,6 +57,12 @@ public abstract class AuthorisationMapper2 {
     public @NotNull ScaStatusResponse mapToScaStatusResponse(@NotNull ScaStatus scaStatus) {
         return new ScaStatusResponse().scaStatus(coreObjectsMapper.mapToModelScaStatus(scaStatus));
     }
+
+     @Mapping(target = "authenticationType", expression = "java( AuthenticationType.fromValue(xs2aAuthenticationObject.getAuthenticationType()) )")
+     abstract ChosenScaMethod mapToChosenScaMethod(Xs2aAuthenticationObject xs2aAuthenticationObject);
+
+    @Mapping(target = "authenticationType", expression = "java( AuthenticationType.fromValue(xs2aAuthenticationObject.getAuthenticationType()) )")
+    abstract AuthenticationObject mapToScaMethod(Xs2aAuthenticationObject xs2aAuthenticationObject);
 
     @IterableMapping(elementTargetType = AuthenticationObject.class, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
     abstract ScaMethods getAvailableScaMethods(List<Xs2aAuthenticationObject> availableScaMethods);

@@ -14,34 +14,26 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers;
+package de.adorsys.psd2.xs2a.web.mapper;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adorsys.psd2.model.*;
-import de.adorsys.psd2.xs2a.domain.Links;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthorisationSubResources;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationResponse;
-import de.adorsys.psd2.xs2a.web.mapper.CoreObjectsMapper;
-import de.adorsys.psd2.xs2a.web.mapper.HrefLinkMapper;
-import org.mapstruct.*;
+import org.mapstruct.IterableMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValueMappingStrategy;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring",
-    uses= {HrefLinkMapper.class, CoreObjectsMapper.class},
+    uses = {HrefLinkMapper.class, CoreObjectsMapper.class},
 
     imports = {HrefLinkMapper.class, AuthenticationType.class})
 //@DecoratedWith(AuthorisationMapperDecorator.class)
 public interface AuthorisationMapper1 {
     static final String HREF = "href";
-
 
     @Mapping(target = "authenticationType", expression = "java( AuthenticationType.fromValue(xs2aAuthenticationObject.getAuthenticationType()) )")
 //    @Mapping(target = "authenticationType", source = "xs2aAuthenticationObject", qualifiedByName = "mapToAuthenticationType")
@@ -50,7 +42,15 @@ public interface AuthorisationMapper1 {
     //    @Mapping(target = "authorisationIds", source = "xs2AAuthorisationSubResources.authorisationIds")
     Authorisations mapToAuthorisations(Xs2aAuthorisationSubResources xs2AAuthorisationSubResources);
 
-//    @Mapping(target = "", source = "")
+    @Mapping(target = "authenticationType", expression = "java( AuthenticationType.fromValue(xs2aAuthenticationObject.getAuthenticationType()) )")
+    AuthenticationObject mapToScaMethod(Xs2aAuthenticationObject xs2aAuthenticationObject);
+
+
+    @IterableMapping(elementTargetType = AuthenticationObject.class, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+//   @Mapping(target = "AuthenticationObject.authenticationType", expression = "java( AuthenticationType.fromValue(availableScaMethods.getAuthenticationType()) )")
+    ScaMethods getAvailableScaMethods(List<Xs2aAuthenticationObject> availableScaMethods);
+
+    //    @Mapping(target = "", source = "")
 //    Object mapToPisCreateOrUpdateAuthorisationResponse(ResponseObject responseObject);
 /*
     @Mapping(target = "scaMethods", ignore = true)
@@ -89,8 +89,4 @@ public interface AuthorisationMapper1 {
         }
         return AuthenticationType.fromValue(xs2aAuthenticationObject.getAuthenticationType()).toString();
     }
-
-   @IterableMapping(elementTargetType = AuthenticationObject.class, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
-    ScaMethods getAvailableScaMethods(List<Xs2aAuthenticationObject> availableScaMethods);
-
 }

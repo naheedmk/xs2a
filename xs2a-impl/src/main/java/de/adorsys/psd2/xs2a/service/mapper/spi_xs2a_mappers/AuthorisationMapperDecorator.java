@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers;
 
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationResponse;
+import de.adorsys.psd2.xs2a.web.mapper.AuthorisationMapper1;
 
 import java.util.HashMap;
 import java.util.Map;
