@@ -20,6 +20,7 @@ import de.adorsys.psd2.model.AuthenticationObject;
 import de.adorsys.psd2.model.Authorisations;
 import de.adorsys.psd2.model.ChosenScaMethod;
 import de.adorsys.psd2.model.ScaMethods;
+import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthorisationSubResources;
 import de.adorsys.psd2.xs2a.util.reader.JsonReader;
@@ -36,13 +37,13 @@ import static org.junit.Assert.assertEquals;
 
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {AuthorisationMapper1Impl.class, AuthorisationMapper2Impl_.class})
+@ContextConfiguration(classes = {AuthorisationMapper1Impl.class})
 public class AuthorisationMapperTest {
 
     @Autowired
     private AuthorisationMapper1 mapper;
-    @Autowired
-    private AuthorisationMapper2 mapper2;
+
+    private AuthorisationMapper2 mapper2 = new AuthorisationMapper2Impl_();
 
     private AuthorisationMapper oldMapper;
     private JsonReader jsonReader = new JsonReader();
@@ -50,6 +51,30 @@ public class AuthorisationMapperTest {
     @Before
     public void setUp() throws Exception {
         oldMapper = new AuthorisationMapper(null, null, null, null, null, null);
+    }
+
+    @Test
+    public void mapToAuthorisations_equals_success() {
+        Xs2aAuthorisationSubResources xs2AAuthorisationSubResources = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-Xs2aAutorisationSubResources.json", Xs2aAuthorisationSubResources.class);
+        Authorisations actualAuthorisations = mapper2.mapToAuthorisations(xs2AAuthorisationSubResources);
+
+        Authorisations expectedAuthorisations = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-Authorisations.json", Authorisations.class);
+
+        for (int i = 0; i < actualAuthorisations.getAuthorisationIds().size(); i++) {
+            assertEquals(expectedAuthorisations.getAuthorisationIds().get(i), actualAuthorisations.getAuthorisationIds().get(i));
+        }
+    }
+
+    @Test
+    public void mapToPisCreateOrUpdateAuthorisationResponse_for_Xs2aCreatePisAuthorisationResponse() {
+        ResponseObject xs2aCreatePisAuthorisationResponse = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-Xs2aAutorisationSubResources.json", ResponseObject.class);
+        Object body = xs2aCreatePisAuthorisationResponse.getBody();
+
+    }
+
+    @Test
+    public void mapToPisCreateOrUpdateAuthorisationResponse_for_Xs2aUpdatePisCommonPaymentPsuDataResponse() {
+
     }
 
     @Test
@@ -65,18 +90,6 @@ public class AuthorisationMapperTest {
         assertEquals(expectedChosenScaMethod.getName(), actualChosenScaMethod.getName());
         assertEquals(expectedChosenScaMethod.getExplanation(), actualChosenScaMethod.getExplanation());
         assertEquals(expectedChosenScaMethod.getAuthenticationVersion(), actualChosenScaMethod.getAuthenticationVersion());
-    }
-
-    @Test
-    public void mapToAuthorisations_equals_success() {
-        Xs2aAuthorisationSubResources xs2AAuthorisationSubResources = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-Xs2aAutorisationSubResources.json", Xs2aAuthorisationSubResources.class);
-        Authorisations actualAuthorisations = mapper2.mapToAuthorisations(xs2AAuthorisationSubResources);
-
-        Authorisations expectedAuthorisations = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-Authorisations.json", Authorisations.class);
-
-        for (int i = 0; i < actualAuthorisations.getAuthorisationIds().size(); i++) {
-            assertEquals(expectedAuthorisations.getAuthorisationIds().get(i), actualAuthorisations.getAuthorisationIds().get(i));
-        }
     }
 
     @Test
