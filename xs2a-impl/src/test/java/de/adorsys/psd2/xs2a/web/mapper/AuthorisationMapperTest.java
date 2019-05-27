@@ -16,10 +16,7 @@
 
 package de.adorsys.psd2.xs2a.web.mapper;
 
-import de.adorsys.psd2.model.AuthenticationObject;
-import de.adorsys.psd2.model.Authorisations;
-import de.adorsys.psd2.model.ChosenScaMethod;
-import de.adorsys.psd2.model.ScaMethods;
+import de.adorsys.psd2.model.*;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthorisationSubResources;
@@ -67,9 +64,10 @@ public class AuthorisationMapperTest {
 
     @Test
     public void mapToPisCreateOrUpdateAuthorisationResponse_for_Xs2aCreatePisAuthorisationResponse() {
-        ResponseObject xs2aCreatePisAuthorisationResponse = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-Xs2aAutorisationSubResources.json", ResponseObject.class);
-        Object body = xs2aCreatePisAuthorisationResponse.getBody();
+        ResponseObject xs2aCreatePisAuthorisationResponse = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-StartScaAprocessResponse-ResponseObject.json", ResponseObject.class);
+        Object actualStartScaprocessResponse = oldMapper.mapToPisCreateOrUpdateAuthorisationResponse(xs2aCreatePisAuthorisationResponse);
 
+        Object expectedStartScaprocessResponse = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-StartScaAprocessResponse-expected.json", StartScaprocessResponse.class);
     }
 
     @Test
