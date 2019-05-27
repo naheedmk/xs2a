@@ -1,0 +1,29 @@
+{
+  "authorisationId": "1",
+  "scaStatus": "RECEIVED",
+  "paymentType": "SINGLE",
+  "links": {
+    "scaRedirect": "https:\\scaRedirect",
+    "updatePsuIdentification": "https:\\updatePsuIdentification",
+    "updateProprietaryData": "https:\\updateProprietaryData",
+    "updatePsuAuthentication": "https:\\updatePsuAuthentication",
+    "selectAuthenticationMethod": "https:\\selectAuthenticationMethod",
+    "self": "",
+    "status": "https:\\status",
+    "account": "https:\\account",
+    "balances": "https:\\balances",
+    "transactions": "https:\\transactions",
+    "first": "https:\\first",
+    "next": "https:\\next",
+    "previous": "https:\\previous",
+    "last": "https:\\last",
+    "download": "https:\\download",
+    "startAuthorisation": "startAuthorisation",
+    "startAuthorisationWithPsuIdentification": "https:\\startAuthorisationWithPsuIdentification",
+    "startAuthorisationWithPsuAuthentication": "https:\\startAuthorisationWithPsuAuthentication",
+    "startAuthorisationWithAuthenticationMethodSelection": "https:\\startAuthorisationWithAuthenticationMethodSelection",
+    "startAuthorisationWithTransactionAuthorisation": "https:\\startAuthorisationWithTransactionAuthorisation",
+    "scaStatus": "https:\\scaStatus",
+    "authoriseTransaction": "https:\\authoriseTransaction"
+  }
+}

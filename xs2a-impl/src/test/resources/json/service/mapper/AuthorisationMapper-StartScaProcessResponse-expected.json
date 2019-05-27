@@ -1,0 +1,32 @@
+{
+  "scaStatus": "RECEIVED",
+  "authorisationId": "1",
+  "scaMethods": "",
+  "chosenScaMethod": "",
+  "challengeData": "",
+  "_links": {
+    "scaRedirect": {"href": "https:\\scaRedirect"},
+    "updatePsuIdentification": {"href": "https:\\updatePsuIdentification"},
+    "updateProprietaryData": {"href": "https:\\updateProprietaryData"},
+    "updatePsuAuthentication": {"href": "https:\\updatePsuAuthentication"},
+    "selectAuthenticationMethod": {"href": "https:\\selectAuthenticationMethod"},
+    "self": "",
+    "status": {"href": "https:\\status"},
+    "account": {"href": "https:\\account"},
+    "balances": {"href": "https:\\balances"},
+    "transactions": {"href": "https:\\transactions"},
+    "first": {"href": "https:\\first"},
+    "next": {"href": "https:\\next"},
+    "previous": {"href": "https:\\previous"},
+    "last": {"href": "https:\\last"},
+    "download": {"href": "https:\\download"},
+    "startAuthorisation": {"href": "https:\\startAuthorisation"},
+    "startAuthorisationWithPsuIdentification": {"href": "https:\\startAuthorisationWithPsuIdentification"},
+    "startAuthorisationWithPsuAuthentication": {"href": "https:\\startAuthorisationWithPsuAuthentication"},
+    "startAuthorisationWithAuthenticationMethodSelection": {"href": "https:\\startAuthorisationWithAuthenticationMethodSelection"},
+    "startAuthorisationWithTransactionAuthorisation": {"href": "https:\\startAuthorisationWithTransactionAuthorisation"},
+    "scaStatus": {"href": "https:\\scaStatus"},
+    "authoriseTransaction": {"href": "https:\\authoriseTransaction"}
+  },
+  "psuMessage": ""
+}

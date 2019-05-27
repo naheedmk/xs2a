@@ -20,6 +20,7 @@ import de.adorsys.psd2.model.*;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthorisationSubResources;
+import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationResponse;
 import de.adorsys.psd2.xs2a.util.reader.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,10 +65,16 @@ public class AuthorisationMapperTest {
 
     @Test
     public void mapToPisCreateOrUpdateAuthorisationResponse_for_Xs2aCreatePisAuthorisationResponse() {
-        ResponseObject xs2aCreatePisAuthorisationResponse = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-StartScaAprocessResponse-ResponseObject.json", ResponseObject.class);
-        Object actualStartScaprocessResponse = oldMapper.mapToPisCreateOrUpdateAuthorisationResponse(xs2aCreatePisAuthorisationResponse);
 
-        Object expectedStartScaprocessResponse = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-StartScaAprocessResponse-expected.json", StartScaprocessResponse.class);
+        Xs2aCreatePisAuthorisationResponse xs2aCreatePisAuthorisationResponse = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-StartScaProcessResponse-ResponseObject.json", Xs2aCreatePisAuthorisationResponse.class);
+        ResponseObject<Xs2aCreatePisAuthorisationResponse> responseObject = ResponseObject.<Xs2aCreatePisAuthorisationResponse>builder()
+                                                                                .body(xs2aCreatePisAuthorisationResponse)
+                                                                                .build();
+        Object actualStartScaprocessResponse = oldMapper.mapToPisCreateOrUpdateAuthorisationResponse(responseObject);
+
+        Object expectedStartScaProcessResponse = jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-StartScaProcessResponse-expected.json", StartScaprocessResponse.class);
+
+        assertEquals(expectedStartScaProcessResponse, actualStartScaprocessResponse);
     }
 
     @Test
