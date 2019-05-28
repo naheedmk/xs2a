@@ -1,7 +1,49 @@
 {
-  "authorisationId": "1",
+  "errorHolder": null,
+  "psuMessage": "some message",
+  "paymentId": "p1",
+  "authorisationId": "a1",
   "scaStatus": "received",
-  "paymentType": "payments",
+  "availableScaMethods": [
+    {
+      "authenticationType": "SMS_OTP",
+      "authenticationVersion": "1",
+      "authenticationMethodId": "sms",
+      "name": "sms_name",
+      "explanation": "sms explanation"
+    },
+    {
+      "authenticationType": "PUSH_OTP",
+      "authenticationVersion": "1",
+      "authenticationMethodId": "push",
+      "name": "mobile",
+      "explanation": "push explanation"
+    },
+    {
+      "authenticationType": "FLASH",
+      "authenticationVersion": "1",
+      "authenticationMethodId": "card",
+      "name": "flash-card",
+      "explanation": "flash-card explanation"
+    },
+    {
+    }
+  ],
+  "chosenScaMethod": {
+    "authenticationType": "SMS_OTP",
+    "authenticationVersion": "1",
+    "authenticationMethodId": "sms",
+    "name": "sms_name",
+    "explanation": "sms explanation"
+  },
+  "challengeData": {
+    "image": null,
+    "data": "some data",
+    "imageLink": "some link",
+    "otpMaxLength": 1,
+    "otpFormat": null,
+    "additionalInformation": "some info"
+  },
   "links": {
     "scaRedirect": "https:\\scaRedirect",
     "updatePsuIdentification": "https:\\updatePsuIdentification",
@@ -25,5 +67,6 @@
     "startAuthorisationWithTransactionAuthorisation": "https:\\startAuthorisationWithTransactionAuthorisation",
     "scaStatus": "https:\\scaStatus",
     "authoriseTransaction": "https:\\authoriseTransaction"
-  }
+  },
+  "psuData": null
 }

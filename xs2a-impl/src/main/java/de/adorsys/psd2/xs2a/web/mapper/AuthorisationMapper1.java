@@ -47,42 +47,8 @@ public interface AuthorisationMapper1 {
 
 
     @IterableMapping(elementTargetType = AuthenticationObject.class, nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
-//   @Mapping(target = "AuthenticationObject.authenticationType", expression = "java( AuthenticationType.fromValue(availableScaMethods.getAuthenticationType()) )")
     ScaMethods getAvailableScaMethods(List<Xs2aAuthenticationObject> availableScaMethods);
 
-    //    @Mapping(target = "", source = "")
-//    Object mapToPisCreateOrUpdateAuthorisationResponse(ResponseObject responseObject);
-/*
-    @Mapping(target = "scaMethods", ignore = true)
-    @Mapping(target = "chosenScaMethod", ignore = true)
-    @Mapping(target = "challengeData", ignore = true)
-    @Mapping(target = "psuMessage", ignore = true)
-//    @Mapping(target = "scaStatus", expression = "java( CoreObjectsMapper.mapToModelScaStatus(response.getScaStatus()))")
-//    @Mapping(target = "_links", source = "response.links")
-    @Mapping(target = "_links", resultType = Map.class, source = "response", qualifiedByName = "mapToLinks")
-//    @Mapping(target = "links", ignore = true)
-//    @Mapping(target = "_links", source = "links", resultType = Map.class)
-//    @Mapping(target = "_links", source = "response", qualifiedByName = "mapToLinks")
-    StartScaprocessResponse mapToStartScaProcessResponseFromPis(Xs2aCreatePisAuthorisationResponse response);
-
-//    default Map mapToLinks(Xs2aCreatePisAuthorisationResponse response) {
-//       return new HrefLinkMapper().mapToLinksMap(response.getLinks());
-//    }
-
-    default Map<String, Map<String, String>> mapToLinksMap(Xs2aCreatePisAuthorisationResponse response) {
-        if (response.getLinks() == null) {
-            return null;
-        }
-
-        Map<String, String> linksMap = new ObjectMapper().convertValue(response.getLinks(), new TypeReference<Map<String, String>>() {
-        });
-        return linksMap
-                   .entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey,
-                e -> Collections.singletonMap(HREF, e.getValue())
-            ));
-    }
-*/
     default String mapToAuthenticationType1(Xs2aAuthenticationObject xs2aAuthenticationObject) {
         if (true) {
 
