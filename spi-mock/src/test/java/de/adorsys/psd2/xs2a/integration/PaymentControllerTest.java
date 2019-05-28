@@ -20,11 +20,15 @@ package de.adorsys.psd2.xs2a.integration;
 import de.adorsys.aspsp.xs2a.spi.ASPSPXs2aApplication;
 import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.CmsAuthorisationType;
+import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationResponse;
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentRequest;
+import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.consent.api.service.EventServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.xs2a.config.*;
+import de.adorsys.psd2.xs2a.core.consent.AspspConsentData;
 import de.adorsys.psd2.xs2a.core.event.Event;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
@@ -32,16 +36,19 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.ResponseObject;
-import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
-import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.integration.builder.AspspSettingsBuilder;
+import de.adorsys.psd2.xs2a.integration.builder.PisPaymentInfoBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.TppInfoBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.payment.PisCommonPaymentResponseBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
-import de.adorsys.psd2.xs2a.service.payment.CreateSinglePaymentService;
+import de.adorsys.psd2.xs2a.service.consent.PisAspspDataService;
+import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
+import de.adorsys.psd2.xs2a.spi.domain.payment.SpiSinglePayment;
+import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiSinglePaymentInitiationResponse;
+import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
+import de.adorsys.psd2.xs2a.spi.service.SinglePaymentSpi;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +71,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -114,7 +122,9 @@ public class PaymentControllerTest {
     @MockBean
     private PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
     @MockBean
-    private CreateSinglePaymentService createSinglePaymentService;
+    private SinglePaymentSpi singlePaymentSpi;
+    @MockBean
+    private PisAspspDataService pisAspspDataService;
 
     @Before
     public void init() {
@@ -171,12 +181,24 @@ public class PaymentControllerTest {
     }
 
     @Test
-    public void getPaymentInitiationEmbeddedScaStatus_multilevelScaTrue_successful() throws Exception {
+    public void initiatePaymentEmbeddedScaStatus_multilevelScaTrue_successful() throws Exception {
         // Given
         String request = IOUtils.resourceToString(PAYMENT_REQ, UTF_8);
 
-        given(createSinglePaymentService.createPayment(any(SinglePayment.class), any(PaymentInitiationParameters.class), eq(TPP_INFO)))
-            .willReturn(ResponseObject.<SinglePaymentInitiationResponse>builder().body(buildSinglePaymentInitiationResponse()).build());
+        SpiSinglePaymentInitiationResponse spiSinglePaymentInitiationResponse = new SpiSinglePaymentInitiationResponse();
+        spiSinglePaymentInitiationResponse.setMultilevelScaRequired(true);
+        given(singlePaymentSpi.initiatePayment(any(SpiContextData.class), any(SpiSinglePayment.class), eq(AspspConsentData.emptyConsentData())))
+            .willReturn(SpiResponse.<SpiSinglePaymentInitiationResponse>builder()
+                            .payload(spiSinglePaymentInitiationResponse)
+                            .aspspConsentData(AspspConsentData.emptyConsentData())
+                            .success());
+
+        PisPaymentInfo pisPaymentInfo = PisPaymentInfoBuilder.buildPisPaymentInfo(SEPA_PAYMENT_PRODUCT, SINGLE_PAYMENT_TYPE, true);
+        given(pisCommonPaymentServiceEncrypted.createCommonPayment(pisPaymentInfo))
+            .willReturn(Optional.of(new CreatePisCommonPaymentResponse(ENCRYPT_PAYMENT_ID)));
+        willDoNothing().given(pisAspspDataService).updateAspspConsentData(any(AspspConsentData.class));
+        willDoNothing().given(pisCommonPaymentServiceEncrypted).updateCommonPayment(any(PisCommonPaymentRequest.class), eq(ENCRYPT_PAYMENT_ID));
+
         given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(EMBEDDED_SCA_APPROACH));
         given(pisCommonPaymentServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, CmsAuthorisationType.CREATED))
             .willReturn(Optional.of(new AuthorisationScaApproachResponse(EMBEDDED_SCA_APPROACH)));
