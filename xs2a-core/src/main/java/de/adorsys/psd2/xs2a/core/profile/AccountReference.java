@@ -27,8 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Comparator;
 import java.util.Currency;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data
@@ -101,12 +101,9 @@ public class AccountReference {
 
     @JsonIgnore
     public Set<AccountReferenceType> getUsedAccountReferenceFields() {
-        Set<AccountReferenceType> usedFields = new HashSet<>();
-        Stream.of(AccountReferenceType.values()).forEach(type -> {
-            if (StringUtils.isNotBlank(type.getFieldValue(this))) {
-                usedFields.add(type);
-            }
-        });
-        return usedFields;
+        return Stream.of(AccountReferenceType.values())
+                   .filter(type -> StringUtils.isNotBlank(type.getFieldValue(this)))
+                   .collect(Collectors.toSet());
+
     }
 }
