@@ -197,6 +197,16 @@ public class AuthorisationMapper {
     }
 
     ChosenScaMethod mapToChosenScaMethod(Xs2aAuthenticationObject xs2aAuthenticationObject) {
-        return authorisationMapper1.mapToChosenScaMethod(xs2aAuthenticationObject);
+//        return authorisationMapper1.mapToChosenScaMethod(xs2aAuthenticationObject);
+        return Optional.ofNullable(xs2aAuthenticationObject)
+                   .map(ch -> {
+                       ChosenScaMethod method = new ChosenScaMethod();
+                       method.setAuthenticationMethodId(ch.getAuthenticationMethodId());
+                       method.setAuthenticationType(AuthenticationType.fromValue(ch.getAuthenticationType()));
+                       method.setAuthenticationVersion(ch.getAuthenticationVersion());
+                       method.setName(ch.getName());
+                       method.setExplanation(ch.getExplanation());
+                       return method;
+                   }).orElse(null);
     }
 }
