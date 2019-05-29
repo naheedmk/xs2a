@@ -42,17 +42,16 @@ import de.adorsys.psd2.xs2a.integration.builder.AspspSettingsBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.TppInfoBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
-import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
-import de.adorsys.psd2.xs2a.service.validator.pis.CommonPaymentObject;
-import de.adorsys.psd2.xs2a.service.validator.pis.authorisation.initiation.CreatePisAuthorisationValidator;
-import de.adorsys.psd2.xs2a.service.validator.pis.authorisation.initiation.UpdatePisCommonPaymentPsuDataPO;
-import de.adorsys.psd2.xs2a.service.validator.pis.authorisation.initiation.UpdatePisCommonPaymentPsuDataValidator;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiScaConfirmation;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthenticationObject;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthorisationStatus;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPaymentInfo;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentExecutionResponse;
+import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.CommonPaymentSpi;
+import de.adorsys.psd2.xs2a.spi.service.PaymentAuthorisationSpi;
+import de.adorsys.psd2.xs2a.spi.service.SpiPayment;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
@@ -75,6 +74,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -102,11 +102,13 @@ public class PaymentStartAuthorisationIT {
     private static final String SEPA_PAYMENT_PRODUCT = "sepa-credit-transfers";
     private static final PaymentType SINGLE_PAYMENT_TYPE = PaymentType.SINGLE;
     private static final String PAYMENT_ID = "DfLtDOgo1tTK6WQlHlb-TMPL2pkxRlhZ4feMa5F4tOWwNN45XLNAVfWwoZUKlQwb_=_bS6p6XvTWI";
-    private static final String INTERNAL_ID = "gfd56ea7-8e3e-474f-b5ea-2b89346cb6kd";
     private static final String CONSENT_ID = "c966f143-f6a2-41db-9036-8abaeeef3af7";
     private static final TppInfo TPP_INFO = TppInfoBuilder.buildTppInfo();
     private static final String PSU_ID = "PSU-123";
     private static final String AUTHORISATION_ID = "e8356ea7-8e3e-474f-b5ea-2b89346cb2dc";
+    private static final String PSU_PASS = "09876";
+
+
     private static final String AUTH_REQ = "/json/payment/req/auth_request.json";
     private static final String AUTH_RESP = "/json/payment/res/explicit/auth_response.json";
 
@@ -117,10 +119,6 @@ public class PaymentStartAuthorisationIT {
     private TppService tppService;
     @MockBean
     private TppStopListService tppStopListService;
-    @MockBean
-    private CreatePisAuthorisationValidator createPisAuthorisationValidator;
-    @MockBean
-    private UpdatePisCommonPaymentPsuDataValidator updatePisCommonPaymentPsuDataValidator;
     @MockBean
     private AspspProfileService aspspProfileService;
     @MockBean
@@ -133,6 +131,8 @@ public class PaymentStartAuthorisationIT {
     private CommonPaymentSpi commonPaymentSpi;
     @MockBean
     private UpdatePaymentStatusAfterSpiServiceEncrypted updatePaymentStatusAfterSpiService;
+    @MockBean
+    private PaymentAuthorisationSpi paymentAuthorisationSpi;
 
     @Captor
     private ArgumentCaptor<CreatePisAuthorisationRequest> createPisAuthorisationRequestCaptor;
@@ -151,9 +151,6 @@ public class PaymentStartAuthorisationIT {
         given(tppService.getTppId()).willReturn(TPP_INFO.getAuthorisationNumber());
         given(tppStopListService.checkIfTppBlocked(TppInfoBuilder.buildTppUniqueParamsHolder())).willReturn(false);
         given(aspspProfileService.getAspspSettings()).willReturn(AspspSettingsBuilder.buildAspspSettings());
-
-        given(createPisAuthorisationValidator.validate(any(CommonPaymentObject.class))).willReturn(ValidationResult.valid());
-        given(updatePisCommonPaymentPsuDataValidator.validate(any(UpdatePisCommonPaymentPsuDataPO.class))).willReturn(ValidationResult.valid());
     }
 
     @Test
@@ -167,24 +164,35 @@ public class PaymentStartAuthorisationIT {
 
         given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(ScaApproach.EMBEDDED));
         given(pisCommonPaymentServiceEncrypted.createAuthorization(eq(PAYMENT_ID), createPisAuthorisationRequestCaptor.capture()))
-            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, ScaStatus.SCAMETHODSELECTED)));
+            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, ScaStatus.PSUIDENTIFIED)));
 
         given(pisCommonPaymentServiceEncrypted.getPisAuthorisationById(AUTHORISATION_ID))
-            .willReturn(Optional.of(buildGetPisAuthorisationResponse(ScaStatus.SCAMETHODSELECTED)));
+            .willReturn(Optional.of(buildGetPisAuthorisationResponse(ScaStatus.PSUIDENTIFIED)));
         given(pisCommonPaymentServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, CmsAuthorisationType.CREATED))
             .willReturn(Optional.of(new AuthorisationScaApproachResponse(ScaApproach.EMBEDDED)));
 
         AspspConsentData aspspConsentData = new AspspConsentData("data".getBytes(), CONSENT_ID);
         given(aspspDataService.readAspspConsentData(PAYMENT_ID)).willReturn(Optional.of(aspspConsentData));
-        given(pisCommonPaymentServiceEncrypted.getDecryptedId(PAYMENT_ID)).willReturn(Optional.of(INTERNAL_ID));
 
-        given(commonPaymentSpi.verifyScaAuthorisationAndExecutePayment(any(SpiContextData.class), any(SpiScaConfirmation.class),
-            any(SpiPaymentInfo.class), any(AspspConsentData.class)))
-            .willReturn(SpiResponse.<SpiPaymentExecutionResponse>builder()
-                .payload(new SpiPaymentExecutionResponse(TransactionStatus.ACCP))
-                .aspspConsentData(aspspConsentData)
-                .success());
+        given(paymentAuthorisationSpi.authorisePsu(any(SpiContextData.class), any(SpiPsuData.class), eq(PSU_PASS), any(SpiPayment.class), eq(aspspConsentData)))
+            .willReturn(SpiResponse.<SpiAuthorisationStatus>builder()
+                            .payload(SpiAuthorisationStatus.SUCCESS)
+                            .aspspConsentData(aspspConsentData)
+                            .success());
+        given(paymentAuthorisationSpi.requestAvailableScaMethods(any(SpiContextData.class), any(SpiPayment.class), eq(aspspConsentData)))
+            .willReturn(SpiResponse.<List<SpiAuthenticationObject>>builder()
+                            .payload(Collections.emptyList())
+                            .aspspConsentData(aspspConsentData)
+                            .success());
         given(aspspDataService.updateAspspConsentData(any(AspspConsentData.class))).willReturn(true);
+
+
+        given(commonPaymentSpi.executePaymentWithoutSca(any(SpiContextData.class), any(SpiPaymentInfo.class), eq(aspspConsentData)))
+            .willReturn(SpiResponse.<SpiPaymentExecutionResponse>builder()
+                            .payload(new SpiPaymentExecutionResponse(TransactionStatus.ACCP))
+                            .aspspConsentData(aspspConsentData)
+                            .success());
+        given(aspspDataService.updateAspspConsentData(eq(aspspConsentData))).willReturn(true);
         given(updatePaymentStatusAfterSpiService.updatePaymentStatus(PAYMENT_ID, TransactionStatus.ACCP)).willReturn(true);
 
         MockHttpServletRequestBuilder requestBuilder = post(UrlBuilder.buildPaymentStartAuthorisationUrl(
@@ -221,6 +229,8 @@ public class PaymentStartAuthorisationIT {
     private PisCommonPaymentResponse buildPisCommonPaymentResponse() {
         PisCommonPaymentResponse pisCommonPaymentResponse = new PisCommonPaymentResponse();
         pisCommonPaymentResponse.setTppInfo(TPP_INFO);
+        pisCommonPaymentResponse.setPaymentType(SINGLE_PAYMENT_TYPE);
+        pisCommonPaymentResponse.setPaymentProduct(SEPA_PAYMENT_PRODUCT);
         return pisCommonPaymentResponse;
     }
 }
