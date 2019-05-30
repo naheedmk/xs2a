@@ -21,15 +21,11 @@ import de.adorsys.aspsp.xs2a.spi.ASPSPXs2aApplication;
 import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.AspspDataService;
 import de.adorsys.psd2.consent.api.CmsAuthorisationType;
-import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationResponse;
-import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentRequest;
-import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.consent.api.service.EventServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.xs2a.config.*;
-import de.adorsys.psd2.xs2a.core.consent.AspspConsentData;
 import de.adorsys.psd2.xs2a.core.event.Event;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
@@ -38,15 +34,10 @@ import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.integration.builder.AspspSettingsBuilder;
-import de.adorsys.psd2.xs2a.integration.builder.PisPaymentInfoBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.TppInfoBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.payment.PisCommonPaymentResponseBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
-import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
-import de.adorsys.psd2.xs2a.spi.domain.payment.SpiSinglePayment;
-import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiSinglePaymentInitiationResponse;
-import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.SinglePaymentSpi;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -70,9 +61,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -100,12 +89,9 @@ public class PaymentControllerTest {
     private static final String CANCELLATION_ID = "cancellationId";
     private static final TppInfo TPP_INFO = TppInfoBuilder.buildTppInfo();
     private static final ScaApproach REDIRECT_SCA_APPROACH = ScaApproach.REDIRECT;
-    private static final ScaApproach EMBEDDED_SCA_APPROACH = ScaApproach.EMBEDDED;
     private HttpHeaders httpHeadersExplicit = new HttpHeaders();
 
     private static final String CANCELLATION_AUTHORISATIONS_RESP = "/json/payment/res/explicit/SinglePaymentCancellationAuth_response.json";
-    private static final String PAYMENT_REQ = "/json/payment/req/SinglePaymentInitiate_request.json";
-    private static final String PAYMENT_RESP = "/json/payment/res/explicit/SinglePaymentInitiate_response.json";
 
     @Autowired
     private MockMvc mockMvc;
@@ -177,43 +163,6 @@ public class PaymentControllerTest {
         resultActions.andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(content().json("{\"scaStatus\":\"received\"}"));
-    }
-
-    @Test
-    public void initiatePaymentEmbeddedScaStatus_multilevelScaTrue_successful() throws Exception {
-        // Given
-        String request = IOUtils.resourceToString(PAYMENT_REQ, UTF_8);
-
-        SpiSinglePaymentInitiationResponse spiSinglePaymentInitiationResponse = new SpiSinglePaymentInitiationResponse();
-        spiSinglePaymentInitiationResponse.setMultilevelScaRequired(true);
-        given(singlePaymentSpi.initiatePayment(any(SpiContextData.class), any(SpiSinglePayment.class), eq(AspspConsentData.emptyConsentData())))
-            .willReturn(SpiResponse.<SpiSinglePaymentInitiationResponse>builder()
-                            .payload(spiSinglePaymentInitiationResponse)
-                            .aspspConsentData(AspspConsentData.emptyConsentData())
-                            .success());
-
-        PisPaymentInfo pisPaymentInfo = PisPaymentInfoBuilder.buildPisPaymentInfo(SEPA_PAYMENT_PRODUCT, SINGLE_PAYMENT_TYPE, true);
-        given(pisCommonPaymentServiceEncrypted.createCommonPayment(pisPaymentInfo))
-            .willReturn(Optional.of(new CreatePisCommonPaymentResponse(ENCRYPT_PAYMENT_ID)));
-        given(aspspDataService.updateAspspConsentData(any(AspspConsentData.class))).willReturn(true);
-        willDoNothing().given(pisCommonPaymentServiceEncrypted).updateCommonPayment(any(PisCommonPaymentRequest.class), eq(ENCRYPT_PAYMENT_ID));
-
-        given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(EMBEDDED_SCA_APPROACH));
-        given(pisCommonPaymentServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, CmsAuthorisationType.CREATED))
-            .willReturn(Optional.of(new AuthorisationScaApproachResponse(EMBEDDED_SCA_APPROACH)));
-
-
-        MockHttpServletRequestBuilder requestBuilder = post(UrlBuilder.buildInitiatePaymentUrl(SINGLE_PAYMENT_TYPE.getValue(), SEPA_PAYMENT_PRODUCT));
-        requestBuilder.headers(httpHeadersExplicit);
-        requestBuilder.content(request);
-
-        // When
-        ResultActions resultActions = mockMvc.perform(requestBuilder);
-
-        //Then
-        resultActions.andExpect(status().isCreated())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(content().json(IOUtils.resourceToString(PAYMENT_RESP, UTF_8)));
     }
 
     @Test
