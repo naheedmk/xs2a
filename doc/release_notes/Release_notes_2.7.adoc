@@ -5,7 +5,7 @@
 * Bugfix: Validate `entryReferenceFrom` and `deltaList` parameters in `Read Transaction List` request
 * Bugfix: Сreate consent request and update PSU authorisation request returns empty list of scaMethods in response
 * Bugfix: Validate `bookingStatus` query parameter in `Read Transaction List` request
-* Bugfix: `CreditorAddress` property is provided to the SPI in payment object even if it was not present in the request
+* Bugfix: `creditorAddress` property is provided to the SPI in payment object even if it was not present in the request
 
 == Bugfix: Consent-related endpoints return incorrect HTTP status code on providing unknown consent ID
 From now on, AIS endpoints that take consent ID as a path parameter will return `CONSENT_UNKNOWN` error with HTTP status
@@ -41,7 +41,7 @@ From now on, mandatory `bookingStatus` query parameter is being validated in `Re
 (`GET /v1/accounts/{account-id}/transactions {query-parameters}`).
 To be considered valid, this parameter should be present in request and have a valid value (`booked`, `pending` or `both`).
 
-== Bugfix: `CreditorAddress` property is provided to the SPI in payment object even if it was not present in the request
+== Bugfix: `creditorAddress` property is provided to the SPI in payment object even if it was not present in the request
 
-Parameter `CreditorAddress` in `de.adorsys.psd2.xs2a.spi.domain.payment.SpiSinglePayment` and `de.adorsys.psd2.xs2a.spi.domain.payment.SpiPeriodicPayment`
+Parameter `creditorAddress` in `de.adorsys.psd2.xs2a.spi.domain.payment.SpiSinglePayment` and `de.adorsys.psd2.xs2a.spi.domain.payment.SpiPeriodicPayment`
 will be to set to null if it is absent in the `initiatePayment` request (`POST /v1/{payment-service}/{payment-product}`)
