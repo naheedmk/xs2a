@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.web.validator.path;
+package de.adorsys.psd2.xs2a.web.validator.query;
 
 import de.adorsys.psd2.xs2a.domain.MessageErrorCode;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
-import de.adorsys.psd2.xs2a.web.validator.path.account.BookingStatusPathParameterValidatorImpl;
+import de.adorsys.psd2.xs2a.web.validator.query.account.BookingStatusQueryParameterParamsValidatorImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,17 +38,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BookingStatusPathParameterValidatorImplTest {
+public class BookingStatusQueryParameterValidatorImplTest {
     private static final String BOOKING_STATUS_PARAMETER_NAME = "bookingStatus";
 
     @InjectMocks
-    private BookingStatusPathParameterValidatorImpl bookingStatusValidator;
+    private BookingStatusQueryParameterParamsValidatorImpl bookingStatusValidator;
     @Mock
     private ErrorBuildingService errorBuildingService;
     @Mock
     private MessageError messageError;
 
-    private Map<String, List<String>> pathParams = new HashMap<>();
+    private Map<String, List<String>> queryParams = new HashMap<>();
 
     @Before
     public void setUp() {
@@ -59,10 +59,10 @@ public class BookingStatusPathParameterValidatorImplTest {
     @Test
     public void validate_withCorrectValue_shouldNotEnrichError() {
         // Given
-        pathParams.put(BOOKING_STATUS_PARAMETER_NAME, Collections.singletonList("booked"));
+        queryParams.put(BOOKING_STATUS_PARAMETER_NAME, Collections.singletonList("booked"));
 
         // When
-        bookingStatusValidator.validate(pathParams, messageError);
+        bookingStatusValidator.validate(queryParams, messageError);
 
         // Then
         verify(errorBuildingService, never()).buildErrorType();
@@ -77,7 +77,7 @@ public class BookingStatusPathParameterValidatorImplTest {
         ArgumentCaptor<MessageError> messageErrorCaptor = ArgumentCaptor.forClass(MessageError.class);
 
         // When
-        bookingStatusValidator.validate(pathParams, messageError);
+        bookingStatusValidator.validate(queryParams, messageError);
 
         // Then
         verify(errorBuildingService).buildErrorType();
@@ -91,11 +91,11 @@ public class BookingStatusPathParameterValidatorImplTest {
     @Test
     public void validate_withBlankValue_shouldEnrichError() {
         // Given
-        pathParams.put(BOOKING_STATUS_PARAMETER_NAME, Collections.singletonList(""));
+        queryParams.put(BOOKING_STATUS_PARAMETER_NAME, Collections.singletonList(""));
         ArgumentCaptor<MessageError> messageErrorCaptor = ArgumentCaptor.forClass(MessageError.class);
 
         // When
-        bookingStatusValidator.validate(pathParams, messageError);
+        bookingStatusValidator.validate(queryParams, messageError);
 
         // Then
         verify(errorBuildingService).buildErrorType();
@@ -109,11 +109,11 @@ public class BookingStatusPathParameterValidatorImplTest {
     @Test
     public void validate_withInvalidValue_shouldEnrichError() {
         // Given
-        pathParams.put(BOOKING_STATUS_PARAMETER_NAME, Collections.singletonList("invalid value"));
+        queryParams.put(BOOKING_STATUS_PARAMETER_NAME, Collections.singletonList("invalid value"));
         ArgumentCaptor<String> errorTextCaptor = ArgumentCaptor.forClass(String.class);
 
         // When
-        bookingStatusValidator.validate(pathParams, messageError);
+        bookingStatusValidator.validate(queryParams, messageError);
 
         // Then
         verify(errorBuildingService, never()).buildErrorType();
@@ -127,11 +127,11 @@ public class BookingStatusPathParameterValidatorImplTest {
     @Test
     public void validate_withMultipleValues_shouldEnrichError() {
         // Given
-        pathParams.put(BOOKING_STATUS_PARAMETER_NAME, Arrays.asList("booked", "pending"));
+        queryParams.put(BOOKING_STATUS_PARAMETER_NAME, Arrays.asList("booked", "pending"));
         ArgumentCaptor<MessageError> messageErrorCaptor = ArgumentCaptor.forClass(MessageError.class);
 
         // When
-        bookingStatusValidator.validate(pathParams, messageError);
+        bookingStatusValidator.validate(queryParams, messageError);
 
         // Then
         verify(errorBuildingService).buildErrorType();

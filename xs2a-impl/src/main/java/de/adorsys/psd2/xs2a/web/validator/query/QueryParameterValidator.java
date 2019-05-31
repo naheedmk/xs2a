@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.web.validator.path.account;
+package de.adorsys.psd2.xs2a.web.validator.query;
 
-import de.adorsys.psd2.xs2a.web.validator.path.PathParameterValidator;
+import de.adorsys.psd2.xs2a.exception.MessageError;
 
-/**
- * Path parameters validator for Read Transaction List request
- */
-public interface TransactionListPathValidator extends PathParameterValidator {
+import java.util.List;
+import java.util.Map;
+
+public interface QueryParameterValidator {
+    /**
+     * Validates query parameters from the request and populates given error with error text if parameters are invalid
+     *
+     * @param queryParameterMap query parameters from the request, with query parameter names acting as keys
+     * @param messageError     error to be populated
+     */
+    void validate(Map<String, List<String>> queryParameterMap, MessageError messageError);
 }

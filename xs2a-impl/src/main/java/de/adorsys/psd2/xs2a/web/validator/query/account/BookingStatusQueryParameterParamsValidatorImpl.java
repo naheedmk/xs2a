@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.web.validator.path.account;
+package de.adorsys.psd2.xs2a.web.validator.query.account;
 
 import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
-import de.adorsys.psd2.xs2a.web.validator.path.AbstractPathParameterValidatorImpl;
+import de.adorsys.psd2.xs2a.web.validator.query.AbstractQueryParameterValidatorImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,32 +28,32 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class BookingStatusPathParameterValidatorImpl extends AbstractPathParameterValidatorImpl
-    implements TransactionListPathValidator {
+public class BookingStatusQueryParameterParamsValidatorImpl extends AbstractQueryParameterValidatorImpl
+    implements TransactionListQueryParamsValidator {
     private static final String BOOKING_STATUS_PARAMETER_NAME = "bookingStatus";
     private static final String ERROR_TEXT_INVALID_VALUE = "'%s' has invalid value";
 
-    public BookingStatusPathParameterValidatorImpl(ErrorBuildingService errorBuildingService) {
+    public BookingStatusQueryParameterParamsValidatorImpl(ErrorBuildingService errorBuildingService) {
         super(errorBuildingService);
     }
 
     @Override
-    protected String getPathParameterName() {
+    protected String getQueryParameterName() {
         return BOOKING_STATUS_PARAMETER_NAME;
     }
 
     @Override
-    public void validate(Map<String, List<String>> pathParameterMap, MessageError messageError) {
-        ValidationResult presenceValidationResult = validateMandatoryParameterPresence(pathParameterMap);
+    public void validate(Map<String, List<String>> queryParameterMap, MessageError messageError) {
+        ValidationResult presenceValidationResult = validateMandatoryParameterPresence(queryParameterMap);
         if (presenceValidationResult.isNotValid()) {
             errorBuildingService.enrichMessageError(messageError, presenceValidationResult.getMessageError());
             return;
         }
 
-        String bookingStatusValue = getFirstPathParameterValue(pathParameterMap);
+        String bookingStatusValue = getQueryParameterValue(queryParameterMap);
         Optional<BookingStatus> bookingStatusOptional = BookingStatus.getByValue(bookingStatusValue);
         if (!bookingStatusOptional.isPresent()) {
-            errorBuildingService.enrichMessageError(messageError, String.format(ERROR_TEXT_INVALID_VALUE, getPathParameterName()));
+            errorBuildingService.enrichMessageError(messageError, String.format(ERROR_TEXT_INVALID_VALUE, getQueryParameterName()));
         }
     }
 }

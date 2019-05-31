@@ -36,6 +36,6 @@ public class ConsentMethodValidatorImplTest {
         assertEquals("_createConsent", methodValidator.getMethodName());
         assertSame(headerValidators, methodValidator.getHeaderValidators());
         assertSame(bodyValidators, methodValidator.getBodyValidators());
-        assertTrue(methodValidator.getPathParameterValidators().isEmpty());
+        assertTrue(methodValidator.getQueryParameterValidators().isEmpty());
     }
 }

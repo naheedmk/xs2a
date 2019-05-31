@@ -18,19 +18,19 @@ package de.adorsys.psd2.xs2a.web.validator;
 
 import de.adorsys.psd2.xs2a.web.validator.body.BodyValidator;
 import de.adorsys.psd2.xs2a.web.validator.header.account.TransactionListHeaderValidator;
-import de.adorsys.psd2.xs2a.web.validator.path.account.TransactionListPathValidator;
+import de.adorsys.psd2.xs2a.web.validator.query.account.TransactionListQueryParamsValidator;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
 
 @Component
-public class TransactionListMethodValidatorImpl extends AbstractMethodValidator<TransactionListHeaderValidator, BodyValidator, TransactionListPathValidator> {
+public class TransactionListMethodValidatorImpl extends AbstractMethodValidator<TransactionListHeaderValidator, BodyValidator, TransactionListQueryParamsValidator> {
     private static final String METHOD_NAME = "_getTransactionList";
 
     protected TransactionListMethodValidatorImpl(List<TransactionListHeaderValidator> headerValidators,
-                                                 List<TransactionListPathValidator> pathParameterValidators) {
-        super(headerValidators, Collections.emptyList(), pathParameterValidators);
+                                                 List<TransactionListQueryParamsValidator> queryParamsValidator) {
+        super(headerValidators, Collections.emptyList(), queryParamsValidator);
     }
 
     @Override

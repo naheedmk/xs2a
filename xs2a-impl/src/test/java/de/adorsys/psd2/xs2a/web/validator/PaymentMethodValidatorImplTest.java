@@ -36,6 +36,6 @@ public class PaymentMethodValidatorImplTest {
         assertEquals("_initiatePayment", methodValidator.getMethodName());
         assertSame(headerValidators, methodValidator.getHeaderValidators());
         assertSame(bodyValidators, methodValidator.getBodyValidators());
-        assertTrue(methodValidator.getPathParameterValidators().isEmpty());
+        assertTrue(methodValidator.getQueryParameterValidators().isEmpty());
     }
 }
