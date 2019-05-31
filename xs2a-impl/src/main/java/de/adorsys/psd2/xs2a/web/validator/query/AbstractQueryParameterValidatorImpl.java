@@ -33,11 +33,10 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public abstract class AbstractQueryParameterValidatorImpl implements QueryParameterValidator {
-    private static final String ERROR_TEXT_ABSENT_PARAMETER = "'%s' is missing in request";
-    private static final String ERROR_TEXT_BLANK_HEADER = "'%s' should not be blank";
-    private static final String ERROR_TEXT_INVALID_VALUE = "'%s' has invalid value";
+    private static final String ERROR_TEXT_ABSENT_PARAMETER = "Query parameter '%s' is missing in request";
+    private static final String ERROR_TEXT_BLANK_HEADER = "Query parameter '%s' should not be blank";
+    private static final String ERROR_TEXT_INVALID_VALUE = "Query parameter '%s' has invalid value";
     protected final ErrorBuildingService errorBuildingService;
-
 
     /**
      * Validates the presence of mandatory query parameter by checking whether:

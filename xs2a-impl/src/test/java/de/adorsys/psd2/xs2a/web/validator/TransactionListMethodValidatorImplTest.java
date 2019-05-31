@@ -68,7 +68,6 @@ public class TransactionListMethodValidatorImplTest {
         // noinspection unchecked
         ArgumentCaptor<Map<String, List<String>>> queryParamCaptor = ArgumentCaptor.forClass(Map.class);
 
-
         // When
         transactionListMethodValidator.validate(mockHttpServletRequest, messageError);
 

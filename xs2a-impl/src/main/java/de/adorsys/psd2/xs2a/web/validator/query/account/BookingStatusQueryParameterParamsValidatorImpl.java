@@ -31,7 +31,7 @@ import java.util.Optional;
 public class BookingStatusQueryParameterParamsValidatorImpl extends AbstractQueryParameterValidatorImpl
     implements TransactionListQueryParamsValidator {
     private static final String BOOKING_STATUS_PARAMETER_NAME = "bookingStatus";
-    private static final String ERROR_TEXT_INVALID_VALUE = "'%s' has invalid value";
+    private static final String ERROR_TEXT_INVALID_VALUE = "Query parameter '%s' has invalid value";
 
     public BookingStatusQueryParameterParamsValidatorImpl(ErrorBuildingService errorBuildingService) {
         super(errorBuildingService);

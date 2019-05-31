@@ -40,6 +40,13 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class BookingStatusQueryParameterValidatorImplTest {
     private static final String BOOKING_STATUS_PARAMETER_NAME = "bookingStatus";
+    private static final MessageError MISSING_VALUE_ERROR =
+        new MessageError(ErrorType.AIS_400, TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "Query parameter 'bookingStatus' is missing in request"));
+    private static final MessageError BLANK_VALUE_ERROR =
+        new MessageError(ErrorType.AIS_400, TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "Query parameter 'bookingStatus' should not be blank"));
+    private static final String INVALID_VALUE_ERROR_TEXT = "Query parameter 'bookingStatus' has invalid value";
+    private static final MessageError INVALID_VALUE_ERROR =
+        new MessageError(ErrorType.AIS_400, TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, INVALID_VALUE_ERROR_TEXT));
 
     @InjectMocks
     private BookingStatusQueryParameterParamsValidatorImpl bookingStatusValidator;
@@ -85,7 +92,7 @@ public class BookingStatusQueryParameterValidatorImplTest {
         verify(errorBuildingService).enrichMessageError(eq(messageError), messageErrorCaptor.capture());
         verify(errorBuildingService, never()).enrichMessageError(eq(messageError), any(String.class));
 
-        assertEquals(new MessageError(ErrorType.AIS_400, TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "'bookingStatus' is missing in request")), messageErrorCaptor.getValue());
+        assertEquals(MISSING_VALUE_ERROR, messageErrorCaptor.getValue());
     }
 
     @Test
@@ -103,7 +110,7 @@ public class BookingStatusQueryParameterValidatorImplTest {
         verify(errorBuildingService).enrichMessageError(eq(messageError), messageErrorCaptor.capture());
         verify(errorBuildingService, never()).enrichMessageError(eq(messageError), any(String.class));
 
-        assertEquals(new MessageError(ErrorType.AIS_400, TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "'bookingStatus' should not be blank")), messageErrorCaptor.getValue());
+        assertEquals(BLANK_VALUE_ERROR, messageErrorCaptor.getValue());
     }
 
     @Test
@@ -121,7 +128,7 @@ public class BookingStatusQueryParameterValidatorImplTest {
         verify(errorBuildingService, never()).enrichMessageError(eq(messageError), any(MessageError.class));
         verify(errorBuildingService).enrichMessageError(eq(messageError), errorTextCaptor.capture());
 
-        assertEquals("'bookingStatus' has invalid value", errorTextCaptor.getValue());
+        assertEquals(INVALID_VALUE_ERROR_TEXT, errorTextCaptor.getValue());
     }
 
     @Test
@@ -139,6 +146,6 @@ public class BookingStatusQueryParameterValidatorImplTest {
         verify(errorBuildingService).enrichMessageError(eq(messageError), messageErrorCaptor.capture());
         verify(errorBuildingService, never()).enrichMessageError(eq(messageError), any(String.class));
 
-        assertEquals(new MessageError(ErrorType.AIS_400, TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "'bookingStatus' has invalid value")), messageErrorCaptor.getValue());
+        assertEquals(INVALID_VALUE_ERROR, messageErrorCaptor.getValue());
     }
 }
