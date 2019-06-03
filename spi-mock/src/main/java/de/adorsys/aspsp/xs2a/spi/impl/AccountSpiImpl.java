@@ -125,11 +125,7 @@ public class AccountSpiImpl implements AccountSpi {
                                               .buildAndExpand(uriParams);
 
             List<SpiTransaction> transactions = getFilteredTransactions(uriComponents, bookingStatus);
-            List<SpiAccountBalance> balances = null;
-
-            if (withBalance) {
-                balances = accountDetails.getBalances();
-            }
+            List<SpiAccountBalance> balances = getBalances(withBalance, accountDetails);
 
             SpiResponse.SpiResponseBuilder<SpiTransactionReport> responseBuilder =
                 SpiResponse.<SpiTransactionReport>builder()
@@ -181,6 +177,13 @@ public class AccountSpiImpl implements AccountSpi {
             return SpiResponse.<SpiTransactionReport>builder()
                        .fail(SpiResponseStatus.LOGICAL_FAILURE);
         }
+    }
+
+    private List<SpiAccountBalance> getBalances(boolean withBalance, SpiAccountDetails accountDetails) {
+        if (withBalance) {
+            return accountDetails.getBalances();
+        }
+        return null;
     }
 
     @Override

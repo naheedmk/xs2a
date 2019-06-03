@@ -19,6 +19,7 @@ package de.adorsys.psd2.xs2a.web.validator.header;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
+import de.adorsys.psd2.xs2a.web.validator.header.account.TransactionListHeaderValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,7 @@ import static org.springframework.http.HttpHeaders.ACCEPT;
  */
 @Component
 public class AcceptHeaderValidatorImpl extends AbstractHeaderValidatorImpl
-    implements GetTransactionListHeaderValidator {
+    implements TransactionListHeaderValidator {
 
     @Autowired
     public AcceptHeaderValidatorImpl(ErrorBuildingService errorBuildingService) {
