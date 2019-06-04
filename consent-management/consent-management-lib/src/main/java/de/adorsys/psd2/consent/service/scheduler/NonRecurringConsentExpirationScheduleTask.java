@@ -42,8 +42,7 @@ public class NonRecurringConsentExpirationScheduleTask {
     public void expireUsedNonRecurringConsent() {
         log.info("Non-recurring consent expiration task has started!");
 
-        List<AisConsent> consents = aisConsentRepository.findUsedNonRecurringConsents(false,
-                                                                                      EnumSet.of(RECEIVED, VALID),
+        List<AisConsent> consents = aisConsentRepository.findUsedNonRecurringConsents(EnumSet.of(RECEIVED, VALID),
                                                                                       LocalDate.now())
                                         .stream()
                                         .map(this::expireConsent)

@@ -53,11 +53,10 @@ public interface AisConsentRepository extends Xs2aCrudRepository<AisConsent, Lon
         "select c from ais_consent c " +
             "inner join ais_consent_usage u " +
             "on c.id = u.consent.id " +
-            "where c.recurringIndicator = :recurringIndicator " +
+            "where c.recurringIndicator = false " +
             "and c.consentStatus in :consentStatuses " +
             "and u.usageDate < :currentDate"
     )
-    List<AisConsent> findUsedNonRecurringConsents(@Param("recurringIndicator") Boolean recurringIndicator,
-                                                  @Param("consentStatuses") Set<ConsentStatus> consentStatuses,
+    List<AisConsent> findUsedNonRecurringConsents(@Param("consentStatuses") Set<ConsentStatus> consentStatuses,
                                                   @Param("currentDate") LocalDate currentDate);
 }
