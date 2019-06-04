@@ -219,4 +219,9 @@ public class AisConsent extends InstanceDependableEntity {
         }
         usages.add(aisConsentUsage);
     }
+
+    public boolean isUsedNonRecurring() {
+        return usages.stream()
+            .anyMatch(u -> u.getUsageDate().isBefore(LocalDate.now()));
+    }
 }

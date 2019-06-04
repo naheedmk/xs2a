@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AisConsentUsageService {
     private final AisConsentUsageRepository aisConsentUsageRepository;
 
@@ -48,7 +49,6 @@ public class AisConsentUsageService {
         aisConsentUsageRepository.save(aisConsentUsageList);
     }
 
-    @Transactional
     public Map<String, Integer> getUsageCounterMap(AisConsent aisConsent) {
         return aisConsentUsageRepository.findReadByConsentAndUsageDate(aisConsent, LocalDate.now())
                    .stream()
