@@ -184,13 +184,11 @@ public class ConsentModelMapper {
         return updatePsuData;
     }
 
-    public CancellationList mapToCancellationList(Xs2aPaymentCancellationAuthorisationSubResource idsContainer) {
-        CancellationList list = new CancellationList();
-
-        list.addAll(Optional.ofNullable(idsContainer.getCancellationIds())
-                        .map(ArrayList::new)
-                        .orElseGet(ArrayList::new));
-        return list;
+    public Cancellations mapToCancellations(Xs2aPaymentCancellationAuthorisationSubResource idsContainer) {
+        return Optional.ofNullable(idsContainer.getCancellationIds())
+                   .map(this::buildCancellationList)
+                   .map(this::buildCancellations)
+                   .orElseGet(Cancellations::new);
     }
 
     public Xs2aUpdatePisCommonPaymentPsuDataRequest mapToPisUpdatePsuData(PsuIdData psuData, String paymentId, String authorisationId, String paymentService, String paymentProduct, Map body) {
@@ -215,5 +213,17 @@ public class ConsentModelMapper {
             request.setUpdatePsuIdentification(true);
         }
         return request;
+    }
+
+    private CancellationList buildCancellationList(List<String> cancellationIds) {
+        CancellationList cancellationList = new CancellationList();
+        cancellationList.addAll(cancellationIds);
+        return cancellationList;
+    }
+
+    private Cancellations buildCancellations(CancellationList cancellationList) {
+        Cancellations cancellations = new Cancellations();
+        cancellations.setCancellationIds(cancellationList);
+        return cancellations;
     }
 }

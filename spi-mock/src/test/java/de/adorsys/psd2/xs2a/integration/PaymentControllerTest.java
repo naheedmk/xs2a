@@ -17,14 +17,16 @@
 package de.adorsys.psd2.xs2a.integration;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adorsys.aspsp.xs2a.spi.ASPSPXs2aApplication;
 import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
-import de.adorsys.psd2.consent.api.AspspDataService;
 import de.adorsys.psd2.consent.api.CmsAuthorisationType;
 import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationResponse;
 import de.adorsys.psd2.consent.api.service.EventServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
+import de.adorsys.psd2.model.CancellationList;
+import de.adorsys.psd2.model.Cancellations;
 import de.adorsys.psd2.xs2a.config.*;
 import de.adorsys.psd2.xs2a.core.event.Event;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
@@ -38,7 +40,6 @@ import de.adorsys.psd2.xs2a.integration.builder.TppInfoBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.payment.PisCommonPaymentResponseBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
-import de.adorsys.psd2.xs2a.spi.service.SinglePaymentSpi;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
@@ -106,10 +109,8 @@ public class PaymentControllerTest {
     private EventServiceEncrypted eventServiceEncrypted;
     @MockBean
     private PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
-    @MockBean
-    private SinglePaymentSpi singlePaymentSpi;
-    @MockBean
-    private AspspDataService aspspDataService;
+    @Autowired
+    private ObjectMapper mapper;
 
     @Before
     public void init() {
@@ -186,6 +187,40 @@ public class PaymentControllerTest {
         resultActions.andExpect(status().isCreated())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(content().json(IOUtils.resourceToString(CANCELLATION_AUTHORISATIONS_RESP, UTF_8)));
+    }
+
+    @Test
+    public void getPaymentInitiationCancellationAuthorisationInformation() throws Exception {
+        // Given
+        given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(REDIRECT_SCA_APPROACH));
+        given(pisCommonPaymentServiceEncrypted.getCommonPaymentById(ENCRYPT_PAYMENT_ID))
+            .willReturn(Optional.of(PisCommonPaymentResponseBuilder.buildPisCommonPaymentResponse()));
+
+        List<String> cancellationIds = Arrays.asList("c0121ca2-ab3a-4564-b915-6e40e8b40f50", "743d0a45-7233-4fbf-9799-c657f327836c");
+        given(pisCommonPaymentServiceEncrypted.getAuthorisationsByPaymentId(ENCRYPT_PAYMENT_ID, CmsAuthorisationType.CANCELLED))
+            .willReturn(Optional.of(cancellationIds));
+
+        MockHttpServletRequestBuilder requestBuilder = get(UrlBuilder.buildGetPaymentInitiationCancellationAuthorisationInformationUrl(SINGLE_PAYMENT_TYPE.getValue(), SEPA_PAYMENT_PRODUCT, ENCRYPT_PAYMENT_ID));
+        requestBuilder.headers(httpHeadersExplicit);
+
+        // When
+        ResultActions resultActions = mockMvc.perform(requestBuilder);
+
+        Cancellations cancellations = buildCancellations(cancellationIds);
+        String content = mapper.writeValueAsString(cancellations);
+
+        //Then
+        resultActions.andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(content().json(content));
+    }
+
+    private Cancellations buildCancellations(List<String> cancellationIds) {
+        Cancellations cancellations = new Cancellations();
+        CancellationList cancellationList = new CancellationList();
+        cancellationList.addAll(cancellationIds);
+        cancellations.setCancellationIds(cancellationList);
+        return cancellations;
     }
 
     private PsuIdData getPsuIdData() {

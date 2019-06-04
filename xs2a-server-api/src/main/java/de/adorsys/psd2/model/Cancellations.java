@@ -16,20 +16,50 @@
 
 package de.adorsys.psd2.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.ArrayList;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 /**
- * An array of all cancellationIds connected to this resource.
+ * An array of all cancellationIds
  */
-@ApiModel(description = "An array of all cancellationIds connected to this resource.")
+@ApiModel(description = "An array of all cancellationIds")
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-03T12:45:57.911034+03:00[Europe/Kiev]")
 
-public class CancellationList extends ArrayList<String>  {
+public class Cancellations   {
+  @JsonProperty("cancellationIds")
+  private CancellationList cancellationIds = null;
+
+  public Cancellations cancellationIds(CancellationList cancellationIds) {
+    this.cancellationIds = cancellationIds;
+    return this;
+  }
+
+  /**
+   * Get cancellationIds
+   * @return cancellationIds
+  **/
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
+
+  @Valid
+
+
+  @JsonProperty("cancellationIds")
+  public CancellationList getCancellationIds() {
+    return cancellationIds;
+  }
+
+  public void setCancellationIds(CancellationList cancellationIds) {
+    this.cancellationIds = cancellationIds;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -39,19 +69,21 @@ public class CancellationList extends ArrayList<String>  {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    return true;
+    Cancellations cancellations = (Cancellations) o;
+    return Objects.equals(this.cancellationIds, cancellations.cancellationIds);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode());
+    return Objects.hash(cancellationIds);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class CancellationList {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
+    sb.append("class Cancellations {\n");
+    
+    sb.append("    cancellationIds: ").append(toIndentedString(cancellationIds)).append("\n");
     sb.append("}");
     return sb.toString();
   }
