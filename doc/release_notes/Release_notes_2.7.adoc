@@ -134,3 +134,16 @@ From now on, while getting the response for these requests:
 
 the response has `authorisationId` field.
 
+
+== Bugfix: Fixed count usage of frequencyPerDay for one-off consents for every account endpoint
+
+`frequencyPerDay` is counted per unique resource for each endpoint when `recurringIndicator` of the consent is set to `false`.
+Count every access on the following endpoints by one-off consent, where pagination on transactions are resulting in counting all accesses to this transaction report as one access:
+
+* `GET /v1/accounts`;
+* `GET /v1/accounts/account-id` per account-id;
+* `GET /v1/accounts/account-id/transactions` per account-id;
+* `GET /v1/accounts/account-id/balances` per account-id;
+* `GET /v1/accounts/account-id/transactions/transaction-id` per account-id and transaction-id, if applicable.
+
+
