@@ -50,7 +50,7 @@ public interface AisConsentRepository extends Xs2aCrudRepository<AisConsent, Lon
                                                        @Param("consentStatuses") Set<ConsentStatus> consentStatuses);
 
     @Query(
-        "select c from ais_consent c " +
+        "select distinct c from ais_consent c " +
             "inner join ais_consent_usage u " +
             "on c.id = u.consent.id " +
             "where c.recurringIndicator = false " +
