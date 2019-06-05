@@ -186,7 +186,6 @@ public class ConsentModelMapper {
 
     public Cancellations mapToCancellations(Xs2aPaymentCancellationAuthorisationSubResource idsContainer) {
         return Optional.ofNullable(idsContainer.getCancellationIds())
-                   .map(this::buildCancellationList)
                    .map(this::buildCancellations)
                    .orElseGet(Cancellations::new);
     }
@@ -215,14 +214,10 @@ public class ConsentModelMapper {
         return request;
     }
 
-    private CancellationList buildCancellationList(List<String> cancellationIds) {
+    private Cancellations buildCancellations(List<String> cancellationIds) {
+        Cancellations cancellations = new Cancellations();
         CancellationList cancellationList = new CancellationList();
         cancellationList.addAll(cancellationIds);
-        return cancellationList;
-    }
-
-    private Cancellations buildCancellations(CancellationList cancellationList) {
-        Cancellations cancellations = new Cancellations();
         cancellations.setCancellationIds(cancellationList);
         return cancellations;
     }

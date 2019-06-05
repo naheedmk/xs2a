@@ -27,7 +27,7 @@ import java.util.Objects;
  */
 @ApiModel(description = "An array of all cancellationIds connected to this resource.")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-03T12:45:57.911034+03:00[Europe/Kiev]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-04-08T13:20:46.558844+03:00[Europe/Kiev]")
 
 public class CancellationList extends ArrayList<String>  {
 
