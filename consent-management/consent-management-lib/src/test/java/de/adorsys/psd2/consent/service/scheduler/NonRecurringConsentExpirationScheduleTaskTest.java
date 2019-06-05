@@ -36,12 +36,13 @@ import java.util.List;
 
 import static de.adorsys.psd2.xs2a.core.consent.ConsentStatus.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NonRecurringConsentExpirationScheduleTaskTest {
-    private static final LocalDate LOCAL_DATE = LocalDate.of(2019, 6, 4);
+    private static final LocalDate LOCAL_DATE = LocalDate.now();
     private static final OffsetDateTime CREATION_TIMESTAMP =
         OffsetDateTime.of(2019, 6, 4, 12, 20, 0, 0, ZoneOffset.UTC);
     private static final String CONSENT_ID_1 = "consent id 1";
@@ -60,8 +61,8 @@ public class NonRecurringConsentExpirationScheduleTaskTest {
         // Given
         List<AisConsent> aisConsentList = Arrays.asList(buildAisConsent(CONSENT_ID_1, RECEIVED),
                                                         buildAisConsent(CONSENT_ID_2, VALID));
-        when(aisConsentRepository.findUsedNonRecurringConsents(EnumSet.of(RECEIVED, VALID), LOCAL_DATE))
-            .thenReturn(aisConsentList);
+        doReturn(aisConsentList).when(aisConsentRepository)
+            .findUsedNonRecurringConsents(EnumSet.of(RECEIVED, VALID), LOCAL_DATE);
         List<AisConsent> expiredConsentList = Arrays.asList(buildAisConsent(CONSENT_ID_1, EXPIRED),
                                                             buildAisConsent(CONSENT_ID_2, EXPIRED));
 
