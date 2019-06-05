@@ -130,7 +130,7 @@ public class AccountSpiImpl implements AccountSpi {
             SpiResponse.SpiResponseBuilder<SpiTransactionReport> responseBuilder =
                 SpiResponse.<SpiTransactionReport>builder()
                     .aspspConsentData(aspspConsentData.respondWith(TEST_ASPSP_DATA.getBytes()));
-            String responseMediaType = StringUtils.isNotBlank(acceptMediaType) ? acceptMediaType : DEFAULT_ACCEPT_MEDIA_TYPE;
+            String responseMediaType = StringUtils.defaultIfBlank(acceptMediaType, DEFAULT_ACCEPT_MEDIA_TYPE);
             if (responseMediaType.contains(SpiTransactionReport.RESPONSE_TYPE_JSON)) {
                 SpiTransactionReport transactionReport = new SpiTransactionReport(transactions,
                                                                                   balances,
