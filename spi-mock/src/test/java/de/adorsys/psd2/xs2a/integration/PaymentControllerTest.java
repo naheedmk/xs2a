@@ -25,8 +25,6 @@ import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationRespo
 import de.adorsys.psd2.consent.api.service.EventServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
-import de.adorsys.psd2.model.CancellationList;
-import de.adorsys.psd2.model.Cancellations;
 import de.adorsys.psd2.xs2a.config.*;
 import de.adorsys.psd2.xs2a.core.event.Event;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
@@ -206,21 +204,10 @@ public class PaymentControllerTest {
         // When
         ResultActions resultActions = mockMvc.perform(requestBuilder);
 
-        Cancellations cancellations = buildCancellations(cancellationIds);
-        String content = mapper.writeValueAsString(cancellations);
-
         //Then
         resultActions.andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(content().json(content));
-    }
-
-    private Cancellations buildCancellations(List<String> cancellationIds) {
-        Cancellations cancellations = new Cancellations();
-        CancellationList cancellationList = new CancellationList();
-        cancellationList.addAll(cancellationIds);
-        cancellations.setCancellationIds(cancellationList);
-        return cancellations;
+            .andExpect(content().json(IOUtils.resourceToString("/json/payment/res/Cancellations.json", UTF_8)));
     }
 
     private PsuIdData getPsuIdData() {
