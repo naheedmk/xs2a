@@ -72,39 +72,39 @@ public class AisConsentTest {
     }
 
     @Test
-    public void isUsedNonRecurring_shouldReturnFalse_recurringConsent() {
+    public void isNonReccuringAlreadyUsed_shouldReturnFalse_recurringConsent() {
         // Given
         AisConsent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, true);
 
         // When
-        boolean actual = aisConsent.isUsedNonRecurring();
+        boolean actual = aisConsent.isNonReccuringAlreadyUsed();
 
         // Then
         assertFalse(actual);
     }
 
     @Test
-    public void isUsedNonRecurring_shouldReturnFalse_nonRecurringWithoutOldUsages() {
+    public void isNonReccuringAlreadyUsed_shouldReturnFalse_nonRecurringWithoutOldUsages() {
         // Given
         AisConsent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, false);
         aisConsent.setUsages(Collections.singletonList(buildAisConsentUsage(LocalDate.now())));
 
         // When
-        boolean actual = aisConsent.isUsedNonRecurring();
+        boolean actual = aisConsent.isNonReccuringAlreadyUsed();
 
         // Then
         assertFalse(actual);
     }
 
     @Test
-    public void isUsedNonRecurring_shouldReturnTrue_nonRecurringWithOldUsages() {
+    public void isNonReccuringAlreadyUsed_shouldReturnTrue_nonRecurringWithOldUsages() {
         // Given
         AisConsent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, false);
         aisConsent.setUsages(Arrays.asList(buildAisConsentUsage(LocalDate.now()),
                                            buildAisConsentUsage(LocalDate.now().minusDays(1))));
 
         // When
-        boolean actual = aisConsent.isUsedNonRecurring();
+        boolean actual = aisConsent.isNonReccuringAlreadyUsed();
 
         // Then
         assertTrue(actual);
