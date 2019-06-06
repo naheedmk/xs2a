@@ -85,7 +85,7 @@
     <include relativeToChangelogFile="true" file="migration/0060-add-request-uri-column-to-ais-consent-usage.xml"/>
     <include relativeToChangelogFile="true" file="migration/0061-change-table-account-reference-extend-iban.xml"/>
     <include relativeToChangelogFile="true"
-    file="migration/0062-change-table-pis-payment-data-extend-end-to-end-identification.xml"/>
+             file="migration/0062-change-table-pis-payment-data-extend-end-to-end-identification.xml"/>
     <include relativeToChangelogFile="true" file="migration/0063-expand-table-crypto-algorithm-with-fields.xml"/>
     <include relativeToChangelogFile="true" file="migration/0064-expand-table-crypto-algorithm-with-fields-class-and-params.xml"/>
     <!-- moved this patсh to the end of the list according to order of applying-->
