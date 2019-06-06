@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+// TODO split mapper into smaller part https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/875
 public class AccountModelMapper {
     private final AmountModelMapper amountModelMapper;
     private final HrefLinkMapper hrefLinkMapper;
