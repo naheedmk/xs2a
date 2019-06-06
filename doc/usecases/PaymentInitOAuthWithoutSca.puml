@@ -1,6 +1,6 @@
 @startuml integrated_sdv
 
-title OAuth 2.0 Integrated
+title OAuth Approach without SCA
 
 participant PSU as psu
 participant TPP as tpp
@@ -19,9 +19,6 @@ tpp -> xs2a: initiate payment\nPSU data and TPP data with token\nREST Call Initi
 activate xs2a
 xs2a -> spi: Java Call SPIinitiatePayment
 activate spi
-spi->idp: Send PSU data and TPP data with token
-|||
-idp->spi: Toket Authorised
 |||
 alt 'Sca Exempted' = TRUE
 |||
