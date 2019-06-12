@@ -133,7 +133,6 @@ public class ConsentModelMapperTest {
         //Given
         Consents consent = jsonReader.getObjectFromFile("json/ConsentsAvailableAccountsWithBalances.json", Consents.class);
         CreateConsentReq expected = jsonReader.getObjectFromFile("json/CreateConsentReqAvailableAccountsWithBalances.json", CreateConsentReq.class);
-        ;
         //When
         CreateConsentReq actual = consentModelMapper.mapToCreateConsentReq(consent);
         //Then
