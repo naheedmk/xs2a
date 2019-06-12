@@ -135,7 +135,7 @@ public class AisConsent extends InstanceDependableEntity {
 
     @Column(name = "available_accounts")
     @Enumerated(value = EnumType.STRING)
-    @ApiModelProperty(value = "Type of the available accounts access type: ALL_ACCOUNTS, ALL_ACCOUNTS_WITH_BALANCES.", example = "ALL_ACCOUNTS")
+    @ApiModelProperty(value = "Type of the available accounts access type: ALL_ACCOUNTS.", example = "ALL_ACCOUNTS")
     private AccountAccessType availableAccounts;
 
     @Column(name = "all_psd2")

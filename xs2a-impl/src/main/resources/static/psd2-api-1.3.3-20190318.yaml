@@ -4435,6 +4435,14 @@ components:
           type: string
           enum:
             - "allAccounts"
+        availableAccountsWithBalances:
+          description: |
+            Optional if supported by API provider.
+
+            Only the value "allAccounts" is admitted.
+          type: string
+          enum:
+          - "allAccounts"
 
     cashAccountType:
       description: |

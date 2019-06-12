@@ -103,7 +103,8 @@ public class ConsentModelMapper {
                                 mapToXs2aAccountReferences(acs.getBalances()),
                                 mapToXs2aAccountReferences(acs.getTransactions()),
                                 mapToAccountAccessTypeFromAvailableAccounts(acs.getAvailableAccounts()),
-                                mapToAccountAccessTypeFromAllPsd2Enum(acs.getAllPsd2())
+                                mapToAccountAccessTypeFromAllPsd2Enum(acs.getAllPsd2()),
+                                mapToAccountAccessTypeFromAvailableAccountsWithBalances(acs.getAvailableAccountsWithBalances())
                             ))
                    .orElse(null);
     }
@@ -144,6 +145,12 @@ public class ConsentModelMapper {
 
     private AccountAccessType mapToAccountAccessTypeFromAllPsd2Enum(AccountAccess.AllPsd2Enum allPsd2Enum) {
         return Optional.ofNullable(allPsd2Enum)
+                   .flatMap(en -> AccountAccessType.getByDescription(en.toString()))
+                   .orElse(null);
+    }
+
+    private AccountAccessType mapToAccountAccessTypeFromAvailableAccountsWithBalances(AccountAccess.AvailableAccountsWithBalancesEnum accountsEnum) {
+        return Optional.ofNullable(accountsEnum)
                    .flatMap(en -> AccountAccessType.getByDescription(en.toString()))
                    .orElse(null);
     }
