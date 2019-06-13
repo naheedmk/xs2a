@@ -33,4 +33,5 @@ From now on, while sending HTTP requests to the XS2A the maximum length of `tpp-
 headers is extended to 255 symbols. Header `authorization` is not validated for length.
 
 == Bugfix: Error on creating AIS consent with availableAccountsWithBalances attribute in the access property
-From now on, TPP is able to create AIS consent with availableAccountsWithBalances attribute in the access property
+From now on, TPP is able to create AIS consent with `availableAccountsWithBalances` attribute in the access property.
+As a result, creation of AIS Consent with `allAccountsWithBalances` value in `availableAccounts` field is no longer allowed.

@@ -130,6 +130,13 @@ public class ConsentModelMapper {
                                         .orElse(null)
                                 )
                             );
+                            mappedAccountAccess.setAvailableAccountsWithBalances(
+                                AccountAccess.AvailableAccountsWithBalancesEnum.fromValue(
+                                    Optional.ofNullable(access.getAvailableAccountsWithBalances())
+                                        .map(AccountAccessType::getDescription)
+                                        .orElse(null)
+                                )
+                            );
 
                             return mappedAccountAccess;
                         }

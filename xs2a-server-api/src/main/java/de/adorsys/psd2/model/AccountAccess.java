@@ -33,7 +33,7 @@ import java.util.Objects;
  */
 @ApiModel(description = "Requested access services for a consent. ")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-11T12:47:07.920011+03:00[Europe/Kiev]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-06-13T12:17:38.965151+03:00[Europe/Kiev]")
 
 public class AccountAccess   {
   @JsonProperty("accounts")
@@ -49,12 +49,10 @@ public class AccountAccess   {
   private List<AccountReference> transactions = null;
 
   /**
-   * Optional if supported by API provider.  Only the values \"allAccounts\" or \"allAccountsWithBalances\" is admitted. 
+   * Optional if supported by API provider.  Only the value \"allAccounts\" is admitted. 
    */
   public enum AvailableAccountsEnum {
-    ALLACCOUNTS("allAccounts"),
-    
-    ALLACCOUNTSWITHBALANCES("allAccountsWithBalances");
+    ALLACCOUNTS("allAccounts");
 
     private String value;
 
@@ -245,10 +243,10 @@ public class AccountAccess   {
   }
 
   /**
-   * Optional if supported by API provider.  Only the values \"allAccounts\" or \"allAccountsWithBalances\" is admitted. 
+   * Optional if supported by API provider.  Only the value \"allAccounts\" is admitted. 
    * @return availableAccounts
   **/
-  @ApiModelProperty(value = "Optional if supported by API provider.  Only the values \"allAccounts\" or \"allAccountsWithBalances\" is admitted. ")
+  @ApiModelProperty(value = "Optional if supported by API provider.  Only the value \"allAccounts\" is admitted. ")
 
 
 
