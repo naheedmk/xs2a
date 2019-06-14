@@ -127,7 +127,7 @@ public class ConsentModelMapperTest {
         StartScaprocessResponse actual = consentModelMapper.mapToStartScaProcessResponse(xs2aCreatePisCancellationAuthorisationResponse);
 
         // Then
-        assertEquals(jsonReader.writeValueAsString(expected), jsonReader.writeValueAsString(actual));
+        assertEquals(expected, actual);
     }
 
     @Test

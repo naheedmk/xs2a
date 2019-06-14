@@ -49,8 +49,6 @@ public class AuthorisationMapperTest {
 
     private static final String SELF_LINK = "self";
     private static final String LOCALHOST_LINK = "http://localhost";
-    private static final String CONSENT_ID = "consent ID";
-    private static final String AUTHORISATION_ID = "authorisation ID";
 
     private static final de.adorsys.psd2.model.ScaStatus SCA_STATUS = de.adorsys.psd2.model.ScaStatus.RECEIVED;
 
@@ -153,6 +151,7 @@ public class AuthorisationMapperTest {
     @Test
     public void mapToAisCreateOrUpdateAuthorisationResponse_for_CreateConsentAuthorizationResponse() {
         // Given
+        when(hrefLinkMapper.mapToLinksMap(null)).thenReturn(null);
         CreateConsentAuthorizationResponse createConsentAuthorizationResponse =
             jsonReader.getObjectFromFile("json/service/mapper/AuthorisationMapper-CreateConsentAuthorisationResponse.json", CreateConsentAuthorizationResponse.class);
 
@@ -167,7 +166,7 @@ public class AuthorisationMapperTest {
             (StartScaprocessResponse) mapper.mapToAisCreateOrUpdateAuthorisationResponse(responseObject);
 
         // Then
-        assertEquals(jsonReader.writeValueAsString(expected), jsonReader.writeValueAsString(actualStartScaProcessResponse));
+        assertEquals(expected, actualStartScaProcessResponse);
     }
 
     private void assertThatChosenScaMethodsEquals(ChosenScaMethod expectedChosenScaMethod, ChosenScaMethod actualChosenScaMethod) {

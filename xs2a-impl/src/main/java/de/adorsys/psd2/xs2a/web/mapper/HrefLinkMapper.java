@@ -37,6 +37,10 @@ public class HrefLinkMapper {
      * @return Map with link name and HrefType value.
      */
     public Map<String, HrefType> mapToLinksMap(Links links) {
+        if (links == null) {
+            return null;
+        }
+
         return mapper.convertValue(links, new TypeReference<Map<String, HrefType>>() {
         });
     }
