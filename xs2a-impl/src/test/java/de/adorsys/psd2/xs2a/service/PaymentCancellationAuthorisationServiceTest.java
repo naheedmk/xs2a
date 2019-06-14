@@ -48,6 +48,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.UNAUTHORIZED;
@@ -134,7 +135,7 @@ public class PaymentCancellationAuthorisationServiceTest {
         paymentCancellationAuthorisationService.createPisCancellationAuthorization(PAYMENT_ID, PSU_ID_DATA, PaymentType.SINGLE, PAYMENT_PRODUCT);
 
         // Then
-        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), argumentCaptor.capture());
+        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.START_PAYMENT_CANCELLATION_AUTHORISATION_REQUEST_RECEIVED);
     }
 
@@ -168,7 +169,7 @@ public class PaymentCancellationAuthorisationServiceTest {
         paymentCancellationAuthorisationService.updatePisCancellationPsuData(request);
 
         // Then
-        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), argumentCaptor.capture(), any());
+        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), nullable(List.class), argumentCaptor.capture(), any());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.UPDATE_PAYMENT_CANCELLATION_PSU_DATA_REQUEST_RECEIVED);
     }
 
@@ -201,7 +202,7 @@ public class PaymentCancellationAuthorisationServiceTest {
         paymentCancellationAuthorisationService.getPaymentInitiationCancellationAuthorisationInformation(PAYMENT_ID);
 
         // Then
-        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), argumentCaptor.capture());
+        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.GET_PAYMENT_CANCELLATION_AUTHORISATION_REQUEST_RECEIVED);
     }
 
@@ -251,7 +252,7 @@ public class PaymentCancellationAuthorisationServiceTest {
 
         // Then
         verify(xs2aEventService, times(1))
-            .recordPisTppRequest(eq(PAYMENT_ID), argumentCaptor.capture());
+            .recordPisTppRequest(eq(PAYMENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.GET_PAYMENT_CANCELLATION_SCA_STATUS_REQUEST_RECEIVED);
     }
 

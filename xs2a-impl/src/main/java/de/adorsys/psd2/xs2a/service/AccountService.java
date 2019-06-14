@@ -105,8 +105,6 @@ public class AccountService {
      * @return response with {@link Xs2aAccountListHolder} containing the List of AccountDetails with Balances if requested and granted by consent
      */
     public ResponseObject<Xs2aAccountListHolder> getAccountList(String consentId, boolean withBalance, String requestUri) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.READ_ACCOUNT_LIST_REQUEST_RECEIVED);
-
         Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
         if (!accountConsentOptional.isPresent()) {
             return ResponseObject.<Xs2aAccountListHolder>builder()
@@ -115,6 +113,8 @@ public class AccountService {
         }
 
         AccountConsent accountConsent = accountConsentOptional.get();
+
+        xs2aEventService.recordAisTppRequest(consentId, accountConsent.getPsuIdDataList(), EventType.READ_ACCOUNT_LIST_REQUEST_RECEIVED);
 
         ValidationResult validationResult = getAccountListValidator.validate(new GetAccountListConsentObject(accountConsent, withBalance, requestUri));
         if (validationResult.isNotValid()) {
@@ -173,8 +173,6 @@ public class AccountService {
      * @return response with {@link Xs2aAccountDetailsHolder} based on accountId with Balances if requested and granted by consent
      */
     public ResponseObject<Xs2aAccountDetailsHolder> getAccountDetails(String consentId, String accountId, boolean withBalance, String requestUri) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.READ_ACCOUNT_DETAILS_REQUEST_RECEIVED);
-
         Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
         if (!accountConsentOptional.isPresent()) {
             return ResponseObject.<Xs2aAccountDetailsHolder>builder()
@@ -183,6 +181,8 @@ public class AccountService {
         }
 
         AccountConsent accountConsent = accountConsentOptional.get();
+
+        xs2aEventService.recordAisTppRequest(consentId, accountConsent.getPsuIdDataList(), EventType.READ_ACCOUNT_DETAILS_REQUEST_RECEIVED);
 
         ValidationResult validationResult = getAccountDetailsValidator.validate(new CommonAccountRequestObject(accountConsent, accountId, withBalance, requestUri));
         if (validationResult.isNotValid()) {
@@ -243,8 +243,6 @@ public class AccountService {
      * @return Balances Report based on consentId and accountId
      */
     public ResponseObject<Xs2aBalancesReport> getBalancesReport(String consentId, String accountId, String requestUri) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.READ_BALANCE_REQUEST_RECEIVED);
-
         Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
         if (!accountConsentOptional.isPresent()) {
             return ResponseObject.<Xs2aBalancesReport>builder()
@@ -253,6 +251,8 @@ public class AccountService {
         }
 
         AccountConsent accountConsent = accountConsentOptional.get();
+
+        xs2aEventService.recordAisTppRequest(consentId, accountConsent.getPsuIdDataList(), EventType.READ_BALANCE_REQUEST_RECEIVED);
 
         ValidationResult validationResult = getBalancesReportValidator.validate(new CommonAccountBalanceRequestObject(accountConsent, requestUri));
         if (validationResult.isNotValid()) {
@@ -314,14 +314,14 @@ public class AccountService {
     public ResponseObject<Xs2aTransactionsReport> getTransactionsReportByPeriod(Xs2aTransactionsReportByPeriodRequest request) {
         String consentId = request.getConsentId();
 
-        xs2aEventService.recordAisTppRequest(consentId, EventType.READ_TRANSACTION_LIST_REQUEST_RECEIVED);
-
         Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
         if (!accountConsentOptional.isPresent()) {
             return ResponseObject.<Xs2aTransactionsReport>builder()
                        .fail(AIS_400, of(CONSENT_UNKNOWN_400))
                        .build();
         }
+
+        xs2aEventService.recordAisTppRequest(consentId, accountConsentOptional.get().getPsuIdDataList(), EventType.READ_TRANSACTION_LIST_REQUEST_RECEIVED);
 
         String accountId = request.getAccountId();
         String requestUri = request.getRequestUri();
@@ -419,8 +419,6 @@ public class AccountService {
      */
     public ResponseObject<Transactions> getTransactionDetails(String consentId, String accountId,
                                                               String transactionId, String requestUri) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.READ_TRANSACTION_DETAILS_REQUEST_RECEIVED);
-
         Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
         if (!accountConsentOptional.isPresent()) {
             return ResponseObject.<Transactions>builder()
@@ -429,6 +427,8 @@ public class AccountService {
         }
 
         AccountConsent accountConsent = accountConsentOptional.get();
+
+        xs2aEventService.recordAisTppRequest(consentId, accountConsent.getPsuIdDataList(), EventType.READ_TRANSACTION_DETAILS_REQUEST_RECEIVED);
 
         ValidationResult validationResult = getTransactionDetailsValidator.validate(new CommonAccountTransactionsRequestObject(accountConsent, requestUri));
         if (validationResult.isNotValid()) {

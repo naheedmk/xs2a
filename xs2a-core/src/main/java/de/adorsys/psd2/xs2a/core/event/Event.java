@@ -20,6 +20,7 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -62,7 +63,7 @@ public class Event {
     /**
      * PSU data
      */
-    private PsuIdData psuIdData;
+    private List<PsuIdData> psuIdData;
 
     /**
      * Authorization number of the TPP
@@ -97,7 +98,7 @@ public class Event {
         private String instanceId;
         private String tppAuthorisationNumber;
         private UUID xRequestId;
-        private PsuIdData psuIdData;
+        private List<PsuIdData> psuIdData;
 
         private EventBuilder() {
         }
@@ -137,7 +138,7 @@ public class Event {
             return this;
         }
 
-        public EventBuilder psuIdData(PsuIdData psuIdData) {
+        public EventBuilder psuIdData(List<PsuIdData> psuIdData) {
             this.psuIdData = psuIdData;
             return this;
         }

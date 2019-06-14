@@ -16,34 +16,32 @@
 
 package de.adorsys.psd2.consent.service.mapper;
 
-import de.adorsys.psd2.consent.domain.PsuDataEmbeddable;
 import de.adorsys.psd2.consent.domain.event.EventEntity;
 import de.adorsys.psd2.consent.service.JsonConverterService;
 import de.adorsys.psd2.xs2a.core.event.Event;
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class EventMapper {
+    private final PsuDataMapper psuDataMapper;
     private final JsonConverterService jsonConverterService;
 
     public List<Event> mapToEventList(@NotNull List<EventEntity> eventEntities) {
         return eventEntities.stream()
-                   .map(this::mapToEvent)
-                   .collect(Collectors.toList());
+            .map(this::mapToEvent)
+            .collect(Collectors.toList());
     }
 
     /**
      * Maps properties from Event object into the EventEntity object.
-     *
+     * <p>
      * Pay attention that this mapper ignores instance id property of the event.
      *
      * @param event event object
@@ -55,11 +53,11 @@ public class EventMapper {
         eventEntity.setConsentId(event.getConsentId());
         eventEntity.setPaymentId(event.getPaymentId());
         byte[] payload = jsonConverterService.toJsonBytes(event.getPayload())
-                             .orElse(null);
+            .orElse(null);
         eventEntity.setPayload(payload);
         eventEntity.setEventOrigin(event.getEventOrigin());
         eventEntity.setEventType(event.getEventType());
-        eventEntity.setPsuData(mapToPsuDataEmbeddable(event.getPsuIdData()));
+        eventEntity.setPsuDataList(psuDataMapper.mapToPsuDataList(event.getPsuIdData()));
         eventEntity.setTppAuthorisationNumber(event.getTppAuthorisationNumber());
         eventEntity.setXRequestId(event.getXRequestId() != null ? event.getXRequestId().toString() : null);
         return eventEntity;
@@ -67,36 +65,18 @@ public class EventMapper {
 
     private Event mapToEvent(@NotNull EventEntity eventEntity) {
         Object payload = jsonConverterService.toObject(eventEntity.getPayload(), Object.class)
-                             .orElse(null);
+            .orElse(null);
         return Event.builder()
-                   .timestamp(eventEntity.getTimestamp())
-                   .consentId(eventEntity.getConsentId())
-                   .paymentId(eventEntity.getPaymentId())
-                   .payload(payload)
-                   .eventOrigin(eventEntity.getEventOrigin())
-                   .eventType(eventEntity.getEventType())
-                   .instanceId(eventEntity.getInstanceId())
-                   .psuIdData(mapToPsuIdData(eventEntity.getPsuData()))
-                   .tppAuthorisationNumber(eventEntity.getTppAuthorisationNumber())
-                   .xRequestId(eventEntity.getXRequestId() != null ? UUID.fromString(eventEntity.getXRequestId()) : null)
-                   .build();
-    }
-
-    private PsuDataEmbeddable mapToPsuDataEmbeddable(PsuIdData psuIdData) {
-        return Optional.ofNullable(psuIdData)
-                   .map(psu -> new PsuDataEmbeddable(psu.getPsuId(),
-                                                     psu.getPsuIdType(),
-                                                     psu.getPsuCorporateId(),
-                                                     psu.getPsuCorporateIdType()))
-                   .orElse(null);
-    }
-
-    private PsuIdData mapToPsuIdData(PsuDataEmbeddable psuDataEmbeddable) {
-        return Optional.ofNullable(psuDataEmbeddable)
-                   .map(psu -> new PsuIdData(psu.getPsuId(),
-                                             psu.getPsuIdType(),
-                                             psu.getPsuCorporateId(),
-                                             psu.getPsuCorporateIdType()))
-                   .orElse(null);
+            .timestamp(eventEntity.getTimestamp())
+            .consentId(eventEntity.getConsentId())
+            .paymentId(eventEntity.getPaymentId())
+            .payload(payload)
+            .eventOrigin(eventEntity.getEventOrigin())
+            .eventType(eventEntity.getEventType())
+            .instanceId(eventEntity.getInstanceId())
+            .psuIdData(psuDataMapper.mapToPsuIdDataList(eventEntity.getPsuDataList()))
+            .tppAuthorisationNumber(eventEntity.getTppAuthorisationNumber())
+            .xRequestId(eventEntity.getXRequestId() != null ? UUID.fromString(eventEntity.getXRequestId()) : null)
+            .build();
     }
 }

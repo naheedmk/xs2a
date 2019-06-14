@@ -105,16 +105,18 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
      */
     @Override
     public ResponseObject<Xs2aUpdatePisCommonPaymentPsuDataResponse> updatePisCommonPaymentPsuData(Xs2aUpdatePisCommonPaymentPsuDataRequest request) {
-        xs2aEventService.recordPisTppRequest(request.getPaymentId(), EventType.UPDATE_PAYMENT_AUTHORISATION_PSU_DATA_REQUEST_RECEIVED, request);
-
-        Optional<PisCommonPaymentResponse> pisCommonPaymentResponse = pisCommonPaymentService.getPisCommonPaymentById(request.getPaymentId());
-        if (!pisCommonPaymentResponse.isPresent()) {
+        Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = pisCommonPaymentService.getPisCommonPaymentById(request.getPaymentId());
+        if (!pisCommonPaymentResponseOptional.isPresent()) {
             return ResponseObject.<Xs2aUpdatePisCommonPaymentPsuDataResponse>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
         }
 
-        ValidationResult validationResult = updatePisCommonPaymentPsuDataValidator.validate(new UpdatePisCommonPaymentPsuDataPO(pisCommonPaymentResponse.get(), request.getAuthorisationId()));
+        PisCommonPaymentResponse pisCommonPaymentResponse = pisCommonPaymentResponseOptional.get();
+
+        xs2aEventService.recordPisTppRequest(request.getPaymentId(), pisCommonPaymentResponse.getPsuData(), EventType.UPDATE_PAYMENT_AUTHORISATION_PSU_DATA_REQUEST_RECEIVED, request);
+
+        ValidationResult validationResult = updatePisCommonPaymentPsuDataValidator.validate(new UpdatePisCommonPaymentPsuDataPO(pisCommonPaymentResponse, request.getAuthorisationId()));
         if (validationResult.isNotValid()) {
             return ResponseObject.<Xs2aUpdatePisCommonPaymentPsuDataResponse>builder()
                        .fail(validationResult.getMessageError())
@@ -142,16 +144,18 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
      */
     @Override
     public ResponseObject<Xs2aAuthorisationSubResources> getPaymentInitiationAuthorisations(String paymentId) {
-        xs2aEventService.recordPisTppRequest(paymentId, EventType.GET_PAYMENT_AUTHORISATION_REQUEST_RECEIVED);
-
-        Optional<PisCommonPaymentResponse> pisCommonPaymentResponse = pisCommonPaymentService.getPisCommonPaymentById(paymentId);
-        if (!pisCommonPaymentResponse.isPresent()) {
+        Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = pisCommonPaymentService.getPisCommonPaymentById(paymentId);
+        if (!pisCommonPaymentResponseOptional.isPresent()) {
             return ResponseObject.<Xs2aAuthorisationSubResources>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
         }
 
-        ValidationResult validationResult = getPaymentAuthorisationsValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse.get()));
+        PisCommonPaymentResponse pisCommonPaymentResponse = pisCommonPaymentResponseOptional.get();
+
+        xs2aEventService.recordPisTppRequest(paymentId, pisCommonPaymentResponse.getPsuData(), EventType.GET_PAYMENT_AUTHORISATION_REQUEST_RECEIVED);
+
+        ValidationResult validationResult = getPaymentAuthorisationsValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse));
         if (validationResult.isNotValid()) {
             return ResponseObject.<Xs2aAuthorisationSubResources>builder()
                        .fail(validationResult.getMessageError())
@@ -175,16 +179,18 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
      */
     @Override
     public ResponseObject<ScaStatus> getPaymentInitiationAuthorisationScaStatus(String paymentId, String authorisationId) {
-        xs2aEventService.recordPisTppRequest(paymentId, EventType.GET_PAYMENT_SCA_STATUS_REQUEST_RECEIVED);
-
-        Optional<PisCommonPaymentResponse> pisCommonPaymentResponse = pisCommonPaymentService.getPisCommonPaymentById(paymentId);
-        if (!pisCommonPaymentResponse.isPresent()) {
+        Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = pisCommonPaymentService.getPisCommonPaymentById(paymentId);
+        if (!pisCommonPaymentResponseOptional.isPresent()) {
             return ResponseObject.<ScaStatus>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
         }
 
-        ValidationResult validationResult = getPaymentAuthorisationScaStatusValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse.get()));
+        PisCommonPaymentResponse pisCommonPaymentResponse = pisCommonPaymentResponseOptional.get();
+
+        xs2aEventService.recordPisTppRequest(paymentId, pisCommonPaymentResponse.getPsuData(), EventType.GET_PAYMENT_SCA_STATUS_REQUEST_RECEIVED);
+
+        ValidationResult validationResult = getPaymentAuthorisationScaStatusValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse));
         if (validationResult.isNotValid()) {
             return ResponseObject.<ScaStatus>builder()
                        .fail(validationResult.getMessageError())
@@ -206,16 +212,18 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
     }
 
     private ResponseObject<Xs2aCreatePisAuthorisationResponse> createPisAuthorisation(String paymentId, String paymentService, PsuIdData psuData) {
-        xs2aEventService.recordPisTppRequest(paymentId, EventType.START_PAYMENT_AUTHORISATION_REQUEST_RECEIVED);
-
-        Optional<PisCommonPaymentResponse> pisCommonPaymentResponse = pisCommonPaymentService.getPisCommonPaymentById(paymentId);
-        if (!pisCommonPaymentResponse.isPresent()) {
+        Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = pisCommonPaymentService.getPisCommonPaymentById(paymentId);
+        if (!pisCommonPaymentResponseOptional.isPresent()) {
             return ResponseObject.<Xs2aCreatePisAuthorisationResponse>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
         }
 
-        ValidationResult validationResult = createPisAuthorisationValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse.get()));
+        PisCommonPaymentResponse pisCommonPaymentResponse = pisCommonPaymentResponseOptional.get();
+
+        xs2aEventService.recordPisTppRequest(paymentId, pisCommonPaymentResponse.getPsuData(), EventType.START_PAYMENT_AUTHORISATION_REQUEST_RECEIVED);
+
+        ValidationResult validationResult = createPisAuthorisationValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse));
         if (validationResult.isNotValid()) {
             return ResponseObject.<Xs2aCreatePisAuthorisationResponse>builder()
                        .fail(validationResult.getMessageError())

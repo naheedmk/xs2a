@@ -67,16 +67,18 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
      */
     @Override
     public ResponseObject<Xs2aCreatePisCancellationAuthorisationResponse> createPisCancellationAuthorization(String paymentId, PsuIdData psuData, PaymentType paymentType, String paymentProduct) {
-        xs2aEventService.recordPisTppRequest(paymentId, EventType.START_PAYMENT_CANCELLATION_AUTHORISATION_REQUEST_RECEIVED);
-
-        Optional<PisCommonPaymentResponse> pisCommonPaymentResponse = xs2aPisCommonPaymentService.getPisCommonPaymentById(paymentId);
-        if (!pisCommonPaymentResponse.isPresent()) {
+        Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = xs2aPisCommonPaymentService.getPisCommonPaymentById(paymentId);
+        if (!pisCommonPaymentResponseOptional.isPresent()) {
             return ResponseObject.<Xs2aCreatePisCancellationAuthorisationResponse>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
         }
 
-        ValidationResult validationResult = createPisCancellationAuthorisationValidator.validate(new CreatePisCancellationAuthorisationPO(pisCommonPaymentResponse.get(), psuData));
+        PisCommonPaymentResponse pisCommonPaymentResponse = pisCommonPaymentResponseOptional.get();
+
+        xs2aEventService.recordPisTppRequest(paymentId, pisCommonPaymentResponse.getPsuData(), EventType.START_PAYMENT_CANCELLATION_AUTHORISATION_REQUEST_RECEIVED);
+
+        ValidationResult validationResult = createPisCancellationAuthorisationValidator.validate(new CreatePisCancellationAuthorisationPO(pisCommonPaymentResponse, psuData));
         if (validationResult.isNotValid()) {
             return ResponseObject.<Xs2aCreatePisCancellationAuthorisationResponse>builder()
                        .fail(validationResult.getMessageError())
@@ -102,16 +104,19 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
     @Override
     public ResponseObject<Xs2aUpdatePisCommonPaymentPsuDataResponse> updatePisCancellationPsuData(Xs2aUpdatePisCommonPaymentPsuDataRequest request) {
         String paymentId = request.getPaymentId();
-        xs2aEventService.recordPisTppRequest(paymentId, EventType.UPDATE_PAYMENT_CANCELLATION_PSU_DATA_REQUEST_RECEIVED, request);
 
-        Optional<PisCommonPaymentResponse> pisCommonPaymentResponse = xs2aPisCommonPaymentService.getPisCommonPaymentById(paymentId);
-        if (!pisCommonPaymentResponse.isPresent()) {
+        Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = xs2aPisCommonPaymentService.getPisCommonPaymentById(paymentId);
+        if (!pisCommonPaymentResponseOptional.isPresent()) {
             return ResponseObject.<Xs2aUpdatePisCommonPaymentPsuDataResponse>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
         }
 
-        ValidationResult validationResult = updatePisCancellationPsuDataValidator.validate(new UpdatePisCancellationPsuDataPO(pisCommonPaymentResponse.get(), request.getAuthorisationId()));
+        PisCommonPaymentResponse pisCommonPaymentResponse = pisCommonPaymentResponseOptional.get();
+
+        xs2aEventService.recordPisTppRequest(paymentId, pisCommonPaymentResponse.getPsuData(), EventType.UPDATE_PAYMENT_CANCELLATION_PSU_DATA_REQUEST_RECEIVED, request);
+
+        ValidationResult validationResult = updatePisCancellationPsuDataValidator.validate(new UpdatePisCancellationPsuDataPO(pisCommonPaymentResponse, request.getAuthorisationId()));
         if (validationResult.isNotValid()) {
             return ResponseObject.<Xs2aUpdatePisCommonPaymentPsuDataResponse>builder()
                        .fail(validationResult.getMessageError())
@@ -139,16 +144,18 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
      */
     @Override
     public ResponseObject<Xs2aPaymentCancellationAuthorisationSubResource> getPaymentInitiationCancellationAuthorisationInformation(String paymentId) {
-        xs2aEventService.recordPisTppRequest(paymentId, EventType.GET_PAYMENT_CANCELLATION_AUTHORISATION_REQUEST_RECEIVED);
-
-        Optional<PisCommonPaymentResponse> pisCommonPaymentResponse = xs2aPisCommonPaymentService.getPisCommonPaymentById(paymentId);
-        if (!pisCommonPaymentResponse.isPresent()) {
+        Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = xs2aPisCommonPaymentService.getPisCommonPaymentById(paymentId);
+        if (!pisCommonPaymentResponseOptional.isPresent()) {
             return ResponseObject.<Xs2aPaymentCancellationAuthorisationSubResource>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
         }
 
-        ValidationResult validationResult = getPaymentAuthorisationsValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse.get()));
+        PisCommonPaymentResponse pisCommonPaymentResponse = pisCommonPaymentResponseOptional.get();
+
+        xs2aEventService.recordPisTppRequest(paymentId, pisCommonPaymentResponse.getPsuData(), EventType.GET_PAYMENT_CANCELLATION_AUTHORISATION_REQUEST_RECEIVED);
+
+        ValidationResult validationResult = getPaymentAuthorisationsValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse));
         if (validationResult.isNotValid()) {
             return ResponseObject.<Xs2aPaymentCancellationAuthorisationSubResource>builder()
                        .fail(validationResult.getMessageError())
@@ -172,16 +179,18 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
      */
     @Override
     public ResponseObject<ScaStatus> getPaymentCancellationAuthorisationScaStatus(String paymentId, String authorisationId) {
-        xs2aEventService.recordPisTppRequest(paymentId, EventType.GET_PAYMENT_CANCELLATION_SCA_STATUS_REQUEST_RECEIVED);
-
-        Optional<PisCommonPaymentResponse> pisCommonPaymentResponse = xs2aPisCommonPaymentService.getPisCommonPaymentById(paymentId);
-        if (!pisCommonPaymentResponse.isPresent()) {
+        Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = xs2aPisCommonPaymentService.getPisCommonPaymentById(paymentId);
+        if (!pisCommonPaymentResponseOptional.isPresent()) {
             return ResponseObject.<ScaStatus>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
         }
 
-        ValidationResult validationResult = getPaymentAuthorisationScaStatusValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse.get()));
+        PisCommonPaymentResponse pisCommonPaymentResponse = pisCommonPaymentResponseOptional.get();
+
+        xs2aEventService.recordPisTppRequest(paymentId, pisCommonPaymentResponse.getPsuData(), EventType.GET_PAYMENT_CANCELLATION_SCA_STATUS_REQUEST_RECEIVED);
+
+        ValidationResult validationResult = getPaymentAuthorisationScaStatusValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse));
         if (validationResult.isNotValid()) {
             return ResponseObject.<ScaStatus>builder()
                        .fail(validationResult.getMessageError())

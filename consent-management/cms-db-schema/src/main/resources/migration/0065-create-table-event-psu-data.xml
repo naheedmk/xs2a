@@ -1,0 +1,99 @@
+<!--
+  ~ Copyright 2018-2019 adorsys GmbH & Co KG
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog logicalFilePath="db.changelog-1.0.xml" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="2019-06-14-1" author="age@adorsys.de">
+        <comment>Create table event_psu_data</comment>
+
+        <createTable tableName="event_psu_data">
+            <column name="psu_data_id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="psu_id" type="VARCHAR(50)"/>
+            <column name="psu_id_type" type="VARCHAR(50)"/>
+            <column name="psu_corporate_id" type="VARCHAR(50)"/>
+            <column name="psu_corporate_id_type" type="VARCHAR(50)"/>
+            <column name="instance_id" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2019-06-14-2" author="age@adorsys.de">
+        <comment>Copy existing PSU Data from event table to event_psu_data</comment>
+
+        <sql dbms="postgresql">
+            INSERT INTO event_psu_data (psu_data_id, event_id, psu_id, psu_id_type, psu_corporate_id, psu_corporate_id_type, instance_id)
+            SELECT NEXTVAL('psu_data_id_seq'), c.* FROM (SELECT id, psu_id, psu_id_type, psu_corporate_id, psu_corporate_id_type, instance_id
+            FROM event WHERE psu_id IS NOT NULL) as c;
+        </sql>
+
+        <sql dbms="mariadb">
+            INSERT INTO event_psu_data (psu_data_id, event_id, psu_id, psu_id_type, psu_corporate_id, psu_corporate_id_type, instance_id)
+            SELECT NEXTVAL(psu_data_id_seq), c.* FROM (SELECT id, psu_id, psu_id_type, psu_corporate_id, psu_corporate_id_type, instance_id
+            FROM event WHERE psu_id IS NOT NULL) as c;
+        </sql>
+
+        <sql dbms="oracle">
+            INSERT INTO event_psu_data (psu_data_id, event_id, psu_id, psu_id_type, psu_corporate_id, psu_corporate_id_type, instance_id)
+            SELECT psu_data_id_seq.nextval, c.* FROM (SELECT id, psu_id, psu_id_type, psu_corporate_id, psu_corporate_id_type, instance_id
+            FROM event WHERE psu_id IS NOT NULL) as c;
+        </sql>
+    </changeSet>
+
+    <changeSet id="2019-06-14-3" author="age@adorsys.de">
+        <comment>Copy existing PSU Data from event_psu_data table to psu_data</comment>
+
+        <sql>
+            INSERT INTO psu_data (id, psu_id, psu_id_type, psu_corporate_id, psu_corporate_id_type, instance_id)
+            SELECT psu_data_id, psu_id, psu_id_type, psu_corporate_id, psu_corporate_id_type, instance_id
+            FROM event_psu_data;
+        </sql>
+    </changeSet>
+
+    <changeSet id="2019-06-14-4" author="age@adorsys.de">
+        <comment>cleanup</comment>
+
+        <dropColumn tableName="event" columnName="psu_id"/>
+        <dropColumn tableName="event" columnName="psu_id_type"/>
+        <dropColumn tableName="event" columnName="psu_corporate_id"/>
+        <dropColumn tableName="event" columnName="psu_corporate_id_type"/>
+        <dropColumn tableName="event_psu_data" columnName="psu_id"/>
+        <dropColumn tableName="event_psu_data" columnName="psu_id_type"/>
+        <dropColumn tableName="event_psu_data" columnName="psu_corporate_id"/>
+        <dropColumn tableName="event_psu_data" columnName="psu_corporate_id_type"/>
+        <dropColumn tableName="event_psu_data" columnName="instance_id"/>
+    </changeSet>
+
+    <changeSet id="2019-06-14-5" author="age@adorsys.de">
+        <comment>Add foreign keys to event_psu_data table</comment>
+
+        <addForeignKeyConstraint baseColumnNames="psu_data_id" baseTableName="event_psu_data"
+                                 constraintName="fk_event_psu_data" deferrable="false"
+                                 initiallyDeferred="false"
+                                 referencedColumnNames="id" referencedTableName="psu_data"/>
+
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="event_psu_data"
+                                 constraintName="fk_psu_data_event" deferrable="false"
+                                 initiallyDeferred="false"
+                                 referencedColumnNames="id" referencedTableName="event"/>
+    </changeSet>
+
+</databaseChangeLog>

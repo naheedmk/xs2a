@@ -126,7 +126,7 @@ public class PaymentAuthorisationServiceTest {
         paymentAuthorisationService.createPisAuthorisation(CREATE_AUTHORISATION_REQUEST);
 
         // Then
-        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), argumentCaptor.capture());
+        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.START_PAYMENT_AUTHORISATION_REQUEST_RECEIVED);
     }
 
@@ -169,7 +169,7 @@ public class PaymentAuthorisationServiceTest {
         paymentAuthorisationService.updatePisCommonPaymentPsuData(request);
 
         // Then
-        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), argumentCaptor.capture(), any());
+        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), nullable(List.class), argumentCaptor.capture(), any());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.UPDATE_PAYMENT_AUTHORISATION_PSU_DATA_REQUEST_RECEIVED);
     }
 
@@ -213,7 +213,7 @@ public class PaymentAuthorisationServiceTest {
         ResponseObject<Xs2aAuthorisationSubResources> paymentInitiationAuthorisation = paymentAuthorisationService.getPaymentInitiationAuthorisations(PAYMENT_ID);
 
         // Then
-        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), argumentCaptor.capture());
+        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.GET_PAYMENT_AUTHORISATION_REQUEST_RECEIVED);
 
         assertThat(paymentInitiationAuthorisation.getBody()).isNotNull();
@@ -272,7 +272,7 @@ public class PaymentAuthorisationServiceTest {
 
 
         // Then
-        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), argumentCaptor.capture());
+        verify(xs2aEventService, times(1)).recordPisTppRequest(eq(PAYMENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.GET_PAYMENT_SCA_STATUS_REQUEST_RECEIVED);
     }
 

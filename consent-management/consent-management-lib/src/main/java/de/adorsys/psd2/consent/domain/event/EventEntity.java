@@ -17,13 +17,15 @@
 package de.adorsys.psd2.consent.domain.event;
 
 import de.adorsys.psd2.consent.domain.InstanceDependableEntity;
-import de.adorsys.psd2.consent.domain.PsuDataEmbeddable;
+import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.xs2a.core.event.EventOrigin;
 import de.adorsys.psd2.xs2a.core.event.EventType;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity(name = "event")
@@ -54,8 +56,11 @@ public class EventEntity extends InstanceDependableEntity {
     @Enumerated(value = EnumType.STRING)
     private EventType eventType;
 
-    @Embedded
-    private PsuDataEmbeddable psuData;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "event_psu_data",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "psu_data_id"))
+    private List<PsuData> psuDataList = new ArrayList<>();
 
     @Column(name = "tpp_authorisation_number")
     private String tppAuthorisationNumber;

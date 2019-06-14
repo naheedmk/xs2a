@@ -28,6 +28,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -135,7 +136,7 @@ public class EventServiceInternalEncryptedTest {
         return Event.builder()
                    .consentId(consentId)
                    .paymentId(paymentId)
-                   .psuIdData(buildPsuIdData())
+                   .psuIdData(Collections.singletonList(buildPsuIdData()))
                    .tppAuthorisationNumber(AUTHORISATION_NUMBER)
                    .xRequestId(REQUEST_ID)
                    .build();

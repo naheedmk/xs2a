@@ -107,7 +107,7 @@ public class ConsentService {
      * @return CreateConsentResponse representing the complete response to create consent request
      */
     public ResponseObject<CreateConsentResponse> createAccountConsentsWithResponse(CreateConsentReq request, PsuIdData psuData, boolean explicitPreferred, TppRedirectUri tppRedirectUri) { // NOPMD // TODO we need to refactor this method and class. https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/749
-        xs2aEventService.recordTppRequest(EventType.CREATE_AIS_CONSENT_REQUEST_RECEIVED, request);
+        xs2aEventService.recordTppRequest(EventType.CREATE_AIS_CONSENT_REQUEST_RECEIVED, psuData, request);
 
         ValidationResult validationResult = createConsentRequestValidator.validate(new CreateConsentRequestObject(request, psuData));
         if (validationResult.isNotValid()) {
@@ -186,7 +186,6 @@ public class ConsentService {
      * @return ConsentStatus
      */
     public ResponseObject<ConsentStatusResponse> getAccountConsentsStatusById(String consentId) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.GET_AIS_CONSENT_STATUS_REQUEST_RECEIVED);
         ResponseObject.ResponseBuilder<ConsentStatusResponse> responseBuilder = ResponseObject.builder();
 
         Optional<AccountConsent> validatedAccountConsentOptional = aisConsentService.getAccountConsentById(consentId);
@@ -198,6 +197,8 @@ public class ConsentService {
         }
 
         AccountConsent validatedAccountConsent = validatedAccountConsentOptional.get();
+
+        xs2aEventService.recordAisTppRequest(consentId, validatedAccountConsent.getPsuIdDataList(), EventType.GET_AIS_CONSENT_STATUS_REQUEST_RECEIVED);
 
         ValidationResult validationResult = getAccountConsentsStatusByIdValidator.validate(new CommonConsentObject(validatedAccountConsent));
         if (validationResult.isNotValid()) {
@@ -233,7 +234,6 @@ public class ConsentService {
      * @return VOID
      */
     public ResponseObject<Void> deleteAccountConsentsById(String consentId) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.DELETE_AIS_CONSENT_REQUEST_RECEIVED);
         Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
 
         if (accountConsentOptional.isPresent()) {
@@ -242,6 +242,9 @@ public class ConsentService {
             //TODO provide correct PSU Data to the SPI https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/701
 
             AccountConsent accountConsent = accountConsentOptional.get();
+
+            xs2aEventService.recordAisTppRequest(consentId, accountConsent.getPsuIdDataList(), EventType.DELETE_AIS_CONSENT_REQUEST_RECEIVED);
+
             ValidationResult validationResult = deleteAccountConsentsByIdValidator.validate(new CommonConsentObject(accountConsent));
             if (validationResult.isNotValid()) {
                 return ResponseObject.<Void>builder()
@@ -279,8 +282,6 @@ public class ConsentService {
      * @return AccountConsent requested by consentId
      */
     public ResponseObject<AccountConsent> getAccountConsentById(String consentId) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.GET_AIS_CONSENT_REQUEST_RECEIVED);
-
         Optional<AccountConsent> consentOptional = aisConsentService.getInitialAccountConsentById(consentId);
 
         if (!consentOptional.isPresent()) {
@@ -290,6 +291,8 @@ public class ConsentService {
         }
 
         AccountConsent consent = consentOptional.get();
+
+        xs2aEventService.recordAisTppRequest(consentId, consent.getPsuIdDataList(), EventType.GET_AIS_CONSENT_REQUEST_RECEIVED);
 
         ValidationResult validationResult = getAccountConsentByIdValidator.validate(new CommonConsentObject(consent));
         if (validationResult.isNotValid()) {
@@ -367,24 +370,26 @@ public class ConsentService {
     }
 
     private ResponseObject<CreateConsentAuthorizationResponse> createConsentAuthorizationWithResponse(PsuIdData psuData, String consentId) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.START_AIS_CONSENT_AUTHORISATION_REQUEST_RECEIVED);
-
         // TODO temporary solution: CMS should be refactored to return response objects instead of Strings, Enums, Booleans etc., so we should receive this error from CMS https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/581
-        Optional<AccountConsent> accountConsent = aisConsentService.getAccountConsentById(consentId);
+        Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
 
-        if (!accountConsent.isPresent()) {
+        if (!accountConsentOptional.isPresent()) {
             return ResponseObject.<CreateConsentAuthorizationResponse>builder()
                        .fail(AIS_403, of(CONSENT_UNKNOWN_403)).build();
         }
 
-        ValidationResult validationResult = createConsentAuthorisationValidator.validate(new CommonConsentObject(accountConsent.get()));
+        AccountConsent accountConsent = accountConsentOptional.get();
+
+        xs2aEventService.recordAisTppRequest(consentId, accountConsent.getPsuIdDataList(), EventType.START_AIS_CONSENT_AUTHORISATION_REQUEST_RECEIVED);
+
+        ValidationResult validationResult = createConsentAuthorisationValidator.validate(new CommonConsentObject(accountConsent));
         if (validationResult.isNotValid()) {
             return ResponseObject.<CreateConsentAuthorizationResponse>builder()
                        .fail(validationResult.getMessageError())
                        .build();
         }
 
-        if (accountConsent.get().isExpired()) {
+        if (accountConsent.isExpired()) {
             return ResponseObject.<CreateConsentAuthorizationResponse>builder()
                        .fail(AIS_401, of(CONSENT_EXPIRED))
                        .build();
@@ -399,7 +404,7 @@ public class ConsentService {
     }
 
     public ResponseObject<UpdateConsentPsuDataResponse> updateConsentPsuData(UpdateConsentPsuDataReq updatePsuData) {
-        xs2aEventService.recordAisTppRequest(updatePsuData.getConsentId(), EventType.UPDATE_AIS_CONSENT_PSU_DATA_REQUEST_RECEIVED, updatePsuData);
+        xs2aEventService.recordAisTppRequest(updatePsuData.getConsentId(), updatePsuData.getPsuData(), EventType.UPDATE_AIS_CONSENT_PSU_DATA_REQUEST_RECEIVED, updatePsuData);
 
         if (!endpointAccessCheckerService.isEndpointAccessible(updatePsuData.getAuthorizationId(), updatePsuData.getConsentId())) {
             return ResponseObject.<UpdateConsentPsuDataResponse>builder()
@@ -452,15 +457,17 @@ public class ConsentService {
     }
 
     public ResponseObject<Xs2aAuthorisationSubResources> getConsentInitiationAuthorisations(String consentId) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.GET_CONSENT_AUTHORISATION_REQUEST_RECEIVED);
-
-        Optional<AccountConsent> accountConsent = aisConsentService.getAccountConsentById(consentId);
-        if (!accountConsent.isPresent()) {
+        Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
+        if (!accountConsentOptional.isPresent()) {
             return ResponseObject.<Xs2aAuthorisationSubResources>builder()
                        .fail(AIS_403, of(CONSENT_UNKNOWN_403)).build();
         }
 
-        ValidationResult validationResult = getConsentAuthorisationsValidator.validate(new CommonConsentObject(accountConsent.get()));
+        AccountConsent accountConsent = accountConsentOptional.get();
+
+        xs2aEventService.recordAisTppRequest(consentId, accountConsent.getPsuIdDataList(), EventType.GET_CONSENT_AUTHORISATION_REQUEST_RECEIVED);
+
+        ValidationResult validationResult = getConsentAuthorisationsValidator.validate(new CommonConsentObject(accountConsent));
         if (validationResult.isNotValid()) {
             return ResponseObject.<Xs2aAuthorisationSubResources>builder()
                        .fail(validationResult.getMessageError())
@@ -482,15 +489,17 @@ public class ConsentService {
      * @return Response containing SCA status of the authorisation or corresponding error
      */
     public ResponseObject<ScaStatus> getConsentAuthorisationScaStatus(String consentId, String authorisationId) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.GET_CONSENT_SCA_STATUS_REQUEST_RECEIVED);
-
-        Optional<AccountConsent> accountConsent = aisConsentService.getAccountConsentById(consentId);
-        if (!accountConsent.isPresent()) {
+        Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
+        if (!accountConsentOptional.isPresent()) {
             return ResponseObject.<ScaStatus>builder()
                        .fail(AIS_403, of(CONSENT_UNKNOWN_403)).build();
         }
 
-        ValidationResult validationResult = getConsentAuthorisationScaStatusValidator.validate(new CommonConsentObject(accountConsent.get()));
+        AccountConsent accountConsent = accountConsentOptional.get();
+
+        xs2aEventService.recordAisTppRequest(consentId, accountConsent.getPsuIdDataList(), EventType.GET_CONSENT_SCA_STATUS_REQUEST_RECEIVED);
+
+        ValidationResult validationResult = getConsentAuthorisationScaStatusValidator.validate(new CommonConsentObject(accountConsent));
         if (validationResult.isNotValid()) {
             return ResponseObject.<ScaStatus>builder()
                        .fail(validationResult.getMessageError())

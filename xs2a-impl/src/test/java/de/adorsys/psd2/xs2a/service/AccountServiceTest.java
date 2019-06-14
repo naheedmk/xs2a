@@ -25,6 +25,7 @@ import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.event.EventType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
+import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
@@ -346,7 +347,7 @@ public class AccountServiceTest {
         accountService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
 
         // Then
-        verify(xs2aEventService, times(1)).recordAisTppRequest(eq(CONSENT_ID), argumentCaptor.capture());
+        verify(xs2aEventService, times(1)).recordAisTppRequest(eq(CONSENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.READ_ACCOUNT_LIST_REQUEST_RECEIVED);
     }
 
@@ -492,7 +493,7 @@ public class AccountServiceTest {
         accountService.getAccountDetails(CONSENT_ID, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI);
 
         // Then
-        verify(xs2aEventService, times(1)).recordAisTppRequest(eq(CONSENT_ID), argumentCaptor.capture());
+        verify(xs2aEventService, times(1)).recordAisTppRequest(eq(CONSENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.READ_ACCOUNT_DETAILS_REQUEST_RECEIVED);
     }
 
@@ -640,7 +641,7 @@ public class AccountServiceTest {
         accountService.getBalancesReport(CONSENT_ID, ACCOUNT_ID, REQUEST_URI);
 
         // Then
-        verify(xs2aEventService, times(1)).recordAisTppRequest(eq(CONSENT_ID), argumentCaptor.capture());
+        verify(xs2aEventService, times(1)).recordAisTppRequest(eq(CONSENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.READ_BALANCE_REQUEST_RECEIVED);
     }
 
@@ -820,7 +821,7 @@ public class AccountServiceTest {
         accountService.getTransactionsReportByPeriod(XS2A_TRANSACTIONS_REPORT_BY_PERIOD_REQUEST);
 
         // Then
-        verify(xs2aEventService, times(1)).recordAisTppRequest(eq(CONSENT_ID), argumentCaptor.capture());
+        verify(xs2aEventService, times(1)).recordAisTppRequest(eq(CONSENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.READ_TRANSACTION_LIST_REQUEST_RECEIVED);
     }
 
@@ -975,7 +976,7 @@ public class AccountServiceTest {
         accountService.getTransactionDetails(CONSENT_ID, ACCOUNT_ID, TRANSACTION_ID, REQUEST_URI);
 
         // Then
-        verify(xs2aEventService, times(1)).recordAisTppRequest(eq(CONSENT_ID), argumentCaptor.capture());
+        verify(xs2aEventService, times(1)).recordAisTppRequest(eq(CONSENT_ID), nullable(List.class), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isEqualTo(EventType.READ_TRANSACTION_DETAILS_REQUEST_RECEIVED);
     }
 

@@ -76,7 +76,7 @@ public class Xs2aEventServiceTest {
         ArgumentCaptor<Event> argumentCaptor = ArgumentCaptor.forClass(Event.class);
 
         // When
-        xs2aEventService.recordAisTppRequest(CONSENT_ID, EVENT_TYPE, null);
+        xs2aEventService.recordAisTppRequest(CONSENT_ID, PSU_ID_DATA, EVENT_TYPE, null);
 
         // Then
         verify(eventService).recordEvent(argumentCaptor.capture());
@@ -96,7 +96,7 @@ public class Xs2aEventServiceTest {
         ArgumentCaptor<Event> argumentCaptor = ArgumentCaptor.forClass(Event.class);
 
         // When
-        xs2aEventService.recordPisTppRequest(PAYMENT_ID, EVENT_TYPE, null);
+        xs2aEventService.recordPisTppRequest(PAYMENT_ID, Collections.singletonList(PSU_ID_DATA), EVENT_TYPE, null);
 
         // Then
         verify(eventService).recordEvent(argumentCaptor.capture());
