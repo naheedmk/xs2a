@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +51,7 @@ public class Xs2aEventServiceTest {
     private static final String TPP_IP = "1.2.3.4";
     private static final EventType EVENT_TYPE = EventType.PAYMENT_INITIATION_REQUEST_RECEIVED;
     private static final String AUTHORISATION_NUMBER = "999";
-    private static PsuIdData PSU_ID_DATA;
+    private static List<PsuIdData> PSU_ID_DATA;
 
     @Mock
     private TppService tppService;
@@ -64,7 +65,7 @@ public class Xs2aEventServiceTest {
 
     @Before
     public void setUp() {
-        PSU_ID_DATA = buildPsuIdData();
+        PSU_ID_DATA = Collections.singletonList(buildPsuIdData());
         when(eventService.recordEvent(any(Event.class))).thenReturn(true);
         when(requestProviderService.getRequestData()).thenReturn(buildRequestData());
         when(tppService.getTppInfo()).thenReturn(buildTppInfo());
@@ -96,7 +97,7 @@ public class Xs2aEventServiceTest {
         ArgumentCaptor<Event> argumentCaptor = ArgumentCaptor.forClass(Event.class);
 
         // When
-        xs2aEventService.recordPisTppRequest(PAYMENT_ID, Collections.singletonList(PSU_ID_DATA), EVENT_TYPE, null);
+        xs2aEventService.recordPisTppRequest(PAYMENT_ID, PSU_ID_DATA, EVENT_TYPE, null);
 
         // Then
         verify(eventService).recordEvent(argumentCaptor.capture());
