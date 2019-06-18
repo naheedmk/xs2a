@@ -1186,10 +1186,10 @@ public class AccountServiceTest {
     }
 
     private static Xs2aAccountAccess createAccountAccess(AccountReference accountReference) {
-        return new Xs2aAccountAccess(Collections.singletonList(accountReference), Collections.singletonList(accountReference), Collections.singletonList(accountReference), null, null);
+        return new Xs2aAccountAccess(Collections.singletonList(accountReference), Collections.singletonList(accountReference), Collections.singletonList(accountReference), null, null, null);
     }
 
     private static Xs2aAccountAccess createGlobalAccountAccess(AccountReference accountReference) {
-        return new Xs2aAccountAccess(Collections.singletonList(accountReference), Collections.singletonList(accountReference), Collections.singletonList(accountReference), AccountAccessType.ALL_ACCOUNTS_WITH_BALANCES, AccountAccessType.ALL_ACCOUNTS_WITH_BALANCES);
+        return new Xs2aAccountAccess(Collections.singletonList(accountReference), Collections.singletonList(accountReference), Collections.singletonList(accountReference), AccountAccessType.ALL_ACCOUNTS, AccountAccessType.ALL_ACCOUNTS, null);
     }
 }

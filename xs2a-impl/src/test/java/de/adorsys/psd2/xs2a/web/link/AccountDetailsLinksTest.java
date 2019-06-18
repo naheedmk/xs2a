@@ -55,8 +55,8 @@ public class AccountDetailsLinksTest {
     public void create_globalConsent_success() {
         AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, ACCOUNT_ID, xs2aAccountAccessGlobal);
 
-        expectedLinks.setBalances("http://url/v1/accounts/33333-999999999/balances");
-        expectedLinks.setTransactions("http://url/v1/accounts/33333-999999999/transactions");
+        expectedLinks.setBalances(new HrefType("http://url/v1/accounts/33333-999999999/balances"));
+        expectedLinks.setTransactions(new HrefType("http://url/v1/accounts/33333-999999999/transactions"));
         assertEquals(expectedLinks, links);
     }
 
