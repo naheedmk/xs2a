@@ -102,6 +102,8 @@ public class GetTransactionsReportValidatorTest {
     private AccountReference accountReference;
     @Mock
     private AspspProfileServiceWrapper aspspProfileService;
+    @Mock
+    private AllAvailableAccountsConsentValidator allAvailableAccountsConsentValidator;
 
     @Before
     public void setUp() {
@@ -116,6 +118,8 @@ public class GetTransactionsReportValidatorTest {
         when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(false);
         when(aspspProfileService.getAvailableBookingStatuses())
             .thenReturn(Collections.singletonList(BOOKING_STATUS));
+        when(allAvailableAccountsConsentValidator.validate(null))
+            .thenReturn(ValidationResult.valid());
     }
 
     @Test

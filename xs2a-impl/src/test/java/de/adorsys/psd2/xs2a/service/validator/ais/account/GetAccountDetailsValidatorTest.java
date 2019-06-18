@@ -75,6 +75,9 @@ public class GetAccountDetailsValidatorTest {
     private AccountAccessValidator accountAccessValidator;
     @Mock
     private AccountReference accountReference;
+    @Mock
+    private AllAvailableAccountsConsentValidator allAvailableAccountsConsentValidator;
+
 
     @Before
     public void setUp() {
@@ -85,6 +88,8 @@ public class GetAccountDetailsValidatorTest {
             .thenReturn(ValidationResult.valid());
         when(aisTppInfoValidator.validateTpp(INVALID_TPP_INFO))
             .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
+        when(allAvailableAccountsConsentValidator.validate(null))
+            .thenReturn(ValidationResult.valid());
     }
 
     @Test

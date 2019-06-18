@@ -56,6 +56,7 @@ public class GetTransactionsReportValidator extends AbstractAisTppValidator<Tran
     private final AspspProfileServiceWrapper aspspProfileService;
     private final TransactionReportAcceptHeaderValidator transactionReportAcceptHeaderValidator;
     private final AccountReferenceAccessValidator accountReferenceAccessValidator;
+    private final AllAvailableAccountsConsentValidator allAvailableAccountsConsentValidator;
 
     /**
      * Validates get transactions report request
@@ -82,6 +83,11 @@ public class GetTransactionsReportValidator extends AbstractAisTppValidator<Tran
                                                                                                      requestObject.getTransactions(), requestObject.getAccountId());
         if (accountReferenceValidationResult.isNotValid()) {
             return accountReferenceValidationResult;
+        }
+
+        ValidationResult allAvailableAccountValidationResult = allAvailableAccountsConsentValidator.validate(accountConsent.getAisConsentRequestType());
+        if (allAvailableAccountValidationResult.isNotValid()) {
+            return allAvailableAccountValidationResult;
         }
 
         ValidationResult permittedAccountReferenceValidationResult =
