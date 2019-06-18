@@ -255,8 +255,7 @@ public class ConsentServiceTest {
         // Then
         verify(authorisationMethodDecider, atLeastOnce()).isImplicitMethod(anyBoolean(), argumentCaptor.capture());
         assertFalse(argumentCaptor.getValue());
-        assertThat(response.getConsentId()).isEqualTo(CONSENT_ID);
-        assertThat(response.getPsuMessage()).isEqualTo(TEST_PSU_MESSAGE);
+        assertResponseIsCorrect(response);
     }
 
     @Test
@@ -283,8 +282,7 @@ public class ConsentServiceTest {
         // Then
         verify(authorisationMethodDecider, atLeastOnce()).isImplicitMethod(anyBoolean(), argumentCaptor.capture());
         assertFalse(argumentCaptor.getValue());
-        assertThat(response.getConsentId()).isEqualTo(CONSENT_ID);
-        assertThat(response.getPsuMessage()).isEqualTo(TEST_PSU_MESSAGE);
+        assertResponseIsCorrect(response);
     }
 
     @Test
@@ -311,8 +309,7 @@ public class ConsentServiceTest {
         // Then
         verify(authorisationMethodDecider, atLeastOnce()).isImplicitMethod(anyBoolean(), argumentCaptor.capture());
         assertTrue(argumentCaptor.getValue());
-        assertThat(response.getConsentId()).isEqualTo(CONSENT_ID);
-        assertThat(response.getPsuMessage()).isEqualTo(TEST_PSU_MESSAGE);
+        assertResponseIsCorrect(response);
     }
 
     @Test
@@ -360,8 +357,7 @@ public class ConsentServiceTest {
         CreateConsentResponse response = responseObj.getBody();
 
         // Then
-        assertThat(response.getConsentId()).isEqualTo(CONSENT_ID);
-        assertThat(response.getPsuMessage()).isEqualTo(TEST_PSU_MESSAGE);
+        assertResponseIsCorrect(response);
     }
 
     @Test
@@ -410,8 +406,7 @@ public class ConsentServiceTest {
         CreateConsentResponse response = responseObj.getBody();
 
         // Then
-        assertThat(response.getConsentId()).isEqualTo(CONSENT_ID);
-        assertThat(response.getPsuMessage()).isEqualTo(TEST_PSU_MESSAGE);
+        assertResponseIsCorrect(response);
     }
 
     @Test
@@ -436,8 +431,7 @@ public class ConsentServiceTest {
         CreateConsentResponse response = responseObj.getBody();
 
         // Then
-        assertThat(response.getConsentId()).isEqualTo(CONSENT_ID);
-        assertThat(response.getPsuMessage()).isEqualTo(TEST_PSU_MESSAGE);
+        assertResponseIsCorrect(response);
     }
 
     @Test
@@ -461,8 +455,7 @@ public class ConsentServiceTest {
             req, PSU_ID_DATA, EXPLICIT_PREFERRED, TPP_REDIRECT_URI);
         CreateConsentResponse response = responseObj.getBody();
         // Then
-        assertThat(response.getConsentId()).isEqualTo(CONSENT_ID);
-        assertThat(response.getPsuMessage()).isEqualTo(TEST_PSU_MESSAGE);
+        assertResponseIsCorrect(response);
     }
 
     @Test
@@ -488,7 +481,7 @@ public class ConsentServiceTest {
         CreateConsentResponse response = responseObj.getBody();
 
         // Then
-        assertThat(response.getConsentId()).isEqualTo(CONSENT_ID);
+        assertResponseIsCorrect(response);
     }
 
     @Test
@@ -1120,5 +1113,10 @@ public class ConsentServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.hasError()).isTrue();
         assertThat(response.getError()).isEqualTo(VALIDATION_ERROR);
+    }
+
+    private void assertResponseIsCorrect(CreateConsentResponse response) {
+        assertThat(response.getConsentId()).isEqualTo(CONSENT_ID);
+        assertThat(response.getPsuMessage()).isEqualTo(TEST_PSU_MESSAGE);
     }
 }
