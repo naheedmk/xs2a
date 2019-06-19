@@ -284,10 +284,8 @@ public class AccountSpiImpl implements AccountSpi {
 
     private List<SpiAccountDetails> filterAccountDetailsByWithBalance(boolean withBalance, List<SpiAccountDetails> details,
                                                                       SpiAccountAccess spiAccountAccess) {
-        boolean isConsentGlobal = spiAccountAccess.getAllPsd2() != null;
-        boolean isConsentForAvailableAccountsWithBalances = spiAccountAccess.getAvailableAccountsWithBalances() == AccountAccessType.ALL_ACCOUNTS;
 
-        if (withBalance && (isConsentGlobal || isConsentForAvailableAccountsWithBalances)) {
+        if (withBalance && isConsentSupportedBalances(spiAccountAccess)) {
             return details;
         }
 
@@ -300,6 +298,12 @@ public class AccountSpiImpl implements AccountSpi {
         }
 
         return details;
+    }
+
+    private boolean isConsentSupportedBalances(SpiAccountAccess spiAccountAccess) {
+        boolean isConsentGlobal = spiAccountAccess.getAllPsd2() != null;
+        boolean isConsentForAvailableAccountsWithBalances = spiAccountAccess.getAvailableAccountsWithBalances() == AccountAccessType.ALL_ACCOUNTS;
+        return isConsentGlobal || isConsentForAvailableAccountsWithBalances;
     }
 
     private boolean isValidAccountByAccess(String accountId, List<SpiAccountReference> allowedAccountData) {
