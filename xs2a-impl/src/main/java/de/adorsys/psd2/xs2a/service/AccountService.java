@@ -478,12 +478,11 @@ public class AccountService {
             return new SpiAccountReference(resourceId, null, null, null, null, null, null);
         }
 
-        for (AccountReference accountReference : references) {
-            if (StringUtils.equals(accountReference.getResourceId(), resourceId)) {
-                return xs2aToSpiAccountReferenceMapper.mapToSpiAccountReference(accountReference);
-            }
-        }
-        return null;
+        return references.stream()
+                   .filter(accountReference -> StringUtils.equals(accountReference.getResourceId(), resourceId))
+                   .findFirst()
+                   .map(xs2aToSpiAccountReferenceMapper::mapToSpiAccountReference)
+                   .orElse(null);
     }
 
     private SpiContextData getSpiContextData(List<PsuIdData> psuIdDataList) {
