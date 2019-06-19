@@ -38,7 +38,6 @@ public class GetAccountDetailsValidator extends AbstractAisTppValidator<CommonAc
     private final AccountConsentValidator accountConsentValidator;
     private final AccountAccessValidator accountAccessValidator;
     private final AccountReferenceAccessValidator accountReferenceAccessValidator;
-    private final AllAvailableAccountsConsentValidator allAvailableAccountsConsentValidator;
 
     /**
      * Validates get account details request
@@ -55,11 +54,6 @@ public class GetAccountDetailsValidator extends AbstractAisTppValidator<CommonAc
                                                                                                      commonAccountRequestObject.getAccounts(), commonAccountRequestObject.getAccountId());
         if (accountReferenceValidationResult.isNotValid()) {
             return accountReferenceValidationResult;
-        }
-
-        ValidationResult allAvailableAccountValidationResult = allAvailableAccountsConsentValidator.validate(accountConsent.getAisConsentRequestType());
-        if (allAvailableAccountValidationResult.isNotValid()) {
-            return allAvailableAccountValidationResult;
         }
 
         ValidationResult permittedAccountReferenceValidationResult =

@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 public class GetBalancesReportValidator extends AbstractAisTppValidator<CommonAccountBalanceRequestObject> {
     private final AccountConsentValidator accountConsentValidator;
     private final AccountReferenceAccessValidator accountReferenceAccessValidator;
-    private final AllAvailableAccountsConsentValidator allAvailableAccountsConsentValidator;
+
 
     /**
      * Validates get balances report request
@@ -52,10 +52,6 @@ public class GetBalancesReportValidator extends AbstractAisTppValidator<CommonAc
             return accountReferenceValidationResult;
         }
 
-        ValidationResult allAvailableAccountValidationResult = allAvailableAccountsConsentValidator.validate(consentObject.getAccountConsent().getAisConsentRequestType());
-        if (allAvailableAccountValidationResult.isNotValid()) {
-            return allAvailableAccountValidationResult;
-        }
         return accountConsentValidator.validate(consentObject.getAccountConsent(), consentObject.getRequestUri());
     }
 }

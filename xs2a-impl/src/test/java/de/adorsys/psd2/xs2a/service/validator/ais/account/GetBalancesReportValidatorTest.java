@@ -60,8 +60,6 @@ public class GetBalancesReportValidatorTest {
     private AisTppInfoValidator aisTppInfoValidator;
     @Mock
     private AccountReferenceAccessValidator accountReferenceAccessValidator;
-    @Mock
-    private AllAvailableAccountsConsentValidator allAvailableAccountsConsentValidator;
 
     @InjectMocks
     private GetBalancesReportValidator getBalancesReportValidator;
@@ -80,8 +78,6 @@ public class GetBalancesReportValidatorTest {
             .thenReturn(ValidationResult.valid());
         when(aisTppInfoValidator.validateTpp(INVALID_TPP_INFO))
             .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
-        when(allAvailableAccountsConsentValidator.validate(null))
-            .thenReturn(ValidationResult.valid());
     }
 
     @Test
