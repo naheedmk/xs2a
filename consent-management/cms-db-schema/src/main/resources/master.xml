@@ -88,7 +88,7 @@
              file="migration/0062-change-table-pis-payment-data-extend-end-to-end-identification.xml"/>
     <include relativeToChangelogFile="true" file="migration/0063-expand-table-crypto-algorithm-with-fields.xml"/>
     <include relativeToChangelogFile="true" file="migration/0064-expand-table-crypto-algorithm-with-fields-class-and-params.xml"/>
-    <include relativeToChangelogFile="true" file="migration/0065-create-table-event-psu-data.xml"/>
+    <include relativeToChangelogFile="true" file="migration/0066-create-table-event-psu-data.xml"/>
     <!-- moved this patсh to the end of the list according to order of applying-->
     <include relativeToChangelogFile="true" file="migration/0058-drop-table-piis_consent-acc-reference.xml"/>
     <include relativeToChangelogFile="true" file="migration/0065-add-accounts-with-balances-column-to-ais-consent.xml"/>
