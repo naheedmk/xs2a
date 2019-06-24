@@ -16,13 +16,14 @@
 
 package de.adorsys.psd2.xs2a.web.link;
 
+import de.adorsys.psd2.xs2a.domain.HrefType;
 import de.adorsys.psd2.xs2a.domain.Links;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.util.reader.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class AccountDetailsLinksTest {
     private static final String HTTP_URL = "http://url";
@@ -30,12 +31,14 @@ public class AccountDetailsLinksTest {
     private static final String WRONG_ACCOUNT_ID = "wrong_account_id";
 
     private Xs2aAccountAccess xs2aAccountAccess;
+    private Xs2aAccountAccess xs2aAccountAccessGlobal;
     private Links expectedLinks;
 
     @Before
     public void setUp() {
         JsonReader jsonReader = new JsonReader();
         xs2aAccountAccess = jsonReader.getObjectFromFile("json/link/account_access.json", Xs2aAccountAccess.class);
+        xs2aAccountAccessGlobal = jsonReader.getObjectFromFile("json/link/account_access-global.json", Xs2aAccountAccess.class);
         expectedLinks = new Links();
     }
 
@@ -43,8 +46,17 @@ public class AccountDetailsLinksTest {
     public void create_success() {
         AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, ACCOUNT_ID, xs2aAccountAccess);
 
-        expectedLinks.setBalances("http://url/v1/accounts/33333-999999999/balances");
-        expectedLinks.setTransactions("http://url/v1/accounts/33333-999999999/transactions");
+        expectedLinks.setBalances(new HrefType("http://url/v1/accounts/33333-999999999/balances"));
+        expectedLinks.setTransactions(new HrefType("http://url/v1/accounts/33333-999999999/transactions"));
+        assertEquals(expectedLinks, links);
+    }
+
+    @Test
+    public void create_globalConsent_success() {
+        AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, ACCOUNT_ID, xs2aAccountAccessGlobal);
+
+        expectedLinks.setBalances(new HrefType("http://url/v1/accounts/33333-999999999/balances"));
+        expectedLinks.setTransactions(new HrefType("http://url/v1/accounts/33333-999999999/transactions"));
         assertEquals(expectedLinks, links);
     }
 
@@ -53,7 +65,7 @@ public class AccountDetailsLinksTest {
         xs2aAccountAccess.getBalances().get(0).setResourceId(WRONG_ACCOUNT_ID);
         AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, ACCOUNT_ID, xs2aAccountAccess);
 
-        expectedLinks.setTransactions("http://url/v1/accounts/33333-999999999/transactions");
+        expectedLinks.setTransactions(new HrefType("http://url/v1/accounts/33333-999999999/transactions"));
         assertEquals(expectedLinks, links);
     }
 
@@ -62,7 +74,7 @@ public class AccountDetailsLinksTest {
         xs2aAccountAccess.getTransactions().get(0).setResourceId(WRONG_ACCOUNT_ID);
         AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, ACCOUNT_ID, xs2aAccountAccess);
 
-        expectedLinks.setBalances("http://url/v1/accounts/33333-999999999/balances");
+        expectedLinks.setBalances(new HrefType("http://url/v1/accounts/33333-999999999/balances"));
         assertEquals(expectedLinks, links);
     }
 }

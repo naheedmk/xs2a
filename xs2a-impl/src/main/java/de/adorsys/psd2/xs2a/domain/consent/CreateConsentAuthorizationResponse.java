@@ -26,7 +26,6 @@ public class CreateConsentAuthorizationResponse implements AuthorisationResponse
     private String consentId;
     private String authorisationId;
     private ScaStatus scaStatus;
-    private ConsentAuthorizationResponseLinkType responseLinkType;
     private String psuMessage;
     private Links links;
 }
