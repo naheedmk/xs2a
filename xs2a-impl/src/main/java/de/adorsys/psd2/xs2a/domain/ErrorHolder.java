@@ -19,12 +19,14 @@ package de.adorsys.psd2.xs2a.domain;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class ErrorHolder {
     private final List<TppMessageInformation> tppMessageInformationList;
@@ -123,5 +125,14 @@ public class ErrorHolder {
                        .map(m -> TppMessageInformation.of(errorCode, m))
                        .collect(Collectors.toList());
         }
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.isBlank(this.getMessage())
+                   ? Optional.ofNullable(getErrorCode())
+                         .map(MessageErrorCode::getName)
+                         .orElse("")
+                   : this.getMessage();
     }
 }
