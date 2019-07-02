@@ -129,10 +129,12 @@ public class ErrorHolder {
 
     @Override
     public String toString() {
-        return StringUtils.isBlank(this.getMessage())
-                   ? Optional.ofNullable(getErrorCode())
-                         .map(MessageErrorCode::getName)
+        return CollectionUtils.isEmpty(tppMessageInformationList)
+                   ? Optional.ofNullable(errorType)
+                         .map(ErrorType::name)
                          .orElse("")
-                   : this.getMessage();
+                   : tppMessageInformationList.stream()
+                         .map(TppMessageInformation::getText)
+                         .collect(Collectors.joining(", "));
     }
 }
