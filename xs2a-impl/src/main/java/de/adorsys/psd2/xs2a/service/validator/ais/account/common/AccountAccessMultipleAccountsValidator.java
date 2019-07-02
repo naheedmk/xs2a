@@ -16,14 +16,16 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
-import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
+import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
+import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.util.List;
 
 import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.CONSENT_INVALID;
 
@@ -31,13 +33,19 @@ import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.CONSENT_INVALID;
 public class AccountAccessMultipleAccountsValidator {
 
     public ValidationResult validate(AccountConsent accountConsent, boolean withBalance) {
-        return Optional.ofNullable(accountConsent)
-                   .filter(consent -> withBalance)
-                   .filter(consent -> consent.getAisConsentRequestType() == AisConsentRequestType.DEDICATED_ACCOUNTS)
-                   .map(AccountConsent::getAccess)
-                   .filter(access -> access.getAccounts() != null && access.getBalances() != null)
-                   .filter(access -> access.getAccounts().size() > access.getBalances().size())
-                   .map(access -> ValidationResult.invalid(ErrorType.AIS_401, TppMessageInformation.of(CONSENT_INVALID)))
-                   .orElseGet(ValidationResult::valid);
+        if (withBalance && accountConsent.isConsentForDedicatedAccounts()) {
+            Xs2aAccountAccess access = accountConsent.getAccess();
+            return validateAccountReferenceSize(access.getAccounts(), access.getBalances())
+                       ? ValidationResult.invalid(ErrorType.AIS_401, TppMessageInformation.of(CONSENT_INVALID))
+                       : ValidationResult.valid();
+        }
+
+        return ValidationResult.valid();
+    }
+
+    private boolean validateAccountReferenceSize(List<AccountReference> accounts, List<AccountReference> balances) {
+        return CollectionUtils.isNotEmpty(accounts)
+                   && CollectionUtils.isNotEmpty(balances)
+                   && accounts.size() > balances.size();
     }
 }
