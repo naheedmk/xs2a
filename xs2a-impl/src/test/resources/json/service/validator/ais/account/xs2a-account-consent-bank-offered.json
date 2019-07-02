@@ -1,9 +1,11 @@
 {
   "access": {
-    "allPsd2": "allAccounts"
+    "accounts": [],
+    "balances": [],
+    "transactions": []
   },
   "recurringIndicator": true,
   "validUntil": "2037-08-06",
   "frequencyPerDay": "4",
-  "aisConsentRequestType": "GLOBAL"
+  "aisConsentRequestType": "BANK_OFFERED"
 }
