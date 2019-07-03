@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.xs2a.web.filter;
 
-import de.adorsys.psd2.xs2a.domain.MessageErrorCode;
+import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.exception.MessageCategory;
 import lombok.Value;
 

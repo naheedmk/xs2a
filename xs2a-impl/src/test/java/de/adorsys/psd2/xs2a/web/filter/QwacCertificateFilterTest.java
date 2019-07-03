@@ -34,8 +34,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.UUID;
 
-import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.CERTIFICATE_EXPIRED;
-import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.CERTIFICATE_INVALID;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CERTIFICATE_EXPIRED;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CERTIFICATE_INVALID;
 import static de.adorsys.psd2.xs2a.exception.MessageCategory.ERROR;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;

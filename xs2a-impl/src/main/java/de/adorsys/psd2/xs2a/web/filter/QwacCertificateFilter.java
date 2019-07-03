@@ -42,8 +42,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.CERTIFICATE_EXPIRED;
-import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.CERTIFICATE_INVALID;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CERTIFICATE_EXPIRED;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CERTIFICATE_INVALID;
 import static de.adorsys.psd2.xs2a.exception.MessageCategory.ERROR;
 
 /**
