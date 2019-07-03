@@ -296,7 +296,7 @@ public class PaymentService {
         Optional<PisCommonPaymentResponse> pisCommonPaymentOptional = pisCommonPaymentService.getPisCommonPaymentById(paymentCancellationRequest.getEncryptedPaymentId());
 
         if (!pisCommonPaymentOptional.isPresent()) {
-            log.info("X-Request-ID: [{}], Payment-ID [{}]. Cancel payment has failed. Payment not found by id.", requestProviderService.getRequestId(), encryptedPaymentId);
+            log.info("X-Request-ID: [{}], Payment-ID [{}]. Cancel payment has failed. Payment not found by id.", requestProviderService.getRequestId(), paymentCancellationRequest.getEncryptedPaymentId());
             return ResponseObject.<CancelPaymentResponse>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
@@ -307,14 +307,14 @@ public class PaymentService {
             new CancelPaymentPO(pisCommonPaymentResponse, paymentCancellationRequest.getPaymentType(), paymentCancellationRequest.getPaymentProduct()));
         if (validationResult.isNotValid()) {
             log.warn("X-Request-ID: [{}], Payment-ID [{}]. Cancel payment Validation failed: {}",
-                     requestProviderService.getRequestId(), encryptedPaymentId, validationResult.getMessageError());
+                     requestProviderService.getRequestId(), paymentCancellationRequest.getEncryptedPaymentId(), validationResult.getMessageError());
             return ResponseObject.<CancelPaymentResponse>builder()
                        .fail(validationResult.getMessageError())
                        .build();
         }
 
         if (isFinalisedPayment(pisCommonPaymentResponse)) {
-            log.info("X-Request-ID: [{}], Payment-ID [{}]. Cancel payment has failed. Payment has finalised status", requestProviderService.getRequestId(), encryptedPaymentId);
+            log.info("X-Request-ID: [{}], Payment-ID [{}]. Cancel payment has failed. Payment has finalised status", requestProviderService.getRequestId(), paymentCancellationRequest.getEncryptedPaymentId());
             return ResponseObject.<CancelPaymentResponse>builder()
                        .fail(PIS_CANC_405, of(CANCELLATION_INVALID))
                        .build();
@@ -329,7 +329,7 @@ public class PaymentService {
             List<PisPayment> pisPayments = getPisPaymentFromCommonPaymentResponse(pisCommonPaymentResponse);
             if (CollectionUtils.isEmpty(pisPayments)) {
                 log.info("X-Request-ID: [{}], Payment-ID: [{}]. Cancel payment has failed: Payments not found at PisCommonPayment.",
-                         requestProviderService.getRequestId(), encryptedPaymentId);
+                         requestProviderService.getRequestId(), paymentCancellationRequest.getEncryptedPaymentId());
                 return ResponseObject.<CancelPaymentResponse>builder()
                            .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                            .build();
