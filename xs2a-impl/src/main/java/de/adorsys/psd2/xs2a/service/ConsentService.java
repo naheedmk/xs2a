@@ -213,7 +213,7 @@ public class ConsentService {
 
         ValidationResult validationResult = getAccountConsentsStatusByIdValidator.validate(new CommonConsentObject(validatedAccountConsent));
         if (validationResult.isNotValid()) {
-            log.info("X-Request-ID: [{}]. Create account consent with response validation failed: {}",
+            log.info("X-Request-ID: [{}]. Create account consents status validation failed: {}",
                      requestProviderService.getRequestId(), validationResult.getMessageError());
             return ResponseObject.<ConsentStatusResponse>builder()
                        .fail(validationResult.getMessageError())

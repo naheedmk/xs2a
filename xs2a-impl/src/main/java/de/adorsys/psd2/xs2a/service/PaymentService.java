@@ -101,7 +101,7 @@ public class PaymentService {
 
         ValidationResult validationResult = createPaymentValidator.validate(new CreatePaymentRequestObject(payment, paymentInitiationParameters));
         if (validationResult.isNotValid()) {
-            log.info("X-Request-ID: [{}]. Validation of create payment failed: {}",
+            log.info("X-Request-ID: [{}], PaymentType [{}], PaymentProduct [{}]. Validation of create payment failed: [{}]",
                      requestProviderService.getRequestId(), paymentInitiationParameters.getPaymentType(), paymentInitiationParameters.getPaymentProduct(), validationResult.getMessageError());
             return ResponseObject.<PaymentInitiationResponse>builder()
                        .fail(validationResult.getMessageError())
@@ -306,7 +306,7 @@ public class PaymentService {
         ValidationResult validationResult = cancelPaymentValidator.validate(
             new CancelPaymentPO(pisCommonPaymentResponse, paymentCancellationRequest.getPaymentType(), paymentCancellationRequest.getPaymentProduct()));
         if (validationResult.isNotValid()) {
-            log.warn("X-Request-ID: [{}], Payment-ID [{}]. Cancel payment Validation failed: {}",
+            log.warn("X-Request-ID: [{}], Payment-ID [{}]. Cancel payment validation failed: [{}]",
                      requestProviderService.getRequestId(), paymentCancellationRequest.getEncryptedPaymentId(), validationResult.getMessageError());
             return ResponseObject.<CancelPaymentResponse>builder()
                        .fail(validationResult.getMessageError())
@@ -337,7 +337,7 @@ public class PaymentService {
 
             Optional<? extends SpiPayment> spiPaymentOptional = spiPaymentFactory.createSpiPaymentByPaymentType(pisPayments, pisCommonPaymentResponse.getPaymentProduct(), paymentCancellationRequest.getPaymentType());
             if (!spiPaymentOptional.isPresent()) {
-                log.info("X-Request-ID: [{}], Payment ID: [{}]. Cancelling payment has failed: couldn't create SPI payment from CMS payments",
+                log.info("X-Request-ID: [{}], Payment ID: [{}]. Cancel payment has failed: couldn't create SPI payment from CMS payments",
                          requestProviderService.getRequestId(), paymentCancellationRequest.getEncryptedPaymentId());
                 return ResponseObject.<CancelPaymentResponse>builder()
                            .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
