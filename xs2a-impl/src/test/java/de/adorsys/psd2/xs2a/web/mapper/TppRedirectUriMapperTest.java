@@ -46,20 +46,4 @@ public class TppRedirectUriMapperTest {
         assertEquals("", tppRedirectUri.getUri());
         assertEquals("", tppRedirectUri.getNokUri());
     }
-
-    @Test
-    public void mapToTppRedirectUri_nullValues() {
-        TppRedirectUri tppRedirectUri = mapper.mapToTppRedirectUri(null, null);
-        assertNotNull(tppRedirectUri);
-        assertNull(tppRedirectUri.getUri());
-        assertNull(tppRedirectUri.getNokUri());
-    }
-
-    @Test
-    public void mapToTppRedirectUri_onlyNokRedirectUriExists() {
-        TppRedirectUri tppRedirectUri = mapper.mapToTppRedirectUri(null, "nok_url");
-        assertNotNull(tppRedirectUri);
-        assertNull(tppRedirectUri.getUri());
-        assertNull(tppRedirectUri.getNokUri());
-    }
 }
