@@ -26,12 +26,14 @@ import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountDetailsHolder;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountListHolder;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aBalancesReport;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aTransactionsReport;
+import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValueValidatorService;
 import de.adorsys.psd2.xs2a.util.reader.JsonReader;
 import de.adorsys.psd2.xs2a.web.mapper.HrefLinkMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
@@ -44,7 +46,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {AccountModelMapperImpl.class,
     HrefLinkMapper.class, ObjectMapper.class, AmountModelMapper.class, ValueValidatorService.class,
-    SpringValidatorAdapter.class})
+    SpringValidatorAdapter.class, RequestProviderService.class, MockHttpServletRequest.class})
 public class AccountModelMapperTest {
 
     private static final OffsetDateTime OFFSET_DATE_TIME = OffsetDateTime.now();
