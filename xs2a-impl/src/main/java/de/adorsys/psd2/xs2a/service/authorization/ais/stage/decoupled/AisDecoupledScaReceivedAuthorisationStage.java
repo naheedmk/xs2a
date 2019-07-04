@@ -124,7 +124,7 @@ public class AisDecoupledScaReceivedAuthorisationStage extends AisScaStage<Updat
             }
 
             MessageError messageError = new MessageError(spiErrorMapper.mapToErrorHolder(authorisationStatusSpiResponse, ServiceType.AIS));
-            log.warn("X-Request-ID: [{}], Consent-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. AIS_DECOUPLED_RECEIVED stage. Authorise PSU when apply  authorisation with update consent PSU data has failed. Error msg: [{}].",
+            log.warn("X-Request-ID: [{}], Consent-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. AIS_DECOUPLED_RECEIVED stage. Authorise PSU when apply authorisation with update consent PSU data has failed. Error msg: [{}].",
                      requestProviderService.getRequestId(), consentId, updateConsentPsuDataReq.getAuthorizationId(), spiPsuData.getPsuId(), messageError);
             return createFailedResponse(messageError, authorisationStatusSpiResponse.getMessages(), updateConsentPsuDataReq);
         }

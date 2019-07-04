@@ -86,9 +86,7 @@ public class MessageError {
                          .map(ErrorType::name)
                          .orElse("")
                    : tppMessages.stream()
-                         .map(info -> StringUtils.isNotBlank(info.getText())
-                                          ? info.getText()
-                                          : info.getMessageErrorCode().getName())
+                         .map(info -> StringUtils.defaultIfBlank(info.getText(), info.getMessageErrorCode().getName()))
                          .collect(Collectors.joining(", "));
     }
 }
