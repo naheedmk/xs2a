@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b054b69c-e13c-4e16-bc78-f25f1eb32808",
+		"_postman_id": "b2b025bf-750c-4d6f-815f-2fb31e12b2e7",
 		"name": "AIS Consent requests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2294,7 +2294,8 @@
 									},
 									{
 										"key": "tpp-qwac-certificate",
-										"value": "qwac certificate"
+										"value": "qwac certificate",
+										"disabled": true
 									},
 									{
 										"key": "x-request-id",
@@ -2633,7 +2634,8 @@
 									},
 									{
 										"key": "tpp-qwac-certificate",
-										"value": "qwac certificate"
+										"value": "qwac certificate",
+										"disabled": true
 									},
 									{
 										"key": "x-request-id",
@@ -3824,7 +3826,8 @@
 									},
 									{
 										"key": "tpp-qwac-certificate",
-										"value": "qwac certificate"
+										"value": "qwac certificate",
+										"disabled": true
 									},
 									{
 										"key": "x-request-id",
@@ -3890,6 +3893,11 @@
 											"",
 											"pm.test(\"Authorisation id is present\", () => {",
 											"    pm.expect(jsonData).to.have.property(\"authorisationId\");",
+											"});",
+											"",
+											"pm.test(\"Redirect URLs are present\", () => {",
+											"    pm.expect(jsonData).to.have.property(\"tppOkRedirectUri\");",
+											"    pm.expect(jsonData).to.have.property(\"tppNokRedirectUri\");",
 											"});",
 											"",
 											"const authorisationId = jsonData.authorisationId;",
@@ -4375,7 +4383,6 @@
 											"pm.test(\"Links exist\", function () {",
 											"    pm.expect(jsonData).to.have.property('_links');",
 											"    ",
-											"    pm.expect(jsonData._links).to.have.property('download');",
 											"    pm.expect(jsonData._links).to.have.property('balances');",
 											"});",
 											""
@@ -5337,7 +5344,6 @@
 											"pm.test(\"Links exist\", function () {",
 											"    pm.expect(jsonData).to.have.property('_links');",
 											"    ",
-											"    pm.expect(jsonData._links).to.have.property('download');",
 											"    pm.expect(jsonData._links).to.have.property('balances');",
 											"});",
 											""
@@ -5660,7 +5666,8 @@
 									{
 										"key": "tpp-qwac-certificate",
 										"value": "qwac certificate",
-										"type": "text"
+										"type": "text",
+										"disabled": true
 									},
 									{
 										"key": "x-request-id",
@@ -5811,7 +5818,13 @@
 											"",
 											"pm.test(\"Authorisation id is correct\", () => {",
 											"    pm.expect(jsonData.authorisationId).to.eql(pm.globals.get(\"authorisation_id\"));",
-											"});"
+											"});",
+											"",
+											"pm.test(\"Redirect URLs are present\", () => {",
+											"    pm.expect(jsonData).to.have.property(\"tppOkRedirectUri\");",
+											"    pm.expect(jsonData).to.have.property(\"tppNokRedirectUri\");",
+											"});",
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -5947,7 +5960,8 @@
 									{
 										"key": "tpp-qwac-certificate",
 										"value": "qwac certificate",
-										"type": "text"
+										"type": "text",
+										"disabled": true
 									},
 									{
 										"key": "x-request-id",
@@ -12206,7 +12220,6 @@
 									"pm.test(\"Links exist\", function () {",
 									"    pm.expect(jsonData).to.have.property('_links');",
 									"    ",
-									"    pm.expect(jsonData._links).to.have.property('download');",
 									"    pm.expect(jsonData._links).to.have.property('balances');",
 									"});",
 									""
