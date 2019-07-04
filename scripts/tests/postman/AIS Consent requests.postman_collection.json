@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b2b025bf-750c-4d6f-815f-2fb31e12b2e7",
+		"_postman_id": "fd97cfdb-b08d-4511-914f-7c5af23b7d4e",
 		"name": "AIS Consent requests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -4381,9 +4381,11 @@
 											"});",
 											"",
 											"pm.test(\"Links exist\", function () {",
-											"    pm.expect(jsonData).to.have.property('_links');",
-											"    ",
-											"    pm.expect(jsonData._links).to.have.property('balances');",
+											"    pm.expect(jsonData).to.have.property('transactions');",
+											"    pm.expect(jsonData.transactions).to.have.property('_links');",
+											"",
+											"    pm.expect(jsonData.transactions._links).to.have.property('balances');",
+											"    pm.expect(jsonData.transactions._links).to.have.property('account');",
 											"});",
 											""
 										],
@@ -5342,9 +5344,11 @@
 											"});",
 											"",
 											"pm.test(\"Links exist\", function () {",
-											"    pm.expect(jsonData).to.have.property('_links');",
-											"    ",
-											"    pm.expect(jsonData._links).to.have.property('balances');",
+											"    pm.expect(jsonData).to.have.property('transactions');",
+											"    pm.expect(jsonData.transactions).to.have.property('_links');",
+											"",
+											"    pm.expect(jsonData.transactions._links).to.have.property('balances');",
+											"    pm.expect(jsonData.transactions._links).to.have.property('account');",
 											"});",
 											""
 										],
@@ -12218,11 +12222,12 @@
 									"});",
 									"",
 									"pm.test(\"Links exist\", function () {",
-									"    pm.expect(jsonData).to.have.property('_links');",
-									"    ",
-									"    pm.expect(jsonData._links).to.have.property('balances');",
-									"});",
-									""
+									"    pm.expect(jsonData).to.have.property('transactions');",
+									"    pm.expect(jsonData.transactions).to.have.property('_links');",
+									"",
+									"    pm.expect(jsonData.transactions._links).to.have.property('balances');",
+									"    pm.expect(jsonData.transactions._links).to.have.property('account');",
+									"});"
 								],
 								"type": "text/javascript"
 							}
