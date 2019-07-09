@@ -31,27 +31,25 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.OffsetDateTime;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {CmsPsuAuthorisationMapperImpl.class})
 public class CmsPsuAuthorisationMapperTest {
 
     private static final String EXTERNAL_ID = "123";
     private static final String OK_REDIRECT_URI = "OK redirect";
     private static final String NOK_REDIRECT_URI = "Not OK redirect";
-    private static final String OK_REDIRECT_URI_CANCELLATION = "OK redirect for cancel";
-    private static final String NOK_REDIRECT_URI_CANCELLATION = "Not OK redirect for cancel";
     private static final OffsetDateTime EXPIRATION_TIMESTAMP = OffsetDateTime.now().plusDays(1);
     private static final String PSU_ID = "PSU ID";
     private static final String PSU_ID_TYPE = "PSU ID type";
 
-    @InjectMocks
-    private CmsPsuAuthorisationMapper cmsPsuAuthorisationMapper;
+    private CmsPsuAuthorisationMapper cmsPsuAuthorisationMapper = new CmsPsuAuthorisationMapperImpl();
 
     private JsonReader jsonReader;
 
@@ -85,10 +83,8 @@ public class CmsPsuAuthorisationMapperTest {
 
         // Then
         CmsPsuAuthorisation expected = jsonReader.getObjectFromFile("json/service/mapper/cms-psu-authorisation.json", CmsPsuAuthorisation.class);
+        expected.setAuthorisationType(null);
         expected.setAuthorisationExpirationTimestamp(EXPIRATION_TIMESTAMP);
-        // AIS does not have cancellation authorisation.
-        expected.setTppOkRedirectUriCancellation(null);
-        expected.setTppNokRedirectUriCancellation(null);
         assertEquals(expected, actual);
     }
 
@@ -106,9 +102,6 @@ public class CmsPsuAuthorisationMapperTest {
         TppInfoEntity tppInfo = new TppInfoEntity();
         tppInfo.setRedirectUri(OK_REDIRECT_URI);
         tppInfo.setNokRedirectUri(NOK_REDIRECT_URI);
-
-        tppInfo.setCancelRedirectUri(OK_REDIRECT_URI_CANCELLATION);
-        tppInfo.setCancelNokRedirectUri(NOK_REDIRECT_URI_CANCELLATION);
 
         paymentData.setTppInfo(tppInfo);
         pisAuthorization.setPaymentData(paymentData);

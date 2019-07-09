@@ -34,6 +34,4 @@ public class CmsPsuAuthorisation {
     private ScaApproach scaApproach;
     private String tppOkRedirectUri;
     private String tppNokRedirectUri;
-    private String tppOkRedirectUriCancellation;
-    private String tppNokRedirectUriCancellation;
 }

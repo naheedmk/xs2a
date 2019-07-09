@@ -17,45 +17,43 @@
 package de.adorsys.psd2.consent.service.mapper;
 
 import de.adorsys.psd2.consent.api.CmsAuthorisationType;
+import de.adorsys.psd2.consent.domain.TppInfoEntity;
 import de.adorsys.psd2.consent.domain.account.AisConsentAuthorization;
 import de.adorsys.psd2.consent.domain.payment.PisAuthorization;
 import de.adorsys.psd2.consent.psu.api.CmsPsuAuthorisation;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-@RequiredArgsConstructor
-public class CmsPsuAuthorisationMapper {
+@Mapper(componentModel = "spring")
+public interface CmsPsuAuthorisationMapper {
 
-    public CmsPsuAuthorisation mapToCmsPsuAuthorisationPis(PisAuthorization pisAuthorization) {
-        CmsPsuAuthorisation result = new CmsPsuAuthorisation();
+    @Mapping(target = "psuId", source = "psuData.psuId")
+    @Mapping(target = "authorisationId", source = "externalId")
+    @Mapping(target = "authorisationType", source = "authorizationType")
+    @Mapping(target = "tppOkRedirectUri", expression = "java(getOkRedirectUri(pisAuthorization))")
+    @Mapping(target = "tppNokRedirectUri", expression = "java(getNokRedirectUri(pisAuthorization))")
+    CmsPsuAuthorisation mapToCmsPsuAuthorisationPis(PisAuthorization pisAuthorization);
 
-        result.setPsuId(pisAuthorization.getPsuData().getPsuId());
-        result.setAuthorisationId(pisAuthorization.getExternalId());
-        result.setScaStatus(pisAuthorization.getScaStatus());
-        result.setAuthorisationType(pisAuthorization.getAuthorizationType());
-        result.setAuthorisationExpirationTimestamp(pisAuthorization.getAuthorisationExpirationTimestamp());
-        result.setScaApproach(pisAuthorization.getScaApproach());
-        result.setTppOkRedirectUri(pisAuthorization.getPaymentData().getTppInfo().getRedirectUri());
-        result.setTppNokRedirectUri(pisAuthorization.getPaymentData().getTppInfo().getNokRedirectUri());
-        result.setTppOkRedirectUriCancellation(pisAuthorization.getPaymentData().getTppInfo().getCancelRedirectUri());
-        result.setTppNokRedirectUriCancellation(pisAuthorization.getPaymentData().getTppInfo().getCancelNokRedirectUri());
+    @Mapping(target = "psuId", source = "psuData.psuId")
+    @Mapping(target = "authorisationId", source = "externalId")
+    @Mapping(target = "authorisationType", ignore = true)
+    @Mapping(target = "tppOkRedirectUri", source = "consent.tppInfo.redirectUri")
+    @Mapping(target = "tppNokRedirectUri", source = "consent.tppInfo.nokRedirectUri")
+    CmsPsuAuthorisation mapToCmsPsuAuthorisationAis(AisConsentAuthorization consentAuthorization);
 
-        return result;
+    default String getOkRedirectUri(PisAuthorization pisAuthorization) {
+        TppInfoEntity tppInfo = pisAuthorization.getPaymentData().getTppInfo();
+
+        return pisAuthorization.getAuthorizationType() == CmsAuthorisationType.CREATED
+                   ? tppInfo.getRedirectUri()
+                   : tppInfo.getCancelRedirectUri();
     }
 
-    public CmsPsuAuthorisation mapToCmsPsuAuthorisationAis(AisConsentAuthorization consentAuthorization) {
-        CmsPsuAuthorisation result = new CmsPsuAuthorisation();
+    default String getNokRedirectUri(PisAuthorization pisAuthorization) {
+        TppInfoEntity tppInfo = pisAuthorization.getPaymentData().getTppInfo();
 
-        result.setPsuId(consentAuthorization.getPsuData().getPsuId());
-        result.setAuthorisationId(consentAuthorization.getExternalId());
-        result.setScaStatus(consentAuthorization.getScaStatus());
-        result.setAuthorisationType(CmsAuthorisationType.CREATED);
-        result.setAuthorisationExpirationTimestamp(consentAuthorization.getAuthorisationExpirationTimestamp());
-        result.setScaApproach(consentAuthorization.getScaApproach());
-        result.setTppOkRedirectUri(consentAuthorization.getConsent().getTppInfo().getRedirectUri());
-        result.setTppNokRedirectUri(consentAuthorization.getConsent().getTppInfo().getNokRedirectUri());
-
-        return result;
+        return pisAuthorization.getAuthorizationType() == CmsAuthorisationType.CREATED
+                   ? tppInfo.getNokRedirectUri()
+                   : tppInfo.getCancelNokRedirectUri();
     }
 }
