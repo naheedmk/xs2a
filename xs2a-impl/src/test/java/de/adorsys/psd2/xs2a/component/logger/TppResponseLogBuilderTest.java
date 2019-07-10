@@ -70,4 +70,8 @@ public class TppResponseLogBuilderTest {
         verify(httpServletResponse).getHeader(eq(X_REQUEST_ID_HEADER));
         verifyNoMoreInteractions(httpServletResponse);
     }
+
+    public void withOptionalRedirectId_shouldAddRedirectId() {
+
+    }
 }
