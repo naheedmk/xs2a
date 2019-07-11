@@ -128,7 +128,6 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     }
 
     @Override
-    @Transactional
     public @NotNull Optional<CmsPsuAuthorisation> getAuthorisationByAuthorisationId(@NotNull String authorisationId, @NotNull String instanceId) {
         Optional<AisConsentAuthorization> optionalAuthorisation = aisConsentAuthorisationRepository
                                                                       .findOne(aisConsentAuthorizationSpecification.byExternalIdAndInstanceId(authorisationId, instanceId));

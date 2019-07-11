@@ -156,7 +156,6 @@ public class CmsPsuPisServiceInternal implements CmsPsuPisService {
     }
 
     @Override
-    @Transactional
     public @NotNull Optional<CmsPsuAuthorisation> getAuthorisationByAuthorisationId(@NotNull String authorisationId, @NotNull String instanceId) {
         Optional<PisAuthorization> optionalAuthorisation = pisAuthorisationRepository
                                                                .findOne(pisAuthorisationSpecification.byExternalIdAndInstanceId(authorisationId, instanceId));
