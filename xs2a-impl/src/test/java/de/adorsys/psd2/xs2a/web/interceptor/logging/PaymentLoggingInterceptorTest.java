@@ -61,12 +61,12 @@ public class PaymentLoggingInterceptorTest {
     @Before
     public void setUp() {
         when(tppService.getTppInfo()).thenReturn(jsonReader.getObjectFromFile(TPP_INFO_JSON, TppInfo.class));
+        when(request.getHeader(X_REQUEST_ID)).thenReturn(X_REQUEST_ID_HEADER_VALUE);
     }
 
     @Test
     public void preHandle_pathVariableIsNull() {
         when(request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(null);
-        when(request.getHeader(X_REQUEST_ID)).thenReturn(X_REQUEST_ID_HEADER_VALUE);
         when(request.getRemoteAddr()).thenReturn(TPP_IP);
         when(request.getRequestURI()).thenReturn(REQUEST_URI);
 
@@ -83,7 +83,6 @@ public class PaymentLoggingInterceptorTest {
     public void preHandle_success() {
         Map<Object, Object> pathVariables = new HashMap<>();
         when(request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE)).thenReturn(pathVariables);
-        when(request.getHeader(X_REQUEST_ID)).thenReturn(X_REQUEST_ID_HEADER_VALUE);
         when(request.getRemoteAddr()).thenReturn(TPP_IP);
         when(request.getRequestURI()).thenReturn(REQUEST_URI);
 
@@ -98,7 +97,6 @@ public class PaymentLoggingInterceptorTest {
 
     @Test
     public void afterCompletion() {
-        when(response.getHeader(X_REQUEST_ID)).thenReturn("222");
         when(response.getStatus()).thenReturn(HttpServletResponse.SC_OK);
         when(redirectIdService.getRedirectId()).thenReturn(Optional.of(REDIRECT_ID));
 

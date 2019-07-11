@@ -46,6 +46,7 @@ public class TppResponseLogBuilderTest {
         tppResponseLogBuilder.withTpp(tppInfo);
 
         // Then
+        //noinspection ResultOfMethodCallIgnored
         verify(tppInfo).getAuthorisationNumber();
         verifyNoMoreInteractions(tppInfo);
         verifyZeroInteractions(httpServletResponse);
@@ -69,9 +70,5 @@ public class TppResponseLogBuilderTest {
         // Then
         verify(httpServletResponse).getHeader(eq(X_REQUEST_ID_HEADER));
         verifyNoMoreInteractions(httpServletResponse);
-    }
-
-    public void withOptionalRedirectId_shouldAddRedirectId() {
-
     }
 }
