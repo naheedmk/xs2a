@@ -87,8 +87,7 @@ public class CmsPsuPisServiceInternal implements CmsPsuPisService {
         throws RedirectUrlIsExpiredException {
 
         Optional<PisAuthorization> optionalAuthorisation = pisAuthorisationRepository
-                                                               .findOne(pisAuthorisationSpecification.byExternalIdAndInstanceId(redirectId, instanceId))
-                                                               .filter(a -> !a.getScaStatus().isFinalisedStatus());
+                                                               .findOne(pisAuthorisationSpecification.byExternalIdAndInstanceId(redirectId, instanceId));
 
         if (optionalAuthorisation.isPresent()) {
             PisAuthorization authorisation = optionalAuthorisation.get();

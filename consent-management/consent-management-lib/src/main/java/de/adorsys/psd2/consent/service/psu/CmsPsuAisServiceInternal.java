@@ -98,8 +98,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
                                                                                @NotNull String instanceId) throws RedirectUrlIsExpiredException {
 
         Optional<AisConsentAuthorization> optionalAuthorisation = aisConsentAuthorisationRepository
-                                                                      .findOne(aisConsentAuthorizationSpecification.byExternalIdAndInstanceId(redirectId, instanceId))
-                                                                      .filter(a -> a.getScaStatus().isNotFinalisedStatus());
+                                                                      .findOne(aisConsentAuthorizationSpecification.byExternalIdAndInstanceId(redirectId, instanceId));
 
         if (optionalAuthorisation.isPresent()) {
             AisConsentAuthorization authorisation = optionalAuthorisation.get();
