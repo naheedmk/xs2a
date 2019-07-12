@@ -72,7 +72,7 @@
 
         <dependency>
             <groupId>de.adorsys.psd2</groupId>
-            <artifactId>event-service-rest-client</artifactId>
+            <artifactId>event-service-xs2a-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 

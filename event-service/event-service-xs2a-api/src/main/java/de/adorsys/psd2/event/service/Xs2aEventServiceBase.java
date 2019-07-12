@@ -16,8 +16,15 @@
 
 package de.adorsys.psd2.event.service;
 
-/**
- * Xs2aEventService with enabled encryption and decryption
- */
-public interface Xs2aEventServiceEncrypted extends Xs2aEventServiceBase {
+import de.adorsys.psd2.event.service.model.EventBO;
+import org.jetbrains.annotations.NotNull;
+
+public interface Xs2aEventServiceBase {
+    /**
+     * Records new Event in the CMS
+     *
+     * @param event Event to be recorded
+     * @return <code>true</code> if the event was recorded. <code>false</code> otherwise.
+     */
+    boolean recordEvent(@NotNull EventBO event);
 }
