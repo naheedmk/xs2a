@@ -56,7 +56,7 @@ public class CmsAspspEventControllerTest {
     }
 
     @Test
-    public void getEventsForDates() throws Exception {
+    public void getEventsForDates_success() throws Exception {
         when(aspspEventService.getEventsForPeriod(OffsetDateTime.parse(START), OffsetDateTime.parse(END), INSTANCE_ID))
             .thenReturn(Collections.emptyList());
 
@@ -71,6 +71,22 @@ public class CmsAspspEventControllerTest {
             .andReturn();
 
         verify(aspspEventService, times(1)).getEventsForPeriod(eq(OffsetDateTime.parse(START)), eq(OffsetDateTime.parse(END)), eq(INSTANCE_ID));
+    }
 
+    @Test
+    public void getEventsForDates_withoutInstanceId() throws Exception {
+        when(aspspEventService.getEventsForPeriod(OffsetDateTime.parse(START), OffsetDateTime.parse(END), INSTANCE_ID))
+            .thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/aspsp-api/v1/events/")
+                            .header("start-date", START)
+                            .header("end-date", END)
+        )
+            .andDo(print())
+            .andExpect(status().is(HttpStatus.OK.value()))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andReturn();
+
+        verify(aspspEventService, times(1)).getEventsForPeriod(eq(OffsetDateTime.parse(START)), eq(OffsetDateTime.parse(END)), eq(INSTANCE_ID));
     }
 }
