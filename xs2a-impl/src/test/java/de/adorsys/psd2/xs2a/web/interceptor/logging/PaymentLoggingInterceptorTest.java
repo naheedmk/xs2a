@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static de.adorsys.psd2.xs2a.web.validator.constants.Xs2aHeaderConstant.X_REQUEST_ID;
 import static org.mockito.Mockito.*;
@@ -98,7 +97,7 @@ public class PaymentLoggingInterceptorTest {
     @Test
     public void afterCompletion() {
         when(response.getStatus()).thenReturn(HttpServletResponse.SC_OK);
-        when(redirectIdService.getRedirectId()).thenReturn(Optional.of(REDIRECT_ID));
+        when(redirectIdService.getRedirectId()).thenReturn(REDIRECT_ID);
 
         interceptor.afterCompletion(request, response, null, null);
 

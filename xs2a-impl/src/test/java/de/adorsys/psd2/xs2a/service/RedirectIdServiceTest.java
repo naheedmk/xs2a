@@ -23,9 +23,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Optional;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,23 +62,22 @@ public class RedirectIdServiceTest {
         when(redirectIdHolder.getRedirectId()).thenReturn(AUTHORISATION_ID);
 
         // When
-        Optional<String> redirectIdOptional = redirectIdService.getRedirectId();
+        String redirectId = redirectIdService.getRedirectId();
 
         // Then
         //noinspection ResultOfMethodCallIgnored
         verify(redirectIdHolder).getRedirectId();
-        assertTrue(redirectIdOptional.isPresent());
-        assertEquals(AUTHORISATION_ID, redirectIdOptional.get());
+        assertEquals(AUTHORISATION_ID, redirectId);
     }
 
     @Test
     public void getRedirectId_withNoIdInHolder_shouldReturnEmpty() {
         // When
-        Optional<String> redirectIdOptional = redirectIdService.getRedirectId();
+        String redirectId = redirectIdService.getRedirectId();
 
         // Then
         //noinspection ResultOfMethodCallIgnored
         verify(redirectIdHolder).getRedirectId();
-        assertFalse(redirectIdOptional.isPresent());
+        assertNull(redirectId);
     }
 }

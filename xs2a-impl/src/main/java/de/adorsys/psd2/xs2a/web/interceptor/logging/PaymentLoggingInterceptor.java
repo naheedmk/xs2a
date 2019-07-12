@@ -55,13 +55,11 @@ public class PaymentLoggingInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        String redirectId = redirectIdService.getRedirectId().orElse(null);
-
         TppLogger.logResponse(response)
             .withTpp(tppService.getTppInfo())
             .withXRequestId()
             .withResponseStatus()
-            .withOptionalRedirectId(redirectId)
+            .withOptionalRedirectId(redirectIdService.getRedirectId())
             .perform();
     }
 }

@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -100,7 +99,7 @@ public class SigningBasketLoggingInterceptorTest {
     @Test
     public void afterCompletion_success() {
         when(response.getStatus()).thenReturn(HttpServletResponse.SC_OK);
-        when(redirectIdService.getRedirectId()).thenReturn(Optional.of(REDIRECT_ID));
+        when(redirectIdService.getRedirectId()).thenReturn(REDIRECT_ID);
 
         interceptor.afterCompletion(request, response, null, null);
 

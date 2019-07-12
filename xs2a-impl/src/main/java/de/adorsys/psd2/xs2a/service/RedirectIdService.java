@@ -18,9 +18,8 @@ package de.adorsys.psd2.xs2a.service;
 
 import de.adorsys.psd2.xs2a.domain.RedirectIdHolder;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -43,9 +42,10 @@ public class RedirectIdService {
      * <p>
      * May not exist if the ID was not generated yet or if the current flow doesn't require redirect ID to be generated.
      *
-     * @return redirect ID, if it was already generated
+     * @return redirect ID, if it was already generated, <code>null</code> otherwise
      */
-    public Optional<String> getRedirectId() {
-        return Optional.ofNullable(redirectIdHolder.getRedirectId());
+    @Nullable
+    public String getRedirectId() {
+        return redirectIdHolder.getRedirectId();
     }
 }
