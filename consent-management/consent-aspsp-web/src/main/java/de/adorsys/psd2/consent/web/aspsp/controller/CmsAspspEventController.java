@@ -54,10 +54,4 @@ public class CmsAspspEventController {
         List<EventBO> events = aspspEventService.getEventsForPeriod(start, end, instanceId);
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
-
-    @GetMapping(path = "/1")
-    public ResponseEntity<List<EventBO>> getEventsForDates1(@RequestHeader(value = "instance-id", required = false) String instanceId) {
-        List<EventBO> events = aspspEventService.getEventsForPeriod(null, null, instanceId);
-        return new ResponseEntity<>(events, HttpStatus.OK);
-    }
 }
