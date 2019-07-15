@@ -32,10 +32,10 @@ public class ContentCachingWrappingFilter extends AbstractXs2aFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         MultiReadHttpServletRequest multiReadRequest = new MultiReadHttpServletRequest(request);
-        MultiReadHttpServletResponse contentCachingResponseWrapper = new MultiReadHttpServletResponse(response);
+        MultiReadHttpServletResponse multiReadResponse = new MultiReadHttpServletResponse(response);
 
-        doFilter(multiReadRequest, contentCachingResponseWrapper, filterChain);
+        doFilter(multiReadRequest, multiReadResponse, filterChain);
 
-        contentCachingResponseWrapper.cacheContent();
+        multiReadResponse.cacheContent();
     }
 }
