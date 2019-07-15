@@ -19,7 +19,6 @@ package de.adorsys.psd2.xs2a.component;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * HttpServletResponse wrapper that allows response content to be stored and retrieved
@@ -35,22 +34,11 @@ public class MultiReadHttpServletResponse extends ContentCachingResponseWrapper 
     }
 
     /**
-     * Returns cached response content. May be empty if response wasn't cached.
-     * <p>
-     * Should not be called before executing {@link MultiReadHttpServletResponse#cacheContent()}.
+     * Returns cached response content
      *
      * @return cached response
      */
     public byte[] getCachedContent() {
         return this.getContentAsByteArray();
-    }
-
-    /**
-     * Stores response content for further retrieval.
-     * <p>
-     * Should be executed after the response has been written to the output stream or writer.
-     */
-    public void cacheContent() throws IOException {
-        this.copyBodyToResponse();
     }
 }

@@ -36,6 +36,6 @@ public class ContentCachingWrappingFilter extends AbstractXs2aFilter {
 
         doFilter(multiReadRequest, multiReadResponse, filterChain);
 
-        multiReadResponse.cacheContent();
+        multiReadResponse.copyBodyToResponse();
     }
 }

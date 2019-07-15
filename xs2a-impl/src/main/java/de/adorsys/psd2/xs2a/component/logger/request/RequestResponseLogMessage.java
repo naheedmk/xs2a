@@ -30,10 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -91,8 +88,12 @@ public class RequestResponseLogMessage {
          * @return builder
          */
         public RequestResponseLogMessageBuilder withRequestHeaders() {
-            String requestHeadersMessage = extractHeaders(Collections.list(request.getHeaderNames()), request::getHeader);
-            logParams.put(REQUEST_HEADERS, requestHeadersMessage);
+            Enumeration<String> headerNames = request.getHeaderNames();
+            if (headerNames != null) {
+                String requestHeadersMessage = extractHeaders(Collections.list(headerNames), request::getHeader);
+                logParams.put(REQUEST_HEADERS, requestHeadersMessage);
+            }
+
             return this;
         }
 

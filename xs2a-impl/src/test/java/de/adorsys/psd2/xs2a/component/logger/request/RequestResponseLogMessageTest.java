@@ -127,6 +127,20 @@ public class RequestResponseLogMessageTest {
     }
 
     @Test
+    public void withRequestHeaders_withNullHeaderNamesInRequest_shouldSkipHeaders() {
+        // Given
+        NoHeaderNamesHttpServletRequest noHeaderNamesHttpServletRequest = new NoHeaderNamesHttpServletRequest();
+
+        // When
+        RequestResponseLogMessage logMessage = RequestResponseLogMessage.builder(noHeaderNamesHttpServletRequest, response)
+                                                   .withRequestHeaders()
+                                                   .build();
+
+        // Then
+        assertTrue(logMessage.getMessage().isEmpty());
+    }
+
+    @Test
     public void withRequestPayload_shouldAddJsonPayload() {
         // Given
         byte[] jsonPayload = jsonReader.getBytesFromFile(REQUEST_BODY_JSON_PATH);
