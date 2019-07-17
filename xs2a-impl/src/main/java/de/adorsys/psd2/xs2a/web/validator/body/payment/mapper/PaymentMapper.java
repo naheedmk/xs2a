@@ -96,7 +96,7 @@ public class PaymentMapper {
         payment.setStartDate(paymentRequest.getStartDate());
         payment.setExecutionRule(mapToPisExecutionRule(paymentRequest.getExecutionRule()).orElse(null));
         payment.setEndDate(paymentRequest.getEndDate());
-        payment.setFrequency(mapToXs2aFrequencyCode(paymentRequest.getFrequency()));
+        payment.setFrequency(mapToFrequencyCode(paymentRequest.getFrequency()));
         payment.setDayOfExecution(mapToPisDayOfExecution(paymentRequest.getDayOfExecution()).orElse(null));
         return payment;
     }
@@ -111,7 +111,7 @@ public class PaymentMapper {
                    .flatMap(PisExecutionRule::getByValue);
     }
 
-    private de.adorsys.psd2.xs2a.core.pis.FrequencyCode mapToXs2aFrequencyCode(FrequencyCode frequency) {
+    private de.adorsys.psd2.xs2a.core.pis.FrequencyCode mapToFrequencyCode(FrequencyCode frequency) {
         return de.adorsys.psd2.xs2a.core.pis.FrequencyCode.valueOf(frequency.name());
     }
 
