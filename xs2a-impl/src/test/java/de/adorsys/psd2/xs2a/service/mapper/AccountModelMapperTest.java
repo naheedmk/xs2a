@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.service.mapper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.adorsys.psd2.model.*;
+import de.adorsys.psd2.xs2a.core.pis.PurposeCode;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.domain.HrefType;
 import de.adorsys.psd2.xs2a.domain.*;
@@ -27,6 +28,7 @@ import de.adorsys.psd2.xs2a.domain.account.Xs2aBalancesReport;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aTransactionsReport;
 import de.adorsys.psd2.xs2a.util.reader.JsonReader;
 import de.adorsys.psd2.xs2a.web.mapper.HrefLinkMapper;
+import de.adorsys.psd2.xs2a.web.mapper.PurposeCodeMapper;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +64,8 @@ public class AccountModelMapperTest {
     private HrefLinkMapper mockedHrefLinkMapper;
     @Autowired
     private AmountModelMapper mockedAmountModelMapper;
+    @Autowired
+    private PurposeCodeMapper mockedPurposeCodeMapper;
 
     private JsonReader jsonReader = new JsonReader();
 
@@ -69,7 +73,7 @@ public class AccountModelMapperTest {
     public void resetMocks() {
         // Resetting is necessary because these mocks are injected into the mapper as singleton beans
         // and are not being recreated after each test
-        Mockito.reset(mockedHrefLinkMapper, mockedAmountModelMapper);
+        Mockito.reset(mockedHrefLinkMapper, mockedAmountModelMapper, mockedPurposeCodeMapper);
     }
 
     @Test
@@ -169,6 +173,7 @@ public class AccountModelMapperTest {
         Xs2aAmount xs2aAmount = jsonReader.getObjectFromFile(XS2A_AMOUNT_JSON_PATH, Xs2aAmount.class);
         Amount amount = jsonReader.getObjectFromFile(AMOUNT_JSON_PATH, Amount.class);
         when(mockedAmountModelMapper.mapToAmount(xs2aAmount)).thenReturn(amount);
+        when(mockedPurposeCodeMapper.mapToPurposeCode(PurposeCode.BKDF)).thenReturn(de.adorsys.psd2.model.PurposeCode.BKDF);
 
         Transactions transactions = jsonReader.getObjectFromFile("json/service/mapper/AccountModelMapper-transactions.json", Transactions.class);
         TransactionDetails actualTransactionDetails = mapper.mapToTransaction(transactions);
@@ -184,6 +189,7 @@ public class AccountModelMapperTest {
         Xs2aAmount xs2aAmount = jsonReader.getObjectFromFile(XS2A_AMOUNT_JSON_PATH, Xs2aAmount.class);
         Amount amount = jsonReader.getObjectFromFile(AMOUNT_JSON_PATH, Amount.class);
         when(mockedAmountModelMapper.mapToAmount(xs2aAmount)).thenReturn(amount);
+        when(mockedPurposeCodeMapper.mapToPurposeCode(PurposeCode.BKDF)).thenReturn(de.adorsys.psd2.model.PurposeCode.BKDF);
 
         Transactions transactions = jsonReader.getObjectFromFile("json/service/mapper/AccountModelMapper-transactions.json", Transactions.class);
 
@@ -252,6 +258,11 @@ public class AccountModelMapperTest {
         @Bean
         public AmountModelMapper mockAmountModelMapper() {
             return mock(AmountModelMapper.class);
+        }
+
+        @Bean
+        public PurposeCodeMapper mockPurposeCodeMapper() {
+            return mock(PurposeCodeMapper.class);
         }
     }
 }
