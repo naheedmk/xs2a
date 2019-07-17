@@ -48,7 +48,7 @@ public class TppRedirectUriBodyValidatorImpl implements BodyValidator {
             String tppRedirectUriHeader = request.getHeader(TPP_REDIRECT_URI);
             Map<String, String> headers = Collections.list(request.getHeaderNames())
                                               .stream()
-                                              .collect(Collectors.toMap(h -> h.toLowerCase(), request::getHeader));
+                                              .collect(Collectors.toMap(String::toLowerCase, request::getHeader));
 
             if (!headers.containsKey(TPP_REDIRECT_URI)) {
                 errorBuildingService.enrichMessageError(messageError, String.format(ERROR_TEXT_ABSENT_HEADER, TPP_REDIRECT_URI));
