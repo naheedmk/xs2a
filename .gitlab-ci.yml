@@ -254,11 +254,10 @@ Deploy to Openshift (develop):
   stage: "Deploy"
   cache: {}
   dependencies: []
-  variables:
-    GIT_STRATEGY: none
   only:
     - koa-test-deploy-psd2
   variables:
+    GIT_STRATEGY: none
     DOCKER_TAG: koa-test-deploy # Dockerhub source tag
     OPENSHIFT_NAMESPACE: ${OPENSHIFT_NAMESPACE_KOA_TEST_DEPLOY_PSD2} # Openshift target namespace
   <<: *deploy_openshift
