@@ -152,8 +152,8 @@ public class CmsToXs2aPaymentMapperTest {
         assertEquals(EXECUTION_RULE, periodicPayment.getExecutionRule());
         assertEquals(END_DATE, periodicPayment.getEndDate());
 
-        FrequencyCode xs2aFrequencyCode = FrequencyCode.valueOf(FREQUENCY);
-        assertEquals(xs2aFrequencyCode, periodicPayment.getFrequency());
+        FrequencyCode frequencyCode = FrequencyCode.valueOf(FREQUENCY);
+        assertEquals(frequencyCode, periodicPayment.getFrequency());
 
         assertEquals(DAY_OF_EXECUTION, periodicPayment.getDayOfExecution());
         assertEquals(STATUS_CHANGE_TIMESTAMP, periodicPayment.getStatusChangeTimestamp());
