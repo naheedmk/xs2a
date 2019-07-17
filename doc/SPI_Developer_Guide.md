@@ -285,7 +285,7 @@ XS2A is started as a standalone application in embedded mode (`Xs2aStandaloneSta
 `Xs2aStandaloneStarter` application has database configuration, event service and CMS parts inside.
 
 
- * Update **apllication.properties** by adding database configuration: 
+ * Update **application.properties** of `xs2a-standalone-starter` by adding database configuration: 
    ```
     spring.datasource.url=jdbc:postgresql://localhost/consent
     spring.datasource.username=cms
