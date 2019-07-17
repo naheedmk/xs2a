@@ -291,7 +291,7 @@ XS2A is started as a standalone application in embedded mode (`Xs2aStandaloneSta
     spring.datasource.username=cms
     spring.datasource.password=cms
    ```
- * Remove maven dependencies in `xs2a-standalone-starter` pom.xml 
+ * Remove maven dependencies in `xs2a-standalone-starter` pom.xml: 
    ``` 
       <dependency>
             <groupId>de.adorsys.psd2</groupId>
@@ -305,7 +305,7 @@ XS2A is started as a standalone application in embedded mode (`Xs2aStandaloneSta
             <version>${project.version}</version>
       </dependency>                   
    ```
- * Add maven dependencies in `xs2a-standalone-starter` pom.xml
+ * Add maven dependencies in `xs2a-standalone-starter` pom.xml:
    ```
       <dependency>
            <groupId>org.springframework.boot</groupId>
@@ -342,7 +342,7 @@ XS2A is started as a standalone application in embedded mode (`Xs2aStandaloneSta
           <version>${project.version}</version>
       </dependency>
    ```
- * Update scan annotations in `Xs2aStandaloneStarter.java`
+ * Update scan annotations in `Xs2aStandaloneStarter.java`:
     ```
        @ComponentScan(basePackages = "de.adorsys.psd2")
        @EnableTransactionManagement
