@@ -244,6 +244,7 @@ AsciiDoc Test:
 
 Push to DockerHub (develop):
   stage: "Package"
+  cache: {}
   only:
     - koa-test-deploy-psd2
   variables:
