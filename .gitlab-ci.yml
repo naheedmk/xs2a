@@ -252,6 +252,7 @@ Push to DockerHub (develop):
 
 Deploy to Openshift (develop):
   stage: "Deploy"
+  cache: {}
   only:
     - koa-test-deploy-psd2
   variables:
