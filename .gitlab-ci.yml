@@ -254,6 +254,8 @@ Deploy to Openshift (develop):
   stage: "Deploy"
   cache: {}
   dependencies: []
+  variables:
+    GIT_STRATEGY: none
   only:
     - koa-test-deploy-psd2
   variables:
