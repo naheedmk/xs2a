@@ -48,6 +48,3 @@ This behaviour can be changed by configuring the `logback-spring.xml`.
 
 Executing GET pain common payment in CMS-PSU-API on `/psu-api/v1/payment/redirect/{redirect-id}` or `/psu-api/v1/payment/cancellation/redirect/{redirect-id}`
 caused internal server error. From now on, this bug is fixed.
-
-
-
