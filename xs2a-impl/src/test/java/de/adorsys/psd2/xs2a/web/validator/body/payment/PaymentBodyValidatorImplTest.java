@@ -26,10 +26,8 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
 import de.adorsys.psd2.xs2a.web.converter.LocalDateConverter;
 import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
-import de.adorsys.psd2.xs2a.web.validator.body.TppRedirectUriBodyValidatorImpl;
-import de.adorsys.psd2.xs2a.web.converter.LocalDateConverter;
-import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
 import de.adorsys.psd2.xs2a.web.validator.body.DateFieldValidator;
+import de.adorsys.psd2.xs2a.web.validator.body.TppRedirectUriBodyValidatorImpl;
 import de.adorsys.psd2.xs2a.web.validator.body.payment.type.PaymentTypeValidator;
 import de.adorsys.psd2.xs2a.web.validator.body.payment.type.PaymentTypeValidatorContext;
 import de.adorsys.psd2.xs2a.web.validator.header.ErrorBuildingServiceMock;
@@ -108,7 +106,7 @@ public class PaymentBodyValidatorImplTest {
         messageError = new MessageError(ErrorType.PIS_400);
         ErrorBuildingService errorService = new ErrorBuildingServiceMock(ErrorType.PIS_400);
         validator = new PaymentBodyValidatorImpl(errorService, objectMapper, paymentTypeValidatorContext,
-                                                 standardPaymentProductsResolver, jsonConverter, tppRedirectUriBodyValidator, new DateFieldValidator(errorService, jsonConverter, new LocalDateConverter()) );
+                                                 standardPaymentProductsResolver, jsonConverter, tppRedirectUriBodyValidator, new DateFieldValidator(errorService, jsonConverter, new LocalDateConverter()));
         when(standardPaymentProductsResolver.isRawPaymentProduct(eq(PAIN_PAYMENT_PRODUCT)))
             .thenReturn(true);
         when(standardPaymentProductsResolver.isRawPaymentProduct(eq(JSON_PAYMENT_PRODUCT)))
@@ -211,7 +209,7 @@ public class PaymentBodyValidatorImplTest {
 
         // Then
         verify(tppRedirectUriBodyValidator, times(1)).validate(mockRequest, messageError);
-        assertEquals(DAY_OF_EXECUTION_WRONG_VALUE_ERROR, messageError);
+        assertTrue(messageError.getTppMessages().isEmpty());
     }
 
     @Test

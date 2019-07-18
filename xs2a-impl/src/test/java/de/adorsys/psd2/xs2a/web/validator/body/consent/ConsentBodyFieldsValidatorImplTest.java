@@ -260,7 +260,6 @@ public class ConsentBodyFieldsValidatorImplTest {
         // Then
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
         assertEquals("Wrong value for availableAccounts", messageError.getTppMessage().getText());
-        verify(tppRedirectUriBodyValidator, times(1)).validate(request, messageError);
     }
 
     @Test
@@ -282,7 +281,6 @@ public class ConsentBodyFieldsValidatorImplTest {
         // Then
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
         assertEquals("Wrong value for availableAccounts", messageError.getTppMessage().getText());
-        verify(tppRedirectUriBodyValidator, times(1)).validate(request, messageError);
     }
 
     @Test
@@ -304,7 +302,6 @@ public class ConsentBodyFieldsValidatorImplTest {
         // Then
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
         assertEquals("Wrong value for allPsd2", messageError.getTppMessage().getText());
-        verify(tppRedirectUriBodyValidator, times(1)).validate(request, messageError);
     }
 
     @Test
@@ -326,7 +323,6 @@ public class ConsentBodyFieldsValidatorImplTest {
         // Then
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
         assertEquals("Wrong value for allPsd2", messageError.getTppMessage().getText());
-        verify(tppRedirectUriBodyValidator, times(1)).validate(request, messageError);
     }
 
     @Test
@@ -347,7 +343,6 @@ public class ConsentBodyFieldsValidatorImplTest {
         // Then
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
         assertEquals("Wrong value for availableAccountsWithBalances", messageError.getTppMessage().getText());
-        verify(tppRedirectUriBodyValidator, times(1)).validate(request, messageError);
     }
 
     @Test
@@ -369,7 +364,6 @@ public class ConsentBodyFieldsValidatorImplTest {
         // Then
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
         assertEquals("Wrong value for availableAccountsWithBalances", messageError.getTppMessage().getText());
-        verify(tppRedirectUriBodyValidator, times(1)).validate(request, messageError);
     }
 
     @Test
@@ -385,7 +379,6 @@ public class ConsentBodyFieldsValidatorImplTest {
         // Then
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
         assertEquals(DESERIALIZATION_ERROR, messageError.getTppMessage().getText());
-        verify(tppRedirectUriBodyValidator, times(1)).validate(malformedRequest, messageError);
     }
 
     @Test
