@@ -49,7 +49,6 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 import static de.adorsys.psd2.xs2a.domain.MessageErrorCode.FORMAT_ERROR;
 import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.PIIS_400;
@@ -96,7 +95,7 @@ public class FundsConfirmationService {
             consent = validationResult.getConsent();
         }
 
-        PsuIdData psuIdData = getPsuIdData(consent);
+        PsuIdData psuIdData = requestProviderService.getPsuIdData();
         AspspConsentData aspspConsentData = getAspspConsentData(consent);
         FundsConfirmationResponse response = executeRequest(psuIdData, consent, request, aspspConsentData);
 
@@ -154,17 +153,6 @@ public class FundsConfirmationService {
         }
 
         return spiToXs2aFundsConfirmationMapper.mapToFundsConfirmationResponse(fundsSufficientCheck.getPayload());
-    }
-
-    private @NotNull PsuIdData getPsuIdData(@Nullable PiisConsent consent) {
-        // TODO Extract PSU Data from request if it's possible https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/525
-        PsuIdData emptyPsuIdData = new PsuIdData(null, null, null, null);
-        if (consent == null) {
-            return emptyPsuIdData;
-        }
-
-        return Optional.ofNullable(consent.getPsuData())
-                   .orElse(emptyPsuIdData);
     }
 
     private @NotNull AspspConsentData getAspspConsentData(@Nullable PiisConsent consent) {
