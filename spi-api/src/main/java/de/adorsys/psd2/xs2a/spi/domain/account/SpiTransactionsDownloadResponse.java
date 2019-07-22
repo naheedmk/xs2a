@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2018 adorsys GmbH & Co KG
+ * Copyright 2018-2019 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.exception;
+package de.adorsys.psd2.xs2a.spi.domain.account;
 
-public enum MessageCategory {
-    ERROR,
-    WARNING
+import lombok.Value;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.InputStream;
+
+/**
+ * A class, containing a stream for downloading the list of transactions by a link, provided by ASPSP
+ */
+@Value
+public class SpiTransactionsDownloadResponse {
+    @NotNull
+    private InputStream transactionStream;
+    @Nullable
+    private String dataFileName;
+    @Nullable
+    private Integer dataSizeBytes;
 }

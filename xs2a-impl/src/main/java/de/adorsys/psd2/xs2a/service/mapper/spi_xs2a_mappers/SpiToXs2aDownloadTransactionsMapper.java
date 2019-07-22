@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2018 adorsys GmbH & Co KG
+ * Copyright 2018-2019 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.exception;
+package de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers;
 
-public enum MessageCategory {
-    ERROR,
-    WARNING
+import de.adorsys.psd2.xs2a.domain.account.Xs2aTransactionsDownloadResponse;
+import de.adorsys.psd2.xs2a.spi.domain.account.SpiTransactionsDownloadResponse;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface SpiToXs2aDownloadTransactionsMapper {
+
+    Xs2aTransactionsDownloadResponse mapToXs2aTransactionsDownloadResponse (SpiTransactionsDownloadResponse response);
 }
