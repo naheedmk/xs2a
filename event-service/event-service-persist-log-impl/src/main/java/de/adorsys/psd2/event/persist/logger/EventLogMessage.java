@@ -44,6 +44,22 @@ public class EventLogMessage {
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EventLogMessageBuilder {
+        private static final String TIMESTAMP = "timestamp";
+        private static final String EVENT_ORIGIN = "eventOrigin";
+        private static final String EVENT_TYPE = "eventType";
+        private static final String X_REQUEST_ID = "xRequestId";
+        private static final String CONSENT_ID = "consentId";
+        private static final String PAYMENT_ID = "paymentId";
+        private static final String TPP_AUTHORISATION_NUMBER = "tppAuthorisationNumber";
+        private static final String PSU_ID = "psuId";
+        private static final String PSU_ID_TYPE = "psuIdType";
+        private static final String PSU_CORPORATE_ID = "psuCorporateId";
+        private static final String PSU_CORPORATE_ID_TYPE = "psuCorporateIdType";
+        private static final String PSU_PROPERTY_PREFIX = ": ";
+        private static final String PSU_DATA_PARTS_SEPARATOR = ", ";
+        private static final String PSU_DATA = "psuData";
+        private static final String PAYLOAD = "payload";
+
         private final EventPO event;
         private Map<String, String> logParams = new LinkedHashMap<>();
 
@@ -53,7 +69,7 @@ public class EventLogMessage {
          * @return this builder
          */
         public EventLogMessageBuilder withTimestamp() {
-            logParams.put("timestamp", event.getTimestamp().toString());
+            logParams.put(TIMESTAMP, event.getTimestamp().toString());
             return this;
         }
 
@@ -63,7 +79,7 @@ public class EventLogMessage {
          * @return this builder
          */
         public EventLogMessageBuilder withEventOrigin() {
-            logParams.put("eventOrigin", event.getEventOrigin().toString());
+            logParams.put(EVENT_ORIGIN, event.getEventOrigin().toString());
             return this;
         }
 
@@ -73,7 +89,7 @@ public class EventLogMessage {
          * @return this builder
          */
         public EventLogMessageBuilder withEventType() {
-            logParams.put("eventType", event.getEventType().toString());
+            logParams.put(EVENT_TYPE, event.getEventType().toString());
             return this;
         }
 
@@ -83,7 +99,7 @@ public class EventLogMessage {
          * @return this builder
          */
         public EventLogMessageBuilder withXRequestId() {
-            logParams.put("xRequestId", event.getXRequestId());
+            logParams.put(X_REQUEST_ID, event.getXRequestId());
             return this;
         }
 
@@ -95,7 +111,7 @@ public class EventLogMessage {
          * @return this builder
          */
         public EventLogMessageBuilder withConsentId() {
-            putOptionalParameter("consentId", event.getConsentId());
+            putOptionalParameter(CONSENT_ID, event.getConsentId());
             return this;
         }
 
@@ -107,7 +123,7 @@ public class EventLogMessage {
          * @return this builder
          */
         public EventLogMessageBuilder withPaymentId() {
-            putOptionalParameter("paymentId", event.getPaymentId());
+            putOptionalParameter(PAYMENT_ID, event.getPaymentId());
             return this;
         }
 
@@ -117,7 +133,7 @@ public class EventLogMessage {
          * @return this builder
          */
         public EventLogMessageBuilder withTppAuthorisationNumber() {
-            logParams.put("tppAuthorisationNumber", event.getTppAuthorisationNumber());
+            logParams.put(TPP_AUTHORISATION_NUMBER, event.getTppAuthorisationNumber());
             return this;
         }
 
@@ -134,12 +150,12 @@ public class EventLogMessage {
 
             if (psuIdDataPO != null) {
                 List<String> messageParts = new ArrayList<>();
-                addOptionalValueWithPrefix(messageParts, psuIdDataPO.getPsuId(), "psuId: ");
-                addOptionalValueWithPrefix(messageParts, psuIdDataPO.getPsuIdType(), "psuIdType: ");
-                addOptionalValueWithPrefix(messageParts, psuIdDataPO.getPsuCorporateId(), "psuCorporateId: ");
-                addOptionalValueWithPrefix(messageParts, psuIdDataPO.getPsuCorporateIdType(), "psuCorporateIdType: ");
+                addOptionalValueWithPrefix(messageParts, psuIdDataPO.getPsuId(), PSU_ID + PSU_PROPERTY_PREFIX);
+                addOptionalValueWithPrefix(messageParts, psuIdDataPO.getPsuIdType(), PSU_ID_TYPE + PSU_PROPERTY_PREFIX);
+                addOptionalValueWithPrefix(messageParts, psuIdDataPO.getPsuCorporateId(), PSU_CORPORATE_ID + PSU_PROPERTY_PREFIX);
+                addOptionalValueWithPrefix(messageParts, psuIdDataPO.getPsuCorporateIdType(), PSU_CORPORATE_ID_TYPE + PSU_PROPERTY_PREFIX);
 
-                logParams.put("psuData", String.join(", ", messageParts));
+                logParams.put(PSU_DATA, String.join(PSU_DATA_PARTS_SEPARATOR, messageParts));
             }
 
             return this;
@@ -157,7 +173,7 @@ public class EventLogMessage {
 
             if (payloadBytes != null) {
                 String payload = new String(event.getPayload(), StandardCharsets.UTF_8);
-                logParams.put("payload", payload);
+                logParams.put(PAYLOAD, payload);
             }
 
             return this;
