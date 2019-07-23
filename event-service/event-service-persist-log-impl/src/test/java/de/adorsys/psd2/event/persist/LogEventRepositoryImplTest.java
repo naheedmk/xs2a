@@ -47,6 +47,7 @@ public class LogEventRepositoryImplTest {
                                          .withTimestamp()
                                          .withEventOrigin()
                                          .withEventType()
+                                         .withInternalRequestId()
                                          .withXRequestId()
                                          .withConsentId()
                                          .withPaymentId()

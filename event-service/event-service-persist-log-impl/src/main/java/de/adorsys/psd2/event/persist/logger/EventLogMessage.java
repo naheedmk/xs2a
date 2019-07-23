@@ -47,6 +47,7 @@ public class EventLogMessage {
         private static final String TIMESTAMP = "timestamp";
         private static final String EVENT_ORIGIN = "eventOrigin";
         private static final String EVENT_TYPE = "eventType";
+        private static final String INTERNAL_REQUEST_ID = "internalRequestId";
         private static final String X_REQUEST_ID = "xRequestId";
         private static final String CONSENT_ID = "consentId";
         private static final String PAYMENT_ID = "paymentId";
@@ -90,6 +91,16 @@ public class EventLogMessage {
          */
         public EventLogMessageBuilder withEventType() {
             logParams.put(EVENT_TYPE, event.getEventType().toString());
+            return this;
+        }
+
+        /**
+         * Adds internal request id from the event to the log message
+         *
+         * @return this builder
+         */
+        public EventLogMessageBuilder withInternalRequestId() {
+            logParams.put(INTERNAL_REQUEST_ID, event.getInternalRequestId());
             return this;
         }
 

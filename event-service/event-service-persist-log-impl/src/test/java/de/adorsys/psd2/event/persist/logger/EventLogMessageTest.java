@@ -30,6 +30,7 @@ public class EventLogMessageTest {
     private static final String TIMESTAMP_MESSAGE_FORMAT = "timestamp: [%s]";
     private static final String EVENT_ORIGIN_MESSAGE_FORMAT = "eventOrigin: [%s]";
     private static final String EVENT_TYPE_MESSAGE_FORMAT = "eventType: [%s]";
+    private static final String INTERNAL_REQUEST_ID_MESSAGE_FORMAT = "internalRequestId: [%s]";
     private static final String X_REQUEST_ID_MESSAGE_FORMAT = "xRequestId: [%s]";
     private static final String CONSENT_ID_MESSAGE_FORMAT = "consentId: [%s]";
     private static final String PAYMENT_ID_MESSAGE_FORMAT = "paymentId: [%s]";
@@ -85,6 +86,23 @@ public class EventLogMessageTest {
         // When
         EventLogMessage logMessage = EventLogMessage.builder(eventPO)
                                          .withEventType()
+                                         .build();
+
+        // Then
+        assertEquals(expectedMessage, logMessage.getMessage());
+    }
+
+    @Test
+    public void withInternalRequestId_shouldAddInternalRequestIdFromEvent() {
+        // Given
+        EventPO eventPO = new EventPO();
+        String internalRequestId = "0cbaf14a-a861-454e-9a11-e21464c69de9";
+        eventPO.setInternalRequestId(internalRequestId);
+        String expectedMessage = String.format(INTERNAL_REQUEST_ID_MESSAGE_FORMAT, internalRequestId);
+
+        // When
+        EventLogMessage logMessage = EventLogMessage.builder(eventPO)
+                                         .withInternalRequestId()
                                          .build();
 
         // Then

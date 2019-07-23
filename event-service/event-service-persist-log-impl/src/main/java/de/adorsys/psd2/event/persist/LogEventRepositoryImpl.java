@@ -36,6 +36,7 @@ public class LogEventRepositoryImpl implements EventRepository {
                                          .withTimestamp()
                                          .withEventOrigin()
                                          .withEventType()
+                                         .withInternalRequestId()
                                          .withXRequestId()
                                          .withConsentId()
                                          .withPaymentId()
