@@ -598,7 +598,9 @@ public class ConsentService {
     }
 
     private SpiContextData getSpiContextData() {
-        return spiContextDataProvider.provideWithPsuIdData(requestProviderService.getPsuIdData());
+        PsuIdData psuIdData = requestProviderService.getPsuIdData();
+        log.info("Corresponding PSU-ID {} was provided from request.", psuIdData);
+        return spiContextDataProvider.provideWithPsuIdData(psuIdData);
     }
 
     private Optional<Xs2aAuthorisationSubResources> getAuthorisationSubResources(String consentId) {

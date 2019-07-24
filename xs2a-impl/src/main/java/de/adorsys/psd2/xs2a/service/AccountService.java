@@ -22,6 +22,7 @@ import de.adorsys.psd2.consent.api.TypeAccess;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.event.EventType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
+import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.Transactions;
@@ -531,6 +532,8 @@ public class AccountService {
     }
 
     private SpiContextData getSpiContextData() {
-        return spiContextDataProvider.provideWithPsuIdData(requestProviderService.getPsuIdData());
+        PsuIdData psuIdData = requestProviderService.getPsuIdData();
+        log.info("Corresponding PSU-ID {} was provided from request.", psuIdData);
+        return spiContextDataProvider.provideWithPsuIdData(psuIdData);
     }
 }

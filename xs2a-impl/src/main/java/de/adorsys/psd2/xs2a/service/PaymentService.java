@@ -174,7 +174,7 @@ public class PaymentService {
         AspspConsentData aspspConsentData = pisAspspDataService.getAspspConsentData(paymentId);
         PaymentInformationResponse response;
 
-        PsuIdData psuIdData = requestProviderService.getPsuIdData();
+        PsuIdData psuIdData = getPsuIdDataFromRequest();
         // TODO should be refactored https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/533
         if (commonPayment.getPaymentData() != null) {
             response = readCommonPaymentService.getPayment(commonPayment, psuIdData, aspspConsentData);
@@ -237,7 +237,7 @@ public class PaymentService {
         }
 
         AspspConsentData aspspConsentData = pisAspspDataService.getAspspConsentData(paymentId);
-        SpiContextData spiContextData = spiContextDataProvider.provideWithPsuIdData(requestProviderService.getPsuIdData());
+        SpiContextData spiContextData = spiContextDataProvider.provideWithPsuIdData(getPsuIdDataFromRequest());
 
         ReadPaymentStatusResponse readPaymentStatusResponse;
 
@@ -344,7 +344,7 @@ public class PaymentService {
             spiPayment = spiPaymentOptional.get();
         }
 
-        return cancelPaymentService.initiatePaymentCancellation(requestProviderService.getPsuIdData(), spiPayment,
+        return cancelPaymentService.initiatePaymentCancellation(getPsuIdDataFromRequest(), spiPayment,
                                                                 paymentCancellationRequest.getEncryptedPaymentId(),
                                                                 paymentCancellationRequest.getTppExplicitAuthorisationPreferred(),
                                                                 paymentCancellationRequest.getTppRedirectUri());
@@ -367,5 +367,11 @@ public class PaymentService {
         });
 
         return pisPayments;
+    }
+
+    private PsuIdData getPsuIdDataFromRequest() {
+        PsuIdData psuIdData = requestProviderService.getPsuIdData();
+        log.info("Corresponding PSU-ID {} was provided from request.", psuIdData);
+        return psuIdData;
     }
 }
