@@ -371,7 +371,7 @@ public class PaymentService {
 
     private PsuIdData getPsuIdDataFromRequest() {
         PsuIdData psuIdData = requestProviderService.getPsuIdData();
-        log.info("Corresponding PSU-ID {} was provided from request.", psuIdData);
+        log.info("X-Request-ID: [{}]. Corresponding PSU-ID {} was provided from request.", requestProviderService.getRequestId(), psuIdData);
         return psuIdData;
     }
 }

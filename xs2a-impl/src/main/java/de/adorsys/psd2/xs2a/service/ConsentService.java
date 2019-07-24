@@ -599,7 +599,7 @@ public class ConsentService {
 
     private SpiContextData getSpiContextData() {
         PsuIdData psuIdData = requestProviderService.getPsuIdData();
-        log.info("Corresponding PSU-ID {} was provided from request.", psuIdData);
+        log.info("X-Request-ID: [{}]. Corresponding PSU-ID {} was provided from request.", requestProviderService.getRequestId(), psuIdData);
         return spiContextDataProvider.provideWithPsuIdData(psuIdData);
     }
 

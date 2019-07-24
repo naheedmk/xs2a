@@ -96,7 +96,7 @@ public class FundsConfirmationService {
         }
 
         PsuIdData psuIdData = requestProviderService.getPsuIdData();
-        log.info("Corresponding PSU-ID {} was provided from request.", psuIdData);
+        log.info("X-Request-ID: [{}]. Corresponding PSU-ID {} was provided from request.", requestProviderService.getRequestId(), psuIdData);
         AspspConsentData aspspConsentData = getAspspConsentData(consent);
         FundsConfirmationResponse response = executeRequest(psuIdData, consent, request, aspspConsentData);
 
