@@ -106,7 +106,7 @@ Response by the method *getPaymentById* returns payment as a part of SpiResponse
 
 * *contextData*;
 * *payment*: Periodic Payment;
-* *aspspConsentData*: Used on SPI level as a container of some binary data. Spi developers may save here necessary information, it is tored and encrypted in consent. *This shall not use without consentId*.
+* *aspspConsentData*: Used on SPI level as a container of some binary data. Spi developers may save here necessary information, it is stored and encrypted in consent. *This shall not use without consentId*.
  Encrypted data is linked to a request. It may be null if consent does not contain such data, or request is not done from a workflow with a consent.
 
 Response by the method *getPaymentStatusById* returns an object (with the transaction status) and contains the following:
@@ -193,7 +193,7 @@ The Method *initiatePaymentCancellation* returns the payment cancellation respon
 * *Payment*: payment to be cancelled;
 * *aspspConsentData*.
 
-The Method *cancelPaymentWithoutSca* is used by cancelling payment without performing SCA. Method returns a positive or negative payment cancellation response as part of spiRestponse. It contains the following data:
+The Method *cancelPaymentWithoutSca* is used by cancelling payment without performing SCA. Method returns a positive or negative payment cancellation response as part of spiResponse. It contains the following data:
 
 * *contextData*;
 * *Payment*: payment to be cancelled;
@@ -208,7 +208,7 @@ It returns a positive or negative response as part of spiResponse. It contains t
 * *spiScaConfirmation*: payment cancellation confirmation information.
 
 === Strong Customer Authentication (SCA)
-The Payment initiation depends heavily on the *Strong Customer Authentication (SCA)* approach implemented by the ASPSP. For now it is implemented three Approaches (REDIRECT, DECOUPLED and EMBEDDED).
+The Payment initiation depends heavily on the *Strong Customer Authentication (SCA)* approach implemented by the ASPSP. For now there are three Approaches implemented (REDIRECT, DECOUPLED and EMBEDDED).
 
 ==== SCA Approach DECOUPLED
 
@@ -224,12 +224,12 @@ Prerequisites in case of *consent for payment initiation*:
 When the Payment was initiated, it should be authorised by the PSU. In case of redirect approach the authorisation can be explicit or implicit.
 
 *The explicit Start of the authorisation* process means that Payment initiation Request is followed by an explicit Request of the TPP to start the authorisation. It is followed by a redirection to the ASPSP SCA authorisation site.
-A status request might be requested by the TPP after the session is reredirected to the TPP's system. Redirect SCA Approach is used in case of *tppExplicitAuthorisationPreferred = true* and *signingBasketSupported = true* or in case of multilevel SCA.
+A status request might be requested by the TPP after the session is redirected to the TPP's system. Redirect SCA Approach is used in case of *tppExplicitAuthorisationPreferred = true* and *signingBasketSupported = true* or in case of multilevel SCA.
 
 * *tppExplicitAuthorisationPreferred*: value of tpp'choice of authorisation method;
 * *signingBasketSupported*: indicates if signing basket is supported on the ASPSP profile. It returns _true_ if ASPSP supports signing basket, _false_ if doesn't.
 
-In case of *implicit Start of the Authorisation process* the ASPSP needed no additional data from TPP. In this case, the redirection of the PSU browser session happens directly after the Payment Initiation Response.
+In case of *implicit Start of the Authorisation process* the ASPSP needs no additional data from TPP. In this case, the redirection of the PSU browser session happens directly after the Payment Initiation Response.
 Besides an SCA status request may be sent by the TPP to follow the SCA process. In this case, the authorisation is used based on *tppExplicitAuthorisationPreferred* and *signingBasketSupported values*:
 
 * Implicit authorisation is used in all cases where *tppExplicitAuthorisationPreferred* or *signingBasketSupported not equals true*;
