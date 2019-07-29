@@ -3,7 +3,7 @@
 //:imagesdir: usecases/diagrams
 :toc: left
 // horizontal line
-***
+
 toc::[]
 
 == General requirements
@@ -133,7 +133,7 @@ Response by the methods *getPaymentById* returns payment as a part of SpiRespons
 
 * *contextData*;
 * *payment*: Bulk Payment;
-*aspspConsentData*: Used on SPI level as a container of some binary data. Spi developers may save here necessary information, it is stored and encrypted in consent. *This shall not use without consentId*.
+* *aspspConsentData*: Used on SPI level as a container of some binary data. Spi developers may save here necessary information, it is stored and encrypted in consent. *This shall not use without consentId*.
 Encrypted data is linked to a request. It may be null if consent does not contain such data, or request is not done from a workflow with a consent.
 
 Response by the methods *getPaymentStatusById* returns an object (with the transaction status) and contains the following:
@@ -166,7 +166,7 @@ The Method *requestAvailableScaMethods* returns a list of SCA methods for the ps
 The Mothod *requestAuthorisationCode* performs SCA depending on selected SCA method. *Should be used only with Embedded Approach*. Method returns a positive or negative response as a part of SpiResponse.
 If the authentication method is unknow, then empty *SpiAuthorizationCoderesult* should be returned. It contains following Data:
 
-* ** *contextdata*;
+* *contextdata*;
 * *businessObject*;
 * *aspspConsentData*;
 * *authenticationMethodId*: Id of a chosen SCA method.

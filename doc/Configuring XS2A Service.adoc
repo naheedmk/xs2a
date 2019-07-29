@@ -3,7 +3,6 @@
 //:imagesdir: usecases/diagrams
 :toc: left
 // horizontal line
-***
 
 == Configuring Logging
 
