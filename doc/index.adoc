@@ -28,10 +28,10 @@ toc::[]
 xref:architecture/index.adoc[Architecture documentation]
 
 == XS2A. Details of realisation
-xref:xs2a features description.adoc[Documentation]
+xref:XS2A. Details of realisation/xs2a features description.adoc[Documentation]
 
 == SPI Developer Guide
-xref:SPI_Developer_Guide.adoc[SPI Developer Guide]
+xref:SPI Developer Guide/SPI_Developer_Guide.adoc[SPI Developer Guide]
 
 include::version_policy.adoc[]
 
