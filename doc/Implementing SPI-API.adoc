@@ -14,6 +14,24 @@ toc::[]
 
 == Implementation of AccountSpi
 
+The Interface is used for AIS consent accounts SPI implementation. The following methods should be implemented:
+
+* *requestAccountList*;
+* *requestAccountDetailForAccount*;
+* *requestTransactionsForAccount*;
+* *requestTransactionForAccountByTransactionId*;
+* *requestBalancesForAccount*;
+* *requestTransactionsByDownloadLink*.
+
+The Method *requestTransactionsForAccount* provides a possibility to retrieve the list of bank transactions filtered by the period, AIS consent account ID and status.
+It also provides the transaction list download ID, which can be used to download a file with the list of bank transactions.
+
+The Method *requestTransactionsByDownloadLink* allows to download a list of bank transactions directly to the file.
+It returns *SpiTransactionsDownloadResponse* object with the InputStream which contains the transaction list, filename (can be null) and the size of the payload in bytes (can be null also).
+
+From the TPP side the download can be initiated by accessing new endpoint in account controller - *GET /v1/accounts/{account-id}/transactions/download/{download-id}*.
+TPP should provide the AIS consent account ID and the download ID. As a response for accessing this endpoint, the TPP receives the stream with transaction list.
+
 == Implementation of AisConsentSpi
 
 == Providing account resources to consent
