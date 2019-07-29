@@ -3,8 +3,6 @@
 //:imagesdir: usecases/diagrams
 :toc: left
 // horizontal line
-***
-toc::[]
 
 == Purpose and Scope
 

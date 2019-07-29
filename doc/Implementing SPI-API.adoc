@@ -151,7 +151,7 @@ The Interface is used while implementing payment authorisation flow on SPI level
 
 The Method *authorisePsu* authorises psu and returns current (success or failure) authorisation status. *Should be used only with Embedded SCA Approach*. It contains following Data:
 
-* *contextdata*;
+* *contextData*;
 * *psuLoginData*: ASPSP identifier(s) of the psu, provided by TPP within this request;
 * *password*: Psu's password;
 * *businessObject*: payment object;
@@ -159,14 +159,14 @@ The Method *authorisePsu* authorises psu and returns current (success or failure
 
 The Method *requestAvailableScaMethods* returns a list of SCA methods for the psu by its login. *Should be used only with the Embedded SCA Approach*. It contains following Data:
 
-* *contextdata*;
+* *contextData*;
 * *businessObject*;
 * *aspspConsentData*.
 
 The Mothod *requestAuthorisationCode* performs SCA depending on selected SCA method. *Should be used only with Embedded Approach*. Method returns a positive or negative response as a part of SpiResponse.
 If the authentication method is unknow, then empty *SpiAuthorizationCoderesult* should be returned. It contains following Data:
 
-* *contextdata*;
+* *contextData*;
 * *businessObject*;
 * *aspspConsentData*;
 * *authenticationMethodId*: Id of a chosen SCA method.
@@ -174,7 +174,7 @@ If the authentication method is unknow, then empty *SpiAuthorizationCoderesult* 
 In case of *Decoupled SCA Approach*, the method *startScaDecoupled* have to be implemented: method notifies a decoupled app about starting SCA. AuthorisationId is provided
 to allow the app to access CMS. It returns a response object, contains a message from ASPSP to PSU, gives him instrctions regarding decoupled SCA starting. It contains the following data:
 
-* *contextdata*;
+* *contextData*;
 * *businessObject*;
 * *aspspConsentData*;
 * *authenticationMethodId*: for a decoupled SCA method within embedded approach;
@@ -189,20 +189,20 @@ The Interface is used to cancel a payment. The following Methods should be imple
 
 The Method *initiatePaymentCancellation* returns the payment cancellation response with information about transaction status and whether authorisation of the request is required. It contains the following data:
 
-* *contextdata*;
+* *contextData*;
 * *Payment*: payment to be cancelled;
 * *aspspConsentData*.
 
 The Method *cancelPaymentWithoutSca* is used by cancelling payment without performing SCA. Method returns a positive or negative payment cancellation response as part of spiRestponse. It contains the following data:
 
-* *contextdata*;
+* *contextData*;
 * *Payment*: payment to be cancelled;
 * *aspspConsentData*.
 
 The Method *verifyScaAuthorisationAndCancelPayment* sends authorisation confirmation information (secure code or such) to ASPSP and, in case of successful validation, cancels payment at ASPSP.
 It returns a positive or negative response as part of spiResponse. It contains the following data:
 
-* *contextdata*;
+* *contextData*;
 * *Payment* payment to be cancelled;
 * *aspspConsentData*;
 * *spiScaConfirmation*: payment cancellation confirmation information.
