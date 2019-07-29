@@ -277,7 +277,7 @@ _Example of Sca Status:_
 * RECEIVED(“received”, false): if an authorisation or cancellation-authorisation resource has been created successfully.
 * PSUIDENTIFIED(“psuIdentified”, false): if the PSU related to the authorisation or cancellation-authorisation resource has been identified.
 
-The Method *getScaApproachServiceTypeProvider* provides sca approach used in current service. It returns the ScaApproach *“Redirect”*.
+The Method *getScaApproachServiceTypeProvider* provides SCA approach used in current service. It returns the ScaApproach *“Redirect”*.
 
 ===== Redirect Approach for Payment cancellation
 
@@ -285,8 +285,8 @@ The Method *createCommonPaymentCancellationAuthorisation* with *paymentId*, *pay
 
 The Method  *getCancellationAuthorisationSubResources* with the *paymentId* returns authorisation sub resources.
 
-The wMethod *updateCommonPaymentCancellationPsuData* updates the cancellation for the payment.
+The Method *updateCommonPaymentCancellationPsuData* updates the cancellation for the payment.
 
 The Method *getCancellationAuthorisationScaStatus* with *PaymentId* and *CancellationId* (Resource identification of the related Payment Cancellation authorisation sub-resource) returns SCA status.
 
-The Method *getScaApproachServiceTypeProvider* provides sca approach used in current service. It returns the ScaApproach *“Redirect”*.
+The Method *getScaApproachServiceTypeProvider* provides SCA approach used in current service. It returns the ScaApproach *“Redirect”*.
