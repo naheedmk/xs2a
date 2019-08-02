@@ -112,3 +112,4 @@ endpoints for retrieving events report from the *cms-aspsp-api* should be disabl
 
 Logging implementation uses *SLF4J* for recording events, meaning that it's possible to configure and use any logging framework that's compatible with *SLF4J*.
 All events are being written to a separate logger *event-log* at *INFO* level.
+See <<SPI_Developer_Guide.adoc#configuring-logging,XS2A Logging configuring>> for more details on how to configure *SLF4J* logging.
