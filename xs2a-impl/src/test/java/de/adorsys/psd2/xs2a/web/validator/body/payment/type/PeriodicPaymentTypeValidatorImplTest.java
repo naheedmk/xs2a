@@ -239,7 +239,7 @@ public class PeriodicPaymentTypeValidatorImplTest {
 
     @Test
     public void validatorAddress_street_tooLong_error() {
-        address.setStreet(VALUE_71_LENGHT + VALUE_71_LENGHT);
+        address.setStreetName(VALUE_71_LENGHT + VALUE_71_LENGHT);
 
         validator.validateAddress(address, messageError);
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
@@ -259,7 +259,7 @@ public class PeriodicPaymentTypeValidatorImplTest {
 
     @Test
     public void validatorAddress_city_tooLong_error() {
-        address.setCity(VALUE_71_LENGHT + VALUE_71_LENGHT);
+        address.setTownName(VALUE_71_LENGHT + VALUE_71_LENGHT);
 
         validator.validateAddress(address, messageError);
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
@@ -269,7 +269,7 @@ public class PeriodicPaymentTypeValidatorImplTest {
 
     @Test
     public void validatorAddress_postalCode_tooLong_error() {
-        address.setPostalCode(VALUE_71_LENGHT + VALUE_71_LENGHT);
+        address.setPostCode(VALUE_71_LENGHT + VALUE_71_LENGHT);
 
         validator.validateAddress(address, messageError);
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());

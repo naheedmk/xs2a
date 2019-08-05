@@ -1,10 +1,10 @@
 openapi: 3.0.1
 info:
   title: NextGenPSD2 XS2A Framework
-  version: "1.3.3 Mar 13th 2019"
+  version: "1.3.4_2019-07-17v1"
   description: |
     # Summary
-    The **NextGenPSD2** *Framework Version 1.3.2* offers a modern, open, harmonised and interoperable set of 
+    The **NextGenPSD2** *Framework Version 1.3.4* offers a modern, open, harmonised and interoperable set of
     Application Programming Interfaces (APIs) as the safest and most efficient way to provide data securely. 
     The NextGenPSD2 Framework reduces XS2A complexity and costs, addresses the problem of multiple competing standards 
     in Europe and, aligned with the goals of the Euro Retail Payments Board,
@@ -368,7 +368,8 @@ paths:
         - $ref: "#/components/parameters/PSU-Http-Method"
         - $ref: "#/components/parameters/PSU-Device-ID"
         - $ref: "#/components/parameters/PSU-Geo-Location"
-      #NO REQUEST BODY 
+        - $ref: "#/components/parameters/TPP-Explicit-Authorisation-Preferred"
+      #NO REQUEST BODY
       
       responses:
         '204':
@@ -505,16 +506,16 @@ paths:
         
         This applies in the following scenarios:
         
-          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment 
+          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment
             Initiation Response that an explicit start of the authorisation process is needed by the TPP. 
             The 'startAuthorisation' hyperlink can transport more information about data which needs to be 
             uploaded by using the extended forms.
             * 'startAuthorisationWithPsuIdentfication', 
-            * 'startAuthorisationWithPsuAuthentication' 
+            * 'startAuthorisationWithPsuAuthentication'
             * 'startAuthorisationWithEncryptedPsuAuthentication'
             * 'startAuthorisationWithAuthentciationMethodSelection' 
           * The related payment initiation cannot yet be executed since a multilevel SCA is mandated.
-          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding 
+          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding
             Payment Cancellation Response that an explicit start of the authorisation process is needed by the TPP. 
             The 'startAuthorisation' hyperlink can transport more information about data which needs to be uploaded 
             by using the extended forms as indicated above.
@@ -576,14 +577,14 @@ paths:
         - $ref: "#/components/parameters/PSU-Geo-Location"
 
       requestBody:
-        content: 
+        content:
           application/json:
             schema:
               oneOf: #Different Authorisation Bodies
-                - {}  
+                - {}
                 - $ref: "#/components/schemas/updatePsuAuthentication"
                 - $ref: "#/components/schemas/selectPsuAuthenticationMethod"
-                - $ref: "#/components/schemas/transactionAuthorisation" 
+                - $ref: "#/components/schemas/transactionAuthorisation"
       
       responses:
         '201':
@@ -876,10 +877,10 @@ paths:
           application/json:
             schema:
               oneOf: #Different Authorisation Bodies
-                - {}  
+                - {}
                 - $ref: "#/components/schemas/updatePsuAuthentication"
                 - $ref: "#/components/schemas/selectPsuAuthenticationMethod"
-                - $ref: "#/components/schemas/transactionAuthorisation" 
+                - $ref: "#/components/schemas/transactionAuthorisation"
             examples:
               "Update PSU Identification (Decoupled Approach)":
                 value: {}
@@ -942,15 +943,15 @@ paths:
         
         This applies in the following scenarios:
         
-          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment 
+          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment
             Initiation Response that an explicit start of the authorisation process is needed by the TPP. 
             The 'startAuthorisation' hyperlink can transport more information about data which needs to be 
             uploaded by using the extended forms.
             * 'startAuthorisationWithPsuIdentfication', 
-            * 'startAuthorisationWithPsuAuthentication' 
+            * 'startAuthorisationWithPsuAuthentication'
             * 'startAuthorisationWithAuthentciationMethodSelection' 
           * The related payment initiation cannot yet be executed since a multilevel SCA is mandated.
-          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding 
+          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding
             Payment Cancellation Response that an explicit start of the authorisation process is needed by the TPP. 
             The 'startAuthorisation' hyperlink can transport more information about data which needs to be uploaded 
             by using the extended forms as indicated above.
@@ -1302,10 +1303,10 @@ paths:
           application/json:
             schema:
               oneOf: #Different Authorisation Bodies
-                - {}  
+                - {}
                 - $ref: "#/components/schemas/updatePsuAuthentication"
                 - $ref: "#/components/schemas/selectPsuAuthenticationMethod"
-                - $ref: "#/components/schemas/transactionAuthorisation" 
+                - $ref: "#/components/schemas/transactionAuthorisation"
             examples:
               "Update PSU Identification (Embedded Approach)":
                 value: {}
@@ -1721,11 +1722,11 @@ paths:
           $ref: "#/components/responses/SERVICE_UNAVAILABLE_503_AIS"
 
 
-  /v1/accounts/{account-id}/transactions/{transactionId}: 
+  /v1/accounts/{account-id}/transactions/{transactionId}:
     get:
       summary: Read Transaction Details
       description: |
-        Reads transaction details from a given transaction addressed by "transactionId" on a given account addressed by "account-id". 
+        Reads transaction details from a given transaction addressed by "transactionId" on a given account addressed by "account-id".
         This call is only available on transactions as reported in a JSON format.
         
         **Remark:** Please note that the PATH might be already given in detail by the corresponding entry of the response of the 
@@ -2528,16 +2529,16 @@ paths:
         
         This applies in the following scenarios:
         
-          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment 
+          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment
             Initiation Response that an explicit start of the authorisation process is needed by the TPP. 
             The 'startAuthorisation' hyperlink can transport more information about data which needs to be 
             uploaded by using the extended forms.
             * 'startAuthorisationWithPsuIdentfication', 
-            * 'startAuthorisationWithPsuAuthentication' 
+            * 'startAuthorisationWithPsuAuthentication'
             * 'startAuthorisationWithEncryptedPsuAuthentication'
             * 'startAuthorisationWithAuthentciationMethodSelection' 
           * The related payment initiation cannot yet be executed since a multilevel SCA is mandated.
-          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding 
+          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding
             Payment Cancellation Response that an explicit start of the authorisation process is needed by the TPP. 
             The 'startAuthorisation' hyperlink can transport more information about data which needs to be uploaded 
             by using the extended forms as indicated above.
@@ -2598,14 +2599,14 @@ paths:
         - $ref: "#/components/parameters/PSU-Geo-Location"
 
       requestBody:
-        content: 
+        content:
           application/json:
             schema:
               oneOf: #Different Authorisation Bodies
-                - {}  
+                - {}
                 - $ref: "#/components/schemas/updatePsuAuthentication"
                 - $ref: "#/components/schemas/selectPsuAuthenticationMethod"
-                - $ref: "#/components/schemas/transactionAuthorisation" 
+                - $ref: "#/components/schemas/transactionAuthorisation"
       
       responses:
         '201':
@@ -2897,10 +2898,10 @@ paths:
           application/json:
             schema:
               oneOf: #Different Authorisation Bodies
-                - {}  
+                - {}
                 - $ref: "#/components/schemas/updatePsuAuthentication"
                 - $ref: "#/components/schemas/selectPsuAuthenticationMethod"
-                - $ref: "#/components/schemas/transactionAuthorisation" 
+                - $ref: "#/components/schemas/transactionAuthorisation"
             examples:
               "Update PSU Identification/Additional SCA Process (Embedded Approach)":
                 value: {}
@@ -2953,8 +2954,8 @@ paths:
         Checks whether a specific amount is available at point of time 
         of the request on an account linked to a given tuple card issuer(TPP)/card number, 
         or addressed by IBAN and TPP respectively.
-        
-        If the related extended services are used a conditional Consent-ID is contained in the header. 
+
+        If the related extended services are used a conditional Consent-ID is contained in the header.
         This field is contained but commented out in this specification.
       operationId: checkAvailabilityOfFunds
       tags:
@@ -2966,6 +2967,7 @@ paths:
       #header
           #common header parameter
         - $ref: "#/components/parameters/X-Request-ID"
+        - $ref: "#/components/parameters/Authorization"
           #method specific header elements
         #- $ref: "#/components/parameters/consentId_HEADER_optional" # Consent-Id for usage of extended services
           #header to support the signature function
@@ -3365,16 +3367,16 @@ paths:
         
         This applies in the following scenarios:
         
-          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment 
+          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment
             Initiation Response that an explicit start of the authorisation process is needed by the TPP. 
             The 'startAuthorisation' hyperlink can transport more information about data which needs to be 
             uploaded by using the extended forms.
             * 'startAuthorisationWithPsuIdentfication', 
-            * 'startAuthorisationWithPsuAuthentication' 
+            * 'startAuthorisationWithPsuAuthentication'
             * 'startAuthorisationWithEncryptedPsuAuthentication'
             * 'startAuthorisationWithAuthentciationMethodSelection' 
           * The related payment initiation cannot yet be executed since a multilevel SCA is mandated.
-          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding 
+          * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding
             Payment Cancellation Response that an explicit start of the authorisation process is needed by the TPP. 
             The 'startAuthorisation' hyperlink can transport more information about data which needs to be uploaded 
             by using the extended forms as indicated above.
@@ -3434,14 +3436,14 @@ paths:
         - $ref: "#/components/parameters/PSU-Geo-Location"
 
       requestBody:
-        content: 
+        content:
           application/json:
             schema:
               oneOf: #Different Authorisation Bodies
-                - {}  
+                - {}
                 - $ref: "#/components/schemas/updatePsuAuthentication"
                 - $ref: "#/components/schemas/selectPsuAuthenticationMethod"
-                - $ref: "#/components/schemas/transactionAuthorisation" 
+                - $ref: "#/components/schemas/transactionAuthorisation"
       
       responses:
         '201':
@@ -3652,11 +3654,11 @@ paths:
           application/json:
             schema:
               oneOf: #Different Authorisation Bodies
-                - {}  
+                - {}
                 - $ref: "#/components/schemas/updatePsuAuthentication"
                 - $ref: "#/components/schemas/selectPsuAuthenticationMethod"
-                - $ref: "#/components/schemas/transactionAuthorisation" 
- 
+                - $ref: "#/components/schemas/transactionAuthorisation"
+
             examples:
               "Update PSU Identification (Embedded Approach)":
                 value: {}
@@ -3856,6 +3858,10 @@ components:
         ID of the corresponding consent object as returned by an Account Information Consent Request.
       type: string
 
+    authorization:
+      description: |
+        Authorization by OAuth2 based Protocol.
+      type: string
 
     consentIdList:
       description: A list of consentIds
@@ -3940,7 +3946,7 @@ components:
         - 'PART': 'PartiallyAccepted' -
           A number of transactions have been accepted, whereas another number of transactions have not yet achieved 'accepted' status.
           Remark: This code may be used only in case of bulk payments. It is only used in a situation where all mandated authorisations have been applied, but some payments have been rejected.
-          
+
       type: string
       enum:
         - "ACCC"
@@ -4190,8 +4196,10 @@ components:
             This attribute is used only, when PHOTO_OTP or CHIP_OTP
             is the selected SCA method.
         data:
-          type: string
-          description: String challenge data
+          type: array
+          items:
+            type: string
+          description: A collection of strings as challenge data
         imageLink:
           type: string
           format: url
@@ -4211,6 +4219,18 @@ components:
             Additional explanation for the PSU to explain
             e.g. fallback mechanism for the chosen SCA method.
             The TPP is obliged to show this to the PSU.
+
+    fundsAvailable:
+      description: |
+        Equals true if sufficient funds are available at the time of the request, false otherwise.
+
+        This datalemenet is allways contained in a confirmation of funds response.
+
+        This data element is contained in a payment status response,
+        if supported by the ASPSP, if a funds check has been performed and
+        if the transactionStatus is "ATCT", "ACWC" or "ACCP".
+      type: boolean
+
 
     hrefType:
       description: Link to a resource
@@ -4368,6 +4388,11 @@ components:
             For card-accounts, this is composed of
               - invoiced, but not yet paid entries, 
               - not yet invoiced but already booked entries
+          - "interimBooked":
+            Balance calculated in the course of the account servicer's business day, at the time specified,
+            and subject to further changes during the business day.
+            The interim balance is calculated on the basis of booked credit and debit items during the calculation time/period
+            specified.
           - "forwardAvailable":
             Forward available balance of money that is at the disposal of the account owner on the date specified.
           - "nonInvoiced": 
@@ -4421,6 +4446,14 @@ components:
         availableAccounts:
           description: |
             Optional if supported by API provider.
+            
+            Only the value "allAccounts" is admitted.
+          type: string
+          enum:
+            - "allAccounts"
+        availableAccountsWithBalance:
+          description: |
+            Optional if supported by API provider.
 
             Only the value "allAccounts" is admitted.
           type: string
@@ -4434,14 +4467,6 @@ components:
           type: string
           enum:
             - "allAccounts"
-        availableAccountsWithBalances:
-          description: |
-            Optional if supported by API provider.
-
-            Only the value "allAccounts" is admitted.
-          type: string
-          enum:
-          - "allAccounts"
 
     cashAccountType:
       description: |
@@ -4460,6 +4485,7 @@ components:
         - "enabled"
         - "deleted"
         - "blocked"
+
 
     accountDetails:
       description: |
@@ -4769,7 +4795,7 @@ components:
         cardAcceptorAddress:
           $ref: "#/components/schemas/address" 
         merchantCategoryCode:
-          $ref: "#/components/schemas/merchantCategoryCode" 
+          $ref: "#/components/schemas/merchantCategoryCode"
         maskedPAN:
           $ref: "#/components/schemas/maskedPan"
         transactionDetails:
@@ -4812,7 +4838,7 @@ components:
           type: string
 
 
-    paymentExchangeRate:  
+    paymentExchangeRate:
       description: Exchange Rate
       type: object
       properties:
@@ -4843,6 +4869,12 @@ components:
           $ref: "#/components/schemas/amount"
         balanceType:
           $ref: "#/components/schemas/balanceType"
+        creditLimitIncluded:
+          description: |
+            A flag indicating if the credit limit of the corresponding account
+            is included in the calculation of the balance, where applicable.
+          type: boolean
+          example: false
         lastChangeDateTime:
           description: |
             This data element might be used to indicate e.g. with the expected or booked balance that no action is known 
@@ -4880,7 +4912,7 @@ components:
         description: An array of all cancellationIds
         type: object
         required:
-            - cancellationIds
+        - cancellationIds
         properties:
             cancellationIds:
                 $ref: "#/components/schemas/cancellationList"
@@ -4949,14 +4981,14 @@ components:
       required:
         - country
       properties:
-        street:
+        streetName:
           type: string
           maxLength: 70
         buildingNumber:
           type: string
-        city:
+        townName:
           type: string
-        postalCode:
+        postCode:
           type: string
         country:
           $ref: "#/components/schemas/countryCode"
@@ -5035,7 +5067,7 @@ components:
         - "SHAR"
         - "SLEV"
 
-    remittanceInformationStructured: 
+    remittanceInformationStructured:
       description: |
         Structured remittance information
       type: object
@@ -5395,8 +5427,8 @@ components:
       type: string
       maxLength: 4
       minLength: 4
- 
-      
+
+
 
 
     frequencyCode:
@@ -5426,9 +5458,9 @@ components:
       description: |
         This field indicates the requested maximum frequency for an access without PSU involvement per day.
         For a one-off access, this attribute is set to "1".
-        
-        The frequency needs to be greater equal to one. 
-        
+
+        The frequency needs to be greater equal to one.
+
         If not otherwise agreed bilaterally between TPP and ASPSP, the frequency is less equal to 4.
       type: integer
       example: 4
@@ -5482,8 +5514,8 @@ components:
 
     executionRule:
       description: |
-        "following" or "preceding" supported as values. 
-        This data attribute defines the behaviour when recurring payment dates falls on a weekend or bank holiday. 
+        "following" or "preceding" supported as values.
+        This data attribute defines the behaviour when recurring payment dates falls on a weekend or bank holiday.
         The payment is then executed either the "preceding" or "following" working day.
         ASPSP might reject the request due to the communicated value, if rules in Online-Banking are not supporting 
         this execution rule.
@@ -5501,7 +5533,13 @@ components:
           description: Password
           type: string
         encryptedPassword:
-          description: Encrypted password. 
+          description: Encrypted password.
+          type: string
+        additionalPassword:
+          description: Additional password in plaintext
+          type: string
+        additionalEncryptedPassword:
+          description: Additional encrypted password
           type: string
 
     psuMessageText:
@@ -5606,28 +5644,28 @@ components:
     # Content of Request Bodies - JSON
     #####################################################
 
-    paymentInitiation_json: 
+    paymentInitiation_json:
       description: |
         Generic Body for a payment initation via JSON.
-        
-        This generic JSON body can be used to represent valid payment initiations for the following JSON based payment product, 
+
+        This generic JSON body can be used to represent valid payment initiations for the following JSON based payment product,
         which where defined in the Implementation Guidelines:
-        
+
           * sepa-credit-transfers
           * instant-sepa-credit-transfers
           * target-2-payments
           * cross-border-credit-transfers
-        
-        For the convenience of the implementer additional which are already predefinded in the Implementation Guidelines 
+
+        For the convenience of the implementer additional which are already predefinded in the Implementation Guidelines
         are included (but commented in source code), such that an ASPSP may add them easily.
-        
-        Take care: Since the format is intended to fit for all payment products 
+
+        Take care: Since the format is intended to fit for all payment products
         there are additional conditions which are NOT covered by this specification.
         Please check the Implementation Guidelines for detailes.
 
-        
+
         The following data element are depending on the actual payment product available (in source code):
-                  
+
          <table style="width:100%">
          <tr><th>Data Element</th><th>SCT EU Core</th><th>SCT INST EU Core</th><th>Target2 Paym. Core</th><th>Cross Border CT Core</th></tr>
          <tr><td>endToEndIdentification</td><td> optional</td> <td>optional</td> <td>optional</td> <td>n.a.</td> </tr>
@@ -5654,18 +5692,18 @@ components:
          <tr><td>requestedExecutionTime</td> <td>n.a.</td> <td>n.a.</td> <td>n.a.</td> <td>n.a.</td> </tr>
             </td></tr>
           </table>
-          
+
         IMPORTANT: In this API definition the following holds:
-          *  All data elements mentioned above are defined, but some of them are commented, 
+          *  All data elements mentioned above are defined, but some of them are commented,
             i.e. they are only visible in the source code and can be used by uncommenting them.
-          * Data elements which are mandatory in the table above for all payment products 
+          * Data elements which are mandatory in the table above for all payment products
             are set to be mandatory in this specification.
           * Data elements which are indicated in the table above as n.a. for all payment products are commented in the source code.
-          * Data elements which are indicated to be option, conditional or mandatory for at least one payment product 
-            in the table above are set to be optional in the s specification except the case where all are definde to be mandatory. 
-          * Data element which are inticated to be n.a. can be used by the ASPS if needed. 
+          * Data elements which are indicated to be option, conditional or mandatory for at least one payment product
+            in the table above are set to be optional in the s specification except the case where all are definde to be mandatory.
+          * Data element which are inticated to be n.a. can be used by the ASPS if needed.
             In this case uncomment tthe the relatetd lines in the source code.
-          * If one uses this data types for some payment products he has to ensure that the used data type is 
+          * If one uses this data types for some payment products he has to ensure that the used data type is
             valid according to the underlying payment product, e.g. by some appropriate validations.
 
       type: object
@@ -5690,7 +5728,7 @@ components:
 #          $ref: "#/components/schemas/currencyCode"
 #        exchangeRateInformation: # N.A. for all, but can be used by ASPSP if needed
 #          $ref: "#/components/schemas/paymentExchangeRate"
-        creditorAccount: 
+        creditorAccount:
           $ref: "#/components/schemas/accountReference"
         creditorAgent:
           $ref: "#/components/schemas/bicfi"
@@ -5725,7 +5763,7 @@ components:
     paymentInitiationBulkElement_json:
       description: |
         Generic body for a bulk payment initation entry.
-        
+
         The bulk entry type is a type which follows the JSON formats for the supported products for single payments
         excluding the data elements (if supported):
           * debtorAccount
@@ -5733,24 +5771,24 @@ components:
           * requestedExecutionTime.
         These data elements may not be contained in any bulk entry.
 
-        This data object can be used to represent valid bulk payment initiations entry for the following JSON based payment product, 
+        This data object can be used to represent valid bulk payment initiations entry for the following JSON based payment product,
         which where defined in the Implementation Guidelines:
-        
+
           * sepa-credit-transfers
           * instant-sepa-credit-transfers
           * target-2-payments
           * cross-border-credit-transfers
-        
-        For the convenience of the implementer additional which are already predefinded in the Implementation Guidelines 
+
+        For the convenience of the implementer additional which are already predefinded in the Implementation Guidelines
         are included (but commented in source code), such that an ASPSP may add them easily.
-        
-        Take care: Since the format is intended to fit for all payment products 
+
+        Take care: Since the format is intended to fit for all payment products
         there are additional conditions which are NOT covered by this specification.
         Please check the Implementation Guidelines for detailes.
 
-        
+
         The following data element are depending on the actual payment product available (in source code):
-                  
+
          <table style="width:100%">
          <tr><th>Data Element</th><th>SCT EU Core</th><th>SCT INST EU Core</th><th>Target2 Paym. Core</th><th>Cross Border CT Core</th></tr>
          <tr><td>endToEndIdentification</td><td> optional</td> <td>optional</td> <td>optional</td> <td>n.a.</td> </tr>
@@ -5774,18 +5812,18 @@ components:
          <tr><td>remittanceInformationStructured</td> <td>n.a.</td> <td>n.a.</td> <td>n.a.</td> <td>n.a.</td> </tr>
             </td></tr>
           </table>
-          
+
         IMPORTANT: In this API definition the following holds:
-          *  All data elements mentioned above are defined, but some of them are commented, 
+          *  All data elements mentioned above are defined, but some of them are commented,
             i.e. they are only visible in the source code and can be used by uncommenting them.
-          * Data elements which are mandatory in the table above for all payment products 
+          * Data elements which are mandatory in the table above for all payment products
             are set to be mandatory in this specification.
           * Data elements which are indicated in the table above as n.a. for all payment products are commented in the source code.
-          * Data elements which are indicated to be option, conditional or mandatory for at least one payment product 
-            in the table above are set to be optional in the s specification except the case where all are definde to be mandatory. 
-          * Data element which are inticated to be n.a. can be used by the ASPS if needed. 
+          * Data elements which are indicated to be option, conditional or mandatory for at least one payment product
+            in the table above are set to be optional in the s specification except the case where all are definde to be mandatory.
+          * Data element which are inticated to be n.a. can be used by the ASPS if needed.
             In this case uncomment tthe the relatetd lines in the source code.
-          * If one uses this data types for some payment products he has to ensure that the used data type is 
+          * If one uses this data types for some payment products he has to ensure that the used data type is
             valid according to the underlying payment product, e.g. by some appropriate validations.
 
       type: object
@@ -5805,7 +5843,7 @@ components:
 #          $ref: "#/components/schemas/currencyCode"
 #        exchangeRateInformation: # N.A. for all, but can be used by ASPSP if needed
 #          $ref: "#/components/schemas/paymentExchangeRate"
-        creditorAccount: 
+        creditorAccount:
           $ref: "#/components/schemas/accountReference"
         creditorAgent:
           $ref: "#/components/schemas/bicfi"
@@ -5831,28 +5869,28 @@ components:
           $ref: "#/components/schemas/remittanceInformationStructured"
 
 
-    periodicPaymentInitiation_json: 
+    periodicPaymentInitiation_json:
       description: |
         Generic Body for a periodic payment initation via JSON.
-        
-        This generic JSON body can be used to represent valid periodic payment initiations for the following JSON based payment product, 
+
+        This generic JSON body can be used to represent valid periodic payment initiations for the following JSON based payment product,
         which where defined in the Implementation Guidelines:
-        
+
           * sepa-credit-transfers
           * instant-sepa-credit-transfers
           * target-2-payments
           * cross-border-credit-transfers
-        
-        For the convenience of the implementer additional which are already predefinded in the Implementation Guidelines 
+
+        For the convenience of the implementer additional which are already predefinded in the Implementation Guidelines
         are included (but commented in source code), such that an ASPSP may add them easily.
-        
-        Take care: Since the format is intended to fit for all payment products 
+
+        Take care: Since the format is intended to fit for all payment products
         there are additional conditions which are NOT covered by this specification.
         Please check the Implementation Guidelines for detailes.
 
-        
+
         The following data element are depending on the actual payment product available (in source code):
-                  
+
          <table style="width:100%">
          <tr><th>Data Element</th><th>SCT EU Core</th><th>SCT INST EU Core</th><th>Target2 Paym. Core</th><th>Cross Border CT Core</th></tr>
          <tr><td>endToEndIdentification</td><td> optional</td> <td>optional</td> <td>optional</td> <td>n.a.</td> </tr>
@@ -5884,18 +5922,18 @@ components:
          <tr><td>dayOfExecution</td> <td>conditional</td> <td>conditional</td> <td>conditional</td> <td>conditional</td> </tr>
             </td></tr>
           </table>
-          
+
         IMPORTANT: In this API definition the following holds:
-          *  All data elements mentioned above are defined, but some of them are commented, 
+          *  All data elements mentioned above are defined, but some of them are commented,
             i.e. they are only visible in the source code and can be used by uncommenting them.
-          * Data elements which are mandatory in the table above for all payment products 
+          * Data elements which are mandatory in the table above for all payment products
             are set to be mandatory in this specification.
           * Data elements which are indicated in the table above as n.a. for all payment products are commented in the source code.
-          * Data elements which are indicated to be option, conditional or mandatory for at least one payment product 
-            in the table above are set to be optional in the s specification except the case where all are definde to be mandatory. 
-          * Data element which are inticated to be n.a. can be used by the ASPS if needed. 
+          * Data elements which are indicated to be option, conditional or mandatory for at least one payment product
+            in the table above are set to be optional in the s specification except the case where all are definde to be mandatory.
+          * Data element which are inticated to be n.a. can be used by the ASPS if needed.
             In this case uncomment tthe the relatetd lines in the source code.
-          * If one uses this data types for some payment products he has to ensure that the used data type is 
+          * If one uses this data types for some payment products he has to ensure that the used data type is
             valid according to the underlying payment product, e.g. by some appropriate validations.
 
       type: object
@@ -5953,11 +5991,11 @@ components:
           $ref: "#/components/schemas/dayOfExecution"
 
 
-    bulkPaymentInitiation_json: 
+    bulkPaymentInitiation_json:
       description: |
         Generic Body for a bulk payment initation via JSON.
-        
-        paymentInformationId is contained in code but commented since it is n.a. 
+
+        paymentInformationId is contained in code but commented since it is n.a.
         and not all ASPSP are able to support this field now.
         In a later version the field will be mandatory.
       type: object
@@ -5984,7 +6022,7 @@ components:
         payments:
           description: |
             A list of generic JSON bodies payment initations for bulk payments via JSON.
-            
+
             Note: Some fields from single payments do not occcur in a bulk payment element
           type: array
           items:
@@ -6228,6 +6266,8 @@ components:
       properties:
         transactionStatus:
           $ref: "#/components/schemas/transactionStatus"
+        fundsAvailable:
+          $ref: "#/components/schemas/fundsAvailable"
 
 
     paymentInitiationStatusResponse-200_xml:
@@ -6294,7 +6334,7 @@ components:
           $ref: "#/components/schemas/_linksPaymentInitiationCancel"
 
 
-    paymentInitiationWithStatusResponse: 
+    paymentInitiationWithStatusResponse:
       description: |
         Generic JSON response body consistion of the corresponding payment initation JSON body together with an optional transaction status field.
       type: object
@@ -6341,7 +6381,7 @@ components:
           $ref: "#/components/schemas/transactionStatus"
 
 
-    periodicPaymentInitiationWithStatusResponse: 
+    periodicPaymentInitiationWithStatusResponse:
       description: |
         Generic JSON response body consistion of the corresponding periodic payment initation JSON body together with an optional transaction status field.
       type: object
@@ -6401,7 +6441,7 @@ components:
           $ref: "#/components/schemas/transactionStatus"
 
 
-    bulkPaymentInitiationWithStatusResponse: 
+    bulkPaymentInitiationWithStatusResponse:
       description: |
         Generic JSON response body consistion of the corresponding bulk payment initation JSON body together with an optional transaction status field.
       type: object
@@ -6419,7 +6459,7 @@ components:
         payments:
           description: |
             A list of generic JSON bodies payment initations for bulk payments via JSON.
-            
+
             Note: Some fields from single payments do not occcur in a bulk payment element
           type: array
           items:
@@ -6467,6 +6507,8 @@ components:
         - _links
         - scaStatus
       properties:
+        scaMethods:
+          $ref: "#/components/schemas/scaMethods"
         _links:
           $ref: "#/components/schemas/_linksUpdatePsuIdentification"
         scaStatus:
@@ -6493,6 +6535,8 @@ components:
           $ref: "#/components/schemas/scaStatus"
         psuMessage:
           $ref: "#/components/schemas/psuMessageText"
+        authorisationId:
+          $ref: "#/components/schemas/authorisationId"
 
 
     selectPsuAuthenticationMethodResponse:
@@ -6521,7 +6565,7 @@ components:
           * 'consents': consent objects which shall be authorised through this signing basket.
           * 'transactionStatus': Only the codes RCVD, ACTC, RJCT are used.
           * '_links': The ASPSP might integrate hyperlinks to indicate next (authorisation) steps to be taken.
-        
+
       type: object
       required:
         - transactionStatus
@@ -6593,7 +6637,7 @@ components:
           $ref: "#/components/schemas/challengeData"
         _links:
           $ref: "#/components/schemas/_linksConsents"
-        message:
+        psuMessage:
           description: Text to be displayed to the PSU, e.g. in a Decoupled SCA Approach.
           type: string
           maxLength: 512
@@ -6631,7 +6675,7 @@ components:
           $ref: "#/components/schemas/lastActionDate"
         consentStatus:
           $ref: "#/components/schemas/consentStatus"
-        _links: 
+        _links:
           $ref: "#/components/schemas/_linksGetConsent"
 
 
@@ -6753,6 +6797,10 @@ components:
         startAuthorisationWithEncryptedPsuAuthentication:
           $ref: "#/components/schemas/hrefType"
         updateEncryptedPsuAuthentication:
+          $ref: "#/components/schemas/hrefType"
+        updateAdditionalPsuAuthentication:
+          $ref: "#/components/schemas/hrefType"
+        updateAdditionalEncryptedPsuAuthentication:
           $ref: "#/components/schemas/hrefType"
         startAuthorisationWithAuthenticationMethodSelection:
           $ref: "#/components/schemas/hrefType"
@@ -6922,11 +6970,14 @@ components:
         defined extensions):
         
         - 'scaStatus': The link to retrieve the scaStatus of the corresponding authorisation sub-resource.
+        - 'selectAuthenticationMethod': This is a link to a resource, where the TPP can select the applicable second factor authentication methods for the PSU, if there are several available authentication methods and if the  PSU is already sufficiently authenticated.. If this link is contained, then there is also the data element "scaMethods" contained in the response body
       type: object
       additionalProperties: 
         $ref: "#/components/schemas/hrefType"
       properties:
         scaStatus:
+          $ref: "#/components/schemas/hrefType"
+        selectAuthenticationMethod:
           $ref: "#/components/schemas/hrefType"
 
 
@@ -6935,7 +6986,16 @@ components:
         A list of hyperlinks to be recognised by the TPP. Might be contained, if several authentication methods 
         are available for the PSU.
         Type of links admitted in this response:
-          * 'selectAuthenticationMethod': 
+          * 'updateAdditionalPsuAuthentication':
+            The link to the payment initiation or account information resource,
+            which needs to be updated by an additional PSU password.
+            This link is only contained in rare cases,
+            where such additional passwords are needed for PSU authentications.
+          * 'updateAdditionalEncryptedPsuAuthentication':
+            The link to the payment initiation or account information resource,
+            which needs to be updated by an additional encrypted PSU password.
+            This link is only contained in rare cases, where such additional passwords are needed for PSU authentications.
+          * 'selectAuthenticationMethod':
             This is a link to a resource, where the TPP can select the applicable second factor authentication 
             methods for the PSU, if there were several available authentication methods. 
             This link is only contained, if the PSU is already identified or authenticated with the first relevant 
@@ -6952,6 +7012,10 @@ components:
       additionalProperties: 
         $ref: "#/components/schemas/hrefType"
       properties:
+        updateAdditionalPsuAuthentication:
+          $ref: "#/components/schemas/hrefType"
+        updateAdditionalEncryptedPsuAuthentication:
+          $ref: "#/components/schemas/hrefType"
         selectAuthenticationMethod:
           $ref: "#/components/schemas/hrefType"
         authoriseTransaction:
@@ -6972,23 +7036,32 @@ components:
         Type of links admitted in this response, (further links might be added for ASPSP defined 
         extensions):
         
-        - "scaRedirect": 
+        - 'scaRedirect':
           In case of an SCA Redirect Approach, the ASPSP is transmitting the link to which to 
           redirect the PSU browser.
-        - "scaOAuth": 
+        - 'scaOAuth':
           In case of a SCA OAuth2 Approach, the ASPSP is transmitting the URI where the 
           configuration of the Authorisation Server can be retrieved. 
           The configuration follows the OAuth 2.0 Authorisation Server Metadata specification.
-        - "updatePsuIdentification": 
+        - 'updatePsuIdentification':
           The link to the authorisation or cancellation authorisation sub-resource, 
           where PSU identification data needs to be uploaded.
-        - "updatePsuAuthentication":
+        - 'updatePsuAuthentication':
           The link to the authorisation or cancellation authorisation sub-resource, 
           where PSU authentication data needs to be uploaded.
-        "authoriseTransaction":
+          - 'updateEncryptedPsuAuthentication':
+          The link to the authorisation or cancellation authorisation sub-resource,
+          where PSU authentication encrypted data needs to be uploaded.
+        - 'updateAdditionalPsuAuthentication':
+            The link to the payment initiation or account information resource,
+            which needs to be updated by an additional PSU password.
+        - 'updateAdditionalEncryptedPsuAuthentication':
+            The link to the payment initiation or account information resource,
+            which needs to be updated by an additional encrypted PSU password.
+        - 'authoriseTransaction':
           The link to the authorisation or cancellation authorisation sub-resource, 
           where the authorisation data has to be uploaded, e.g. the TOP received by SMS. 
-        "scaStatus": 
+        - 'scaStatus':
           The link to retrieve the scaStatus of the corresponding authorisation sub-resource.
       type: object
       additionalProperties: 
@@ -7001,6 +7074,10 @@ components:
         updatePsuIdentification:
           $ref: "#/components/schemas/hrefType"
         updatePsuAuthentication:
+          $ref: "#/components/schemas/hrefType"
+        updateAdditionalPsuAuthentication:
+          $ref: "#/components/schemas/hrefType"
+        updateAdditionalEncryptedPsuAuthentication:
           $ref: "#/components/schemas/hrefType"
         authoriseTransaction:
           $ref: "#/components/schemas/hrefType"
@@ -7029,7 +7106,7 @@ components:
         - 'startAuthorisationWithPsuAuthentication':
           The link to the authorisation or cancellation authorisation sub-resource, 
           where PSU authentication data needs to be uploaded.
-          * 'startAuthorisationWithEncryptedPsuAuthentication':
+        - 'startAuthorisationWithEncryptedPsuAuthentication':
             Same as startAuthorisactionWithPsuAuthentication where the authentication data need to be encrypted on 
             application layer in uploading.
         - 'selectAuthenticationMethod':
@@ -7157,11 +7234,11 @@ components:
     _linksGetConsent:
       description: |
         A list of hyperlinks to be recognised by the TPP.
-        
+
         Links of type "account" and/or "cardAccount", depending on the nature of the consent.
 
       type: object
-      additionalProperties: 
+      additionalProperties:
         $ref: "#/components/schemas/hrefType"
       properties:
         account:
@@ -7322,7 +7399,7 @@ components:
         - "ERROR"
         - "WARNING"
 
-    MessageCode2XX: 
+    MessageCode2XX:
       description: Message codes for HTTP Error codes 2XX.
       type: string
       enum: 
@@ -7341,7 +7418,7 @@ components:
       description: Message codes defined for PIIS for HTTP Error code 400 (BAD_REQUEST).
       type: string
 
-    MessageCode400_SBS: 
+    MessageCode400_SBS:
       description: Message codes defined for signing baskets for HTTP Error code 400 (BAD_REQUEST).
       type: string
 
@@ -7357,11 +7434,10 @@ components:
       description: Message codes defined for PIIS for HTTP Error code 401 (UNAUTHORIZED).
       type: string
 
-    MessageCode401_SBS: 
+    MessageCode401_SBS:
       description: Message codes defined for signing baskets for HTTP Error code 401 (UNAUTHORIZED).
       type: string
-        
-        
+
     MessageCode403_PIS: 
       description: Message codes defined defined for PIS for PIS for HTTP Error code 403 (FORBIDDEN).
       type: string
@@ -7375,7 +7451,7 @@ components:
       type: string
 
 
-    MessageCode403_SBS: 
+    MessageCode403_SBS:
       description: Message codes defined for signing baskets for HTTP Error code 403 (FORBIDDEN).
       type: string
 
@@ -7395,7 +7471,7 @@ components:
       type: string
 
 
-    MessageCode404_SBS: 
+    MessageCode404_SBS:
       description: Message codes defined for signing baskets for HTTP Error code 404 (NOT FOUND).
       type: string
 
@@ -7417,7 +7493,7 @@ components:
       description: Message codes defined for PIIS for HTTP Error code 405 (METHOD NOT ALLOWED).
       type: string
 
-    MessageCode405_SBS: 
+    MessageCode405_SBS:
       description: Message codes defined for SBS for HTTP Error code 405 (METHOD NOT ALLOWED).
       type: string
 
@@ -7439,10 +7515,9 @@ components:
       description: Message codes defined for PIIS for HTTP Error code 409 (CONFLICT).
       type: string
 
-    MessageCode409_SBS: 
+    MessageCode409_SBS:
       description: Message codes defined for signing baskets for HTTP Error code 409 (CONFLICT).
       type: string
-
 
     MessageCode429_AIS: 
       description: Message codes for HTTP Error code 429 (TOO MANY REQUESTS).
@@ -7461,7 +7536,7 @@ components:
       maxLength: 512
 
 
-    tppMessage2XX: 
+    tppMessage2XX:
       type: object
       required:
         - category
@@ -8100,7 +8175,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error400_SBS: 
+    Error400_SBS:
       description: |
         Standardised definition of reporting error information according to [RFC7807] 
         in case of a HTTP error code 400 for signing baskets.
@@ -8316,7 +8391,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error401_SBS: 
+    Error401_SBS:
       description: |
         Standardised definition of reporting error information according to [RFC7807] 
         in case of a HTTP error code 401 for signing baskets.
@@ -8532,7 +8607,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error403_SBS: 
+    Error403_SBS:
       description: |
         Standardised definition of reporting error information according to [RFC7807] 
         in case of a HTTP error code 403 for signing baskets.
@@ -8748,7 +8823,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error404_SBS: 
+    Error404_SBS:
       description: |
         Standardised definition of reporting error information according to [RFC7807] 
         in case of a HTTP error code 404 for signing baskets.
@@ -9018,7 +9093,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error405_SBS: 
+    Error405_SBS:
       description: |
         Standardised definition of reporting error information according to [RFC7807] 
         in case of a HTTP error code 405 for signing baskets.
@@ -9288,7 +9363,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error409_SBS: 
+    Error409_SBS:
       description: |
         Standardised definition of reporting error information according to [RFC7807] 
         in case of a HTTP error code 409 for signing baskets.
@@ -9439,7 +9514,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error400_NG_SBS: 
+    Error400_NG_SBS:
       description: |
         NextGenPSD2 specific definition of reporting error information in case of a HTTP error code 400.
       type: object
@@ -9492,7 +9567,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error401_NG_SBS: 
+    Error401_NG_SBS:
       description: |
         NextGenPSD2 specific definition of reporting error information in case of a HTTP error code 401.
       type: object
@@ -9544,7 +9619,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error403_NG_SBS: 
+    Error403_NG_SBS:
       description: |
         NextGenPSD2 specific definition of reporting error information in case of a HTTP error code 403.
       type: object
@@ -9596,7 +9671,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error404_NG_SBS: 
+    Error404_NG_SBS:
       description: |
         NextGenPSD2 specific definition of reporting error information in case of a HTTP error code 404.
       type: object
@@ -9661,7 +9736,7 @@ components:
           $ref: "#/components/schemas/_linksAll"
 
 
-    Error405_NG_SBS: 
+    Error405_NG_SBS:
       description: |
         NextGenPSD2 specific definition of reporting error information in case of a HTTP error code 401.
       type: object
@@ -9744,7 +9819,7 @@ components:
         }]
 
 
-    Error409_NG_SBS: 
+    Error409_NG_SBS:
       description: |
         NextGenPSD2 specific definition of reporting error information in case of a HTTP error code 409.
       type: object
@@ -9925,6 +10000,15 @@ components:
       schema:
         $ref: "#/components/schemas/consentId"
 
+    Authorization:
+      name: Authorization
+      in: header
+      description: |
+        This field  might be used in case where a consent was agreed between ASPSP and PSU through an OAuth2 based protocol,
+        facilitated by the TPP.
+      required: false
+      schema:
+        $ref: "#/components/schemas/authorization"
 
     consentId_HEADER_mandatory:
       name: Consent-ID
@@ -10105,7 +10189,7 @@ components:
       description: |
         URI of the TPP, where the transaction flow shall be redirected to after a Redirect.
         
-        Mandated for the Redirect SCA Approach, specifically 
+        Mandated for the Redirect SCA Approach, specifically
         when TPP-Redirect-Preferred equals "true".
         It is recommended to always use this header field.
         
@@ -10152,11 +10236,11 @@ components:
       name: TPP-Rejection-NoFunds-Preferred
       in: header
       description: |
-        If it equals "true" then the TPP prefers a rejection of the payment initiation in case the ASPSP is 
-        providing an integrated confirmation of funds request an the result of this is that not sufficient 
+        If it equals "true" then the TPP prefers a rejection of the payment initiation in case the ASPSP is
+        providing an integrated confirmation of funds request an the result of this is that not sufficient
         funds are available.
-        
-        If it equals "false" then the TPP prefers that the ASPSP is dealing with the payment initiation like 
+
+        If it equals "false" then the TPP prefers that the ASPSP is dealing with the payment initiation like
         in the ASPSPs online channel, potentially waiting for a certain time period for funds to arrive to initiate the payment.
 
         This parameter might be ignored by the ASPSP.
@@ -10176,6 +10260,13 @@ components:
       description: |
         URI for the Endpoint of the TPP-API to which the status of the payment initiation should be sent.
         This header field may by ignored by the ASPSP.
+
+        For security reasons, it shall be ensured that the TPP-Notification-URI as introduced above is secured by the TPP eIDAS QWAC used for identification of the TPP. The following applies:
+
+        URIs which are provided by TPPs in TPP-Notification-URI shall comply with the domain secured by the eIDAS QWAC certificate of the TPP in the field CN or SubjectAltName of the certificate. Please note that in case of example-TPP.com as certificate entry TPP- Notification-URI like www.example-TPP.com/xs2a-client/v1/ASPSPidentifcation/mytransaction- id/notifications or notifications.example-TPP.com/xs2a-client/v1/ASPSPidentifcation/mytransaction- id/notifications would be compliant.
+
+        Wildcard definitions shall be taken into account for compliance checks by the ASPSP.
+         ASPSPs may respond with ASPSP-Notification-Support set to false, if the provided URIs do not comply.
       schema:
         type: string
       required: false
@@ -10185,16 +10276,16 @@ components:
       name: TPP-Notification-Content-Preferred
       in: header
       description: |
-        The string has the form 
-        
+        The string has the form
+
         status=X1, ..., Xn
-        
+
         where Xi is one of the constants SCA, PROCESS, LAST and where constants are not
         repeated.
         The usage of the constants supports the of following semantics:
 
           SCA: A notification on every change of the scaStatus attribute for all related authorisation processes is preferred by the TPP.
-        
+
           PROCESS: A notification on all changes of consentStatus or transactionStatus attributes is preferred by the TPP.
           LAST: Only a notification on the last consentStatus or transactionStatus as available in the XS2A interface is preferred by the TPP.
 
@@ -10208,9 +10299,14 @@ components:
       name: PSU-ID
       in: header
       description: |
-        Client ID of the PSU in the ASPSP client interface. Might be mandated in the ASPSP's documentation.
-        Is not contained if an OAuth2 based authentication was performed in a pre-step or an OAuth2 based SCA was performed in an preceding
+        Client ID of the PSU in the ASPSP client interface.
+
+        Might be mandated in the ASPSP's documentation.
+
+        It might be contained even if an OAuth2 based authentication was performed in a pre-step or an OAuth2 based SCA was performed in an preceding
         AIS service in the same session.
+        In this case the ASPSP might check whether PSU-ID and token match,
+        according to ASPSP documentation.
       schema:
         type: string
       required: false
@@ -10222,6 +10318,8 @@ components:
       in: header
       description: |
         Type of the PSU-ID, needed in scenarios where PSUs have several PSU-IDs as access possibility.
+
+        In this case, the mean and use are then defined in the ASPSP’s documentation.
       schema:
         type: string
       required: false
@@ -10387,7 +10485,7 @@ components:
         The forwarded Geo Location of the corresponding http request between PSU and TPP if available.
       schema:
         type: string
-        pattern: 'GEO:-?[0-9]{1,2}\.[0-9]{6};-?[0-9]{1,3}\.[0-9]{6}'
+        pattern: '(GEO:)-?[0-9]{1,3}\.[0-9]{6}\,-?[0-9]{1,3}\.[0-9]{6}'
       required: false
       example: GEO:52.506931;13.144558
 
@@ -10537,6 +10635,33 @@ components:
         format: url
       required: false
 
+    #conditional for extended service lean push
+    ASPSP-Notification-Support:
+      description: |
+        true if the ASPSP supports resource status notification services.
+
+        false if the ASPSP supports resource status notification in general, but not for the current request.
+
+        Not used, if resource status notification services are generally not supported by the ASPSP.
+
+        Shall be supported if the ASPSP supports resource status notification services.
+      schema:
+        type: boolean
+      required: false
+
+    ASPSP-Notification-Content:
+      description: |
+        The string has the form
+        status=X1, …, Xn
+        where Xi is one of the constants SCA, PROCESS, LAST and where constants are not repeated.
+        The usage of the constants supports the following semantics
+        SCA - Notification on every change of the scaStatus attribute for all related authorisation processes is provided by the ASPSP for the related resource.
+        PROCESS - Notification on all changes of consentStatus or transactionStatus attributes is provided by the ASPSP for the related resource
+        LAST - Notification on the last consentStatus or transactionStatus as available in the XS2A interface is provided by the ASPSP for the related resource.
+        This field must be provided if the ASPSP-Notification-Support=true. The ASPSP might consider the notification content as preferred by the TPP, but can also respond independently of the preferred request
+      schema:
+        type: string
+      required: false
   responses:
   #####################################################
   # Reusabale Responses
@@ -10676,10 +10801,10 @@ components:
       content:
         application/json:
           schema:
-              $ref: "#/components/schemas/cancellations"
+            $ref: "#/components/schemas/cancellations"
           examples:
             "Example 1":
-                $ref: "#/components/examples/cancellationsExample"
+              $ref: "#/components/examples/cancellationsExample"
 
 
     OK_200_AccountDetails:
@@ -10692,7 +10817,12 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/accountDetails"
+            type: object
+            required:
+              - account
+            properties:
+              account:
+                $ref: "#/components/schemas/accountDetails"
           examples:
             "Regular Account": 
               $ref: "#/components/examples/accountDetailsRegularAccount"
@@ -10710,7 +10840,12 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/cardAccountDetails"
+            type: object
+            required:
+              - cardAccount
+            properties:
+              cardAccount:
+                $ref: "#/components/schemas/cardAccountDetails"
           examples:
             "Card Account": 
               $ref: "#/components/examples/cardAccountDetailsExample"
@@ -10726,7 +10861,12 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/transactionDetails"
+            type: object
+            required:
+              - transactionsDetails
+            properties:
+              transactionsDetails:
+                $ref: "#/components/schemas/transactionDetails"
           examples:
             Example:
               $ref: "#/components/examples/transactionDetailsExample"
@@ -10761,7 +10901,7 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/readCardAccountBalanceResponse-200"
-          examples: 
+          examples:
             "Example:":
               $ref: "#/components/examples/balancesExample_CardAccount"
 
@@ -10799,7 +10939,7 @@ components:
               - $ref: "#/components/schemas/camt.052"
               - $ref: "#/components/schemas/camt.053"
               - $ref: "#/components/schemas/camt.054"
-
+        
         text/plain:
           schema:
             description:
@@ -10936,7 +11076,7 @@ components:
               - fundsAvailable
             properties:
               fundsAvailable:
-                type: boolean
+                $ref: "#/components/schemas/fundsAvailable"
           examples:
             "Example":
               $ref: "#/components/examples/confirmationOfFundsResponseExample"
@@ -10952,7 +11092,12 @@ components:
           $ref: "#/components/headers/X-Request-ID"
         ASPSP-SCA-Approach:
           $ref: "#/components/headers/ASPSP-SCA-Approach"
-          
+        #conditional for extended service lean Push
+        ASPSP-Notification-Support:
+          $ref: "#/components/headers/ASPSP-Notification-Support"
+        ASPSP-Notification-Content:
+          $ref: "#/components/headers/ASPSP-Notification-Content"
+
       content:
         application/json:
           schema:
@@ -10972,7 +11117,12 @@ components:
           $ref: "#/components/headers/Location"
         ASPSP-SCA-Approach:
           $ref: "#/components/headers/ASPSP-SCA-Approach"
-      
+        #conditional for extended service lean Push
+        ASPSP-Notification-Support:
+          $ref: "#/components/headers/ASPSP-Notification-Support"
+        ASPSP-Notification-Content:
+          $ref: "#/components/headers/ASPSP-Notification-Content"
+
       content:
         application/json:
           schema:
@@ -11018,7 +11168,12 @@ components:
           $ref: "#/components/headers/X-Request-ID"
         ASPSP-SCA-Approach:
           $ref: "#/components/headers/ASPSP-SCA-Approach"
-      
+        #conditional for extended service lean Push
+        ASPSP-Notification-Support:
+          $ref: "#/components/headers/ASPSP-Notification-Support"
+        ASPSP-Notification-Content:
+          $ref: "#/components/headers/ASPSP-Notification-Content"
+
       content:
         application/json:
           schema:
@@ -11152,11 +11307,11 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error400_NG_SBS" 
+            $ref: "#/components/schemas/Error400_NG_SBS"
 
         application/problem+json:
           schema:
-            $ref: "#/components/schemas/Error400_SBS" 
+            $ref: "#/components/schemas/Error400_SBS"
 
 
     UNAUTHORIZED_401_PIS:
@@ -11225,11 +11380,11 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error401_NG_SBS" 
+            $ref: "#/components/schemas/Error401_NG_SBS"
 
         application/problem+json:
           schema:
-             $ref: "#/components/schemas/Error401_SBS" 
+             $ref: "#/components/schemas/Error401_SBS"
             
 
     FORBIDDEN_403_PIS:
@@ -11301,11 +11456,11 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error403_NG_SBS" 
+            $ref: "#/components/schemas/Error403_NG_SBS"
 
         application/problem+json:
           schema:
-             $ref: "#/components/schemas/Error403_SBS" 
+             $ref: "#/components/schemas/Error403_SBS"
 
 
     NOT_FOUND_404_PIS:
@@ -11377,11 +11532,11 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error404_NG_SBS" 
+            $ref: "#/components/schemas/Error404_NG_SBS"
 
         application/problem+json:
           schema:
-             $ref: "#/components/schemas/Error404_SBS" 
+             $ref: "#/components/schemas/Error404_SBS"
 
 
     METHOD_NOT_ALLOWED_405_PIS:
@@ -11472,11 +11627,11 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error405_NG_SBS" 
+            $ref: "#/components/schemas/Error405_NG_SBS"
 
         application/problem+json:
           schema:
-             $ref: "#/components/schemas/Error405_SBS" 
+             $ref: "#/components/schemas/Error405_SBS"
 
 
     NOT_ACCEPTABLE_406_PIS:
@@ -11564,7 +11719,7 @@ components:
       #No Response body because there are no valid message codes for PIIS in case of HTTP code 408
 
 
-    REQUEST_TIMEOUT_408_SBS: 
+    REQUEST_TIMEOUT_408_SBS:
       description: Request Timeout
       
       headers:
@@ -11629,7 +11784,7 @@ components:
              $ref: "#/components/schemas/Error409_PIIS"
 
 
-    CONFLICT_409_SBS: 
+    CONFLICT_409_SBS:
       description: Conflict
       
       headers:
@@ -12633,7 +12788,7 @@ components:
     balancesExample_CardAccount:
       description: |
         Response in case of card Acoount balance request
-      value: 
+      value:
         {
           "cardAccount": {"maskedPan": "525412******3241"},
           "balances":[
@@ -12766,7 +12921,7 @@ components:
         { 
           "authorisationIds": ["123auth456"]
         }
-
+    
     cancellationsExample:
       value:
         { 
@@ -12803,7 +12958,7 @@ tags:
         * Account details of a given account or card account or of the list of all accessible accounts or card account  relative to a granted consent
   - name: Signing Baskets Service (SBS)
     description: |
-      Signing basket methods are used for authorising several transactions and resp. or consents with one SCA operation. 
+      Signing basket methods are used for authorising several transactions and resp. or consents with one SCA operation.
   - name: Common Services
     description: |
       Processes on starting authorisations, update PSU identification or PSU authentication data and explicit 
