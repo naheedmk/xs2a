@@ -2,7 +2,7 @@
 
 == Table of Contents
 * Remove deprecated methods in SpiResponse
-* Removing deprecated enum
+* Removed deprecated enum
 
 == Remove deprecated methods in SpiResponse
 
@@ -14,5 +14,5 @@ From now on, some changes in `SpiResponse` and `SpiResponseStatus` were made:
 - removed `responseStatus` property from `SpiResponse` class;
 - removed `SpiResponseStatus` enumerator.
 
-== Removing deprecated enum
+== Removed deprecated enum
 Removed deprecated enum value `ALL_ACCOUNTS_WITH_BALANCES` in `AccountAccessType` class.
