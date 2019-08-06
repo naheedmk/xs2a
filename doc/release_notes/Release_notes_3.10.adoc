@@ -1,3 +1,9 @@
 = Release notes v. 3.10
 
 == Table of Contents
+* Bugfix: `batchBookingPreferred` is not persisted for bulk payments
+
+== Bugfix: `batchBookingPreferred` is not persisted for bulk payments
+
+From now on, `batchBookingPreferred` field is persisted for bulk payment during the payment initiation request (`POST /v1/{payment-service}/{payment-product}`)
+ and return correct value on get payment information request (`GET /v1/{payment-service}/{payment-product}/{paymentId}`)
