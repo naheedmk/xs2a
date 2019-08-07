@@ -30,6 +30,7 @@ import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPeriodicPayment;
+import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiGetPaymentStatusResponse;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.PeriodicPaymentSpi;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +66,7 @@ public class ReadPeriodicPaymentStatusService implements ReadPaymentStatusServic
         SpiAspspConsentDataProvider aspspConsentDataProvider =
             aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(encryptedPaymentId);
 
-        SpiResponse<TransactionStatus> spiResponse = periodicPaymentSpi.getPaymentStatusById(spiContextData, spiPeriodicPaymentOptional.get(), aspspConsentDataProvider);
+        SpiResponse<SpiGetPaymentStatusResponse> spiResponse = periodicPaymentSpi.getPaymentStatusById(spiContextData, spiPeriodicPaymentOptional.get(), aspspConsentDataProvider);
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
@@ -74,6 +75,7 @@ public class ReadPeriodicPaymentStatusService implements ReadPaymentStatusServic
             return new ReadPaymentStatusResponse(errorHolder);
         }
 
-        return new ReadPaymentStatusResponse(spiResponse.getPayload());
+        SpiGetPaymentStatusResponse payload = spiResponse.getPayload();
+        return new ReadPaymentStatusResponse(payload.getTransactionStatus(), payload.getFundsAvailable());
     }
 }
