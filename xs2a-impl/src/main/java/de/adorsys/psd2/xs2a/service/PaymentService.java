@@ -284,7 +284,8 @@ public class PaymentService {
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), encryptedPaymentId, transactionStatus);
         }
 
-        return ResponseObject.<GetPaymentStatusResponse>builder().body(new GetPaymentStatusResponse(transactionStatus, readPaymentStatusResponse.getFundsAvailable())).build();
+        GetPaymentStatusResponse response = new GetPaymentStatusResponse(transactionStatus, readPaymentStatusResponse.getFundsAvailable());
+        return ResponseObject.<GetPaymentStatusResponse>builder().body(response).build();
     }
 
     /**

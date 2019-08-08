@@ -26,6 +26,10 @@ public class ReadPaymentStatusResponse {
     private Boolean fundsAvailable;
     private ErrorHolder errorHolder;
 
+    public ReadPaymentStatusResponse(TransactionStatus status){
+        this(status,null);
+    }
+
     public ReadPaymentStatusResponse(TransactionStatus status, Boolean fundsAvailable) {
         this.status = status;
         this.fundsAvailable = fundsAvailable;

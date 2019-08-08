@@ -19,12 +19,13 @@ package de.adorsys.psd2.xs2a.spi.domain.payment.response;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Data
 @AllArgsConstructor
 public class SpiGetPaymentStatusResponse {
-    @Nullable
+    @NotNull
     private TransactionStatus transactionStatus;
     @Nullable
     private Boolean fundsAvailable;
