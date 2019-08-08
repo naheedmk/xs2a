@@ -38,7 +38,7 @@ public class SqlEventReportBuilder extends MapSqlParameterSource {
         try {
             sqlRequest = new StringBuilder(getBasePartOfRequest(sqlRequestFileName));
         } catch (IOException e) {
-            log.error("Event SQL report request has not find!");
+            log.error("Request query was not found!");
         }
         filterRequest = new StringBuilder();
         return this;
