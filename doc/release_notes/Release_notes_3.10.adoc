@@ -58,4 +58,4 @@ replaced with `PaymentAuthorisationType`.
 
 == Update version of jackson-databind to 2.9.9.3
 
-Fixed severity security vulnerability detected in com.fasterxml.jackson.core:jackson-databind < 2.9.9.2 defined in pom.xml.
+Fixed severe security vulnerability detected in com.fasterxml.jackson.core:jackson-databind < 2.9.9.2 defined in pom.xml.
