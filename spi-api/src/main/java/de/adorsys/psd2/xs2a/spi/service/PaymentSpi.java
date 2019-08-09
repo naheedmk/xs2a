@@ -55,7 +55,7 @@ public interface PaymentSpi<T extends SpiPayment, R> {
      * @param contextData      holder of call's context data (e.g. about PSU and TPP)
      * @param payment          T payment, that extends SpiPayment
      * @param aspspConsentDataProvider Provides access to read/write encrypted data to be stored in the consent management system
-     * @return Returns TransactionStatus as a part of SpiResponse
+     * @return Returns a response that contains the current transaction status and a flag indicating the availability of funds, as a part of SpiResponse
      */
     @NotNull
     SpiResponse<SpiGetPaymentStatusResponse> getPaymentStatusById(@NotNull SpiContextData contextData, @NotNull T payment, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider);

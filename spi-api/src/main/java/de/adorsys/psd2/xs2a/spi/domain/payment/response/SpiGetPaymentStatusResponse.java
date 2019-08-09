@@ -24,9 +24,20 @@ import org.jetbrains.annotations.Nullable;
 
 @Data
 @AllArgsConstructor
+/**
+ * A response object that is returned by the ASPSP after requesting the payment status.
+ */
 public class SpiGetPaymentStatusResponse {
+    /*
+     * The current transaction status of the requested payment.
+     */
     @NotNull
     private TransactionStatus transactionStatus;
+
+    /*
+     * The funds available check indicates, whether funds are available for said customer. The data element is contained
+     * if supported by the ASPSP, if a funds check has been performed, and if the transaction status is ATCT, ACWC or ACCP.
+     */
     @Nullable
     private Boolean fundsAvailable;
 }
