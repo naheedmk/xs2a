@@ -82,5 +82,5 @@ information about `fundsAvailable`. Additionally some changes in payment SPI wer
 
 == POST cancellation-authorisations doesn't return cancellationId
 
-From now on, response on start authorisation for payment cancellation (`POST /v1/{payment-service}/{payment-product}/{paymentId}/cancellation- authorisations`)
+From now on, response on start authorisation for payment cancellation (`POST /v1/{payment-service}/{payment-product}/{paymentId}/cancellation-authorisations`)
 will contain `cancellationId` property instead of `authorisationId`.
