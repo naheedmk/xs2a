@@ -252,7 +252,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAddress(address, messageError);
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
-        assertEquals(String.format("Value '%s' should not be more than %s symbols", "street", 100),
+        assertEquals(String.format("Value '%s' should not be more than %s symbols", "streetName", 100),
                      messageError.getTppMessage().getText());
     }
 
@@ -272,7 +272,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAddress(address, messageError);
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
-        assertEquals(String.format("Value '%s' should not be more than %s symbols", "city", 100),
+        assertEquals(String.format("Value '%s' should not be more than %s symbols", "townName", 100),
                      messageError.getTppMessage().getText());
     }
 
@@ -282,7 +282,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAddress(address, messageError);
         assertEquals(MessageErrorCode.FORMAT_ERROR, messageError.getTppMessage().getMessageErrorCode());
-        assertEquals(String.format("Value '%s' should not be more than %s symbols", "postalCode", 5),
+        assertEquals(String.format("Value '%s' should not be more than %s symbols", "postCode", 5),
                      messageError.getTppMessage().getText());
     }
 
