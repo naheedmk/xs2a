@@ -225,6 +225,7 @@ public class InitiatePayments_successfulTest {
 
         given(pisCommonPaymentServiceEncrypted.createCommonPayment(any(PisPaymentInfo.class)))
             .willReturn(Optional.of(new CreatePisCommonPaymentResponse(ENCRYPT_PAYMENT_ID)));
+
     }
 
     // =============== IMPLICIT MODE
