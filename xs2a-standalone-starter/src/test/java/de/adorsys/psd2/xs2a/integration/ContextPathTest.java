@@ -38,6 +38,7 @@ import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.ais.AisConsentAuthorizationResponseBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.ais.AisConsentBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
+import de.adorsys.psd2.xs2a.service.validator.tpp.TppInfoHolder;
 import de.adorsys.psd2.xs2a.spi.domain.account.SpiAccountDetails;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -123,6 +124,8 @@ public class ContextPathTest {
     @MockBean
     @Qualifier("consentRestTemplate")
     private RestTemplate consentRestTemplate;
+    @MockBean
+    private TppInfoHolder tppInfoHolder;
 
     @Before
     public void init() {
@@ -150,6 +153,8 @@ public class ContextPathTest {
             .willReturn(true);
         given(consentRestTemplate.postForEntity(anyString(), any(EventBO.class), eq(Boolean.class)))
             .willReturn(new ResponseEntity<>(true, HttpStatus.OK));
+        given(tppInfoHolder.getTppInfo())
+            .willReturn(TPP_INFO);
     }
 
     @Test

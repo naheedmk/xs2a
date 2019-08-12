@@ -35,4 +35,5 @@ public class TppCertificateData {
     private String state;
     private String issuerCN;
     private Date notAfter;
+    private List<String> dnsList;
 }

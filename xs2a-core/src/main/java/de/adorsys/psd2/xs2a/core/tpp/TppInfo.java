@@ -71,6 +71,10 @@ public class TppInfo {
     private String issuerCN;
 
     @JsonIgnore
+    @ApiModelProperty(value = "List of DNS which are stored in `Subject Alternative Name` field in QWAC")
+    private List<String> dnsList;
+
+    @JsonIgnore
     public boolean isNotValid() {
         return !isValid();
     }
