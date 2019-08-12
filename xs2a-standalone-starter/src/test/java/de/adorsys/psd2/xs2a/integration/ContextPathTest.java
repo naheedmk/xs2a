@@ -38,7 +38,6 @@ import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.ais.AisConsentAuthorizationResponseBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.ais.AisConsentBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
-import de.adorsys.psd2.xs2a.service.validator.tpp.TppInfoHolder;
 import de.adorsys.psd2.xs2a.spi.domain.account.SpiAccountDetails;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -67,9 +66,7 @@ import java.util.Optional;
 import static org.apache.commons.io.IOUtils.resourceToString;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -124,8 +121,6 @@ public class ContextPathTest {
     @MockBean
     @Qualifier("consentRestTemplate")
     private RestTemplate consentRestTemplate;
-    @MockBean
-    private TppInfoHolder tppInfoHolder;
 
     @Before
     public void init() {
@@ -153,8 +148,6 @@ public class ContextPathTest {
             .willReturn(true);
         given(consentRestTemplate.postForEntity(anyString(), any(EventBO.class), eq(Boolean.class)))
             .willReturn(new ResponseEntity<>(true, HttpStatus.OK));
-        given(tppInfoHolder.getTppInfo())
-            .willReturn(TPP_INFO);
     }
 
     @Test

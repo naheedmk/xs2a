@@ -43,7 +43,6 @@ import de.adorsys.psd2.xs2a.integration.builder.TppInfoBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.payment.SpiPaymentInitiationResponseBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
-import de.adorsys.psd2.xs2a.service.validator.tpp.TppInfoHolder;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiBulkPayment;
@@ -143,8 +142,6 @@ public class InitiatePayments_successfulTest {
     private PeriodicPaymentSpi periodicPaymentSpi;
     @MockBean
     private BulkPaymentSpi bulkPaymentSpi;
-    @MockBean
-    private TppInfoHolder tppInfoHolder;
 
     @MockBean
     @Qualifier("consentRestTemplate")
@@ -228,8 +225,6 @@ public class InitiatePayments_successfulTest {
 
         given(pisCommonPaymentServiceEncrypted.createCommonPayment(any(PisPaymentInfo.class)))
             .willReturn(Optional.of(new CreatePisCommonPaymentResponse(ENCRYPT_PAYMENT_ID)));
-        given(tppInfoHolder.getTppInfo())
-            .willReturn(TPP_INFO);
     }
 
     // =============== IMPLICIT MODE
