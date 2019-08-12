@@ -32,7 +32,7 @@ import java.util.Objects;
  */
 @ApiModel(description = "Body of the JSON response for a Start SCA authorisation request.")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-08-05T14:58:08.698193+03:00[Europe/Kiev]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-08-12T15:40:34.163305+03:00[Europe/Kiev]")
 
 public class StartCancellationScaProcessResponse {
     @JsonProperty("scaStatus")
