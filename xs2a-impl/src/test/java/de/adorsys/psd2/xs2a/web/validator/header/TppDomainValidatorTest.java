@@ -21,8 +21,8 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
+import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
-import de.adorsys.psd2.xs2a.service.validator.tpp.TppInfoHolder;
 import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +49,7 @@ public class TppDomainValidatorTest {
 
     private static final String TPP_NAME_DOMAIN = "www.example-TPP.com";
     private static final String TPP_DNS_DOMAIN = "www.example-TPP.de";
+    private static final String TPP_WILDCARD_DOMAIN = "*.example-TPP.de";
     private static final TppMessageInformation TPP_MESSAGE_INFORMATION = TppMessageInformation.of(FORMAT_ERROR, TppDomainValidator.ERROR_TEXT);
 
 
@@ -59,7 +60,7 @@ public class TppDomainValidatorTest {
     @Mock
     private ScaApproachResolver scaApproachResolver;
     @Mock
-    private TppInfoHolder tppInfoHolder;
+    private TppService tppService;
 
     @Test
     public void validate_NoHeader_Valid() {
@@ -86,7 +87,7 @@ public class TppDomainValidatorTest {
         //Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(ScaApproach.REDIRECT);
-        when(tppInfoHolder.getTppInfo())
+        when(tppService.getTppInfo())
             .thenReturn(buildTppInfo(null, null));
         //When
         ValidationResult validate = tppDomainValidator.validate(URL_HEADER_CORRECT);
@@ -99,7 +100,7 @@ public class TppDomainValidatorTest {
         //Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(ScaApproach.REDIRECT);
-        when(tppInfoHolder.getTppInfo())
+        when(tppService.getTppInfo())
             .thenReturn(buildTppInfo("example-TPP", "dns-example-TPP"));
         //When
         ValidationResult validate = tppDomainValidator.validate(URL_HEADER_CORRECT);
@@ -112,7 +113,7 @@ public class TppDomainValidatorTest {
         //Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(ScaApproach.REDIRECT);
-        when(tppInfoHolder.getTppInfo())
+        when(tppService.getTppInfo())
             .thenReturn(buildTppInfo(TPP_NAME_DOMAIN, TPP_DNS_DOMAIN));
         //When
         ValidationResult validate = tppDomainValidator.validate(URL_HEADER_CORRECT);
@@ -125,8 +126,21 @@ public class TppDomainValidatorTest {
         //Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(ScaApproach.REDIRECT);
-        when(tppInfoHolder.getTppInfo())
+        when(tppService.getTppInfo())
             .thenReturn(buildTppInfo(TPP_NAME_DOMAIN, TPP_DNS_DOMAIN));
+        //When
+        ValidationResult validate = tppDomainValidator.validate(URL_HEADER_SUBDOMAIN_CORRECT);
+        //Then
+        assertEquals(ValidationResult.valid(), validate);
+    }
+
+    @Test
+    public void validate_UrlHeaderSubdomainCorrectTppWildCardDomain_Valid() {
+        //Given
+        when(scaApproachResolver.resolveScaApproach())
+            .thenReturn(ScaApproach.REDIRECT);
+        when(tppService.getTppInfo())
+            .thenReturn(buildTppInfo(TPP_NAME_DOMAIN, TPP_WILDCARD_DOMAIN));
         //When
         ValidationResult validate = tppDomainValidator.validate(URL_HEADER_SUBDOMAIN_CORRECT);
         //Then
@@ -138,7 +152,7 @@ public class TppDomainValidatorTest {
         //Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(ScaApproach.REDIRECT);
-        when(tppInfoHolder.getTppInfo())
+        when(tppService.getTppInfo())
             .thenReturn(buildTppInfo(TPP_NAME_DOMAIN, TPP_DNS_DOMAIN));
         //When
         ValidationResult validate = tppDomainValidator.validate(URL_HEADER_WRONG);
@@ -154,7 +168,7 @@ public class TppDomainValidatorTest {
         //Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(ScaApproach.REDIRECT);
-        when(tppInfoHolder.getTppInfo())
+        when(tppService.getTppInfo())
             .thenReturn(buildTppInfo(TPP_NAME_DOMAIN, TPP_DNS_DOMAIN));
         //When
         ValidationResult validate = tppDomainValidator.validate(URL_HEADER_WRONG_DOMAIN);
@@ -170,7 +184,7 @@ public class TppDomainValidatorTest {
         //Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(ScaApproach.REDIRECT);
-        when(tppInfoHolder.getTppInfo())
+        when(tppService.getTppInfo())
             .thenReturn(buildTppInfo(TPP_NAME_DOMAIN, TPP_DNS_DOMAIN));
         //When
         ValidationResult validate = tppDomainValidator.validate(URL_HEADER_WRONG_TLD);

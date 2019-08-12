@@ -23,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -72,7 +73,7 @@ public class TppInfo {
 
     @JsonIgnore
     @ApiModelProperty(value = "List of DNS which are stored in `Subject Alternative Name` field in QWAC")
-    private List<String> dnsList;
+    private List<String> dnsList = new ArrayList<>();
 
     @JsonIgnore
     public boolean isNotValid() {

@@ -22,8 +22,8 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
+import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
-import de.adorsys.psd2.xs2a.service.validator.tpp.TppInfoHolder;
 import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,13 +45,14 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.FORMAT_ERROR;
 @Slf4j
 public class TppDomainValidator {
     public static final String ERROR_TEXT = "URIs don't comply with domain from certificate";
+    private static final String PATTERN_FOR_NORMALIZE_DOMAIN = ".*\\.(?=.*\\.)";
     private final ErrorBuildingService errorBuildingService;
     private final ScaApproachResolver scaApproachResolver;
-    private final TppInfoHolder tppInfoHolder;
+    private final TppService tppService;
     private final RequestProviderService requestProviderService;
 
     public ValidationResult validate(String header) {
-        if (StringUtils.isNoneBlank(header) && isRedirectScaApproach()) {
+        if (StringUtils.isNotBlank(header) && isRedirectScaApproach()) {
             List<URL> certificateUrls = getDomainsFromTppInfo().stream()
                                             .map(this::buildURL)
                                             .filter(Objects::nonNull)
@@ -85,23 +86,28 @@ public class TppDomainValidator {
 
     private URL buildURL(String domain) {
         try {
-            URL url = new URL(getDomainWithProtocol(domain));
+            String normalizedDomain = normalizeDomain(domain);
+            URL url = new URL(getDomainWithProtocol(normalizedDomain));
             if (InternetDomainName.from(url.getHost()).isUnderPublicSuffix()) {
                 return url;
             }
         } catch (MalformedURLException e) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}] Cannot build URL from [{}]",
+            log.warn("InR-ID: [{}], X-Request-ID: [{}] Cannot build URL from [{}]",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), domain);
         }
 
         return null;
     }
 
+    private String normalizeDomain(String domain) {
+        return domain.replaceAll(PATTERN_FOR_NORMALIZE_DOMAIN, StringUtils.EMPTY);
+    }
+
     private List<String> getDomainsFromTppInfo() {
-        TppInfo tppInfo = tppInfoHolder.getTppInfo();
+        TppInfo tppInfo = tppService.getTppInfo();
         List<String> dnsList = new ArrayList<>();
         Optional.ofNullable(tppInfo.getTppName()).ifPresent(dnsList::add);
-        Optional.ofNullable(tppInfo.getDnsList()).ifPresent(dnsList::addAll);
+        dnsList.addAll(tppInfo.getDnsList());
         return dnsList.stream()
                    .filter(StringUtils::isNotBlank)
                    .collect(Collectors.toList());
@@ -122,7 +128,7 @@ public class TppDomainValidator {
         try {
             return InternetDomainName.from(host).topPrivateDomain().toString();
         } catch (IllegalStateException ex) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}] Cannot get top domain from [{}]",
+            log.warn("InR-ID: [{}], X-Request-ID: [{}] Cannot get top domain from [{}]",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), host);
         }
         return null;

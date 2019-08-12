@@ -24,6 +24,7 @@ import de.adorsys.psd2.validator.common.RoleOfPSP;
 import de.adorsys.psd2.validator.common.RolesOfPSP;
 import lombok.extern.slf4j.Slf4j;
 import no.difi.certvalidator.api.CertificateValidationException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -40,6 +41,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class CertificateExtractorUtil {
@@ -129,32 +131,28 @@ public class CertificateExtractorUtil {
     }
 
     private static List<String> getSubjectAltNames(X509Certificate certificate, int type) {
-        List<String> result = new ArrayList<>();
         try {
             Collection<?> subjectAltNames = certificate.getSubjectAlternativeNames();
-            if (subjectAltNames == null) {
+            if (CollectionUtils.isEmpty(subjectAltNames)) {
                 return Collections.emptyList();
             }
-            for (Object subjectAltName : subjectAltNames) {
-                List<?> entry = (List<?>) subjectAltName;
-                if (entry == null || entry.size() < 2) {
-                    continue;
-                }
-                Integer altNameType = (Integer) entry.get(0);
-                if (altNameType == null) {
-                    continue;
-                }
-                if (altNameType == type) {
-                    String altName = (String) entry.get(1);
-                    if (altName != null) {
-                        result.add(altName);
-                    }
-                }
-            }
-            return result;
+
+            return certificate.getSubjectAlternativeNames().stream()
+                       .map(entry -> (List<?>) entry)
+                       .filter(CertificateExtractorUtil::isValidSubjectAltName)
+                       .filter(e -> (Integer) e.get(0) == type)
+                       .map(e -> (String) e.get(1))
+                       .filter(Objects::nonNull)
+                       .collect(Collectors.toList());
         } catch (CertificateParsingException e) {
             return Collections.emptyList();
         }
+    }
+
+    private static boolean isValidSubjectAltName(List<?> entry) {
+        return entry != null
+                   && entry.size() >= 2
+                   && entry.get(0) != null;
     }
 
 }
