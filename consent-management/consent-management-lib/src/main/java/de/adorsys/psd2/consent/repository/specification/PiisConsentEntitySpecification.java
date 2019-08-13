@@ -128,7 +128,7 @@ public class PiisConsentEntitySpecification extends GenericSpecification {
     public Specification<PiisConsentEntity> byPsuIdDataAndTppInfoAndAccountReferenceWithoutJoin(@NotNull PsuIdData psuIdData,
                                                                                      @NotNull String tppAuthorisationNumber,
                                                                                      @NotNull AccountReference accountReference) {
-        return Specifications.<PiisConsentEntity>where(byPsuIdData(psuIdData))
+        return Specification.<PiisConsentEntity>where(byPsuIdData(psuIdData))
                    .and(byTppAuthorisationNumberWithoutJoin(tppAuthorisationNumber))
                    .and(byAccountReference(accountReference));
     }
