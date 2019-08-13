@@ -19,6 +19,7 @@ package de.adorsys.psd2.report.jpa.builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import java.io.IOException;
@@ -26,17 +27,21 @@ import java.io.IOException;
 @Data
 @Slf4j
 public class SqlEventReportBuilder extends MapSqlParameterSource {
-    private final String sqlRequestFileName;
+    private final String PLACEHOLDER = "<schema_name>";
+
+    @Value("${spring.jpa.properties.hibernate.default_schema}")
+    private String schemaName;
+    private String sqlRequestFileName = "base_event_report_db.sql";
     private StringBuilder sqlRequest;
     private StringBuilder filterRequest;
 
-    public String getBasePartOfRequest(String fileName) throws IOException {
-        return IOUtils.toString(getClass().getClassLoader().getResource(fileName).openStream());
+    public String getBasePartOfRequest() throws IOException {
+        return IOUtils.toString(getClass().getClassLoader().getResource(sqlRequestFileName).openStream()).replace(PLACEHOLDER, schemaName);
     }
 
     public SqlEventReportBuilder baseRequest() {
         try {
-            sqlRequest = new StringBuilder(getBasePartOfRequest(sqlRequestFileName));
+            sqlRequest = new StringBuilder(getBasePartOfRequest());
         } catch (IOException e) {
             log.error("Request query was not found!");
         }

@@ -18,17 +18,24 @@ package de.adorsys.psd2.report.jpa.builder;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SqlEventReportBuilderTest {
     public static final String TEST_REQUEST_NAME = "json/test_event_report_db.sql";
 
+    @InjectMocks
     private SqlEventReportBuilder builder;
 
     @Before
     public void init() {
-        builder = new SqlEventReportBuilder(TEST_REQUEST_NAME);
+        builder = new SqlEventReportBuilder();
+        builder.setSchemaName("event");
+        builder.setSqlRequestFileName(TEST_REQUEST_NAME);
     }
 
     @Test
