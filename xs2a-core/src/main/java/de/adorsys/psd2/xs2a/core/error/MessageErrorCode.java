@@ -83,7 +83,7 @@ public enum MessageErrorCode {
         public String getName() {
             return "SERVICE_INVALID";
         }
-    },  //406 -if http method
+    },
     SERVICE_BLOCKED(403),  //This service is not reachable for the addressed PSU due to a channel independent blocking by the ASPSP. Additional information might be given by the ASPSP
 
     //CONSENT_UNKNOWN: The consent-ID cannot be matched by the ASPSP relative to the TPP

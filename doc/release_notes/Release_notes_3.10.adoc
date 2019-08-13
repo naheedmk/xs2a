@@ -95,4 +95,4 @@ If URIs are not compliant `400 FORMAT_ERROR` error will be returned in the respo
 
 == Added `Error 406` for PIS
 
-From now on, `Error406PIS` is added.
+From now on, 406 error code is supported in PIS.
