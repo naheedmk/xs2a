@@ -16,8 +16,6 @@
 
 package de.adorsys.psd2.report.jpa.builder;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,8 +26,6 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-@Data
-@EqualsAndHashCode(callSuper = true)
 public class SqlEventReportBuilder extends MapSqlParameterSource {
     private static final String PLACEHOLDER = "<schema_name>";
 
