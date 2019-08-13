@@ -24,11 +24,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
 public class SqlEventReportBuilderTest {
     public static final String TEST_REQUEST_NAME = "json/test_event_report_db.sql";
 
-    @InjectMocks
     private SqlEventReportBuilder builder;
 
     @Before

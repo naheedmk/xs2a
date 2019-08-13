@@ -17,21 +17,26 @@
 package de.adorsys.psd2.report.jpa.builder;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Data
 @Slf4j
+@Component
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class SqlEventReportBuilder extends MapSqlParameterSource {
-    private final String PLACEHOLDER = "<schema_name>";
+    private static final String PLACEHOLDER = "<schema_name>";
 
     @Value("${spring.jpa.properties.hibernate.default_schema}")
     private String schemaName;
-    private String sqlRequestFileName = "base_event_report_db.sql";
+    @Value("base_event_report_db.sql")
+    private String sqlRequestFileName;
     private StringBuilder sqlRequest;
     private StringBuilder filterRequest;
 
