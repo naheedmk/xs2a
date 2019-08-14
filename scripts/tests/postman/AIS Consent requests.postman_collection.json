@@ -13356,7 +13356,7 @@
 						"header": [
 							{
 								"key": "Accept",
-								"value": "application/json, application/xml"
+								"value": "application/json"
 							},
 							{
 								"key": "Consent-ID",
