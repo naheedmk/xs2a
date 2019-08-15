@@ -84,7 +84,7 @@ public class ConsentController implements ConsentApi {
         ResponseHeaders headers = consentHeadersBuilder.buildCreateConsentHeaders(createConsentResponse.getAuthorizationId(),
                                                                                   Optional.ofNullable(createConsentResponse.getLinks().getSelf())
                                                                                       .map(HrefType::getHref)
-                                                                                      .orElseThrow(() -> new IllegalArgumentException("Wrong href type")));
+                                                                                      .orElseThrow(() -> new IllegalArgumentException("Wrong href type in self link")));
 
         return responseMapper.created(createResponse, consentModelMapper::mapToConsentsResponse201, headers);
     }

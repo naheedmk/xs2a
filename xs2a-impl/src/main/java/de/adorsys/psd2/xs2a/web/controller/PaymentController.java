@@ -92,9 +92,9 @@ public class PaymentController implements PaymentApi {
                                                      String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
 
         ResponseObject<GetPaymentStatusResponse> serviceResponse = PaymentType.getByValue(paymentService)
-                                                                .map(pt -> xs2aPaymentService.getPaymentStatusById(pt, paymentProduct, paymentId))
-                                                                .orElseGet(ResponseObject.<GetPaymentStatusResponse>builder()
-                                                                               .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404))::build);
+                                                                       .map(pt -> xs2aPaymentService.getPaymentStatusById(pt, paymentProduct, paymentId))
+                                                                       .orElseGet(ResponseObject.<GetPaymentStatusResponse>builder()
+                                                                                      .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404))::build);
         return serviceResponse.hasError()
                    ? responseErrorMapper.generateErrorResponse(serviceResponse.getError())
                    : responseMapper.ok(serviceResponse, PaymentModelMapperPsd2::mapToStatusResponse);
@@ -117,7 +117,7 @@ public class PaymentController implements PaymentApi {
                    : responseMapper.ok(ResponseObject.builder()
                                            .body(paymentModelMapperPsd2
                                                      .mapToGetPaymentResponse(serviceResponse.getBody(),
-                                                                              PaymentType.getByValue(paymentService).orElseThrow(() -> new IllegalArgumentException("Unsupported payment service")),
+                                                                              PaymentType.getByValue(paymentService).orElseThrow(() -> new IllegalArgumentException("Unsupported payment service: " + paymentService)),
                                                                               paymentProduct)).build());
     }
 
@@ -365,7 +365,7 @@ public class PaymentController implements PaymentApi {
         PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
         ResponseObject<Xs2aCreatePisCancellationAuthorisationResponse> serviceResponse = paymentCancellationAuthorisationService
                                                                                              .createPisCancellationAuthorization(paymentId, psuData,
-                                                                                                                                 PaymentType.getByValue(paymentService).orElseThrow(() -> new IllegalArgumentException("Unsupported payment service")), paymentProduct);
+                                                                                                                                 PaymentType.getByValue(paymentService).orElseThrow(() -> new IllegalArgumentException("Unsupported payment service: " + paymentService)), paymentProduct);
 
         if (serviceResponse.hasError()) {
             return responseErrorMapper.generateErrorResponse(serviceResponse.getError(),
@@ -430,6 +430,6 @@ public class PaymentController implements PaymentApi {
     private ResponseHeaders buildPaymentInitiationResponseHeaders(PaymentInitiationResponse paymentInitiationResponse) {
         return paymentInitiationHeadersBuilder.buildInitiatePaymentHeaders(paymentInitiationResponse.getAuthorizationId(), Optional.ofNullable(paymentInitiationResponse.getLinks().getSelf())
                                                                                                                                .map(HrefType::getHref)
-                                                                                                                               .orElseThrow(() -> new IllegalArgumentException("Wrong href type")));
+                                                                                                                               .orElseThrow(() -> new IllegalArgumentException("Wrong href type in self link")));
     }
 }
