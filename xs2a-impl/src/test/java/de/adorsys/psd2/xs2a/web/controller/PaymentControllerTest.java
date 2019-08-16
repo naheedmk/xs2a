@@ -836,7 +836,6 @@ public class PaymentControllerTest {
     private ResponseObject<PaymentInitiationResponse> buildSuccessResponseObjectWithLinksNullType() {
         PaymentInitiationResponse initiationResponse = new SinglePaymentInitiationResponse();
         Links links = new Links();
-//        links.setSelf(new HrefType("type"));
         initiationResponse.setLinks(links);
         return ResponseObject.<PaymentInitiationResponse>builder()
                    .body(initiationResponse)
