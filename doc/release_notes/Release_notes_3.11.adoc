@@ -1,3 +1,9 @@
 = Release notes v. 3.11
 
 == Table of Contents
+* Remove deprecated column `authority_id` from `tpp_stop_list` table
+
+== Remove deprecated column `authority_id` from `tpp_stop_list` table
+
+From now on, the column `authority_id` in `tpp_stop_list` table doesn't exist anymore.
+Adequate changes in controllers and services have been made.
