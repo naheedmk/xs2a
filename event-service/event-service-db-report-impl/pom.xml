@@ -100,10 +100,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>org.apache.commons</groupId>
+            <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
+
         <!-- Test dependencies-->
         <dependency>
             <groupId>de.adorsys.psd2</groupId>
