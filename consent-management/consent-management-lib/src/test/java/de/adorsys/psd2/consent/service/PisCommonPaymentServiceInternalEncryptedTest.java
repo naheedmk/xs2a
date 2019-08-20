@@ -15,7 +15,6 @@
  */
 
 
-
 package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
@@ -55,7 +54,9 @@ public class PisCommonPaymentServiceInternalEncryptedTest {
     private static final PaymentAuthorisationType AUTHORISATION_TYPE = PaymentAuthorisationType.CREATED;
     private static final String AUTHORISATION_ID = "46f2e3a7-1855-4815-8755-5ca76769a1a4";
     private static final PsuIdData PSU_DATA = new PsuIdData(null, null, null, null);
-    private static final CreatePisAuthorisationRequest CREATE_PIS_AUTHORISATION_REQUEST = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PSU_DATA, ScaApproach.REDIRECT);
+    private static final String TPP_REDIRECT_URI = "request/redirect_uri";
+    private static final String TPP_NOK_REDIRECT_URI = "request/nok_redirect_uri";
+    private static final CreatePisAuthorisationRequest CREATE_PIS_AUTHORISATION_REQUEST = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PSU_DATA, ScaApproach.REDIRECT, TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
 
     @InjectMocks
     private PisCommonPaymentServiceInternalEncrypted pisCommonPaymentServiceInternalEncrypted;

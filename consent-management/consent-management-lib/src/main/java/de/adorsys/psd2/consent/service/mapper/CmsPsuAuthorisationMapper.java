@@ -37,17 +37,5 @@ public interface CmsPsuAuthorisationMapper {
     @Mapping(target = "psuId", source = "psuData.psuId")
     @Mapping(target = "authorisationId", source = "externalId")
     @Mapping(target = "authorisationType", ignore = true)
-    @Mapping(target = "tppOkRedirectUri", source = "consent.tppInfo.redirectUri")
-    @Mapping(target = "tppNokRedirectUri", source = "consent.tppInfo.nokRedirectUri")
     CmsPsuAuthorisation mapToCmsPsuAuthorisationAis(AisConsentAuthorization consentAuthorization);
-
-    @AfterMapping
-    default void mapToCmsPsuAuthorisationPisAfterMapping(PisAuthorization pisAuthorization,
-                                                         @MappingTarget CmsPsuAuthorisation cmsPsuAuthorisation) {
-        TppInfoEntity tppInfo = pisAuthorization.getPaymentData().getTppInfo();
-
-        boolean isPaymentCreated = pisAuthorization.getAuthorizationType() == PaymentAuthorisationType.CREATED;
-        cmsPsuAuthorisation.setTppOkRedirectUri(isPaymentCreated ? tppInfo.getRedirectUri() : tppInfo.getCancelRedirectUri());
-        cmsPsuAuthorisation.setTppNokRedirectUri(isPaymentCreated ? tppInfo.getNokRedirectUri() : tppInfo.getCancelNokRedirectUri());
-    }
 }

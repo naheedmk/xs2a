@@ -95,8 +95,10 @@ public class PisCommonPaymentServiceInternalTest {
     private static final ScaStatus SCA_STATUS = ScaStatus.RECEIVED;
     private static final PsuIdData PSU_ID_DATA = new PsuIdData("id", "type", "corporate ID", "corporate type");
     private final static PsuData PSU_DATA = new PsuData("id", "type", "corporate ID", "corporate type");
+    private static final String TPP_REDIRECT_URI = "request/redirect_uri";
+    private static final String TPP_NOK_REDIRECT_URI = "request/nok_redirect_uri";
 
-    private static final CreatePisAuthorisationRequest CREATE_PIS_AUTHORISATION_REQUEST = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PSU_ID_DATA, ScaApproach.REDIRECT);
+    private static final CreatePisAuthorisationRequest CREATE_PIS_AUTHORISATION_REQUEST = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PSU_ID_DATA, ScaApproach.REDIRECT, TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
     private static final JsonReader jsonReader = new JsonReader();
 
     @Before

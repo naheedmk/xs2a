@@ -44,4 +44,10 @@ public class AisConsentAuthorizationRequest {
 
     @ApiModelProperty(value = "SCA approach")
     private ScaApproach scaApproach;
+
+    @ApiModelProperty(value="TPP redirect URI")
+    private String tppRedirectURI;
+
+    @ApiModelProperty(value="TPP NOK redirect URI")
+    private String tppNokRedirectURI;
 }

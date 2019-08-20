@@ -113,6 +113,9 @@ public class InitiatePayments_successfulTest {
     private static final String AUTHORISATION_ID = "e8356ea7-8e3e-474f-b5ea-2b89346cb2dc";
     private static final TppInfo TPP_INFO = TppInfoBuilder.buildTppInfo();
 
+    private static final String TPP_REDIRECT_URI = "request/redirect_uri";
+    private static final String TPP_NOK_REDIRECT_URI = "request/nok_redirect_uri";
+
     private static final ScaStatus SCA_STATUS = ScaStatus.RECEIVED;
 
     private HttpHeaders httpHeadersImplicit = new HttpHeaders();
@@ -431,11 +434,11 @@ public class InitiatePayments_successfulTest {
     }
 
     private CreatePisAuthorisationRequest getPisAuthorisationRequest(ScaApproach scaApproach) {
-        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PsuIdDataBuilder.buildPsuIdData(), scaApproach);
+        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PsuIdDataBuilder.buildPsuIdData(), scaApproach, TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
     }
 
     private CreatePisAuthorisationRequest getPisAuthorisationRequestWithEmptyPsuIdData(ScaApproach scaApproach) {
-        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PsuIdDataBuilder.buildEmptyPsuIdData(), scaApproach);
+        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PsuIdDataBuilder.buildEmptyPsuIdData(), scaApproach, TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
     }
 
     private void initiateSinglePayment_successful(HttpHeaders headers, ScaApproach scaApproach, boolean multilevelSca, boolean isPsuIdDataEmpty) throws Exception {

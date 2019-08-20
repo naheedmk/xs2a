@@ -63,7 +63,10 @@ public class PisAuthorisationService {
      * @return a response object containing authorisation id
      */
     public CreatePisAuthorisationResponse createPisAuthorisation(String paymentId, PsuIdData psuData) {
-        CreatePisAuthorisationRequest request = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, psuData, scaApproachResolver.resolveScaApproach());
+        String tppRedirectURI = requestProviderService.getTppRedirectURI();
+        String tppNokRedirectURI = requestProviderService.getTppNokRedirectURI();
+
+        CreatePisAuthorisationRequest request = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, psuData, scaApproachResolver.resolveScaApproach(), tppRedirectURI, tppNokRedirectURI);
         return pisCommonPaymentServiceEncrypted.createAuthorization(paymentId, request)
                    .orElseGet(() -> {
                        log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Create PIS authorisation has failed: can't save authorisation to cms DB",
@@ -160,7 +163,10 @@ public class PisAuthorisationService {
      * @return long representation of identifier of stored pis authorisation cancellation
      */
     public CreatePisAuthorisationResponse createPisAuthorisationCancellation(String paymentId, PsuIdData psuData) {
-        CreatePisAuthorisationRequest request = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CANCELLED, psuData, scaApproachResolver.resolveScaApproach());
+        String tppRedirectURI = requestProviderService.getTppRedirectURI();
+        String tppNokRedirectURI = requestProviderService.getTppNokRedirectURI();
+
+        CreatePisAuthorisationRequest request = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CANCELLED, psuData, scaApproachResolver.resolveScaApproach(), tppRedirectURI, tppNokRedirectURI);
         return pisCommonPaymentServiceEncrypted.createAuthorizationCancellation(paymentId, request)
                    .orElseGet(() -> {
                        log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Create PIS Payment Cancellation Authorisation has failed. Can't find Payment Data by id or Payment is Finalised.",

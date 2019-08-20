@@ -49,13 +49,15 @@ public class Xs2aAisConsentAuthorisationMapper {
                    .orElse(null);
     }
 
-    public AisConsentAuthorizationRequest mapToAisConsentAuthorization(ScaStatus scaStatus, PsuIdData psuData, ScaApproach scaApproach) {
+    public AisConsentAuthorizationRequest mapToAisConsentAuthorization(ScaStatus scaStatus, PsuIdData psuData, ScaApproach scaApproach, String tppRedirectURI, String tppNOKRedirectURI) {
         return Optional.ofNullable(scaStatus)
                    .map(st -> {
                        AisConsentAuthorizationRequest consentAuthorization = new AisConsentAuthorizationRequest();
                        consentAuthorization.setPsuData(psuData);
                        consentAuthorization.setScaStatus(scaStatus);
                        consentAuthorization.setScaApproach(scaApproach);
+                       consentAuthorization.setTppRedirectURI(tppRedirectURI);
+                       consentAuthorization.setTppNokRedirectURI(tppNOKRedirectURI);
                        return consentAuthorization;
                    })
                    .orElse(null);

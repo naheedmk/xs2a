@@ -440,7 +440,8 @@ public class PisCommonPaymentServiceInternal implements PisCommonPaymentService 
         pisAuthorisation.setAuthorisationExpirationTimestamp(countAuthorisationExpirationTimestamp());
         pisAuthorisation.setScaApproach(request.getScaApproach());
         pisAuthorisation.setPaymentData(paymentData);
-
+        pisAuthorisation.setTppOkRedirectUri(request.getTppRedirectURI());
+        pisAuthorisation.setTppNokRedirectUri(request.getTppNokRedirectURI());
         return pisAuthorisationRepository.save(pisAuthorisation);
     }
 

@@ -57,6 +57,9 @@ public class PisAuthorisationServiceTest {
     private static final String WRONG_AUTHORISATION_ID = "wrong authorisation id";
     private static final String CANCELLATION_AUTHORISATION_ID = "dd5d766f-eeb7-4efe-b730-24d5ed53f537";
     private static final String WRONG_CANCELLATION_AUTHORISATION_ID = "wrong cancellation authorisation id";
+    private static final String TPP_REDIRECT_URI = "request/redirect_uri";
+    private static final String TPP_NOK_REDIRECT_URI = "request/nok_redirect_uri";
+
     private static final ScaStatus SCA_STATUS = ScaStatus.RECEIVED;
     private static final List<String> SOME_LIST = Collections.emptyList();
     private static final ScaApproach SCA_APPROACH = ScaApproach.OAUTH;
@@ -289,11 +292,11 @@ public class PisAuthorisationServiceTest {
     }
 
     private static CreatePisAuthorisationRequest buildCreatePisAuthorisationRequestCancelled() {
-        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CANCELLED, PSU_ID_DATA, SCA_APPROACH);
+        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CANCELLED, PSU_ID_DATA, SCA_APPROACH, TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
     }
 
     private static CreatePisAuthorisationRequest buildCreatePisAuthorisationRequestCreated() {
-        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PSU_ID_DATA, SCA_APPROACH);
+        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PSU_ID_DATA, SCA_APPROACH, TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
     }
 
     private static Xs2aUpdatePisCommonPaymentPsuDataRequest buildXs2aUpdatePisCommonPaymentPsuDataRequest() {

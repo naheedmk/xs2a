@@ -277,6 +277,8 @@ public class AisAuthorisationServiceInternal implements AisConsentAuthorisationS
         consentAuthorization.setRedirectUrlExpirationTimestamp(OffsetDateTime.now().plus(aspspProfileService.getAspspSettings().getRedirectUrlExpirationTimeMs(), ChronoUnit.MILLIS));
         consentAuthorization.setAuthorisationExpirationTimestamp(OffsetDateTime.now().plus(aspspProfileService.getAspspSettings().getAuthorisationExpirationTimeMs(), ChronoUnit.MILLIS));
         consentAuthorization.setScaApproach(request.getScaApproach());
+        consentAuthorization.setTppOkRedirectUri(request.getTppRedirectURI());
+        consentAuthorization.setTppNokRedirectUri(request.getTppNokRedirectURI());
         return aisConsentAuthorisationRepository.save(consentAuthorization);
     }
 
