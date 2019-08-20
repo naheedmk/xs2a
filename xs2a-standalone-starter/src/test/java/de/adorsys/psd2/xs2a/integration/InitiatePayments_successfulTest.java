@@ -161,7 +161,8 @@ public class InitiatePayments_successfulTest {
         headerMap.put("PSU-Corporate-ID", "Some corporate id");
         headerMap.put("PSU-Corporate-ID-Type", "Some corporate id type");
         headerMap.put("PSU-IP-Address", "1.1.1.1");
-        headerMap.put("TPP-Redirect-URI", "ok.uri");
+        headerMap.put("TPP-Redirect-URI", TPP_REDIRECT_URI);
+        headerMap.put("TPP-NOK-Redirect-URI", TPP_NOK_REDIRECT_URI);
 
         httpHeadersImplicit.setAll(headerMap);
         // when Implicit auth mode we need to set 'false'

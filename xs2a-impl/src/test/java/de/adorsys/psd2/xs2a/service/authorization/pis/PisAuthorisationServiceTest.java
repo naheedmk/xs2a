@@ -108,6 +108,10 @@ public class PisAuthorisationServiceTest {
             .thenReturn(SCA_APPROACH);
         when(pisCommonPaymentServiceEncrypted.createAuthorization(PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST_CREATED))
             .thenReturn(Optional.of(CREATE_PIS_AUTHORISATION_RESPONSE));
+        when(requestProviderService.getTppRedirectURI())
+            .thenReturn(TPP_REDIRECT_URI);
+        when(requestProviderService.getTppNokRedirectURI())
+            .thenReturn(TPP_NOK_REDIRECT_URI);
 
         // When
         CreatePisAuthorisationResponse actualResponse = pisAuthorisationService.createPisAuthorisation(PAYMENT_ID, PSU_ID_DATA);
@@ -121,8 +125,6 @@ public class PisAuthorisationServiceTest {
         // Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(SCA_APPROACH);
-        when(pisCommonPaymentServiceEncrypted.createAuthorization(WRONG_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST_CREATED))
-            .thenReturn(Optional.empty());
 
         // When
         CreatePisAuthorisationResponse actualResponse = pisAuthorisationService.createPisAuthorisation(WRONG_PAYMENT_ID, PSU_ID_DATA);
@@ -176,6 +178,10 @@ public class PisAuthorisationServiceTest {
             .thenReturn(SCA_APPROACH);
         when(pisCommonPaymentServiceEncrypted.createAuthorizationCancellation(PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST_CANCELLED))
             .thenReturn(Optional.of(CREATE_PIS_AUTHORISATION_RESPONSE));
+        when(requestProviderService.getTppRedirectURI())
+            .thenReturn(TPP_REDIRECT_URI);
+        when(requestProviderService.getTppNokRedirectURI())
+            .thenReturn(TPP_NOK_REDIRECT_URI);
 
         // When
         CreatePisAuthorisationResponse actualResponse = pisAuthorisationService.createPisAuthorisationCancellation(PAYMENT_ID, PSU_ID_DATA);
@@ -189,8 +195,6 @@ public class PisAuthorisationServiceTest {
         // Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(SCA_APPROACH);
-        when(pisCommonPaymentServiceEncrypted.createAuthorizationCancellation(WRONG_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST_CANCELLED))
-            .thenReturn(Optional.empty());
 
         // When
         CreatePisAuthorisationResponse actualResponse = pisAuthorisationService.createPisAuthorisationCancellation(WRONG_PAYMENT_ID, PSU_ID_DATA);

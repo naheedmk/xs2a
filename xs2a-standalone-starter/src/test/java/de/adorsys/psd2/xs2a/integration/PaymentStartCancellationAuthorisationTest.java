@@ -121,6 +121,8 @@ public class PaymentStartCancellationAuthorisationTest {
         httpHeadersExplicit.add("tpp-qwac-certificate", "qwac certificate");
         httpHeadersExplicit.add("X-Request-ID", "2f77a125-aa7a-45c0-b414-cea25a116035");
         httpHeadersExplicit.add("PSU-ID", PSU_ID);
+        httpHeadersExplicit.add( "TPP-Redirect-URI", TPP_REDIRECT_URI );
+        httpHeadersExplicit.add( "TPP-Nok-Redirect-URI", TPP_NOK_REDIRECT_URI);
 
         given(tppService.getTppInfo()).willReturn(TPP_INFO);
         given(tppStopListService.checkIfTppBlocked(TppInfoBuilder.getTppInfo())).willReturn(false);
