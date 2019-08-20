@@ -9,7 +9,7 @@
 * Bugfix: missing `requestedExecutionDate` on get payment request for future dated payment
 * Pass PSU-IP-Address to SPI Context
 * Handling wrong HTTP methods in all XS2A endpoints
-* Start authorisation for payment cancellation ignores request body
+* Bugfix: Start authorisation for payment cancellation ignores request body
 
 == Remove deprecated constructor in `SpiContextData`
 
@@ -31,7 +31,7 @@ From now on, `406 REQUESTED_FORMATS_INVALID` is responded as text for not suppor
 From now on, if you try to create periodic payment without field `frequency` or with wrong
 value for this field, the error `400 FORMAT_ERROR` will be given to TPP.
 
-== * Bugfix: create PIIS consent needs closing "/" in URL
+== Bugfix: create PIIS consent needs closing "/" in URL
 
 From now on create PIIS consent doesn't need closing "/" in URL.
 
@@ -48,7 +48,7 @@ From now on, `PSU-IP-Address` header is provided to SPI level as `psuIpAddress` 
 
 From now on, any HTTP request to XS2A endpoint with unsupported HTTP method will result in `405 METHOD NOT ALLOWED` response with text error description provided (ex, `HTTP method 'PURGE' is not supported`).
 
-== Start authorisation for payment cancellation ignores request body
+== Bugfix: Start authorisation for payment cancellation ignores request body
 
 From now on, it's possible to send PSU password in the request body on starting authorisation for payment cancellation
 (`POST /v1/{payment-service}/{payment-product}/{paymentId}/cancellation-authorisations`) to authenticate the PSU without sending separate request.
