@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.domain.consent;
+package de.adorsys.psd2.xs2a.web.mapper;
 
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import lombok.Value;
-import org.apache.commons.lang3.StringUtils;
+import de.adorsys.psd2.model.ChosenScaMethod;
+import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
+import org.mapstruct.Mapper;
 
-@Value
-public class Xs2aCreatePisAuthorisationRequest {
-    private String paymentId;
-    private PsuIdData psuData;
-    private String paymentProduct;
-    private String paymentService;
-    private String password;
-
-    public boolean hasNoUpdateData() {
-        return psuData.isEmpty()
-                   || StringUtils.isBlank(password);
-    }
+@Mapper(componentModel = "spring")
+public interface ChosenScaMethodMapper {
+    ChosenScaMethod mapToChosenScaMethod(Xs2aAuthenticationObject xs2aAuthenticationObject);
 }

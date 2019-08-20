@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.domain.consent;
+package de.adorsys.psd2.xs2a.domain.authorisation;
 
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import lombok.Value;
-import org.apache.commons.lang3.StringUtils;
+/**
+ * Type of the authorisation response to be returned to the TPP on creating new authorisation resource
+ */
+public enum AuthorisationResponseType {
+    /**
+     * Response on start authorisation
+     */
+    START,
 
-@Value
-public class Xs2aCreatePisAuthorisationRequest {
-    private String paymentId;
-    private PsuIdData psuData;
-    private String paymentProduct;
-    private String paymentService;
-    private String password;
-
-    public boolean hasNoUpdateData() {
-        return psuData.isEmpty()
-                   || StringUtils.isBlank(password);
-    }
+    /**
+     * Response on update authorisation's PSU data
+     */
+    UPDATE
 }
