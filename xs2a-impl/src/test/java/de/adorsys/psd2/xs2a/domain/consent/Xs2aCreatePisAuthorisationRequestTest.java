@@ -24,13 +24,11 @@ import static org.junit.Assert.assertTrue;
 
 public class Xs2aCreatePisAuthorisationRequestTest {
     private static final String PAYMENT_ID = "payment id";
-    private static final String PSU_ID = "psu id";
     private static final PsuIdData PSU_ID_DATA = new PsuIdData("psu id", null, null, null);
     private static final PsuIdData EMPTY_PSU_ID_DATA = new PsuIdData(null, null, null, null);
     private static final String PAYMENT_PRODUCT = "sepa-credit-transfers";
     private static final String PAYMENT_SERVICE = "payments";
     private static final String PASSWORD = "some password";
-
 
     @Test
     public void hasNoUpdateData_withNoPsuIdData_shouldReturnTrue() {
