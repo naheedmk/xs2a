@@ -7532,7 +7532,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?",
+									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{url_xs2a}}"
