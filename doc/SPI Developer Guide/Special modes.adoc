@@ -113,3 +113,18 @@ endpoints for retrieving events report from the *cms-aspsp-api* should be disabl
 Logging implementation uses *SLF4J* for recording events, meaning that it's possible to configure and use any logging framework that's compatible with *SLF4J*.
 All events are being written to a separate logger *event-log* at *INFO* level.
 See <<SPI_Developer_Guide.adoc#configuring-logging,XS2A Logging configuring>> for more details on how to configure *SLF4J* logging.
+
+
+==== Adjusting swagger UI
+
+Adjustment Swagger UI implies updating appropriate .yaml file.
+
+* First of all Connector Developer should define custom local swagger api yaml file and set xs2a.swagger.psd2.api.location project property to point at this file.
+* Next steps involve adding and changing necessary parameters.
+
+The defoult version of psd2.yaml file can be found under:
+```
+xs2a-impl->src->main->resources->static->psd2-api....yaml
+```
+
+NOTE: for adding additional products e.g., it should be updated ASPSP-Profile as well.
