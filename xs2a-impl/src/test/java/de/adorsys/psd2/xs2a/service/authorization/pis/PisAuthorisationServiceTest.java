@@ -26,6 +26,7 @@ import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
+import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
@@ -59,6 +60,7 @@ public class PisAuthorisationServiceTest {
     private static final String WRONG_CANCELLATION_AUTHORISATION_ID = "wrong cancellation authorisation id";
     private static final String TPP_REDIRECT_URI = "request/redirect_uri";
     private static final String TPP_NOK_REDIRECT_URI = "request/nok_redirect_uri";
+    private static final TppRedirectUri TPP_REDIRECT_URIs = new TppRedirectUri(TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
 
     private static final ScaStatus SCA_STATUS = ScaStatus.RECEIVED;
     private static final List<String> SOME_LIST = Collections.emptyList();
@@ -125,6 +127,10 @@ public class PisAuthorisationServiceTest {
         // Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(SCA_APPROACH);
+        when(requestProviderService.getTppRedirectURI())
+            .thenReturn(TPP_REDIRECT_URI);
+        when(requestProviderService.getTppNokRedirectURI())
+            .thenReturn(TPP_NOK_REDIRECT_URI);
 
         // When
         CreatePisAuthorisationResponse actualResponse = pisAuthorisationService.createPisAuthorisation(WRONG_PAYMENT_ID, PSU_ID_DATA);
@@ -195,6 +201,10 @@ public class PisAuthorisationServiceTest {
         // Given
         when(scaApproachResolver.resolveScaApproach())
             .thenReturn(SCA_APPROACH);
+        when(requestProviderService.getTppRedirectURI())
+            .thenReturn(TPP_REDIRECT_URI);
+        when(requestProviderService.getTppNokRedirectURI())
+            .thenReturn(TPP_NOK_REDIRECT_URI);
 
         // When
         CreatePisAuthorisationResponse actualResponse = pisAuthorisationService.createPisAuthorisationCancellation(WRONG_PAYMENT_ID, PSU_ID_DATA);
@@ -296,11 +306,11 @@ public class PisAuthorisationServiceTest {
     }
 
     private static CreatePisAuthorisationRequest buildCreatePisAuthorisationRequestCancelled() {
-        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CANCELLED, PSU_ID_DATA, SCA_APPROACH, TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
+        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CANCELLED, PSU_ID_DATA, SCA_APPROACH, TPP_REDIRECT_URIs);
     }
 
     private static CreatePisAuthorisationRequest buildCreatePisAuthorisationRequestCreated() {
-        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PSU_ID_DATA, SCA_APPROACH, TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
+        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PSU_ID_DATA, SCA_APPROACH, TPP_REDIRECT_URIs);
     }
 
     private static Xs2aUpdatePisCommonPaymentPsuDataRequest buildXs2aUpdatePisCommonPaymentPsuDataRequest() {
