@@ -25,6 +25,7 @@ public class Xs2aCreatePisAuthorisationRequest {
     private String paymentId;
     private PsuIdData psuData;
     private String paymentProduct;
+    // TODO change the type from String to PaymentType https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1019
     private String paymentService;
     private String password;
 
