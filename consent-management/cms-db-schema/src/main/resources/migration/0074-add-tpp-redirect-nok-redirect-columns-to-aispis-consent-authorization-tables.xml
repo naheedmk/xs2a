@@ -17,7 +17,7 @@
 <databaseChangeLog logicalFilePath="db.changelog-1.0.xml" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-    <changeSet author="iku@adorsys.com.ua" id="2019-08-19=1">
+    <changeSet author="iku@adorsys.com.ua" id="2019-08-19-1">
         <comment>Add column redirect_uri to ais_consent_authorization</comment>
 
         <addColumn tableName="ais_consent_authorization">
@@ -25,15 +25,15 @@
         </addColumn>
     </changeSet>
 
-    <changeSet author="iku@adorsys.com.ua" id="2019-08-19=2">
+    <changeSet author="iku@adorsys.com.ua" id="2019-08-19-2">
         <comment>Add column nok_redirect_uri to ais_consent_authorization</comment>
 
         <addColumn tableName="ais_consent_authorization">
-            <column name="nok_redirect_uri" type="VARCHAR(255)"></column>
+            <column name="nok_redirect_uri" type="VARCHAR(255)"/>
         </addColumn>
     </changeSet>
 
-    <changeSet author="iku@adorsys.com.ua" id="2019-08-19=3">
+    <changeSet author="iku@adorsys.com.ua" id="2019-08-19-3">
         <comment>Add column redirect_uri to pis_consent_authorization</comment>
 
         <addColumn tableName="pis_consent_authorization">
@@ -41,11 +41,11 @@
         </addColumn>
     </changeSet>
 
-    <changeSet author="iku@adorsys.com.ua" id="2019-08-19=4">
+    <changeSet author="iku@adorsys.com.ua" id="2019-08-19-4">
         <comment>Add column nok_redirect_uri to pis_consent_authorization</comment>
 
         <addColumn tableName="pis_consent_authorization">
-            <column name="nok_redirect_uri" type="VARCHAR(255)"></column>
+            <column name="nok_redirect_uri" type="VARCHAR(255)"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>
