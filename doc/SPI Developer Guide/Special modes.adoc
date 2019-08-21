@@ -117,12 +117,19 @@ See <<SPI_Developer_Guide.adoc#configuring-logging,XS2A Logging configuring>> fo
 
 ==== Adjusting swagger UI
 
-Adjustment Swagger UI implies updating appropriate .yaml file.
+Swagger UI is not enabled for XS2A by default.
 
-* First of all Connector Developer should define custom local swagger api yaml file and set xs2a.swagger.psd2.api.location project property to point at this file.
-* Next steps involve adding and changing necessary parameters.
+To enable Swagger in XS2A you have to add `@EnableXs2aSwagger` annotation on any of Spring configuration classes / Spring boot Application class in your application.
 
-The defoult version of psd2.yaml file can be found under:
+To disable Swagger just remove it.
+
+Adjustment Swagger UI implies updating appropriate .yaml file:
+
+* At first put PSD2 API yaml file to the resource folder of your Connector to override default PSD2 API and
+set `xs2a.swagger.psd2.api.location` property in your application.properties file e.g. `xs2a.swagger.psd.api.location=path/in/my/classpath/my_swagger_api.yml`
+* Next steps involve adding and changing necessary parameters in the .yaml file.
+
+The default version of PSD2 API yaml file can be found under:
 ```
 xs2a-impl->src->main->resources->static->psd2-api....yaml
 ```
