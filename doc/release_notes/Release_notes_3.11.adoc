@@ -14,6 +14,7 @@
 * Funds confirmation request validation.
 * Moved columns `redirect_uri` and `nok_redirect_uri` from `tpp_info` to `authorisation_template`
 * Bugfix: Error on updating PSU Data with no body in the request
+* The `tpp_info` table was refactored
 
 == Remove deprecated constructor in `SpiContextData`
 
@@ -88,3 +89,11 @@ update PSU Data in the context of a Payment Initiation Request
 `PUT /v1/{payment-service}/{paymentId}/{payment- product}/authorisations/{authorisationId}` without body.
 As a result you'll receive response with `scaStatus` `psuIdentified`. This result is the same if you
 sent these requests with empty json body `{}`.
+
+
+== The `tpp_info` table was refactored
+
+From now on, `authorisation_number` is a unique value in `tpp_info` table. All duplicate values were removed and `tpp_info_id`
+values in `ais_consent`, `pis_common_payment` and `piis_consent` were replaced by corresponding values. `redirect_uri`,
+`nok_redirect_uri`, `cancel_redirect_uri`, `cancel_nok_redirect_uri` were marked as `@Deprecated` and will be removed in
+version 3.14.

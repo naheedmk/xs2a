@@ -70,12 +70,18 @@ public class TppInfoEntity extends InstanceDependableEntity {
     @Column(name = "redirect_uri")
     private String redirectUri;
 
+    // TODO Should be removed in 3.14 in scope of https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1020
+    @Deprecated
     @Column(name = "nok_redirect_uri")
     private String nokRedirectUri;
 
+    // TODO Should be removed in 3.14 in scope of https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1020
+    @Deprecated
     @Column(name = "cancel_redirect_uri")
     private String cancelRedirectUri;
 
+    // TODO Should be removed in 3.14 in scope of https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1020
+    @Deprecated
     @Column(name = "cancel_nok_redirect_uri")
     private String cancelNokRedirectUri;
 }
