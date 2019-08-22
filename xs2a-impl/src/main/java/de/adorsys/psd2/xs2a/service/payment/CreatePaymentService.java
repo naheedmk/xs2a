@@ -20,13 +20,14 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 
-public interface CreatePaymentService<T, R> {
-    ResponseObject<R> createPayment(T payment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo);
+public interface CreatePaymentService {
+    ResponseObject<PaymentInitiationResponse> createPayment(Object payment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo);
 
-    default ResponseObject<R> buildErrorResponse(ErrorHolder errorHolder) {
-        return ResponseObject.<R>builder()
+    default ResponseObject<PaymentInitiationResponse> buildErrorResponse(ErrorHolder errorHolder) {
+        return ResponseObject.<PaymentInitiationResponse>builder()
                    .fail(new MessageError(errorHolder))
                    .build();
     }

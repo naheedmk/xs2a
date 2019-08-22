@@ -113,8 +113,6 @@ public class ReadSinglePaymentServiceTest {
 
     @Test
     public void getPayment_success() {
-        // Given
-
         // When
         PaymentInformationResponse<SinglePayment> actualResponse = readSinglePaymentService.getPayment(PIS_PAYMENTS, PRODUCT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
@@ -127,10 +125,6 @@ public class ReadSinglePaymentServiceTest {
 
     @Test
     public void getPayment_updatePaymentStatusAfterSpiService_updatePaymentStatus_failed() {
-        //Given
-        when(updatePaymentStatusAfterSpiService.updatePaymentStatus(SOME_ENCRYPTED_PAYMENT_ID, SINGLE_PAYMENT.getTransactionStatus()))
-            .thenReturn(false);
-
         // When
         PaymentInformationResponse<SinglePayment> actualResponse = readSinglePaymentService.getPayment(PIS_PAYMENTS, PRODUCT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 

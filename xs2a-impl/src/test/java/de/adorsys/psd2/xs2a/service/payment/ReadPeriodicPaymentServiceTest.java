@@ -108,14 +108,10 @@ public class ReadPeriodicPaymentServiceTest {
 
     @Test
     public void getPayment_success() {
-        //Given
-        when(updatePaymentStatusAfterSpiService.updatePaymentStatus(SOME_ENCRYPTED_PAYMENT_ID, PERIODIC_PAYMENT.getTransactionStatus()))
-            .thenReturn(true);
-
-        //When
+        // When
         PaymentInformationResponse<PeriodicPayment> actualResponse = readPeriodicPaymentService.getPayment(PIS_PAYMENTS, PRODUCT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
-        //Then
+        // Then
         assertThat(actualResponse.hasError()).isFalse();
         assertThat(actualResponse.getPayment()).isNotNull();
         assertThat(actualResponse.getPayment()).isEqualTo(PERIODIC_PAYMENT);
@@ -124,13 +120,10 @@ public class ReadPeriodicPaymentServiceTest {
 
     @Test
     public void getPayment_updatePaymentStatusAfterSpiService_updatePaymentStatus_failed() {
-        when(updatePaymentStatusAfterSpiService.updatePaymentStatus(SOME_ENCRYPTED_PAYMENT_ID, PERIODIC_PAYMENT.getTransactionStatus()))
-            .thenReturn(false);
-
-        //When
+        // When
         PaymentInformationResponse<PeriodicPayment> actualResponse = readPeriodicPaymentService.getPayment(PIS_PAYMENTS, PRODUCT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
-        //Then
+        // Then
         assertThat(actualResponse.hasError()).isFalse();
         assertThat(actualResponse.getPayment()).isNotNull();
         assertThat(actualResponse.getPayment()).isEqualTo(PERIODIC_PAYMENT);
@@ -139,7 +132,7 @@ public class ReadPeriodicPaymentServiceTest {
 
     @Test
     public void getPayment_spiPaymentFactory_createSpiPeriodicPayment_failed() {
-        //Given
+        // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
                                         .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
                                         .build();
@@ -147,10 +140,10 @@ public class ReadPeriodicPaymentServiceTest {
         when(spiPaymentFactory.createSpiPeriodicPayment(PIS_PAYMENTS.get(0), PRODUCT))
             .thenReturn(Optional.empty());
 
-        //When
+        // When
         PaymentInformationResponse<PeriodicPayment> actualResponse = readPeriodicPaymentService.getPayment(PIS_PAYMENTS, PRODUCT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
-        //Then
+        // Then
         assertThat(actualResponse.hasError()).isTrue();
         assertThat(actualResponse.getPayment()).isNull();
         assertThat(actualResponse.getErrorHolder()).isNotNull();
@@ -159,7 +152,7 @@ public class ReadPeriodicPaymentServiceTest {
 
     @Test
     public void getPayment_periodicPaymentSpi_getPaymentById_failed() {
-        //Given
+        // Given
         SpiResponse<SpiPeriodicPayment> spiResponseError = SpiResponse.<SpiPeriodicPayment>builder()
                                                                .error(new TppMessage(MessageErrorCode.FORMAT_ERROR, "Format error"))
                                                                .build();
@@ -173,10 +166,10 @@ public class ReadPeriodicPaymentServiceTest {
         when(spiErrorMapper.mapToErrorHolder(spiResponseError, ServiceType.PIS))
             .thenReturn(expectedError);
 
-        //When
+        // When
         PaymentInformationResponse<PeriodicPayment> actualResponse = readPeriodicPaymentService.getPayment(PIS_PAYMENTS, PRODUCT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
-        //Then
+        // Then
         assertThat(actualResponse.hasError()).isTrue();
         assertThat(actualResponse.getPayment()).isNull();
         assertThat(actualResponse.getErrorHolder()).isNotNull();

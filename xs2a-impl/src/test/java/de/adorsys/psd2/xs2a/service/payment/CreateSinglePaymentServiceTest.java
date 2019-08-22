@@ -35,6 +35,7 @@ import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aPisCommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationService;
@@ -108,20 +109,17 @@ public class CreateSinglePaymentServiceTest {
         when(scaPaymentService.createSinglePayment(buildSinglePayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForSinglePayment());
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
         when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PARAM.getPsuData())).thenReturn(PIS_COMMON_PAYMENT);
-        when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, singlePaymentInitiationResponse))
+        when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, singlePaymentInitiationResponse, null))
             .thenReturn(PAYMENT_INFO);
-        when(scaPaymentServiceResolver.getService())
-            .thenReturn(scaPaymentService);
         when(scaPaymentService.createSinglePayment(buildSinglePayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA))
             .thenReturn(buildSpiErrorForSinglePayment());
-        when(scaPaymentServiceResolver.getService())
-            .thenReturn(scaPaymentService);
+        when(scaPaymentServiceResolver.getService()).thenReturn(scaPaymentService);
     }
 
     @Test
     public void createPayment_success() {
         //When
-        ResponseObject<SinglePaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
+        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isFalse();
@@ -137,7 +135,7 @@ public class CreateSinglePaymentServiceTest {
         param.setPsuData(WRONG_PSU_DATA);
 
         //When
-        ResponseObject<SinglePaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), param, WRONG_TPP_INFO);
+        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), param, WRONG_TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -152,7 +150,7 @@ public class CreateSinglePaymentServiceTest {
             .thenReturn(PIS_COMMON_PAYMENT_FAIL);
 
         //When
-        ResponseObject<SinglePaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
+        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -170,7 +168,7 @@ public class CreateSinglePaymentServiceTest {
             .thenReturn(Optional.empty());
 
         //When
-        ResponseObject<SinglePaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
+        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -188,7 +186,7 @@ public class CreateSinglePaymentServiceTest {
             .thenReturn(Optional.of(CREATE_PIS_AUTHORISATION_RESPONSE));
 
         //When
-        ResponseObject<SinglePaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), buildPaymentInitiationParameters(), buildTppInfo());
+        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), buildPaymentInitiationParameters(), buildTppInfo());
 
         //Then
         assertThat(actualResponse.hasError()).isFalse();
@@ -204,6 +202,7 @@ public class CreateSinglePaymentServiceTest {
         payment.setDebtorAccount(buildReference(DEB_ACCOUNT_ID));
         payment.setCreditorAccount(buildReference(CRED_ACCOUNT_ID));
         payment.setTransactionStatus(TransactionStatus.RCVD);
+        payment.setPaymentProduct("sepa-credit-transfers");
         return payment;
     }
 

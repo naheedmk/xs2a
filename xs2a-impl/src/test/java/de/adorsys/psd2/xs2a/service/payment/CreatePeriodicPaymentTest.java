@@ -34,6 +34,7 @@ import de.adorsys.psd2.xs2a.domain.Xs2aAmount;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aPisCommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
@@ -111,18 +112,17 @@ public class CreatePeriodicPaymentTest {
         when(scaPaymentService.createPeriodicPayment(buildPeriodicPayment(), TPP_INFO, "sepa-credit-transfers", PSU_ID_DATA)).thenReturn(periodicPaymentInitiationResponse);
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
         when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PARAM.getPsuData())).thenReturn(PIS_COMMON_PAYMENT);
-        when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, periodicPaymentInitiationResponse))
+        when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, periodicPaymentInitiationResponse, null))
             .thenReturn(PAYMENT_INFO);
         when(scaPaymentService.createPeriodicPayment(buildPeriodicPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA))
             .thenReturn(buildSpiErrorForPeriodicPayment());
-        when(scaPaymentServiceResolver.getService())
-            .thenReturn(scaPaymentService);
+        when(scaPaymentServiceResolver.getService()).thenReturn(scaPaymentService);
     }
 
     @Test
     public void success_initiate_periodic_payment() {
         //When
-        ResponseObject<PeriodicPaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), buildPaymentInitiationParameters(), buildTppInfo());
+        ResponseObject<PaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), buildPaymentInitiationParameters(), buildTppInfo());
 
         //Then
         assertThat(actualResponse.hasError()).isFalse();
@@ -134,7 +134,7 @@ public class CreatePeriodicPaymentTest {
     @Test
     public void createPayment_success() {
         //When
-        ResponseObject<PeriodicPaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), buildPaymentInitiationParameters(), buildTppInfo());
+        ResponseObject<PaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), buildPaymentInitiationParameters(), buildTppInfo());
 
         //Then
         assertThat(actualResponse.hasError()).isFalse();
@@ -151,7 +151,7 @@ public class CreatePeriodicPaymentTest {
 
         when(scaPaymentService.createPeriodicPayment(buildPeriodicPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForPeriodicPayment());
         //When
-        ResponseObject<PeriodicPaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), param, WRONG_TPP_INFO);
+        ResponseObject<PaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), param, WRONG_TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -166,7 +166,7 @@ public class CreatePeriodicPaymentTest {
             .thenReturn(PIS_COMMON_PAYMENT_FAIL);
 
         //When
-        ResponseObject<PeriodicPaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), buildPaymentInitiationParameters(), buildTppInfo());
+        ResponseObject<PaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), buildPaymentInitiationParameters(), buildTppInfo());
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -184,7 +184,7 @@ public class CreatePeriodicPaymentTest {
             .thenReturn(Optional.of(CREATE_PIS_AUTHORISATION_RESPONSE));
 
         //When
-        ResponseObject<PeriodicPaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), buildPaymentInitiationParameters(), buildTppInfo());
+        ResponseObject<PaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), buildPaymentInitiationParameters(), buildTppInfo());
 
         //Then
         assertThat(actualResponse.hasError()).isFalse();
@@ -203,7 +203,7 @@ public class CreatePeriodicPaymentTest {
             .thenReturn(Optional.empty());
 
         //When
-        ResponseObject<PeriodicPaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), buildPaymentInitiationParameters(), buildTppInfo());
+        ResponseObject<PaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), buildPaymentInitiationParameters(), buildTppInfo());
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();

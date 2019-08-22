@@ -339,7 +339,6 @@ public class ScaPaymentServiceTest {
         request.setPaymentType(PaymentType.SINGLE);
         request.setPaymentProduct("sepa-credit-transfers");
         request.setPaymentData(new byte[16]);
-        request.setTppInfo(TPP_INFO);
         return request;
     }
 

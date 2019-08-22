@@ -16,96 +16,59 @@
 
 package de.adorsys.psd2.xs2a.service.payment;
 
-import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.ResponseObject;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationResponse;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aPisCommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
-import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationService;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationServiceResolver;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aToCmsPisCommonPaymentRequestMapper;
 import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentServiceResolver;
-import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.PAYMENT_FAILED;
-import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
-import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.PIS_400;
+import java.util.Collections;
 
 @Service
-@RequiredArgsConstructor
-public class CreateCommonPaymentService implements CreatePaymentService<CommonPayment, PaymentInitiationResponse> {
-    private final ScaPaymentServiceResolver scaPaymentServiceResolver;
-    private final Xs2aPisCommonPaymentService pisCommonPaymentService;
-    private final AuthorisationMethodDecider authorisationMethodDecider;
-    private final PisScaAuthorisationServiceResolver pisScaAuthorisationServiceResolver;
-    private final Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper;
-    private final Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper;
+public class CreateCommonPaymentService extends AbstractCreatePaymentService<CommonPayment> {
+    private ScaPaymentServiceResolver scaPaymentServiceResolver;
 
-    /**
-     * Initiates payment
-     *
-     * @param payment                     payment information
-     * @param paymentInitiationParameters payment initiation parameters
-     * @param tppInfo                     information about particular TPP
-     * @return Response containing information about created common payment or corresponding error
-     */
+    @Autowired
+    public CreateCommonPaymentService(ScaPaymentServiceResolver scaPaymentServiceResolver,
+                                      Xs2aPisCommonPaymentService pisCommonPaymentService,
+                                      PisScaAuthorisationServiceResolver pisScaAuthorisationServiceResolver,
+                                      AuthorisationMethodDecider authorisationMethodDecider,
+                                      Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper,
+                                      Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper) {
+        super(pisCommonPaymentService, pisScaAuthorisationServiceResolver, authorisationMethodDecider,
+              xs2aPisCommonPaymentMapper, xs2aToCmsPisCommonPaymentRequestMapper);
+        this.scaPaymentServiceResolver = scaPaymentServiceResolver;
+    }
+
     @Override
-    public ResponseObject<PaymentInitiationResponse> createPayment(CommonPayment payment, PaymentInitiationParameters paymentInitiationParameters, TppInfo tppInfo) {
-        PsuIdData psuData = paymentInitiationParameters.getPsuData();
+    protected CommonPayment getPaymentRequest(Object payment, PaymentInitiationParameters paymentInitiationParameters) {
+        CommonPayment request = new CommonPayment();
+        request.setPaymentType(paymentInitiationParameters.getPaymentType());
+        request.setPaymentProduct(paymentInitiationParameters.getPaymentProduct());
+        request.setPaymentData((byte[]) payment);
+        request.setPsuDataList(Collections.singletonList(paymentInitiationParameters.getPsuData()));
+        return request;
+    }
 
+    @Override
+    protected PaymentInitiationResponse initiatePayment(CommonPayment paymentRequest, PaymentInitiationParameters paymentInitiationParameters,
+                                                              TppInfo tppInfo, PsuIdData psuData) {
         ScaPaymentService scaPaymentService = scaPaymentServiceResolver.getService();
-        PaymentInitiationResponse response = scaPaymentService.createCommonPayment(payment, tppInfo, paymentInitiationParameters.getPaymentProduct(), psuData);
+        return scaPaymentService.createCommonPayment(paymentRequest, tppInfo, paymentInitiationParameters.getPaymentProduct(), psuData);
+    }
 
-        if (response.hasError()) {
-            return buildErrorResponse(response.getErrorHolder());
-        }
-
-        PisPaymentInfo pisPaymentInfo = xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(paymentInitiationParameters, tppInfo, response, payment.getPaymentData());
-        Xs2aPisCommonPayment pisCommonPayment = xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(pisCommonPaymentService.createCommonPayment(pisPaymentInfo), psuData);
-
-        String externalPaymentId = pisCommonPayment.getPaymentId();
-
-        if (StringUtils.isBlank(externalPaymentId)) {
-            return ResponseObject.<PaymentInitiationResponse>builder()
-                       .fail(PIS_400, of(PAYMENT_FAILED))
-                       .build();
-        }
-
-        InitialSpiAspspConsentDataProvider aspspConsentDataProvider = response.getAspspConsentDataProvider();
-        aspspConsentDataProvider.saveWith(externalPaymentId);
-
-        response.setPaymentId(externalPaymentId);
-
-        boolean implicitMethod = authorisationMethodDecider.isImplicitMethod(paymentInitiationParameters.isTppExplicitAuthorisationPreferred(), response.isMultilevelScaRequired());
-        if (implicitMethod) {
-            PisScaAuthorisationService pisScaAuthorisationService = pisScaAuthorisationServiceResolver.getService();
-            Optional<Xs2aCreatePisAuthorisationResponse> consentAuthorisation = pisScaAuthorisationService.createCommonPaymentAuthorisation(externalPaymentId, payment.getPaymentType(), paymentInitiationParameters.getPsuData());
-            if (!consentAuthorisation.isPresent()) {
-                return ResponseObject.<PaymentInitiationResponse>builder()
-                           .fail(PIS_400, of(PAYMENT_FAILED))
-                           .build();
-            }
-
-            Xs2aCreatePisAuthorisationResponse authorisationResponse = consentAuthorisation.get();
-            response.setAuthorizationId(authorisationResponse.getAuthorisationId());
-            response.setScaStatus(authorisationResponse.getScaStatus());
-        }
-
-        return ResponseObject.<PaymentInitiationResponse>builder()
-                   .body(response)
-                   .build();
+    @Override
+    protected CommonPayment updateCommonPayment(CommonPayment paymentRequest, PaymentInitiationParameters paymentInitiationParameters,
+                                                PaymentInitiationResponse response, String paymentId) {
+        return paymentRequest;
     }
 }

@@ -17,78 +17,53 @@
 package de.adorsys.psd2.xs2a.service.payment;
 
 import de.adorsys.psd2.consent.api.pis.PisPayment;
-import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
-import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.domain.ErrorHolder;
-import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInformationResponse;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
-import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
-import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiToXs2aBulkPaymentMapper;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
+import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiBulkPayment;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.BulkPaymentSpi;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service("bulk-payments")
-@RequiredArgsConstructor
 public class ReadBulkPaymentService extends ReadPaymentService<PaymentInformationResponse<BulkPayment>> {
-    private final SpiContextDataProvider spiContextDataProvider;
-    private final Xs2aUpdatePaymentAfterSpiService updatePaymentStatusAfterSpiService;
-    private final BulkPaymentSpi bulkPaymentSpi;
-    private final SpiToXs2aBulkPaymentMapper spiToXs2aBulkPaymentMapper;
-    private final SpiErrorMapper spiErrorMapper;
-    private final SpiPaymentFactory spiPaymentFactory;
-    private final RequestProviderService requestProviderService;
-    private final SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
+
+    private BulkPaymentSpi bulkPaymentSpi;
+    private SpiToXs2aBulkPaymentMapper spiToXs2aBulkPaymentMapper;
+
+    @Autowired
+    public ReadBulkPaymentService(BulkPaymentSpi bulkPaymentSpi, SpiToXs2aBulkPaymentMapper spiToXs2aBulkPaymentMapper,
+                                  SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
+                                  RequestProviderService requestProviderService, Xs2aUpdatePaymentAfterSpiService updatePaymentStatusAfterSpiService,
+                                  SpiContextDataProvider spiContextDataProvider, SpiPaymentFactory spiPaymentFactory) {
+        super(spiErrorMapper, aspspConsentDataProviderFactory, requestProviderService,updatePaymentStatusAfterSpiService, spiContextDataProvider, spiPaymentFactory);
+        this.bulkPaymentSpi = bulkPaymentSpi;
+        this.spiToXs2aBulkPaymentMapper = spiToXs2aBulkPaymentMapper;
+    }
 
     @Override
-    public PaymentInformationResponse<BulkPayment> getPayment(List<PisPayment> pisPayments, String paymentProduct, PsuIdData psuData, @NotNull String encryptedPaymentId) {
-        Optional<SpiBulkPayment> spiPaymentOptional = spiPaymentFactory.createSpiBulkPayment(pisPayments, paymentProduct);
+    public Optional<SpiBulkPayment> createSpiPayment(List<PisPayment> pisPayments, String paymentProduct) {
+        return spiPaymentFactory.createSpiBulkPayment(pisPayments, paymentProduct);
+    }
 
-        if (!spiPaymentOptional.isPresent()) {
-            return new PaymentInformationResponse<>(
-                ErrorHolder.builder(ErrorType.PIS_404)
-                    .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
-                    .build()
-            );
-        }
+    @Override
+    public SpiResponse<SpiBulkPayment> getSpiPaymentById(SpiContextData spiContextData, Object spiPayment, SpiAspspConsentDataProvider aspspConsentDataProvider) {
+        return bulkPaymentSpi.getPaymentById(spiContextData, (SpiBulkPayment) spiPayment, aspspConsentDataProvider);
+    }
 
-        SpiAspspConsentDataProvider aspspConsentDataProvider =
-            aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(encryptedPaymentId);
-
-        SpiResponse<SpiBulkPayment> spiResponse = bulkPaymentSpi.getPaymentById(spiContextDataProvider.provideWithPsuIdData(psuData), spiPaymentOptional.get(), aspspConsentDataProvider);
-
-        if (spiResponse.hasError()) {
-            ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. READ BULK Payment failed. Can't get Payment by id at SPI-level. Error msg: [{}]",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), spiPaymentOptional.get().getPaymentId(), errorHolder);
-            return new PaymentInformationResponse<>(errorHolder);
-        }
-
-        SpiBulkPayment spiResponsePayment = spiResponse.getPayload();
-        BulkPayment xs2aBulkPayment = spiToXs2aBulkPaymentMapper.mapToXs2aBulkPayment(spiResponsePayment);
-
-        TransactionStatus paymentStatus = xs2aBulkPayment.getTransactionStatus();
-        if (!updatePaymentStatusAfterSpiService.updatePaymentStatus(encryptedPaymentId, paymentStatus)) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Internal payment ID: [{}], Transaction status: [{}]. Update of a payment status in the CMS has failed.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), xs2aBulkPayment.getPaymentId(), paymentStatus);
-        }
-
-        return new PaymentInformationResponse<>(xs2aBulkPayment);
+    @Override
+    public Object getXs2aPayment(SpiResponse spiResponse) {
+        SpiBulkPayment spiBulkPayment = (SpiBulkPayment) spiResponse.getPayload();
+        return spiToXs2aBulkPaymentMapper.mapToXs2aBulkPayment(spiBulkPayment);
     }
 }

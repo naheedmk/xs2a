@@ -17,17 +17,10 @@
 package de.adorsys.psd2.xs2a.service.payment;
 
 import de.adorsys.psd2.consent.api.pis.PisPayment;
-import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
-import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.domain.ErrorHolder;
-import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInformationResponse;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
-import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
-import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiToXs2aSinglePaymentMapper;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
@@ -36,62 +29,41 @@ import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiSinglePayment;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.SinglePaymentSpi;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service("payments")
-@RequiredArgsConstructor
 public class ReadSinglePaymentService extends ReadPaymentService<PaymentInformationResponse<SinglePayment>> {
-    private final SpiContextDataProvider spiContextDataProvider;
-    private final Xs2aUpdatePaymentAfterSpiService updatePaymentStatusAfterSpiService;
-    private final SinglePaymentSpi singlePaymentSpi;
-    private final SpiToXs2aSinglePaymentMapper spiToXs2aSinglePaymentMapper;
-    private final SpiErrorMapper spiErrorMapper;
-    private final SpiPaymentFactory spiPaymentFactory;
-    private final RequestProviderService requestProviderService;
-    private final SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
+
+    private SinglePaymentSpi singlePaymentSpi;
+    private SpiToXs2aSinglePaymentMapper spiToXs2aSinglePaymentMapper;
+
+    @Autowired
+    public ReadSinglePaymentService(SinglePaymentSpi singlePaymentSpi, SpiToXs2aSinglePaymentMapper spiToXs2aSinglePaymentMapper,
+                                    SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
+                                    RequestProviderService requestProviderService, Xs2aUpdatePaymentAfterSpiService updatePaymentStatusAfterSpiService,
+                                    SpiContextDataProvider spiContextDataProvider, SpiPaymentFactory spiPaymentFactory) {
+        super(spiErrorMapper, aspspConsentDataProviderFactory, requestProviderService,updatePaymentStatusAfterSpiService, spiContextDataProvider, spiPaymentFactory);
+        this.singlePaymentSpi = singlePaymentSpi;
+        this.spiToXs2aSinglePaymentMapper = spiToXs2aSinglePaymentMapper;
+    }
 
     @Override
-    public PaymentInformationResponse<SinglePayment> getPayment(List<PisPayment> pisPayments, String paymentProduct, PsuIdData psuData, @NotNull String encryptedPaymentId) {
-        Optional<SpiSinglePayment> spiPaymentOptional = spiPaymentFactory.createSpiSinglePayment(pisPayments.get(0), paymentProduct);
+    public Optional<SpiSinglePayment> createSpiPayment(List<PisPayment> pisPayments, String paymentProduct) {
+        return spiPaymentFactory.createSpiSinglePayment(pisPayments.get(0), paymentProduct);
+    }
 
-        if (!spiPaymentOptional.isPresent()) {
-            return new PaymentInformationResponse<>(
-                ErrorHolder.builder(ErrorType.PIS_404)
-                    .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
-                    .build()
-            );
-        }
+    @Override
+    public SpiResponse<SpiSinglePayment> getSpiPaymentById(SpiContextData spiContextData, Object spiPayment, SpiAspspConsentDataProvider aspspConsentDataProvider) {
+        return singlePaymentSpi.getPaymentById(spiContextData, (SpiSinglePayment) spiPayment, aspspConsentDataProvider);
+    }
 
-        SpiContextData spiContextData = spiContextDataProvider.provideWithPsuIdData(psuData);
-
-        SpiAspspConsentDataProvider aspspConsentDataProvider =
-            aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(encryptedPaymentId);
-
-        SpiResponse<SpiSinglePayment> spiResponse = singlePaymentSpi.getPaymentById(spiContextData, spiPaymentOptional.get(), aspspConsentDataProvider);
-
-        if (spiResponse.hasError()) {
-            ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. READ SINGLE Payment failed. Can't get Payment by id at SPI-level. Error msg: [{}]",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), spiPaymentOptional.get().getPaymentId(), errorHolder);
-            return new PaymentInformationResponse<>(errorHolder);
-        }
-
-        SpiSinglePayment spiSinglePayment = spiResponse.getPayload();
-        SinglePayment xs2aSinglePayment = spiToXs2aSinglePaymentMapper.mapToXs2aSinglePayment(spiSinglePayment);
-
-        TransactionStatus paymentStatus = xs2aSinglePayment.getTransactionStatus();
-        if (!updatePaymentStatusAfterSpiService.updatePaymentStatus(encryptedPaymentId, paymentStatus)) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Internal payment ID: [{}], Transaction status: [{}]. Update of a payment status in the CMS has failed.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), xs2aSinglePayment.getPaymentId(), paymentStatus);
-        }
-
-        return new PaymentInformationResponse<>(xs2aSinglePayment);
+    @Override
+    public Object getXs2aPayment(SpiResponse spiResponse) {
+        SpiSinglePayment spiSinglePayment = (SpiSinglePayment) spiResponse.getPayload();
+        return spiToXs2aSinglePaymentMapper.mapToXs2aSinglePayment(spiSinglePayment);
     }
 }

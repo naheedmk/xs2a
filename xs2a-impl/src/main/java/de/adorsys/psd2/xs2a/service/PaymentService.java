@@ -29,7 +29,6 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.pis.*;
-import de.adorsys.psd2.xs2a.service.consent.PisPsuDataService;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.event.Xs2aEventService;
@@ -66,14 +65,9 @@ public class PaymentService {
     private final SpiPaymentFactory spiPaymentFactory;
     private final Xs2aPisCommonPaymentService pisCommonPaymentService;
     private final Xs2aUpdatePaymentAfterSpiService updatePaymentAfterSpiService;
-    private final PisPsuDataService pisPsuDataService;
     private final TppService tppService;
-    private final CreateSinglePaymentService createSinglePaymentService;
-    private final CreatePeriodicPaymentService createPeriodicPaymentService;
-    private final CreateBulkPaymentService createBulkPaymentService;
     private final CancelPaymentService cancelPaymentService;
     private final Xs2aEventService xs2aEventService;
-    private final CreateCommonPaymentService createCommonPaymentService;
     private final ReadCommonPaymentService readCommonPaymentService;
     private final Xs2aToSpiPaymentInfoMapper xs2aToSpiPaymentInfoMapper;
     private final CmsToXs2aPaymentMapper cmsToXs2aPaymentMapper;
@@ -85,6 +79,7 @@ public class PaymentService {
     private final GetPaymentByIdValidator getPaymentByIdValidator;
     private final GetPaymentStatusByIdValidator getPaymentStatusByIdValidator;
     private final CancelPaymentValidator cancelPaymentValidator;
+    private final PaymentServiceResolver paymentServiceResolver;
 
     /**
      * Initiates a payment though "payment service" corresponding service method
@@ -107,25 +102,8 @@ public class PaymentService {
 
         TppInfo tppInfo = tppService.getTppInfo();
 
-        if (standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())) {
-            CommonPayment request = new CommonPayment();
-            request.setPaymentType(paymentInitiationParameters.getPaymentType());
-            request.setPaymentProduct(paymentInitiationParameters.getPaymentProduct());
-            request.setPaymentData((byte[]) payment);
-            request.setTppInfo(tppInfo);
-            request.setPsuDataList(Collections.singletonList(paymentInitiationParameters.getPsuData()));
-
-            return createCommonPaymentService.createPayment(request, paymentInitiationParameters, tppInfo);
-        }
-
-        ResponseObject<? extends PaymentInitiationResponse> responseObject;
-        if (paymentInitiationParameters.getPaymentType() == PaymentType.SINGLE) {
-            responseObject = createSinglePaymentService.createPayment((SinglePayment) payment, paymentInitiationParameters, tppInfo);
-        } else if (paymentInitiationParameters.getPaymentType() == PaymentType.PERIODIC) {
-            responseObject = createPeriodicPaymentService.createPayment((PeriodicPayment) payment, paymentInitiationParameters, tppInfo);
-        } else {
-            responseObject = createBulkPaymentService.createPayment((BulkPayment) payment, paymentInitiationParameters, tppInfo);
-        }
+        CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        ResponseObject<PaymentInitiationResponse> responseObject = createPaymentService.createPayment(payment, paymentInitiationParameters, tppInfo);
 
         if (responseObject.hasError()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}]. Create payment failed: [{}]",
