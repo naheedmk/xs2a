@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.validator.pis.authorisation;
+package de.adorsys.psd2.xs2a.service.validator.ais.consent;
 
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
@@ -23,13 +23,13 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PisAuthorisationStatusValidator extends AuthorisationStatusValidator {
-    public PisAuthorisationStatusValidator(RequestProviderService requestProviderService) {
+public class AisAuthorisationStatusValidator extends AuthorisationStatusValidator {
+    public AisAuthorisationStatusValidator(RequestProviderService requestProviderService) {
         super(requestProviderService);
     }
 
     @Override
     protected @NotNull ErrorType getErrorType() {
-        return ErrorType.PIS_409;
+        return ErrorType.AIS_409;
     }
 }
