@@ -37,7 +37,7 @@
             </or>
         </preConditions>
 
-        <comment>Update tpp_info_id in ais_consent, pis_common_payment and piis_consent</comment>
+        <comment>Update tpp_info_id in ais_consent, pis_common_payment, piis_consent and tpp_info_role</comment>
 
         <sql>
             UPDATE ais_consent a
@@ -76,6 +76,19 @@
             GROUP BY authorisation_number) n
             ON t.authorisation_number = n.authorisation_number
             WHERE p.tpp_info_id = t.tpp_info_id);
+        </sql>
+
+        <sql>
+            UPDATE tpp_info_role r
+            SET tpp_info_id =
+            (SELECT n.new_tpp_info_id
+            FROM tpp_info t
+            INNER JOIN
+            (SELECT MIN(tpp_info_id) AS new_tpp_info_id, authorisation_number
+            FROM tpp_info
+            GROUP BY authorisation_number) n
+            ON t.authorisation_number = n.authorisation_number
+            WHERE r.tpp_info_id = t.tpp_info_id);
         </sql>
 
     </changeSet>
