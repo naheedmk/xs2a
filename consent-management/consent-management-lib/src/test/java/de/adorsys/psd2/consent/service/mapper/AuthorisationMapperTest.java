@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class AuthorisationMapperTest {
     private AuthorisationMapper authorisationMapper = new AuthorisationMapper();
@@ -43,9 +42,5 @@ public class AuthorisationMapperTest {
 
         // Then
         assertEquals(Collections.singletonList(expectedAuthorisation), actual);
-
-        Authorisation authorisation = actual.get(0);
-        assertNotNull(authorisation.getId());
-        assertNotNull(authorisation.getScaStatus());
     }
 }

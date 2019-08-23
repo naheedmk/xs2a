@@ -36,7 +36,7 @@ public abstract class AuthorisationStatusValidator {
     @NotNull
     public ValidationResult validate(@NotNull ScaStatus scaStatus) {
         if (scaStatus == ScaStatus.FAILED) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}]. Authorisation status validation has failed: authorisation has failed status",
+            log.info("InR-ID: [{}], X-Request-ID: [{}]. Authorisation has failed status",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId());
             return ValidationResult.invalid(getErrorType(), MessageErrorCode.STATUS_INVALID);
         }
