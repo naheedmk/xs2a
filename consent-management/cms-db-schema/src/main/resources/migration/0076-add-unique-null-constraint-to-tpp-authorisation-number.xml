@@ -107,8 +107,8 @@
         <sql>
             DELETE FROM tpp_info
             WHERE tpp_info_id NOT IN
-            (SELECT MIN(tpp_info_id) tpp_info_id
-            FROM consent.tpp_info
+            (SELECT MIN(tpp_info_id) AS tpp_info_id
+            FROM tpp_info
             GROUP BY authorisation_number)
         </sql>
 
@@ -123,10 +123,12 @@
             </or>
         </preConditions>
 
-        <comment>Set redirect_uri, nok_redirect_uri, cancel_redirect_uri, cancel_nok_redirect_uri in tpp_info table to NULL</comment>
+        <comment>
+            Set redirect_uri, nok_redirect_uri, cancel_redirect_uri, cancel_nok_redirect_uri in tpp_info table to NULL
+        </comment>
 
         <sql>
-            UPDATE consent.tpp_info
+            UPDATE tpp_info
             SET redirect_uri = NULL,
             nok_redirect_uri = NULL,
             cancel_redirect_uri = NULL,
@@ -150,6 +152,11 @@
 
         <addForeignKeyConstraint baseColumnNames="tpp_info_id" baseTableName="piis_consent"
                                  constraintName="fk__piis_consent__tpp_info" deferrable="false"
+                                 initiallyDeferred="false"
+                                 referencedColumnNames="tpp_info_id" referencedTableName="tpp_info"/>
+
+        <addForeignKeyConstraint baseColumnNames="tpp_info_id" baseTableName="authorisation_template"
+                                 constraintName="fk__auth_templ__tpp_info" deferrable="false"
                                  initiallyDeferred="false"
                                  referencedColumnNames="tpp_info_id" referencedTableName="tpp_info"/>
 

@@ -96,4 +96,4 @@ sent these requests with empty json body `{}`.
 From now on, `authorisation_number` is a unique value in `tpp_info` table. All duplicate values were removed and `tpp_info_id`
 values in `ais_consent`, `pis_common_payment` and `piis_consent` were replaced by corresponding values. `redirect_uri`,
 `nok_redirect_uri`, `cancel_redirect_uri`, `cancel_nok_redirect_uri` were marked as `@Deprecated` and will be removed in
-version 3.14.
+version 5.2.
