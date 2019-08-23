@@ -85,7 +85,7 @@ public class AisConsent extends InstanceDependableEntity {
         inverseJoinColumns = @JoinColumn(name = "psu_data_id"))
     private List<PsuData> psuDataList = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "tpp_info_id", nullable = false)
     @ApiModelProperty(value = "Information about TPP", required = true)
     private TppInfoEntity tppInfo;

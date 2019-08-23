@@ -65,7 +65,7 @@ public class PiisConsentEntity extends InstanceDependableEntity {
     private PsuData psuData;
 
     // TODO: Remove the column in scope of https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/971
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "tpp_info_id")
     @ApiModelProperty(value = "Information about TPP")
     private TppInfoEntity tppInfo;
