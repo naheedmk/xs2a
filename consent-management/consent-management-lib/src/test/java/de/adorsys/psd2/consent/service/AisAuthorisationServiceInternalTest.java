@@ -200,7 +200,7 @@ public class AisAuthorisationServiceInternalTest {
         assertTrue(actual.isPresent());
         verify(aisConsentAuthorisationRepository).save(argument.capture());
         AisConsentAuthorization aisConsentAuthorization = argument.getValue();
-        assertSame(aisConsentAuthorization.getScaStatus(), ScaStatus.PSUIDENTIFIED);
+        assertSame(ScaStatus.PSUIDENTIFIED, aisConsentAuthorization.getScaStatus());
 
         verify(aisConsentAuthorisationRepository).saveAll(failedAuthorisationsArgument.capture());
         List<AisConsentAuthorization> failedAuthorisations = failedAuthorisationsArgument.getValue();
@@ -241,14 +241,14 @@ public class AisAuthorisationServiceInternalTest {
         assertTrue(actual.isPresent());
         verify(aisConsentAuthorisationRepository).save(argument.capture());
         AisConsentAuthorization aisConsentAuthorization = argument.getValue();
-        assertSame(aisConsentAuthorization.getScaStatus(), ScaStatus.PSUIDENTIFIED);
+        assertSame(ScaStatus.PSUIDENTIFIED, aisConsentAuthorization.getScaStatus());
 
         verify(aisConsentAuthorisationRepository).saveAll(failedAuthorisationsArgument.capture());
         List<AisConsentAuthorization> failedAuthorisations = failedAuthorisationsArgument.getValue();
         Set<ScaStatus> scaStatuses = failedAuthorisations.stream()
                                          .map(AisConsentAuthorization::getScaStatus)
                                          .collect(Collectors.toSet());
-        assertEquals(scaStatuses.size(), 1);
+        assertEquals(1, scaStatuses.size());
         assertTrue(scaStatuses.contains(ScaStatus.FAILED));
         assertEquals(authorisationTemplateEntity.getRedirectUri(), aisConsentAuthorization.getTppOkRedirectUri());
         assertEquals(authorisationTemplateEntity.getNokRedirectUri(), aisConsentAuthorization.getTppNokRedirectUri());

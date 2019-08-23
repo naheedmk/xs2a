@@ -428,7 +428,7 @@ public class PisCommonPaymentServiceInternal implements PisCommonPaymentService 
 
         if (psuDataOptional.isPresent()) {
             PsuData psuData = psuDataOptional.get();
-            if (PaymentAuthorisationType.CANCELLED != request.getAuthorizationType()){
+            if (PaymentAuthorisationType.CANCELLED != request.getAuthorizationType()) {
                 paymentData.setPsuDataList(cmsPsuService.enrichPsuData(psuData, paymentData.getPsuDataList()));
             }
             pisAuthorisation.setPsuData(psuData);
@@ -447,21 +447,17 @@ public class PisCommonPaymentServiceInternal implements PisCommonPaymentService 
 
         boolean isCreatedType = PaymentAuthorisationType.CREATED == request.getAuthorizationType();
 
-        String uri = getUri(redirectURIs.getUri(), isCreatedType
-                                                       ? authorisationTemplate.getRedirectUri()
-                                                       : authorisationTemplate.getCancelRedirectUri());
+        String uri = StringUtils.defaultIfBlank(redirectURIs.getUri(), isCreatedType
+                                                                           ? authorisationTemplate.getRedirectUri()
+                                                                           : authorisationTemplate.getCancelRedirectUri());
 
-        String nokUri = getUri(redirectURIs.getNokUri(), isCreatedType
-                                                             ? authorisationTemplate.getNokRedirectUri()
-                                                             : authorisationTemplate.getCancelNokRedirectUri());
+        String nokUri = StringUtils.defaultIfBlank(redirectURIs.getNokUri(), isCreatedType
+                                                                                 ? authorisationTemplate.getNokRedirectUri()
+                                                                                 : authorisationTemplate.getCancelNokRedirectUri());
 
         pisAuthorisation.setTppOkRedirectUri(uri);
         pisAuthorisation.setTppNokRedirectUri(nokUri);
         return pisAuthorisationRepository.save(pisAuthorisation);
-    }
-
-    private String getUri(String uri, String uriTemplate) {
-        return StringUtils.isBlank(uri) ? uriTemplate : uri;
     }
 
     private OffsetDateTime countRedirectUrlExpirationTimestampForAuthorisationType(PaymentAuthorisationType authorisationType) {

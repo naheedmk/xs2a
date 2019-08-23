@@ -282,15 +282,9 @@ public class AisAuthorisationServiceInternal implements AisConsentAuthorisationS
         consentAuthorization.setScaApproach(request.getScaApproach());
         TppRedirectUri redirectURIs = request.getTppRedirectURIs();
         AuthorisationTemplateEntity authorisationTemplate = aisConsent.getAuthorisationTemplate();
-        String uri = getUri(redirectURIs.getUri(), authorisationTemplate.getRedirectUri());
-        String nokUri = getUri(redirectURIs.getNokUri(), authorisationTemplate.getNokRedirectUri());
-        consentAuthorization.setTppOkRedirectUri(uri);
-        consentAuthorization.setTppNokRedirectUri(nokUri);
+        consentAuthorization.setTppOkRedirectUri(StringUtils.defaultIfBlank(redirectURIs.getUri(), authorisationTemplate.getRedirectUri()));
+        consentAuthorization.setTppNokRedirectUri(StringUtils.defaultIfBlank(redirectURIs.getNokUri(), authorisationTemplate.getNokRedirectUri()));
         return aisConsentAuthorisationRepository.save(consentAuthorization);
-    }
-
-    private String getUri(String uri, String uriTemplate) {
-        return StringUtils.isBlank(uri) ? uriTemplate : uri;
     }
 
     private Optional<AisConsentAuthorization> findAuthorisationInConsent(String authorisationId, AisConsent consent) {
