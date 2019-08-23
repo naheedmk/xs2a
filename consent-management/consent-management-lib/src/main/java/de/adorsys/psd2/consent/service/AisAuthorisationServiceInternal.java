@@ -22,6 +22,7 @@ import de.adorsys.psd2.consent.api.ais.AisConsentAuthorizationRequest;
 import de.adorsys.psd2.consent.api.ais.AisConsentAuthorizationResponse;
 import de.adorsys.psd2.consent.api.ais.CreateAisConsentAuthorizationResponse;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationService;
+import de.adorsys.psd2.consent.domain.AuthorisationTemplateEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.ScaMethod;
 import de.adorsys.psd2.consent.domain.account.AisConsent;
@@ -39,6 +40,7 @@ import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -279,9 +281,16 @@ public class AisAuthorisationServiceInternal implements AisConsentAuthorisationS
         consentAuthorization.setAuthorisationExpirationTimestamp(OffsetDateTime.now().plus(aspspProfileService.getAspspSettings().getAuthorisationExpirationTimeMs(), ChronoUnit.MILLIS));
         consentAuthorization.setScaApproach(request.getScaApproach());
         TppRedirectUri redirectURIs = request.getTppRedirectURIs();
-        consentAuthorization.setTppOkRedirectUri(redirectURIs.getUri());
-        consentAuthorization.setTppNokRedirectUri(redirectURIs.getNokUri());
+        AuthorisationTemplateEntity authorisationTemplate = aisConsent.getAuthorisationTemplate();
+        String uri = getUri(redirectURIs.getUri(), authorisationTemplate.getRedirectUri());
+        String nokUri = getUri(redirectURIs.getNokUri(), authorisationTemplate.getNokRedirectUri());
+        consentAuthorization.setTppOkRedirectUri(uri);
+        consentAuthorization.setTppNokRedirectUri(nokUri);
         return aisConsentAuthorisationRepository.save(consentAuthorization);
+    }
+
+    private String getUri(String uri, String uriTemplate) {
+        return StringUtils.isBlank(uri) ? uriTemplate : uri;
     }
 
     private Optional<AisConsentAuthorization> findAuthorisationInConsent(String authorisationId, AisConsent consent) {
