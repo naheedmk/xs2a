@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.service.payment;
 
-import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
@@ -50,7 +49,7 @@ public class ReadCommonPaymentService {
     private final SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
     private final RequestProviderService requestProviderService;
 
-    public PaymentInformationResponse<PisPaymentInfo> getPayment(CommonPayment commonPayment, PsuIdData psuData, String encryptedPaymentId) {
+    public PaymentInformationResponse getPayment(CommonPayment commonPayment, PsuIdData psuData, String encryptedPaymentId) {
         SpiPaymentInfo spiPaymentInfo = xs2aToSpiPaymentInfoMapper.mapToSpiPaymentInfo(commonPayment);
 
         SpiContextData spiContextData = spiContextDataProvider.provideWithPsuIdData(psuData);
@@ -69,6 +68,6 @@ public class ReadCommonPaymentService {
 
         SpiPaymentInfo responsePaymentInfo = spiResponse.getPayload();
 
-        return new PaymentInformationResponse<>(spiToXs2aPaymentInfoMapper.mapToXs2aPaymentInfo(responsePaymentInfo));
+        return new PaymentInformationResponse(spiToXs2aPaymentInfoMapper.mapToXs2aPaymentInfo(responsePaymentInfo));
     }
 }

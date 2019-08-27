@@ -131,6 +131,8 @@ public class PaymentServiceTest {
     private RequestProviderService requestProviderService;
     @Mock
     private CreateCommonPaymentService createCommonPaymentService;
+    @Mock
+    private PaymentServiceResolver paymentServiceResolver;
 
     private JsonReader jsonReader;
 
@@ -168,8 +170,7 @@ public class PaymentServiceTest {
     @Test
     public void createRawPayment_Success() {
         // Given
-        when(standardPaymentProductsResolver.isRawPaymentProduct(anyString()))
-            .thenReturn(true);
+        when(paymentServiceResolver.getCreatePaymentService(any())).thenReturn(createCommonPaymentService);
         when(createCommonPaymentService.createPayment(any(), any(), any()))
             .thenReturn(ResponseObject.<PaymentInitiationResponse>builder()
                             .body(buildSinglePaymentInitiationResponse())
@@ -184,6 +185,7 @@ public class PaymentServiceTest {
     @Test
     public void createSinglePayment_Success() {
         // Given
+        when(paymentServiceResolver.getCreatePaymentService(any())).thenReturn(createSinglePaymentService);
         when(createSinglePaymentService.createPayment(any(), any(), any()))
             .thenReturn(ResponseObject.<PaymentInitiationResponse>builder()
                             .body(buildSinglePaymentInitiationResponse())
@@ -198,6 +200,7 @@ public class PaymentServiceTest {
     @Test
     public void createPeriodicPayment_Success() {
         // Given
+        when(paymentServiceResolver.getCreatePaymentService(any())).thenReturn(createPeriodicPaymentService);
         when(createPeriodicPaymentService.createPayment(any(), any(), any()))
             .thenReturn(ResponseObject.<PaymentInitiationResponse>builder()
                             .body(buildPeriodicPaymentInitiationResponse())
@@ -272,6 +275,7 @@ public class PaymentServiceTest {
     @Test
     public void createBulkPayments() {
         // When
+        when(paymentServiceResolver.getCreatePaymentService(any())).thenReturn(createBulkPaymentService);
         ResponseObject<PaymentInitiationResponse> actualResponse = paymentService.createPayment(bulkPayment, buildPaymentInitiationParameters(PaymentType.BULK));
 
         // Then
@@ -298,6 +302,7 @@ public class PaymentServiceTest {
     @Test
     public void createPayment_Success_ShouldRecordEvent() {
         // Given
+        when(paymentServiceResolver.getCreatePaymentService(any())).thenReturn(createSinglePaymentService);
         when(createSinglePaymentService.createPayment(any(), any(), any()))
             .thenReturn(ResponseObject.<PaymentInitiationResponse>builder()
                             .body(buildSinglePaymentInitiationResponse())

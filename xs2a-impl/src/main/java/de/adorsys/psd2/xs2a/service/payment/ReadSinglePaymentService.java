@@ -17,8 +17,7 @@
 package de.adorsys.psd2.xs2a.service.payment;
 
 import de.adorsys.psd2.consent.api.pis.PisPayment;
-import de.adorsys.psd2.xs2a.domain.pis.PaymentInformationResponse;
-import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
+import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
@@ -36,7 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("payments")
-public class ReadSinglePaymentService extends ReadPaymentService<PaymentInformationResponse<SinglePayment>> {
+public class ReadSinglePaymentService extends ReadPaymentService {
 
     private SinglePaymentSpi singlePaymentSpi;
     private SpiToXs2aSinglePaymentMapper spiToXs2aSinglePaymentMapper;
@@ -62,7 +61,7 @@ public class ReadSinglePaymentService extends ReadPaymentService<PaymentInformat
     }
 
     @Override
-    public Object getXs2aPayment(SpiResponse spiResponse) {
+    public CommonPayment getXs2aPayment(SpiResponse spiResponse) {
         SpiSinglePayment spiSinglePayment = (SpiSinglePayment) spiResponse.getPayload();
         return spiToXs2aSinglePaymentMapper.mapToXs2aSinglePayment(spiSinglePayment);
     }

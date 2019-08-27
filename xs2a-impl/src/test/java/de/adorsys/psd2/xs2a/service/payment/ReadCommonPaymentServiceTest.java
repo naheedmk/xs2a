@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.service.payment;
 
-import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.error.TppMessage;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
@@ -63,7 +62,7 @@ public class ReadCommonPaymentServiceTest {
     private static final CommonPayment COMMON_PAYMENT = buildCommonPayment();
     private static final SpiPaymentInfo SPI_PAYMENT_INFO = new SpiPaymentInfo(PRODUCT);
     private static final SpiContextData SPI_CONTEXT_DATA = getSpiContextData();
-    private static final PisPaymentInfo PIS_PAYMENT_INFO = getPisPaymentInfo();
+    private static final CommonPayment PIS_PAYMENT_INFO = getCommonPayment();
     private static final String SOME_ENCRYPTED_PAYMENT_ID = "Encrypted Payment Id";
 
     @InjectMocks
@@ -103,7 +102,7 @@ public class ReadCommonPaymentServiceTest {
     @Test
     public void getPayment_success() {
         // When
-        PaymentInformationResponse<PisPaymentInfo> actualResponse = readCommonPaymentService.getPayment(COMMON_PAYMENT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        PaymentInformationResponse<CommonPayment> actualResponse = readCommonPaymentService.getPayment(COMMON_PAYMENT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         // Then
         assertThat(actualResponse.hasError()).isFalse();
@@ -125,7 +124,7 @@ public class ReadCommonPaymentServiceTest {
             .thenReturn(expectedError);
 
         // When
-        PaymentInformationResponse<PisPaymentInfo> actualResponse = readCommonPaymentService.getPayment(COMMON_PAYMENT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        PaymentInformationResponse<CommonPayment> actualResponse = readCommonPaymentService.getPayment(COMMON_PAYMENT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         // Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -143,15 +142,6 @@ public class ReadCommonPaymentServiceTest {
         return request;
     }
 
-    private static TppInfo buildTppInfo() {
-        TppInfo tppInfo = new TppInfo();
-        tppInfo.setAuthorisationNumber("registrationNumber");
-        tppInfo.setTppName("tppName");
-        tppInfo.setTppRoles(Collections.singletonList(TppRole.PISP));
-        tppInfo.setAuthorityId("authorityId");
-        return tppInfo;
-    }
-
     private static SpiContextData getSpiContextData() {
         return new SpiContextData(
             new SpiPsuData("", "", "", "", ""),
@@ -161,7 +151,7 @@ public class ReadCommonPaymentServiceTest {
         );
     }
 
-    private static PisPaymentInfo getPisPaymentInfo() {
-        return new PisPaymentInfo();
+    private static CommonPayment getCommonPayment() {
+        return new CommonPayment();
     }
 }

@@ -49,6 +49,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
@@ -130,9 +131,12 @@ public class PaymentService {
         xs2aEventService.recordPisTppRequest(encryptedPaymentId, EventType.GET_PAYMENT_REQUEST_RECEIVED);
         Optional<PisCommonPaymentResponse> pisCommonPaymentOptional = pisCommonPaymentService.getPisCommonPaymentById(encryptedPaymentId);
 
+        UUID internalRequestId = requestProviderService.getInternalRequestId();
+        UUID xRequestId = requestProviderService.getRequestId();
+
         if (!pisCommonPaymentOptional.isPresent()) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get payment failed. PIS CommonPayment not found by id",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), encryptedPaymentId);
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get payment failed. PIS CommonPayment not found by ID",
+                     internalRequestId, xRequestId, encryptedPaymentId);
             return ResponseObject.builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
@@ -142,7 +146,7 @@ public class PaymentService {
         ValidationResult validationResult = getPaymentByIdValidator.validate(new GetPaymentByIdPO(commonPaymentResponse, paymentType, paymentProduct));
         if (validationResult.isNotValid()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get payment - validation failed: {}",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), encryptedPaymentId, validationResult.getMessageError());
+                     internalRequestId, xRequestId, encryptedPaymentId, validationResult.getMessageError());
             return ResponseObject.builder()
                        .fail(validationResult.getMessageError())
                        .build();
@@ -159,19 +163,19 @@ public class PaymentService {
             List<PisPayment> pisPayments = getPisPaymentFromCommonPaymentResponse(commonPaymentResponse);
             if (CollectionUtils.isEmpty(pisPayments)) {
                 log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get payment failed. Payments not found at PisCommonPayment.",
-                         requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), encryptedPaymentId);
+                         internalRequestId, xRequestId, encryptedPaymentId);
                 return ResponseObject.builder()
                            .fail(PIS_400, of(FORMAT_ERROR, PAYMENT_NOT_FOUND_MESSAGE))
                            .build();
             }
 
-            ReadPaymentService<PaymentInformationResponse> readPaymentService = readPaymentFactory.getService(paymentType.getValue());
+            ReadPaymentService readPaymentService = readPaymentFactory.getService(paymentType.getValue());
             response = readPaymentService.getPayment(pisPayments, commonPaymentResponse.getPaymentProduct(), psuIdData, encryptedPaymentId); //NOT USED IN 1.2
         }
 
         if (response.hasError()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Read Payment failed: {}",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), encryptedPaymentId, response.getErrorHolder());
+                     internalRequestId, xRequestId, encryptedPaymentId, response.getErrorHolder());
             return ResponseObject.builder()
                        .fail(response.getErrorHolder())
                        .build();

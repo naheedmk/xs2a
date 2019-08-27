@@ -22,6 +22,7 @@ import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
+import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInformationResponse;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
@@ -38,9 +39,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
-public abstract class ReadPaymentService<T> {
+public abstract class ReadPaymentService {
 
     protected SpiContextDataProvider spiContextDataProvider;
     protected SpiPaymentFactory spiPaymentFactory;
@@ -59,11 +61,11 @@ public abstract class ReadPaymentService<T> {
         this.updatePaymentStatusAfterSpiService = updatePaymentStatusAfterSpiService;
     }
 
-    public T getPayment(List<PisPayment> pisPayments, String paymentProduct, PsuIdData psuData, @NotNull String encryptedPaymentId) {
+    public PaymentInformationResponse getPayment(List<PisPayment> pisPayments, String paymentProduct, PsuIdData psuData, @NotNull String encryptedPaymentId) {
         Optional spiPaymentOptional = createSpiPayment(pisPayments, paymentProduct);
 
         if (!spiPaymentOptional.isPresent()) {
-            return (T) new PaymentInformationResponse(
+            return new PaymentInformationResponse(
                 ErrorHolder.builder(ErrorType.PIS_404)
                     .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
                     .build());
@@ -75,24 +77,26 @@ public abstract class ReadPaymentService<T> {
             aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(encryptedPaymentId);
 
         SpiResponse spiResponse = getSpiPaymentById(spiContextData, spiPaymentOptional.get(), aspspConsentDataProvider);
+        UUID internalRequestId = requestProviderService.getInternalRequestId();
+        UUID xRequestId = requestProviderService.getRequestId();
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Read payment failed. Can't get payment by ID at SPI level. Error msg: [{}]",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), ((SpiPayment) spiPaymentOptional.get()).getPaymentId(), errorHolder);
-            return (T) new PaymentInformationResponse(errorHolder);
+                     internalRequestId, xRequestId, ((SpiPayment) spiPaymentOptional.get()).getPaymentId(), errorHolder);
+            return new PaymentInformationResponse(errorHolder);
         }
 
-        Object xs2aPayment = getXs2aPayment(spiResponse);
+        CommonPayment xs2aPayment = getXs2aPayment(spiResponse);
 
-        TransactionStatus paymentStatus = ((SpiPayment) spiResponse.getPayload()).getPaymentStatus();
+        TransactionStatus paymentStatus = xs2aPayment.getTransactionStatus();
 
         if (!updatePaymentStatusAfterSpiService.updatePaymentStatus(encryptedPaymentId, paymentStatus)) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Internal payment ID: [{}], Transaction status: [{}]. Update of a payment status in the CMS has failed.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), ((SpiPayment) spiResponse.getPayload()).getPaymentId(), paymentStatus);
+                     internalRequestId, xRequestId, xs2aPayment.getPaymentId(), paymentStatus);
         }
 
-        return (T) new PaymentInformationResponse(xs2aPayment);
+        return new PaymentInformationResponse(xs2aPayment);
 
     }
 
@@ -100,5 +104,5 @@ public abstract class ReadPaymentService<T> {
 
     protected abstract SpiResponse getSpiPaymentById(SpiContextData spiContextData, Object spiPayment, SpiAspspConsentDataProvider aspspConsentDataProvider);
 
-    protected abstract Object getXs2aPayment(SpiResponse spiResponse);
+    protected abstract CommonPayment getXs2aPayment(SpiResponse spiResponse);
 }

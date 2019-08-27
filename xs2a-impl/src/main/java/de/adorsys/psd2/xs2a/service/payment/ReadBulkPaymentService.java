@@ -17,8 +17,7 @@
 package de.adorsys.psd2.xs2a.service.payment;
 
 import de.adorsys.psd2.consent.api.pis.PisPayment;
-import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
-import de.adorsys.psd2.xs2a.domain.pis.PaymentInformationResponse;
+import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
@@ -36,7 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("bulk-payments")
-public class ReadBulkPaymentService extends ReadPaymentService<PaymentInformationResponse<BulkPayment>> {
+public class ReadBulkPaymentService extends ReadPaymentService {
 
     private BulkPaymentSpi bulkPaymentSpi;
     private SpiToXs2aBulkPaymentMapper spiToXs2aBulkPaymentMapper;
@@ -62,7 +61,7 @@ public class ReadBulkPaymentService extends ReadPaymentService<PaymentInformatio
     }
 
     @Override
-    public Object getXs2aPayment(SpiResponse spiResponse) {
+    public CommonPayment getXs2aPayment(SpiResponse spiResponse) {
         SpiBulkPayment spiBulkPayment = (SpiBulkPayment) spiResponse.getPayload();
         return spiToXs2aBulkPaymentMapper.mapToXs2aBulkPayment(spiBulkPayment);
     }
