@@ -38,6 +38,8 @@ public class SpiTransactionReport {
      */
     private String downloadId;
 
+    private SpiAccountReference account;
+
     private List<SpiTransaction> transactions;
     @Nullable
     private List<SpiAccountBalance> balances;
