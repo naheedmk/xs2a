@@ -596,7 +596,7 @@ public class PaymentServiceTest {
     private PaymentInitiationParameters buildPaymentInitiationParameters(PaymentType type) {
         PaymentInitiationParameters requestParameters = new PaymentInitiationParameters();
         requestParameters.setPaymentType(type);
-        requestParameters.setPaymentProduct("sepa-credit-transfers");
+        requestParameters.setPaymentProduct(PAYMENT_PRODUCT);
         requestParameters.setPsuData(PSU_ID_DATA);
         return requestParameters;
     }
@@ -643,7 +643,7 @@ public class PaymentServiceTest {
 
     private PisCommonPaymentResponse getFinalisedPisCommonPayment() {
         PisCommonPaymentResponse response = new PisCommonPaymentResponse();
-        response.setPaymentProduct("sepa-credit-transfers");
+        response.setPaymentProduct(PAYMENT_PRODUCT);
         response.setPayments(getFinalisedPisPayment());
         response.setTransactionStatus(TransactionStatus.ACCC);
         return response;
