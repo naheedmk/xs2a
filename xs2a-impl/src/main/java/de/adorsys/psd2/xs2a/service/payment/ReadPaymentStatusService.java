@@ -16,71 +16,13 @@
 
 package de.adorsys.psd2.xs2a.service.payment;
 
-import de.adorsys.psd2.consent.api.pis.PisPayment;
-import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
-import de.adorsys.psd2.xs2a.domain.ErrorHolder;
-import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
+import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.xs2a.domain.pis.ReadPaymentStatusResponse;
-import de.adorsys.psd2.xs2a.service.RequestProviderService;
-import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
-import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
-import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
-import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
-import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
-import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiGetPaymentStatusResponse;
-import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
-import de.adorsys.psd2.xs2a.spi.service.SpiPayment;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Optional;
+public interface ReadPaymentStatusService {
 
-@Slf4j
-public abstract class ReadPaymentStatusService {
+    ReadPaymentStatusResponse readPaymentStatus(CommonPaymentData commonPaymentData, SpiContextData spiContextData, @NotNull String encryptedPaymentId);
 
-    protected SpiPaymentFactory spiPaymentFactory;
-
-    private SpiErrorMapper spiErrorMapper;
-    private SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
-    private RequestProviderService requestProviderService;
-
-    public ReadPaymentStatusService(SpiPaymentFactory spiPaymentFactory, SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory, RequestProviderService requestProviderService) {
-        this.spiPaymentFactory = spiPaymentFactory;
-        this.spiErrorMapper = spiErrorMapper;
-        this.aspspConsentDataProviderFactory = aspspConsentDataProviderFactory;
-        this.requestProviderService = requestProviderService;
-    }
-
-    public ReadPaymentStatusResponse readPaymentStatus(List<PisPayment> pisPayments, String paymentProduct, SpiContextData spiContextData, @NotNull String encryptedPaymentId) {
-        Optional spiPaymentOptional = createSpiPayment(pisPayments, paymentProduct);
-
-        if (!spiPaymentOptional.isPresent()) {
-            return new ReadPaymentStatusResponse(
-                ErrorHolder.builder(ErrorType.PIS_404)
-                    .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
-                    .build()
-            );
-        }
-
-        SpiAspspConsentDataProvider aspspConsentDataProvider =
-            aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(encryptedPaymentId);
-
-        SpiResponse<SpiGetPaymentStatusResponse> spiResponse = getSpiPaymentStatusById(spiContextData, spiPaymentOptional.get(), aspspConsentDataProvider);
-
-        if (spiResponse.hasError()) {
-            ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. READ SINGLE Payment STATUS failed. Can't get Payment status by id at SPI-level. Error msg: [{}]",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), ((SpiPayment) spiPaymentOptional.get()).getPaymentId(), errorHolder);
-            return new ReadPaymentStatusResponse(errorHolder);
-        }
-
-        SpiGetPaymentStatusResponse payload = spiResponse.getPayload();
-        return new ReadPaymentStatusResponse(payload.getTransactionStatus(), payload.getFundsAvailable());
-    }
-
-    protected abstract Optional createSpiPayment(List<PisPayment> pisPayments, String paymentProduct);
-
-    protected abstract SpiResponse<SpiGetPaymentStatusResponse> getSpiPaymentStatusById(SpiContextData spiContextData, Object spiPayment, SpiAspspConsentDataProvider aspspConsentDataProvider);
 }

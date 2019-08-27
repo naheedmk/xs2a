@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("status-bulk-payments")
-public class ReadBulkPaymentStatusService extends ReadPaymentStatusService {
+public class ReadBulkPaymentStatusService extends AbstractReadPaymentStatusService {
 
     private BulkPaymentSpi bulkPaymentSpi;
 

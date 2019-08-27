@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("status-periodic-payments")
-public class ReadPeriodicPaymentStatusService extends ReadPaymentStatusService {
+public class ReadPeriodicPaymentStatusService extends AbstractReadPaymentStatusService {
 
     private PeriodicPaymentSpi periodicPaymentSpi;
 

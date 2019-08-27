@@ -16,7 +16,9 @@
 
 package de.adorsys.psd2.xs2a.service.payment;
 
+import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.consent.api.pis.PisPayment;
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.error.TppMessage;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
@@ -59,6 +61,7 @@ public class ReadSinglePaymentStatusServiceTest {
     private static final String PRODUCT = "sepa-credit-transfers";
     private final static UUID X_REQUEST_ID = UUID.randomUUID();
     private static final List<PisPayment> PIS_PAYMENTS = getListPisPayment();
+    private static final CommonPaymentData COMMON_PAYMENT_DATA = getCommonPaymentData();
     private static final SpiContextData SPI_CONTEXT_DATA = getSpiContextData();
     private static final SpiSinglePayment SPI_SINGLE_PAYMENT = new SpiSinglePayment(PRODUCT);
     private static final SpiGetPaymentStatusResponse TRANSACTION_STATUS = new SpiGetPaymentStatusResponse(TransactionStatus.ACSP,null);
@@ -101,7 +104,7 @@ public class ReadSinglePaymentStatusServiceTest {
             .thenReturn(TRANSACTION_RESPONSE);
 
         //When
-        ReadPaymentStatusResponse actualResponse = readSinglePaymentStatusService.readPaymentStatus(PIS_PAYMENTS, PRODUCT, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        ReadPaymentStatusResponse actualResponse = readSinglePaymentStatusService.readPaymentStatus(COMMON_PAYMENT_DATA, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         //Then
         assertThat(actualResponse).isEqualTo(READ_PAYMENT_STATUS_RESPONSE);
@@ -118,7 +121,7 @@ public class ReadSinglePaymentStatusServiceTest {
             .thenReturn(Optional.empty());
 
         //When
-        ReadPaymentStatusResponse actualResponse = readSinglePaymentStatusService.readPaymentStatus(PIS_PAYMENTS, PRODUCT, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        ReadPaymentStatusResponse actualResponse = readSinglePaymentStatusService.readPaymentStatus(COMMON_PAYMENT_DATA, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -140,7 +143,7 @@ public class ReadSinglePaymentStatusServiceTest {
             .thenReturn(expectedError);
 
         //When
-        ReadPaymentStatusResponse actualResponse = readSinglePaymentStatusService.readPaymentStatus(PIS_PAYMENTS, PRODUCT, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        ReadPaymentStatusResponse actualResponse = readSinglePaymentStatusService.readPaymentStatus(COMMON_PAYMENT_DATA, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -170,5 +173,12 @@ public class ReadSinglePaymentStatusServiceTest {
 
     private static List<PisPayment> getListPisPayment() {
         return Collections.singletonList(new PisPayment());
+    }
+
+    private static CommonPaymentData getCommonPaymentData() {
+        PisCommonPaymentResponse paymentData = new PisCommonPaymentResponse();
+        paymentData.setPaymentProduct(PRODUCT);
+        paymentData.setPayments(Collections.singletonList(new PisPayment()));
+        return paymentData;
     }
 }

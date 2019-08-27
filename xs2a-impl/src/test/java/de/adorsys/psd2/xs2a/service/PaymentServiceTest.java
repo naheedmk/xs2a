@@ -20,7 +20,6 @@ import de.adorsys.psd2.consent.api.pis.PisPayment;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentCancellationRequest;
 import de.adorsys.psd2.event.core.model.EventType;
-import de.adorsys.psd2.xs2a.config.factory.ReadPaymentStatusFactory;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -34,10 +33,10 @@ import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.event.Xs2aEventService;
-import de.adorsys.psd2.xs2a.service.mapper.consent.CmsToXs2aPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.payment.*;
 import de.adorsys.psd2.xs2a.service.payment.create.CreatePaymentService;
+import de.adorsys.psd2.xs2a.service.payment.read.ReadPaymentService;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
@@ -83,8 +82,6 @@ public class PaymentServiceTest {
     private PaymentService paymentService;
 
     @Mock
-    private CmsToXs2aPaymentMapper cmsToXs2aPaymentMapper;
-    @Mock
     private CancelPaymentService cancelPaymentService;
     @Mock
     private Xs2aPisCommonPaymentService xs2aPisCommonPaymentService;
@@ -99,9 +96,7 @@ public class PaymentServiceTest {
     @Mock
     private SpiPaymentFactory spiPaymentFactory;
     @Mock
-    private ReadPaymentStatusFactory readPaymentStatusFactory;
-    @Mock
-    private ReadPaymentStatusService readPaymentStatusService;
+    private AbstractReadPaymentStatusService readPaymentStatusService;
     @Mock
     private SpiContextDataProvider spiContextDataProvider;
     @Mock
@@ -128,6 +123,8 @@ public class PaymentServiceTest {
     private InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider;
     @Mock
     private RequestProviderService requestProviderService;
+    @Mock
+    private ReadPaymentService readPaymentService;
 
     private JsonReader jsonReader;
 
@@ -143,7 +140,6 @@ public class PaymentServiceTest {
         bulkPayment = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/xs2a-bulk-payment.json", BulkPayment.class);
         periodicPayment = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/xs2a-periodic-payment.json", PeriodicPayment.class);
 
-        when(readPaymentStatusFactory.getService(anyString())).thenReturn(readPaymentStatusService);
         when(tppService.getTppInfo()).thenReturn(getTppInfo());
         when(xs2aPisCommonPaymentService.getPisCommonPaymentById(PAYMENT_ID))
             .thenReturn(getPisCommonPayment());
@@ -322,9 +318,9 @@ public class PaymentServiceTest {
         // Given
         when(xs2aPisCommonPaymentService.getPisCommonPaymentById(anyString()))
             .thenReturn(Optional.of(pisCommonPaymentResponse));
-        when(cmsToXs2aPaymentMapper.mapToXs2aCommonPayment(pisCommonPaymentResponse))
-            .thenReturn(new CommonPayment());
         ArgumentCaptor<EventType> argumentCaptor = ArgumentCaptor.forClass(EventType.class);
+        when(paymentServiceResolver.getReadPaymentService(any())).thenReturn(readPaymentService);
+        when(readPaymentService.getPayment(pisCommonPaymentResponse, null, PAYMENT_ID)).thenReturn(new PaymentInformationResponse<>(singlePayment));
 
         // When
         paymentService.getPaymentById(PaymentType.SINGLE, PAYMENT_PRODUCT, PAYMENT_ID);
@@ -367,10 +363,9 @@ public class PaymentServiceTest {
     public void getPaymentStatusById_Success_ShouldRecordEvent() {
         // Given
         when(xs2aPisCommonPaymentService.getPisCommonPaymentById(anyString())).thenReturn(Optional.of(pisCommonPaymentResponse));
-        when(pisCommonPaymentResponse.getPayments()).thenReturn(Collections.singletonList(pisPayment));
-        when(pisCommonPaymentResponse.getPaymentProduct()).thenReturn(PAYMENT_PRODUCT);
-        when(readPaymentStatusService.readPaymentStatus(eq(Collections.singletonList(pisPayment)), eq(PAYMENT_PRODUCT), any(SpiContextData.class), any(String.class)))
+        when(readPaymentStatusService.readPaymentStatus(any(), any(SpiContextData.class), any(String.class)))
             .thenReturn(new ReadPaymentStatusResponse(RCVD));
+        when(paymentServiceResolver.getReadPaymentStatusService(any(PisCommonPaymentResponse.class))).thenReturn(readPaymentStatusService);
         when(updatePaymentStatusAfterSpiService.updatePaymentStatus(anyString(), any(TransactionStatus.class)))
             .thenReturn(true);
         ArgumentCaptor<EventType> argumentCaptor = ArgumentCaptor.forClass(EventType.class);
@@ -417,14 +412,12 @@ public class PaymentServiceTest {
     public void getPaymentStatusById_Success_FundsAvailableIsNull() {
         // Given
         when(xs2aPisCommonPaymentService.getPisCommonPaymentById(anyString())).thenReturn(Optional.of(pisCommonPaymentResponse));
-        when(pisCommonPaymentResponse.getPayments()).thenReturn(Collections.singletonList(pisPayment));
-        when(pisCommonPaymentResponse.getPaymentProduct()).thenReturn(PAYMENT_PRODUCT);
-        when(readPaymentStatusService.readPaymentStatus(eq(Collections.singletonList(pisPayment)), eq(PAYMENT_PRODUCT), any(SpiContextData.class), any(String.class)))
+        when(readPaymentStatusService.readPaymentStatus(any(), any(SpiContextData.class), any(String.class)))
             .thenReturn(new ReadPaymentStatusResponse(ACCP));
         when(updatePaymentStatusAfterSpiService.updatePaymentStatus(anyString(), any(TransactionStatus.class)))
             .thenReturn(true);
         when(spiContextDataProvider.provideWithPsuIdData(any())).thenReturn(SPI_CONTEXT_DATA);
-
+        when(paymentServiceResolver.getReadPaymentStatusService(any())).thenReturn(readPaymentStatusService);
         // When
         ResponseObject<GetPaymentStatusResponse> response = paymentService.getPaymentStatusById(PaymentType.SINGLE, PAYMENT_PRODUCT, PAYMENT_ID);
 
@@ -439,13 +432,12 @@ public class PaymentServiceTest {
     public void getPaymentStatusById_Success_FundsAvailableIsTrue() {
         // Given
         when(xs2aPisCommonPaymentService.getPisCommonPaymentById(anyString())).thenReturn(Optional.of(pisCommonPaymentResponse));
-        when(pisCommonPaymentResponse.getPayments()).thenReturn(Collections.singletonList(pisPayment));
-        when(pisCommonPaymentResponse.getPaymentProduct()).thenReturn(PAYMENT_PRODUCT);
-        when(readPaymentStatusService.readPaymentStatus(eq(Collections.singletonList(pisPayment)), eq(PAYMENT_PRODUCT), any(SpiContextData.class), any(String.class)))
+        when(readPaymentStatusService.readPaymentStatus(any(), any(SpiContextData.class), any(String.class)))
             .thenReturn(new ReadPaymentStatusResponse(ACCP, true));
         when(updatePaymentStatusAfterSpiService.updatePaymentStatus(anyString(), any(TransactionStatus.class)))
             .thenReturn(true);
         when(spiContextDataProvider.provideWithPsuIdData(any())).thenReturn(SPI_CONTEXT_DATA);
+        when(paymentServiceResolver.getReadPaymentStatusService(any())).thenReturn(readPaymentStatusService);
 
         // When
         ResponseObject<GetPaymentStatusResponse> response = paymentService.getPaymentStatusById(PaymentType.SINGLE, PAYMENT_PRODUCT, PAYMENT_ID);

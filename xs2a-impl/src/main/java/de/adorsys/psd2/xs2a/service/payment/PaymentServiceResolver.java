@@ -17,7 +17,9 @@
 package de.adorsys.psd2.xs2a.service.payment;
 
 import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.config.factory.ReadPaymentFactory;
+import de.adorsys.psd2.xs2a.config.factory.ReadPaymentStatusFactory;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.service.payment.create.*;
@@ -43,6 +45,9 @@ public class PaymentServiceResolver {
     private final ReadCommonPaymentService readCommonPaymentService;
     private final ReadPaymentFactory readPaymentFactory;
 
+    private final ReadCommonPaymentStatusService readCommonPaymentStatusService;
+    private final ReadPaymentStatusFactory readPaymentStatusFactory;
+
 
     public CreatePaymentService getCreatePaymentService(PaymentInitiationParameters paymentInitiationParameters) {
         if (standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())) {
@@ -63,6 +68,13 @@ public class PaymentServiceResolver {
             return readCommonPaymentService;
         }
         return readPaymentFactory.getService(commonPaymentData.getPaymentType().getValue());
+    }
+
+    public ReadPaymentStatusService getReadPaymentStatusService(PisCommonPaymentResponse pisCommonPaymentResponse) {
+        if (pisCommonPaymentResponse.getPaymentData() != null) {
+            return readCommonPaymentStatusService;
+        }
+        return readPaymentStatusFactory.getService(ReadPaymentStatusFactory.SERVICE_PREFIX + pisCommonPaymentResponse.getPaymentType().getValue());
     }
 
 }

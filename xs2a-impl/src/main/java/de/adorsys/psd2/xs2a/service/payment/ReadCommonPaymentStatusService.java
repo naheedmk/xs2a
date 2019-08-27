@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.payment;
 
-import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
+import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.ReadPaymentStatusResponse;
@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReadCommonPaymentStatusService {
+public class ReadCommonPaymentStatusService implements ReadPaymentStatusService {
     private final CommonPaymentSpi commonPaymentSpi;
     private final SpiErrorMapper spiErrorMapper;
     private final Xs2aToSpiPaymentInfoMapper xs2aToSpiPaymentInfoMapper;
@@ -48,8 +48,9 @@ public class ReadCommonPaymentStatusService {
     private final SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
     private final RequestProviderService requestProviderService;
 
-    public ReadPaymentStatusResponse readPaymentStatus(PisCommonPaymentResponse pisCommonPaymentResponse, SpiContextData spiContextData, @NotNull String encryptedPaymentId) {
-        CommonPayment commonPayment = cmsToXs2aPaymentMapper.mapToXs2aCommonPayment(pisCommonPaymentResponse);
+    @Override
+    public ReadPaymentStatusResponse readPaymentStatus(CommonPaymentData commonPaymentData, SpiContextData spiContextData, @NotNull String encryptedPaymentId) {
+        CommonPayment commonPayment = cmsToXs2aPaymentMapper.mapToXs2aCommonPayment(commonPaymentData);
         SpiPaymentInfo request = xs2aToSpiPaymentInfoMapper.mapToSpiPaymentInfo(commonPayment);
 
         SpiAspspConsentDataProvider aspspConsentDataProvider =
@@ -59,7 +60,7 @@ public class ReadCommonPaymentStatusService {
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. READ COMMON Payment STATUS failed. Can't get Payment status by id at SPI-level. Error msg: [{}]",
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. READ COMMON Payment STATUS failed. Can't get Payment status by ID at SPI level. Error msg: [{}]",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), commonPayment.getPaymentId(), errorHolder);
             return new ReadPaymentStatusResponse(errorHolder);
         }
