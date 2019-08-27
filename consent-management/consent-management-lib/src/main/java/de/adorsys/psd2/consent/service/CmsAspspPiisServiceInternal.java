@@ -64,7 +64,10 @@ public class CmsAspspPiisServiceInternal implements CmsAspspPiisService {
         closePreviousPiisConsents(psuIdData, request);
 
         PiisConsentEntity consent = piisConsentMapper.mapToPiisConsentEntity(psuIdData, request);
-        tppInfoRepository.findByAuthorisationNumber(request.getTppInfo().getAuthorisationNumber()).ifPresent(consent::setTppInfo);
+
+        if (request.getTppInfo() != null) {
+            tppInfoRepository.findByAuthorisationNumber(request.getTppInfo().getAuthorisationNumber()).ifPresent(consent::setTppInfo);
+        }
 
         PiisConsentEntity saved = piisConsentRepository.save(consent);
 
