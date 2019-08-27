@@ -90,11 +90,9 @@ public class PaymentServiceTest {
     @Mock
     private TppService tppService;
     @Mock
-    private CreateSinglePaymentService createSinglePaymentService;
+    private PaymentServiceResolver paymentServiceResolver;
     @Mock
-    private CreatePeriodicPaymentService createPeriodicPaymentService;
-    @Mock
-    private CreateBulkPaymentService createBulkPaymentService;
+    private CreatePaymentService createPaymentService;
     @Mock
     private Xs2aEventService xs2aEventService;
     @Mock
@@ -129,10 +127,6 @@ public class PaymentServiceTest {
     private InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider;
     @Mock
     private RequestProviderService requestProviderService;
-    @Mock
-    private CreateCommonPaymentService createCommonPaymentService;
-    @Mock
-    private PaymentServiceResolver paymentServiceResolver;
 
     private JsonReader jsonReader;
 
@@ -149,8 +143,6 @@ public class PaymentServiceTest {
         periodicPayment = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/xs2a-periodic-payment.json", PeriodicPayment.class);
 
         when(readPaymentStatusFactory.getService(anyString())).thenReturn(readPaymentStatusService);
-        when(createBulkPaymentService.createPayment(bulkPayment, buildPaymentInitiationParameters(PaymentType.BULK), getTppInfoServiceModified()))
-            .thenReturn(getValidResponse());
         when(tppService.getTppInfo()).thenReturn(getTppInfo());
         when(xs2aPisCommonPaymentService.getPisCommonPaymentById(PAYMENT_ID))
             .thenReturn(getPisCommonPayment());
@@ -170,8 +162,9 @@ public class PaymentServiceTest {
     @Test
     public void createRawPayment_Success() {
         // Given
-        when(paymentServiceResolver.getCreatePaymentService(any())).thenReturn(createCommonPaymentService);
-        when(createCommonPaymentService.createPayment(any(), any(), any()))
+        PaymentInitiationParameters paymentInitiationParameters = buildPaymentInitiationParameters(PaymentType.SINGLE);
+        when(paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters)).thenReturn(createPaymentService);
+        when(createPaymentService.createPayment(any(), any(), any()))
             .thenReturn(ResponseObject.<PaymentInitiationResponse>builder()
                             .body(buildSinglePaymentInitiationResponse())
                             .build());
@@ -185,13 +178,14 @@ public class PaymentServiceTest {
     @Test
     public void createSinglePayment_Success() {
         // Given
-        when(paymentServiceResolver.getCreatePaymentService(any())).thenReturn(createSinglePaymentService);
-        when(createSinglePaymentService.createPayment(any(), any(), any()))
+        PaymentInitiationParameters paymentInitiationParameters = buildPaymentInitiationParameters(PaymentType.SINGLE);
+        when(paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters)).thenReturn(createPaymentService);
+        when(createPaymentService.createPayment(any(), any(), any()))
             .thenReturn(ResponseObject.<PaymentInitiationResponse>builder()
                             .body(buildSinglePaymentInitiationResponse())
                             .build());
         // When
-        ResponseObject<PaymentInitiationResponse> actualResponse = paymentService.createPayment(singlePayment, buildPaymentInitiationParameters(PaymentType.SINGLE));
+        ResponseObject<PaymentInitiationResponse> actualResponse = paymentService.createPayment(singlePayment, paymentInitiationParameters);
 
         // Then
         assertThatPaymentWasCreated(actualResponse);
@@ -200,13 +194,14 @@ public class PaymentServiceTest {
     @Test
     public void createPeriodicPayment_Success() {
         // Given
-        when(paymentServiceResolver.getCreatePaymentService(any())).thenReturn(createPeriodicPaymentService);
-        when(createPeriodicPaymentService.createPayment(any(), any(), any()))
+        PaymentInitiationParameters paymentInitiationParameters = buildPaymentInitiationParameters(PaymentType.PERIODIC);
+        when(paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters)).thenReturn(createPaymentService);
+        when(createPaymentService.createPayment(any(), any(), any()))
             .thenReturn(ResponseObject.<PaymentInitiationResponse>builder()
                             .body(buildPeriodicPaymentInitiationResponse())
                             .build());
         // When
-        ResponseObject<PaymentInitiationResponse> actualResponse = paymentService.createPayment(periodicPayment, buildPaymentInitiationParameters(PaymentType.PERIODIC));
+        ResponseObject<PaymentInitiationResponse> actualResponse = paymentService.createPayment(periodicPayment, paymentInitiationParameters);
 
         // Then
         assertThatPaymentWasCreated(actualResponse);
@@ -275,8 +270,11 @@ public class PaymentServiceTest {
     @Test
     public void createBulkPayments() {
         // When
-        when(paymentServiceResolver.getCreatePaymentService(any())).thenReturn(createBulkPaymentService);
-        ResponseObject<PaymentInitiationResponse> actualResponse = paymentService.createPayment(bulkPayment, buildPaymentInitiationParameters(PaymentType.BULK));
+        PaymentInitiationParameters paymentInitiationParameters = buildPaymentInitiationParameters(PaymentType.BULK);
+        when(paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters)).thenReturn(createPaymentService);
+        when(createPaymentService.createPayment(bulkPayment, paymentInitiationParameters, getTppInfoServiceModified()))
+            .thenReturn(getValidResponse());
+        ResponseObject<PaymentInitiationResponse> actualResponse = paymentService.createPayment(bulkPayment, paymentInitiationParameters);
 
         // Then
         assertThatPaymentWasCreated(actualResponse);
@@ -302,8 +300,9 @@ public class PaymentServiceTest {
     @Test
     public void createPayment_Success_ShouldRecordEvent() {
         // Given
-        when(paymentServiceResolver.getCreatePaymentService(any())).thenReturn(createSinglePaymentService);
-        when(createSinglePaymentService.createPayment(any(), any(), any()))
+        PaymentInitiationParameters paymentInitiationParameters = buildPaymentInitiationParameters(PaymentType.SINGLE);
+        when(paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters)).thenReturn(createPaymentService);
+        when(createPaymentService.createPayment(any(), any(), any()))
             .thenReturn(ResponseObject.<PaymentInitiationResponse>builder()
                             .body(buildSinglePaymentInitiationResponse())
                             .build());

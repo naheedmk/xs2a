@@ -1,0 +1,98 @@
+/*
+ * Copyright 2018-2019 adorsys GmbH & Co KG
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package de.adorsys.psd2.xs2a.service.payment;
+
+import de.adorsys.psd2.xs2a.core.profile.PaymentType;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
+import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class PaymentServiceResolverTest {
+
+    @InjectMocks
+    private PaymentServiceResolver paymentServiceResolver;
+
+    @Mock
+    private StandardPaymentProductsResolver standardPaymentProductsResolver;
+    @Mock
+    private CreateCommonPaymentService createCommonPaymentService;
+    @Mock
+    private CreateSinglePaymentService createSinglePaymentService;
+    @Mock
+    private CreatePeriodicPaymentService createPeriodicPaymentService;
+    @Mock
+    private CreateBulkPaymentService createBulkPaymentService;
+
+    private PaymentInitiationParameters paymentInitiationParameters;
+
+    @Before
+    public void setUp() {
+        paymentInitiationParameters = new PaymentInitiationParameters();
+    }
+
+    @Test
+    public void getCreatePaymentService_commonPayment() {
+        when(standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())).thenReturn(true);
+
+        CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        assertTrue(createPaymentService instanceof CreateCommonPaymentService);
+    }
+
+    @Test
+    public void getCreatePaymentService_singlePayment() {
+        paymentInitiationParameters.setPaymentType(PaymentType.SINGLE);
+        when(standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())).thenReturn(false);
+
+        CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        assertTrue(createPaymentService instanceof CreateSinglePaymentService);
+    }
+
+    @Test
+    public void getCreatePaymentService_periodicPayment() {
+        paymentInitiationParameters.setPaymentType(PaymentType.PERIODIC);
+        when(standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())).thenReturn(false);
+
+        CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        assertTrue(createPaymentService instanceof CreatePeriodicPaymentService);
+    }
+
+    @Test
+    public void getCreatePaymentService_bulkPayment() {
+        paymentInitiationParameters.setPaymentType(PaymentType.BULK);
+        when(standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())).thenReturn(false);
+
+        CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        assertTrue(createPaymentService instanceof CreateBulkPaymentService);
+    }
+
+    @Test
+    public void getCreatePaymentService_noPaymentType() {
+        when(standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())).thenReturn(false);
+
+        CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        assertTrue(createPaymentService instanceof CreateBulkPaymentService);
+    }
+}

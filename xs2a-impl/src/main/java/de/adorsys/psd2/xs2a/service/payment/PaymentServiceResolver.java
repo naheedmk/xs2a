@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 public class PaymentServiceResolver {
 
     private final StandardPaymentProductsResolver standardPaymentProductsResolver;
-
     private final CreateCommonPaymentService createCommonPaymentService;
     private final CreateSinglePaymentService createSinglePaymentService;
     private final CreatePeriodicPaymentService createPeriodicPaymentService;
