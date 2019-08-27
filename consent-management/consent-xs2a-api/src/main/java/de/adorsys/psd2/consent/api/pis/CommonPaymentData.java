@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.payment;
+package de.adorsys.psd2.consent.api.pis;
 
-import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
-import de.adorsys.psd2.xs2a.domain.pis.PaymentInformationResponse;
+public interface CommonPaymentData {
+    String getExternalId();
 
-public interface ReadPaymentService {
+    java.util.List<de.adorsys.psd2.xs2a.core.psu.PsuIdData> getPsuData();
 
-    PaymentInformationResponse<CommonPayment> getPayment(CommonPaymentData commonPaymentData, PsuIdData psuData,
-                                                         String encryptedPaymentId);
+    byte[] getPaymentData();
+
+    de.adorsys.psd2.xs2a.core.pis.TransactionStatus getTransactionStatus();
+
+    java.time.OffsetDateTime getStatusChangeTimestamp();
+
+    String getPaymentProduct();
+
+    de.adorsys.psd2.xs2a.core.profile.PaymentType getPaymentType();
+
+    java.util.List<PisPayment> getPayments();
 }

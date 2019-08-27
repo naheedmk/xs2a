@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.service.mapper.consent;
 
 import de.adorsys.psd2.consent.api.CmsAddress;
+import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.consent.api.pis.PisPayment;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.pis.PurposeCode;
@@ -118,7 +119,7 @@ public class CmsToXs2aPaymentMapper {
         return bulk;
     }
 
-    public CommonPayment mapToXs2aCommonPayment(PisCommonPaymentResponse response) {
+    public CommonPayment mapToXs2aCommonPayment(CommonPaymentData response) {
         return Optional.ofNullable(response)
                    .map(r -> {
                             CommonPayment commonPayment = new CommonPayment();

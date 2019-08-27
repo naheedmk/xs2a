@@ -20,7 +20,6 @@ import de.adorsys.psd2.consent.api.pis.PisPayment;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentCancellationRequest;
 import de.adorsys.psd2.event.core.model.EventType;
-import de.adorsys.psd2.xs2a.config.factory.ReadPaymentFactory;
 import de.adorsys.psd2.xs2a.config.factory.ReadPaymentStatusFactory;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
@@ -61,7 +60,6 @@ import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.*;
 public class PaymentService {
     private static final String PAYMENT_NOT_FOUND_MESSAGE = "Payment not found"; //TODO: move to bundle https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/791
 
-    private final ReadPaymentFactory readPaymentFactory;
     private final ReadPaymentStatusFactory readPaymentStatusFactory;
     private final SpiPaymentFactory spiPaymentFactory;
     private final Xs2aPisCommonPaymentService pisCommonPaymentService;
@@ -69,7 +67,6 @@ public class PaymentService {
     private final TppService tppService;
     private final CancelPaymentService cancelPaymentService;
     private final Xs2aEventService xs2aEventService;
-    private final ReadCommonPaymentService readCommonPaymentService;
     private final Xs2aToSpiPaymentInfoMapper xs2aToSpiPaymentInfoMapper;
     private final CmsToXs2aPaymentMapper cmsToXs2aPaymentMapper;
     private final SpiContextDataProvider spiContextDataProvider;
@@ -152,26 +149,9 @@ public class PaymentService {
                        .build();
         }
 
-        CommonPayment commonPayment = cmsToXs2aPaymentMapper.mapToXs2aCommonPayment(commonPaymentResponse);
-        PaymentInformationResponse response;
-
         PsuIdData psuIdData = getPsuIdDataFromRequest();
-        // TODO should be refactored https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/533
-        if (commonPayment.getPaymentData() != null) {
-            response = readCommonPaymentService.getPayment(commonPayment, psuIdData, encryptedPaymentId);
-        } else {
-            List<PisPayment> pisPayments = getPisPaymentFromCommonPaymentResponse(commonPaymentResponse);
-            if (CollectionUtils.isEmpty(pisPayments)) {
-                log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get payment failed. Payments not found at PisCommonPayment.",
-                         internalRequestId, xRequestId, encryptedPaymentId);
-                return ResponseObject.builder()
-                           .fail(PIS_400, of(FORMAT_ERROR, PAYMENT_NOT_FOUND_MESSAGE))
-                           .build();
-            }
-
-            ReadPaymentService readPaymentService = readPaymentFactory.getService(paymentType.getValue());
-            response = readPaymentService.getPayment(pisPayments, commonPaymentResponse.getPaymentProduct(), psuIdData, encryptedPaymentId); //NOT USED IN 1.2
-        }
+        ReadPaymentService readPaymentService = paymentServiceResolver.getReadPaymentService(commonPaymentResponse);
+        PaymentInformationResponse response = readPaymentService.getPayment(commonPaymentResponse, psuIdData, encryptedPaymentId);
 
         if (response.hasError()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Read Payment failed: {}",

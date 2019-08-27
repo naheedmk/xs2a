@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.service.payment;
 
 import de.adorsys.psd2.consent.api.pis.PisPayment;
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.error.TppMessage;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -24,6 +25,7 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
+import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInformationResponse;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.consent.PisAspspDataService;
@@ -91,9 +93,14 @@ public class ReadBulkPaymentServiceTest {
     private SpiAspspConsentDataProvider spiAspspConsentDataProvider;
     @Mock
     private SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
+    private PisCommonPaymentResponse pisCommonPaymentResponse;
 
     @Before
     public void init() {
+        pisCommonPaymentResponse = new PisCommonPaymentResponse();
+        pisCommonPaymentResponse.setPayments(PIS_PAYMENTS);
+        pisCommonPaymentResponse.setPaymentProduct(PRODUCT);
+
         when(spiPaymentFactory.createSpiBulkPayment(PIS_PAYMENTS, PRODUCT))
             .thenReturn(Optional.of(SPI_BULK_PAYMENT));
         when(spiContextDataProvider.provideWithPsuIdData(PSU_DATA))
@@ -111,7 +118,7 @@ public class ReadBulkPaymentServiceTest {
         //Given
 
         //When
-        PaymentInformationResponse<BulkPayment> actualResponse = readBulkPaymentService.getPayment(PIS_PAYMENTS, PRODUCT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        PaymentInformationResponse<CommonPayment> actualResponse = readBulkPaymentService.getPayment(pisCommonPaymentResponse, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         //Then
         assertThat(actualResponse.hasError()).isFalse();
@@ -126,7 +133,7 @@ public class ReadBulkPaymentServiceTest {
         when(requestProviderService.getRequestId()).thenReturn(X_REQUEST_ID);
 
         //When
-        PaymentInformationResponse<BulkPayment> actualResponse = readBulkPaymentService.getPayment(PIS_PAYMENTS, PRODUCT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        PaymentInformationResponse<CommonPayment> actualResponse = readBulkPaymentService.getPayment(pisCommonPaymentResponse, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         //Then
         assertThat(actualResponse.hasError()).isFalse();
@@ -151,7 +158,7 @@ public class ReadBulkPaymentServiceTest {
             .thenReturn(expectedError);
 
         //When
-        PaymentInformationResponse<BulkPayment> actualResponse = readBulkPaymentService.getPayment(PIS_PAYMENTS, PRODUCT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        PaymentInformationResponse<CommonPayment> actualResponse = readBulkPaymentService.getPayment(pisCommonPaymentResponse, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         // Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -170,7 +177,7 @@ public class ReadBulkPaymentServiceTest {
             .thenReturn(Optional.empty());
 
         // When
-        PaymentInformationResponse<BulkPayment> actualResponse = readBulkPaymentService.getPayment(PIS_PAYMENTS, PRODUCT, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        PaymentInformationResponse<CommonPayment> actualResponse = readBulkPaymentService.getPayment(pisCommonPaymentResponse, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         // Then
         assertThat(actualResponse.hasError()).isTrue();

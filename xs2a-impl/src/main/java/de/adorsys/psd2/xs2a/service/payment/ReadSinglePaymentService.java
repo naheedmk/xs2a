@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("payments")
-public class ReadSinglePaymentService extends ReadPaymentService {
+public class ReadSinglePaymentService extends AbstractReadPaymentService {
 
     private SinglePaymentSpi singlePaymentSpi;
     private SpiToXs2aSinglePaymentMapper spiToXs2aSinglePaymentMapper;

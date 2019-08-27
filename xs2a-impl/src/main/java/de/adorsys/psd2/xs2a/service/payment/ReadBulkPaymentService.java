@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service("bulk-payments")
-public class ReadBulkPaymentService extends ReadPaymentService {
+public class ReadBulkPaymentService extends AbstractReadPaymentService {
 
     private BulkPaymentSpi bulkPaymentSpi;
     private SpiToXs2aBulkPaymentMapper spiToXs2aBulkPaymentMapper;

@@ -16,6 +16,8 @@
 
 package de.adorsys.psd2.xs2a.service.payment;
 
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
+import de.adorsys.psd2.xs2a.config.factory.ReadPaymentFactory;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
@@ -45,12 +47,20 @@ public class PaymentServiceResolverTest {
     private CreatePeriodicPaymentService createPeriodicPaymentService;
     @Mock
     private CreateBulkPaymentService createBulkPaymentService;
+    @Mock
+    private ReadCommonPaymentService readCommonPaymentService;
+    @Mock
+    private ReadPaymentFactory readPaymentFactory;
+    @Mock
+    private ReadSinglePaymentService readSinglePaymentService;
 
     private PaymentInitiationParameters paymentInitiationParameters;
+    private PisCommonPaymentResponse commonPaymentData;
 
     @Before
     public void setUp() {
         paymentInitiationParameters = new PaymentInitiationParameters();
+        commonPaymentData = new PisCommonPaymentResponse();
     }
 
     @Test
@@ -94,5 +104,21 @@ public class PaymentServiceResolverTest {
 
         CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
         assertTrue(createPaymentService instanceof CreateBulkPaymentService);
+    }
+
+    @Test
+    public void getReadPaymentService_commonPayment() {
+        commonPaymentData.setPaymentData("body".getBytes());
+        ReadPaymentService readPaymentService = paymentServiceResolver.getReadPaymentService(commonPaymentData);
+        assertTrue(readPaymentService instanceof ReadCommonPaymentService);
+    }
+
+    @Test
+    public void getReadPaymentService_singlePayment() {
+        commonPaymentData.setPaymentType(PaymentType.SINGLE);
+        when(readPaymentFactory.getService(PaymentType.SINGLE.getValue())).thenReturn(readSinglePaymentService);
+
+        ReadPaymentService readPaymentService = paymentServiceResolver.getReadPaymentService(commonPaymentData);
+        assertTrue(readPaymentService instanceof ReadSinglePaymentService);
     }
 }

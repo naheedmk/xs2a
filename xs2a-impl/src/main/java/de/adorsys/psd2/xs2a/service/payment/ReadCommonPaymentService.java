@@ -16,12 +16,14 @@
 
 package de.adorsys.psd2.xs2a.service.payment;
 
+import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInformationResponse;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
+import de.adorsys.psd2.xs2a.service.mapper.consent.CmsToXs2aPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiToXs2aPaymentInfoMapper;
@@ -39,7 +41,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReadCommonPaymentService {
+public class ReadCommonPaymentService implements ReadPaymentService {
     private final CommonPaymentSpi commonPaymentSpi;
 
     private final SpiContextDataProvider spiContextDataProvider;
@@ -49,8 +51,8 @@ public class ReadCommonPaymentService {
     private final SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
     private final RequestProviderService requestProviderService;
 
-    public PaymentInformationResponse getPayment(CommonPayment commonPayment, PsuIdData psuData, String encryptedPaymentId) {
-        SpiPaymentInfo spiPaymentInfo = xs2aToSpiPaymentInfoMapper.mapToSpiPaymentInfo(commonPayment);
+    public PaymentInformationResponse<CommonPayment> getPayment(CommonPaymentData commonPaymentData, PsuIdData psuData, String encryptedPaymentId) {
+        SpiPaymentInfo spiPaymentInfo = xs2aToSpiPaymentInfoMapper.mapToSpiPaymentInfo(commonPaymentData);
 
         SpiContextData spiContextData = spiContextDataProvider.provideWithPsuIdData(psuData);
         SpiAspspConsentDataProvider aspspConsentDataProvider =
@@ -62,12 +64,12 @@ public class ReadCommonPaymentService {
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Read common payment failed. Can't get Payment by id at SPI-level. Error msg: [{}]",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), commonPayment.getPaymentId(), errorHolder);
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), commonPaymentData.getExternalId(), errorHolder);
             return new PaymentInformationResponse<>(errorHolder);
         }
 
         SpiPaymentInfo responsePaymentInfo = spiResponse.getPayload();
 
-        return new PaymentInformationResponse(spiToXs2aPaymentInfoMapper.mapToXs2aPaymentInfo(responsePaymentInfo));
+        return new PaymentInformationResponse<>(spiToXs2aPaymentInfoMapper.mapToXs2aPaymentInfo(responsePaymentInfo));
     }
 }

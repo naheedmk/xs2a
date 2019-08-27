@@ -16,6 +16,8 @@
 
 package de.adorsys.psd2.xs2a.service.payment;
 
+import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.error.TppMessage;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
@@ -59,7 +61,7 @@ import static org.mockito.Mockito.when;
 public class ReadCommonPaymentServiceTest {
     private static final PsuIdData PSU_DATA = new PsuIdData(null, null, null, null);
     private static final String PRODUCT = "sepa-credit-transfers";
-    private static final CommonPayment COMMON_PAYMENT = buildCommonPayment();
+    private static final CommonPaymentData COMMON_PAYMENT = buildCommonPaymentData();
     private static final SpiPaymentInfo SPI_PAYMENT_INFO = new SpiPaymentInfo(PRODUCT);
     private static final SpiContextData SPI_CONTEXT_DATA = getSpiContextData();
     private static final CommonPayment PIS_PAYMENT_INFO = getCommonPayment();
@@ -133,8 +135,8 @@ public class ReadCommonPaymentServiceTest {
         assertThat(actualResponse.getErrorHolder()).isEqualToComparingFieldByField(expectedError);
     }
 
-    private static CommonPayment buildCommonPayment() {
-        CommonPayment request = new CommonPayment();
+    private static CommonPaymentData buildCommonPaymentData() {
+        PisCommonPaymentResponse request = new PisCommonPaymentResponse();
         request.setPaymentType(PaymentType.SINGLE);
         request.setPaymentProduct("sepa-credit-transfers");
         request.setPaymentData(new byte[16]);
