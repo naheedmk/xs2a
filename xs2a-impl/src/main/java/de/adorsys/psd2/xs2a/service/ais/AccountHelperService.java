@@ -21,13 +21,13 @@ import de.adorsys.psd2.consent.api.TypeAccess;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aAisConsentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.Xs2aToSpiAccountReferenceMapper;
-import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.account.SpiAccountReference;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,21 +66,21 @@ public class AccountHelperService {
         return spiContextDataProvider.provideWithPsuIdData(psuIdData);
     }
 
-    ActionStatus createActionStatus(boolean withBalance, ResponseObject response) {
+    public ActionStatus createActionStatus(boolean withBalance, ResponseObject response) {
         return response.hasError()
                    ? consentMapper.mapActionStatusError(response.getError().getTppMessage().getMessageErrorCode(),
                                                         withBalance, TypeAccess.TRANSACTION)
                    : ActionStatus.SUCCESS;
     }
 
-    ActionStatus createActionStatus(boolean withBalance, TypeAccess access, ResponseObject response) {
+    public ActionStatus createActionStatus(boolean withBalance, TypeAccess access, ResponseObject response) {
         return response.hasError()
                    ? consentMapper.mapActionStatusError(response.getError().getTppMessage().getMessageErrorCode(),
                                                         withBalance, access)
                    : ActionStatus.SUCCESS;
     }
 
-    boolean needsToUpdateUsage(AccountConsent accountConsent) {
+    public boolean needsToUpdateUsage(AccountConsent accountConsent) {
         return accountConsent.isOneAccessType() || requestProviderService.isRequestFromTPP();
     }
 }
