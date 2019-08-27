@@ -33,6 +33,7 @@
         <comment>
             Update tpp_info_id in ais_consent, pis_common_payment, piis_consent and tpp_info_role
         </comment>
+
         <sql>
             UPDATE ais_consent a
             SET tpp_info_id =
@@ -88,9 +89,9 @@
 
     <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-3">
         <comment>
-            Add foreign key constraints for tpp_info column to ais_consent, pis_common_payment and piis_consent tables;
-            Add unique constraint for authorisation_number column in tpp_info table
+            Add foreign key constraints for tpp_info column to ais_consent, pis_common_payment and piis_consent tables
         </comment>
+
         <addForeignKeyConstraint baseColumnNames="tpp_info_id" baseTableName="ais_consent"
                                  constraintName="fk__ais_consent__tpp_info" deferrable="false"
                                  initiallyDeferred="false"
@@ -105,11 +106,6 @@
                                  constraintName="fk__piis_consent__tpp_info" deferrable="false"
                                  initiallyDeferred="false"
                                  referencedColumnNames="tpp_info_id" referencedTableName="tpp_info"/>
-
-        <addUniqueConstraint columnNames="authorisation_number"
-                             constraintName="uniq_auth_num"
-                             deferrable="false" initiallyDeferred="false"
-                             tableName="tpp_info"/>
     </changeSet>
 
     <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-4">
@@ -117,6 +113,7 @@
             Delete non-unique records in tpp_info table;
             Set redirect_uri, nok_redirect_uri, cancel_redirect_uri, cancel_nok_redirect_uri in tpp_info table to NULL
         </comment>
+
         <sql>
             DELETE FROM tpp_info
             WHERE tpp_info_id NOT IN
@@ -132,6 +129,17 @@
             cancel_redirect_uri = NULL,
             cancel_nok_redirect_uri = NULL
         </sql>
+    </changeSet>
+
+    <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-5">
+        <comment>
+            Add unique constraint for authorisation_number column in tpp_info table
+        </comment>
+
+        <addUniqueConstraint columnNames="authorisation_number"
+                             constraintName="uniq_auth_num"
+                             deferrable="false" initiallyDeferred="false"
+                             tableName="tpp_info"/>
     </changeSet>
 
 </databaseChangeLog>
