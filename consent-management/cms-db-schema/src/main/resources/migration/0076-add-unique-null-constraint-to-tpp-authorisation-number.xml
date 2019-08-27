@@ -130,12 +130,6 @@
                                  constraintName="fk__piis_consent__tpp_info" deferrable="false"
                                  initiallyDeferred="false"
                                  referencedColumnNames="tpp_info_id" referencedTableName="tpp_info"/>
-
-        <addForeignKeyConstraint baseColumnNames="tpp_info_id" baseTableName="authorisation_template"
-                                 constraintName="fk__auth_templ__tpp_info" deferrable="false"
-                                 initiallyDeferred="false"
-                                 referencedColumnNames="tpp_info_id" referencedTableName="tpp_info"/>
-
     </changeSet>
 
     <changeSet author="iiu@adorsys.com.ua" id="2019-08-21-5">
