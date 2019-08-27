@@ -79,6 +79,7 @@ public class PisDecoupledScaReceivedAuthorisationStage extends PisScaStage<Xs2aU
 
     private Xs2aUpdatePisCommonPaymentPsuDataResponse applyAuthorisation(Xs2aUpdatePisCommonPaymentPsuDataRequest request, GetPisAuthorisationResponse pisAuthorisationResponse) {
         PsuIdData psuData = extractPsuIdData(request, false);
+        request.setPsuData( psuData );
         PaymentType paymentType = pisAuthorisationResponse.getPaymentType();
         String paymentProduct = pisAuthorisationResponse.getPaymentProduct();
         SpiPayment payment = mapToSpiPayment(pisAuthorisationResponse, paymentType, paymentProduct);
