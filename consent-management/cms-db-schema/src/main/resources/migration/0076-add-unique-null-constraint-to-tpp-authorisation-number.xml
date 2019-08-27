@@ -21,7 +21,7 @@
 
     <changeSet author="iiu@adorsys.com.ua" id="2019-08-27">
         <comment>
-            Authorisation_number is made unique in tpp_info table. The followinf step included:
+            Authorisation_number column is made unique in tpp_info table. It includes the following steps:
             - Remove tpp_info_id foreign key constraints from ais_consent, pis_common_payment and piis_consent tables;
             - Update tpp_info_id in ais_consent, pis_common_payment, piis_consent and tpp_info_role;
             - Add foreign key constraints for tpp_info column to ais_consent, pis_common_payment and piis_consent tables;
