@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.payment;
+package de.adorsys.psd2.xs2a.service.payment.create;
 
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
+import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
-import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationServiceResolver;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
@@ -31,40 +31,44 @@ import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentServiceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 @Service
-public class CreatePeriodicPaymentService extends AbstractCreatePaymentService<PeriodicPayment> {
+public class CreateCommonPaymentService extends AbstractCreatePaymentService<CommonPayment> {
     private ScaPaymentServiceResolver scaPaymentServiceResolver;
 
     @Autowired
-    public CreatePeriodicPaymentService(ScaPaymentServiceResolver scaPaymentServiceResolver,
-                                        Xs2aPisCommonPaymentService pisCommonPaymentService,
-                                        PisScaAuthorisationServiceResolver pisScaAuthorisationServiceResolver,
-                                        AuthorisationMethodDecider authorisationMethodDecider,
-                                        Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper,
-                                        Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper) {
+    public CreateCommonPaymentService(ScaPaymentServiceResolver scaPaymentServiceResolver,
+                                      Xs2aPisCommonPaymentService pisCommonPaymentService,
+                                      PisScaAuthorisationServiceResolver pisScaAuthorisationServiceResolver,
+                                      AuthorisationMethodDecider authorisationMethodDecider,
+                                      Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper,
+                                      Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper) {
         super(pisCommonPaymentService, pisScaAuthorisationServiceResolver, authorisationMethodDecider,
               xs2aPisCommonPaymentMapper, xs2aToCmsPisCommonPaymentRequestMapper);
         this.scaPaymentServiceResolver = scaPaymentServiceResolver;
     }
 
     @Override
-    protected PeriodicPayment getPaymentRequest(Object payment, PaymentInitiationParameters paymentInitiationParameters) {
-        return (PeriodicPayment) payment;
+    protected CommonPayment getPaymentRequest(Object payment, PaymentInitiationParameters paymentInitiationParameters) {
+        CommonPayment request = new CommonPayment();
+        request.setPaymentType(paymentInitiationParameters.getPaymentType());
+        request.setPaymentProduct(paymentInitiationParameters.getPaymentProduct());
+        request.setPaymentData((byte[]) payment);
+        request.setPsuDataList(Collections.singletonList(paymentInitiationParameters.getPsuData()));
+        return request;
     }
 
     @Override
-    protected PaymentInitiationResponse initiatePayment(PeriodicPayment paymentRequest, PaymentInitiationParameters paymentInitiationParameters,
-                                                                TppInfo tppInfo, PsuIdData psuData) {
+    protected PaymentInitiationResponse initiatePayment(CommonPayment paymentRequest, PaymentInitiationParameters paymentInitiationParameters,
+                                                              TppInfo tppInfo, PsuIdData psuData) {
         ScaPaymentService scaPaymentService = scaPaymentServiceResolver.getService();
-        return scaPaymentService.createPeriodicPayment(paymentRequest, tppInfo, paymentInitiationParameters.getPaymentProduct(), psuData);
+        return scaPaymentService.createCommonPayment(paymentRequest, tppInfo, paymentInitiationParameters.getPaymentProduct(), psuData);
     }
 
     @Override
-    protected PeriodicPayment updateCommonPayment(PeriodicPayment paymentRequest, PaymentInitiationParameters paymentInitiationParameters,
-                                                  PaymentInitiationResponse response, String paymentId) {
-        paymentRequest.setTransactionStatus(response.getTransactionStatus());
-        paymentRequest.setPaymentId(response.getPaymentId());
-        pisCommonPaymentService.updatePeriodicPaymentInCommonPayment(paymentRequest, paymentInitiationParameters, paymentId);
+    protected CommonPayment updateCommonPayment(CommonPayment paymentRequest, PaymentInitiationParameters paymentInitiationParameters,
+                                                PaymentInitiationResponse response, String paymentId) {
         return paymentRequest;
     }
 }

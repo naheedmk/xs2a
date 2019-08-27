@@ -15,14 +15,13 @@
  */
 
 
-package de.adorsys.psd2.xs2a.service.payment;
+package de.adorsys.psd2.xs2a.service.payment.create;
 
 import de.adorsys.psd2.consent.api.AspspDataService;
 import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
-import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
@@ -30,20 +29,21 @@ import de.adorsys.psd2.xs2a.core.tpp.TppRole;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
-import de.adorsys.psd2.xs2a.domain.Xs2aAmount;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aPisCommonPayment;
+import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
+import de.adorsys.psd2.xs2a.domain.pis.CommonPaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
-import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
-import de.adorsys.psd2.xs2a.domain.pis.SinglePaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationService;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationServiceResolver;
+import de.adorsys.psd2.xs2a.service.consent.PisAspspDataService;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aToCmsPisCommonPaymentRequestMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
+import de.adorsys.psd2.xs2a.service.payment.create.CreateCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentServiceResolver;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
@@ -55,71 +55,75 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateSinglePaymentServiceTest {
-    private static final Currency EUR_CURRENCY = Currency.getInstance("EUR");
+public class CreateCommonPaymentServiceTest {
     private static final String PAYMENT_ID = "d6cb50e5-bb88-4bbf-a5c1-42ee1ed1df2c";
-    private static final String IBAN = "DE123456789";
-    private static final PsuIdData PSU_DATA = new PsuIdData("correct_psu", null, null, null);
-    private static final PsuIdData WRONG_PSU_DATA = new PsuIdData("wrong_psu", null, null, null);
+    private static final PsuIdData PSU_DATA = new PsuIdData("aspsp", null, null, null);
     private static final TppInfo TPP_INFO = buildTppInfo();
-    private static final TppInfo WRONG_TPP_INFO = new TppInfo();
-    private static final String DEB_ACCOUNT_ID = "11111_debtorAccount";
-    private static final String CRED_ACCOUNT_ID = "2222_creditorAccount";
+    private static final String PRODUCT = "sepa-credit-transfers";
+    private static final byte[] PAYMENT_DATA_IN_BYTES = "payment_data".getBytes();
+    private static final CommonPayment COMMON_PAYMENT = buildCommonPayment();
     private static final Xs2aPisCommonPayment PIS_COMMON_PAYMENT = new Xs2aPisCommonPayment(PAYMENT_ID, PSU_DATA);
     private static final PaymentInitiationParameters PARAM = buildPaymentInitiationParameters();
     private static final CreatePisCommonPaymentResponse PIS_COMMON_PAYMENT_RESPONSE = new CreatePisCommonPaymentResponse(PAYMENT_ID);
     private static final PisPaymentInfo PAYMENT_INFO = buildPisPaymentInfoRequest();
     private static final List<String> ERROR_MESSAGE_TEXT = Arrays.asList("message 1", "message 2", "message 3");
-    private final Xs2aPisCommonPayment PIS_COMMON_PAYMENT_FAIL = new Xs2aPisCommonPayment(null, PSU_DATA);
-    private static final Xs2aCreatePisAuthorisationResponse CREATE_PIS_AUTHORISATION_RESPONSE = new Xs2aCreatePisAuthorisationResponse(null, null, null, null);
-    private SinglePaymentInitiationResponse singlePaymentInitiationResponse;
+    private static final Xs2aPisCommonPayment PIS_COMMON_PAYMENT_FAIL = new Xs2aPisCommonPayment(null, PSU_DATA);
+    private static final PsuIdData WRONG_PSU_DATA = new PsuIdData("wrong_psu", null, null, null);
+    private static final TppInfo WRONG_TPP_INFO = new TppInfo();
+    private static final Xs2aCreatePisAuthorisationResponse CREATE_PIS_AUTHORISATION_RESPONSE = new Xs2aCreatePisAuthorisationResponse(null, null, null);
+    private CommonPaymentInitiationResponse commonPaymentInitiationResponse;
 
     @InjectMocks
-    private CreateSinglePaymentService createSinglePaymentService;
+    private CreateCommonPaymentService createCommonPaymentService;
     @Mock
     private ScaPaymentService scaPaymentService;
-    @SuppressWarnings("unused") //mocks boolean value that returns false by default
-    @Mock
-    private AuthorisationMethodDecider authorisationMethodDecider;
-    @Mock
-    private Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper;
     @Mock
     private Xs2aPisCommonPaymentService pisCommonPaymentService;
-    @Mock
-    private Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper;
-    @Mock
-    private ScaPaymentServiceResolver scaPaymentServiceResolver;
+    @Mock    private PisAspspDataService pisAspspDataService;
     @Mock
     private AspspDataService aspspDataService;
     @Mock
     private PisScaAuthorisationService pisScaAuthorisationService;
     @Mock
     private PisScaAuthorisationServiceResolver pisScaAuthorisationServiceResolver;
+    @Mock
+    private Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper;
+    @Mock
+    private Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper;
+    @Mock
+    private ScaPaymentServiceResolver scaPaymentServiceResolver;
+    @SuppressWarnings("unused") //mocks boolean value that returns false by default
+    @Mock
+    private AuthorisationMethodDecider authorisationMethodDecider;
 
     @Before
     public void init() {
-        singlePaymentInitiationResponse = buildSinglePaymentInitiationResponse(new SpiAspspConsentDataProviderFactory(aspspDataService).getInitialAspspConsentDataProvider());
-        when(scaPaymentService.createSinglePayment(buildSinglePayment(), TPP_INFO, "sepa-credit-transfers", PSU_DATA)).thenReturn(singlePaymentInitiationResponse);
-        when(scaPaymentService.createSinglePayment(buildSinglePayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForSinglePayment());
+        InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider =
+            new SpiAspspConsentDataProviderFactory(aspspDataService).getInitialAspspConsentDataProvider();
+        commonPaymentInitiationResponse = buildCommonPaymentInitiationResponse(initialSpiAspspConsentDataProvider);
+        when(scaPaymentService.createCommonPayment(COMMON_PAYMENT, TPP_INFO, PRODUCT, PSU_DATA)).thenReturn(commonPaymentInitiationResponse);
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
-        when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PARAM.getPsuData())).thenReturn(PIS_COMMON_PAYMENT);
-        when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, singlePaymentInitiationResponse, null))
+        when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PSU_DATA)).thenReturn(PIS_COMMON_PAYMENT);
+        when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, commonPaymentInitiationResponse, COMMON_PAYMENT.getPaymentData()))
             .thenReturn(PAYMENT_INFO);
-        when(scaPaymentService.createSinglePayment(buildSinglePayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA))
-            .thenReturn(buildSpiErrorForSinglePayment());
-        when(scaPaymentServiceResolver.getService()).thenReturn(scaPaymentService);
+        when(scaPaymentServiceResolver.getService())
+            .thenReturn(scaPaymentService);
     }
 
     @Test
     public void createPayment_success() {
         //When
-        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
+        ResponseObject<PaymentInitiationResponse> actualResponse = createCommonPaymentService.createPayment(PAYMENT_DATA_IN_BYTES, buildPaymentInitiationParameters(), TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isFalse();
@@ -131,11 +135,17 @@ public class CreateSinglePaymentServiceTest {
     public void createPayment_wrongPsuData_fail() {
         // Given
         String errorMessagesString = ERROR_MESSAGE_TEXT.toString().replace("[", "").replace("]", "");
+
         PaymentInitiationParameters param = buildPaymentInitiationParameters();
         param.setPsuData(WRONG_PSU_DATA);
 
+
+        CommonPayment commonPayment = buildCommonPayment();
+        commonPayment.setPsuDataList(Collections.singletonList(WRONG_PSU_DATA));
+        when(scaPaymentService.createCommonPayment(commonPayment, WRONG_TPP_INFO, PRODUCT, WRONG_PSU_DATA)).thenReturn(buildSpiErrorForCommonPayment());
+
         //When
-        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), param, WRONG_TPP_INFO);
+        ResponseObject<PaymentInitiationResponse> actualResponse = createCommonPaymentService.createPayment(PAYMENT_DATA_IN_BYTES, param, WRONG_TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -146,15 +156,33 @@ public class CreateSinglePaymentServiceTest {
     @Test
     public void createPayment_emptyPaymentId_fail() {
         // Given
-        when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PARAM.getPsuData()))
+        when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PSU_DATA))
             .thenReturn(PIS_COMMON_PAYMENT_FAIL);
 
         //When
-        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
+        ResponseObject<PaymentInitiationResponse> actualResponse = createCommonPaymentService.createPayment(PAYMENT_DATA_IN_BYTES, PARAM, TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
         assertThat(actualResponse.getError().getTppMessage().getMessageErrorCode()).isEqualTo(MessageErrorCode.PAYMENT_FAILED);
+    }
+
+    @Test
+    public void createPayment_authorisationMethodDecider_isImplicitMethod_success() throws IOException {
+        // Given
+        when(authorisationMethodDecider.isImplicitMethod(false, false))
+            .thenReturn(true);
+        when(pisScaAuthorisationServiceResolver.getService())
+            .thenReturn(pisScaAuthorisationService);
+        when(pisScaAuthorisationService.createCommonPaymentAuthorisation(PAYMENT_ID, PaymentType.SINGLE, PARAM.getPsuData()))
+            .thenReturn(Optional.of(CREATE_PIS_AUTHORISATION_RESPONSE));
+
+        //When
+        ResponseObject<PaymentInitiationResponse> actualResponse = createCommonPaymentService.createPayment(PAYMENT_DATA_IN_BYTES, PARAM, TPP_INFO);
+
+        //Then
+        assertThat(actualResponse.hasError()).isFalse();
+        assertThat(actualResponse.getBody()).isEqualTo(commonPaymentInitiationResponse);
     }
 
     @Test
@@ -168,72 +196,37 @@ public class CreateSinglePaymentServiceTest {
             .thenReturn(Optional.empty());
 
         //When
-        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
+        ResponseObject<PaymentInitiationResponse> actualResponse = createCommonPaymentService.createPayment(PAYMENT_DATA_IN_BYTES, PARAM, TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
         assertThat(actualResponse.getError().getTppMessage().getMessageErrorCode()).isEqualTo(MessageErrorCode.PAYMENT_FAILED);
     }
 
-    @Test
-    public void createPayment_authorisationMethodDecider_isImplicitMethod_success() {
-        // Given
-        when(authorisationMethodDecider.isImplicitMethod(false, false))
-            .thenReturn(true);
-        when(pisScaAuthorisationServiceResolver.getService())
-            .thenReturn(pisScaAuthorisationService);
-        when(pisScaAuthorisationService.createCommonPaymentAuthorisation(PAYMENT_ID, PaymentType.SINGLE, PARAM.getPsuData()))
-            .thenReturn(Optional.of(CREATE_PIS_AUTHORISATION_RESPONSE));
 
-        //When
-        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), buildPaymentInitiationParameters(), buildTppInfo());
+    private static CommonPayment buildCommonPayment() {
+        CommonPayment request = new CommonPayment();
+        request.setPaymentType(PaymentType.SINGLE);
+        request.setPaymentProduct("sepa-credit-transfers");
+        request.setPaymentData(PAYMENT_DATA_IN_BYTES);
+        request.setPsuDataList(Collections.singletonList(PSU_DATA));
 
-        //Then
-        assertThat(actualResponse.hasError()).isFalse();
-        assertThat(actualResponse.getBody()).isEqualTo(singlePaymentInitiationResponse);
-    }
-
-
-    private static SinglePayment buildSinglePayment() {
-        SinglePayment payment = new SinglePayment();
-        Xs2aAmount amount = buildXs2aAmount();
-        payment.setPaymentId(PAYMENT_ID);
-        payment.setInstructedAmount(amount);
-        payment.setDebtorAccount(buildReference(DEB_ACCOUNT_ID));
-        payment.setCreditorAccount(buildReference(CRED_ACCOUNT_ID));
-        payment.setTransactionStatus(TransactionStatus.RCVD);
-        payment.setPaymentProduct("sepa-credit-transfers");
-        return payment;
-    }
-
-    private static Xs2aAmount buildXs2aAmount() {
-        Xs2aAmount amount = new Xs2aAmount();
-        amount.setCurrency(EUR_CURRENCY);
-        amount.setAmount("100");
-        return amount;
-    }
-
-    private static AccountReference buildReference(String accountId) {
-        AccountReference reference = new AccountReference();
-        reference.setIban(IBAN);
-        reference.setCurrency(EUR_CURRENCY);
-        reference.setAspspAccountId(accountId);
-        return reference;
+        return request;
     }
 
     private static PaymentInitiationParameters buildPaymentInitiationParameters() {
         PaymentInitiationParameters parameters = new PaymentInitiationParameters();
-        parameters.setPaymentProduct("sepa-credit-transfers");
+        parameters.setPaymentProduct(PRODUCT);
         parameters.setPaymentType(PaymentType.SINGLE);
         parameters.setPsuData(PSU_DATA);
         return parameters;
     }
 
-    private static SinglePaymentInitiationResponse buildSinglePaymentInitiationResponse(InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider) {
-        SinglePaymentInitiationResponse response = new SinglePaymentInitiationResponse();
+    private static CommonPaymentInitiationResponse buildCommonPaymentInitiationResponse(InitialSpiAspspConsentDataProvider initialSpiAspcpConsentDataProvider) {
+        CommonPaymentInitiationResponse response = new CommonPaymentInitiationResponse();
         response.setPaymentId(PAYMENT_ID);
         response.setTransactionStatus(TransactionStatus.RCVD);
-        response.setAspspConsentDataProvider(initialSpiAspspConsentDataProvider);
+        response.setAspspConsentDataProvider(initialSpiAspcpConsentDataProvider);
         return response;
     }
 
@@ -246,12 +239,12 @@ public class CreateSinglePaymentServiceTest {
         return tppInfo;
     }
 
-    private static SinglePaymentInitiationResponse buildSpiErrorForSinglePayment() {
-        ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_400)
+    private static CommonPaymentInitiationResponse buildSpiErrorForCommonPayment() {
+        ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIIS_400)
                                       .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "message 1, message 2, message 3"))
                                       .build();
 
-        return new SinglePaymentInitiationResponse(errorHolder);
+        return new CommonPaymentInitiationResponse(errorHolder);
     }
 
     private static PisPaymentInfo buildPisPaymentInfoRequest() {

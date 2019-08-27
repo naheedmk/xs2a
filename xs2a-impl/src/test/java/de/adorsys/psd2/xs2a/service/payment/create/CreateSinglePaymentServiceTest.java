@@ -15,8 +15,9 @@
  */
 
 
-package de.adorsys.psd2.xs2a.service.payment;
+package de.adorsys.psd2.xs2a.service.payment.create;
 
+import de.adorsys.psd2.consent.api.AspspDataService;
 import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
@@ -32,7 +33,10 @@ import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.Xs2aAmount;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aPisCommonPayment;
-import de.adorsys.psd2.xs2a.domain.pis.*;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
+import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
+import de.adorsys.psd2.xs2a.domain.pis.SinglePaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationService;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationServiceResolver;
@@ -40,9 +44,11 @@ import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aToCmsPisCommonPaymentRequestMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
+import de.adorsys.psd2.xs2a.service.payment.create.CreateSinglePaymentService;
 import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentServiceResolver;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
+import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +62,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateBulkPaymentServiceTest {
+public class CreateSinglePaymentServiceTest {
     private static final Currency EUR_CURRENCY = Currency.getInstance("EUR");
     private static final String PAYMENT_ID = "d6cb50e5-bb88-4bbf-a5c1-42ee1ed1df2c";
     private static final String IBAN = "DE123456789";
@@ -64,54 +70,57 @@ public class CreateBulkPaymentServiceTest {
     private static final PsuIdData WRONG_PSU_DATA = new PsuIdData("wrong_psu", null, null, null);
     private static final TppInfo TPP_INFO = buildTppInfo();
     private static final TppInfo WRONG_TPP_INFO = new TppInfo();
+    private static final String DEB_ACCOUNT_ID = "11111_debtorAccount";
+    private static final String CRED_ACCOUNT_ID = "2222_creditorAccount";
     private static final Xs2aPisCommonPayment PIS_COMMON_PAYMENT = new Xs2aPisCommonPayment(PAYMENT_ID, PSU_DATA);
-    private static final Xs2aPisCommonPayment PIS_COMMON_PAYMENT_FAIL = new Xs2aPisCommonPayment(null, PSU_DATA);
     private static final PaymentInitiationParameters PARAM = buildPaymentInitiationParameters();
     private static final CreatePisCommonPaymentResponse PIS_COMMON_PAYMENT_RESPONSE = new CreatePisCommonPaymentResponse(PAYMENT_ID);
     private static final PisPaymentInfo PAYMENT_INFO = buildPisPaymentInfoRequest();
     private static final List<String> ERROR_MESSAGE_TEXT = Arrays.asList("message 1", "message 2", "message 3");
+    private final Xs2aPisCommonPayment PIS_COMMON_PAYMENT_FAIL = new Xs2aPisCommonPayment(null, PSU_DATA);
     private static final Xs2aCreatePisAuthorisationResponse CREATE_PIS_AUTHORISATION_RESPONSE = new Xs2aCreatePisAuthorisationResponse(null, null, null, null);
+    private SinglePaymentInitiationResponse singlePaymentInitiationResponse;
 
     @InjectMocks
-    private CreateBulkPaymentService createBulkPaymentService;
+    private CreateSinglePaymentService createSinglePaymentService;
     @Mock
     private ScaPaymentService scaPaymentService;
+    @SuppressWarnings("unused") //mocks boolean value that returns false by default
+    @Mock
+    private AuthorisationMethodDecider authorisationMethodDecider;
+    @Mock
+    private Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper;
+    @Mock
+    private Xs2aPisCommonPaymentService pisCommonPaymentService;
+    @Mock
+    private Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper;
     @Mock
     private ScaPaymentServiceResolver scaPaymentServiceResolver;
     @Mock
-    private Xs2aPisCommonPaymentService pisCommonPaymentService;
+    private AspspDataService aspspDataService;
     @Mock
     private PisScaAuthorisationService pisScaAuthorisationService;
     @Mock
     private PisScaAuthorisationServiceResolver pisScaAuthorisationServiceResolver;
-    @Mock
-    private Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper;
-    @Mock
-    private Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper;
-    @Mock
-    private InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider;
-    @SuppressWarnings("unused") //mocks boolean value that returns false by default
-    @Mock
-    private AuthorisationMethodDecider authorisationMethodDecider;
-
 
     @Before
     public void init() {
-        BulkPaymentInitiationResponse buildBulkPaymentInitiationResponse = buildBulkPaymentInitiationResponse(initialSpiAspspConsentDataProvider);
-
-        when(scaPaymentService.createBulkPayment(buildBulkPayment(), TPP_INFO, "sepa-credit-transfers", PSU_DATA)).thenReturn(buildBulkPaymentInitiationResponse);
-        when(scaPaymentService.createBulkPayment(buildBulkPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForBulkPayment());
+        singlePaymentInitiationResponse = buildSinglePaymentInitiationResponse(new SpiAspspConsentDataProviderFactory(aspspDataService).getInitialAspspConsentDataProvider());
+        when(scaPaymentService.createSinglePayment(buildSinglePayment(), TPP_INFO, "sepa-credit-transfers", PSU_DATA)).thenReturn(singlePaymentInitiationResponse);
+        when(scaPaymentService.createSinglePayment(buildSinglePayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForSinglePayment());
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
-        when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PSU_DATA)).thenReturn(PIS_COMMON_PAYMENT);
-        when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, buildBulkPaymentInitiationResponse, null))
+        when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PARAM.getPsuData())).thenReturn(PIS_COMMON_PAYMENT);
+        when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, singlePaymentInitiationResponse, null))
             .thenReturn(PAYMENT_INFO);
+        when(scaPaymentService.createSinglePayment(buildSinglePayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA))
+            .thenReturn(buildSpiErrorForSinglePayment());
         when(scaPaymentServiceResolver.getService()).thenReturn(scaPaymentService);
     }
 
     @Test
     public void createPayment_success() {
         //When
-        ResponseObject<PaymentInitiationResponse> actualResponse = createBulkPaymentService.createPayment(buildBulkPayment(), buildPaymentInitiationParameters(), buildTppInfo());
+        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isFalse();
@@ -120,15 +129,14 @@ public class CreateBulkPaymentServiceTest {
     }
 
     @Test
-    public void createPayment_wrongPsuData() {
+    public void createPayment_wrongPsuData_fail() {
         // Given
         String errorMessagesString = ERROR_MESSAGE_TEXT.toString().replace("[", "").replace("]", "");
-
         PaymentInitiationParameters param = buildPaymentInitiationParameters();
         param.setPsuData(WRONG_PSU_DATA);
 
         //When
-        ResponseObject<PaymentInitiationResponse> actualResponse = createBulkPaymentService.createPayment(buildBulkPayment(), param, WRONG_TPP_INFO);
+        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), param, WRONG_TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -139,11 +147,11 @@ public class CreateBulkPaymentServiceTest {
     @Test
     public void createPayment_emptyPaymentId_fail() {
         // Given
-        when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PSU_DATA))
+        when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PARAM.getPsuData()))
             .thenReturn(PIS_COMMON_PAYMENT_FAIL);
 
         //When
-        ResponseObject<PaymentInitiationResponse> actualResponse = createBulkPaymentService.createPayment(buildBulkPayment(), buildPaymentInitiationParameters(), buildTppInfo());
+        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -157,11 +165,11 @@ public class CreateBulkPaymentServiceTest {
             .thenReturn(true);
         when(pisScaAuthorisationServiceResolver.getService())
             .thenReturn(pisScaAuthorisationService);
-        when(pisScaAuthorisationService.createCommonPaymentAuthorisation(PAYMENT_ID, PaymentType.BULK, PARAM.getPsuData()))
+        when(pisScaAuthorisationService.createCommonPaymentAuthorisation(PAYMENT_ID, PaymentType.SINGLE, PARAM.getPsuData()))
             .thenReturn(Optional.empty());
 
         //When
-        ResponseObject<PaymentInitiationResponse> actualResponse = createBulkPaymentService.createPayment(buildBulkPayment(), buildPaymentInitiationParameters(), buildTppInfo());
+        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), PARAM, TPP_INFO);
 
         //Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -171,41 +179,32 @@ public class CreateBulkPaymentServiceTest {
     @Test
     public void createPayment_authorisationMethodDecider_isImplicitMethod_success() {
         // Given
-        BulkPaymentInitiationResponse expectedResponse = buildBulkPaymentInitiationResponse(initialSpiAspspConsentDataProvider);
         when(authorisationMethodDecider.isImplicitMethod(false, false))
             .thenReturn(true);
         when(pisScaAuthorisationServiceResolver.getService())
             .thenReturn(pisScaAuthorisationService);
-        when(pisScaAuthorisationService.createCommonPaymentAuthorisation(PAYMENT_ID, PaymentType.BULK, PARAM.getPsuData()))
+        when(pisScaAuthorisationService.createCommonPaymentAuthorisation(PAYMENT_ID, PaymentType.SINGLE, PARAM.getPsuData()))
             .thenReturn(Optional.of(CREATE_PIS_AUTHORISATION_RESPONSE));
 
         //When
-        ResponseObject<PaymentInitiationResponse> actualResponse = createBulkPaymentService.createPayment(buildBulkPayment(), buildPaymentInitiationParameters(), buildTppInfo());
+        ResponseObject<PaymentInitiationResponse> actualResponse = createSinglePaymentService.createPayment(buildSinglePayment(), buildPaymentInitiationParameters(), buildTppInfo());
 
         //Then
         assertThat(actualResponse.hasError()).isFalse();
-        assertThat(actualResponse.getBody()).isEqualTo(expectedResponse);
+        assertThat(actualResponse.getBody()).isEqualTo(singlePaymentInitiationResponse);
     }
 
-    private static BulkPayment buildBulkPayment() {
-        BulkPayment payment = new BulkPayment();
-        payment.setPaymentId(PAYMENT_ID);
-        payment.setPayments(buildListSinglePayment());
-        payment.setDebtorAccount(buildReference());
-        payment.setTransactionStatus(TransactionStatus.RCVD);
-        return payment;
-    }
 
-    private static List<SinglePayment> buildListSinglePayment() {
-        List<SinglePayment> list = new ArrayList<>();
+    private static SinglePayment buildSinglePayment() {
         SinglePayment payment = new SinglePayment();
         Xs2aAmount amount = buildXs2aAmount();
+        payment.setPaymentId(PAYMENT_ID);
         payment.setInstructedAmount(amount);
-        payment.setDebtorAccount(buildReference());
-        payment.setCreditorAccount(buildReference());
+        payment.setDebtorAccount(buildReference(DEB_ACCOUNT_ID));
+        payment.setCreditorAccount(buildReference(CRED_ACCOUNT_ID));
         payment.setTransactionStatus(TransactionStatus.RCVD);
-        list.add(payment);
-        return list;
+        payment.setPaymentProduct("sepa-credit-transfers");
+        return payment;
     }
 
     private static Xs2aAmount buildXs2aAmount() {
@@ -215,35 +214,28 @@ public class CreateBulkPaymentServiceTest {
         return amount;
     }
 
-    private static AccountReference buildReference() {
+    private static AccountReference buildReference(String accountId) {
         AccountReference reference = new AccountReference();
         reference.setIban(IBAN);
         reference.setCurrency(EUR_CURRENCY);
+        reference.setAspspAccountId(accountId);
         return reference;
     }
 
     private static PaymentInitiationParameters buildPaymentInitiationParameters() {
         PaymentInitiationParameters parameters = new PaymentInitiationParameters();
         parameters.setPaymentProduct("sepa-credit-transfers");
-        parameters.setPaymentType(PaymentType.BULK);
+        parameters.setPaymentType(PaymentType.SINGLE);
         parameters.setPsuData(PSU_DATA);
         return parameters;
     }
 
-    private static BulkPaymentInitiationResponse buildBulkPaymentInitiationResponse(InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider) {
-        BulkPaymentInitiationResponse response = new BulkPaymentInitiationResponse();
+    private static SinglePaymentInitiationResponse buildSinglePaymentInitiationResponse(InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider) {
+        SinglePaymentInitiationResponse response = new SinglePaymentInitiationResponse();
         response.setPaymentId(PAYMENT_ID);
         response.setTransactionStatus(TransactionStatus.RCVD);
         response.setAspspConsentDataProvider(initialSpiAspspConsentDataProvider);
         return response;
-    }
-
-    private static BulkPaymentInitiationResponse buildSpiErrorForBulkPayment() {
-        ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIIS_400)
-                                      .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "message 1, message 2, message 3"))
-                                      .build();
-
-        return new BulkPaymentInitiationResponse(errorHolder);
     }
 
     private static TppInfo buildTppInfo() {
@@ -253,6 +245,14 @@ public class CreateBulkPaymentServiceTest {
         tppInfo.setTppRoles(Collections.singletonList(TppRole.PISP));
         tppInfo.setAuthorityId("authorityId");
         return tppInfo;
+    }
+
+    private static SinglePaymentInitiationResponse buildSpiErrorForSinglePayment() {
+        ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_400)
+                                      .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "message 1, message 2, message 3"))
+                                      .build();
+
+        return new SinglePaymentInitiationResponse(errorHolder);
     }
 
     private static PisPaymentInfo buildPisPaymentInfoRequest() {

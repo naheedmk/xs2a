@@ -15,7 +15,7 @@
  */
 
 
-package de.adorsys.psd2.xs2a.service.payment;
+package de.adorsys.psd2.xs2a.service.payment.create;
 
 import de.adorsys.psd2.consent.api.AspspDataService;
 import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
@@ -44,6 +44,7 @@ import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aToCmsPisCommonPaymentRequestMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
+import de.adorsys.psd2.xs2a.service.payment.create.CreatePeriodicPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentServiceResolver;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
