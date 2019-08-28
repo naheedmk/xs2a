@@ -43,7 +43,7 @@ public abstract class AbstractCancelPaymentService implements CancelPaymentServi
     @Override
     public ResponseObject<CancelPaymentResponse> cancelPayment(CommonPaymentData commonPaymentData, PisPaymentCancellationRequest paymentCancellationRequest) {
         List<PisPayment> pisPayments = getPisPayments(commonPaymentData);
-        if (CollectionUtils.isEmpty(pisPayments)) {
+        if (!isCommonPayment() && CollectionUtils.isEmpty(pisPayments)) {
             return ResponseObject.<CancelPaymentResponse>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
@@ -63,6 +63,10 @@ public abstract class AbstractCancelPaymentService implements CancelPaymentServi
     }
 
     protected abstract Optional<? extends SpiPayment> createSpiPayment(List<PisPayment> pisPayments, CommonPaymentData commonPaymentData);
+
+    protected boolean isCommonPayment(){
+        return false;
+    }
 
     private List<PisPayment> getPisPayments(CommonPaymentData commonPaymentData) {
         List<PisPayment> pisPayments = Optional.of(commonPaymentData)

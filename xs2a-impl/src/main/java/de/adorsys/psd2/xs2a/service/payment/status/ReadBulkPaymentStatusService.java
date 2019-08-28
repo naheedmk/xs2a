@@ -41,7 +41,7 @@ public class ReadBulkPaymentStatusService extends AbstractReadPaymentStatusServi
     @Autowired
     public ReadBulkPaymentStatusService(BulkPaymentSpi bulkPaymentSpi, SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
                                           RequestProviderService requestProviderService, SpiPaymentFactory spiPaymentFactory) {
-        super(spiPaymentFactory, spiErrorMapper, aspspConsentDataProviderFactory, requestProviderService);
+        super(spiPaymentFactory, spiErrorMapper, aspspConsentDataProviderFactory);
         this.bulkPaymentSpi = bulkPaymentSpi;
     }
 

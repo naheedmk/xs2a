@@ -54,13 +54,12 @@ public abstract class AbstractReadPaymentStatusService implements ReadPaymentSta
 
     private SpiErrorMapper spiErrorMapper;
     private SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
-    private RequestProviderService requestProviderService;
 
-    public AbstractReadPaymentStatusService(SpiPaymentFactory spiPaymentFactory, SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory, RequestProviderService requestProviderService) {
+    public AbstractReadPaymentStatusService(SpiPaymentFactory spiPaymentFactory, SpiErrorMapper spiErrorMapper,
+                                            SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory) {
         this.spiPaymentFactory = spiPaymentFactory;
         this.spiErrorMapper = spiErrorMapper;
         this.aspspConsentDataProviderFactory = aspspConsentDataProviderFactory;
-        this.requestProviderService = requestProviderService;
     }
 
     @Override
@@ -68,9 +67,6 @@ public abstract class AbstractReadPaymentStatusService implements ReadPaymentSta
         List<PisPayment> pisPayments = getPisPayments(commonPaymentData);
 
         if (CollectionUtils.isEmpty(pisPayments)) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get Payment Status failed. Payments not found in CommonPaymentData.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), encryptedPaymentId);
-
             return new ReadPaymentStatusResponse(
                 ErrorHolder.builder(ErrorType.PIS_400)
                     .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, PAYMENT_NOT_FOUND_MESSAGE))
@@ -94,8 +90,6 @@ public abstract class AbstractReadPaymentStatusService implements ReadPaymentSta
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. READ SINGLE Payment STATUS failed. Can't get Payment status by ID at SPI level. Error msg: [{}]",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), ((SpiPayment) spiPaymentOptional.get()).getPaymentId(), errorHolder);
             return new ReadPaymentStatusResponse(errorHolder);
         }
 

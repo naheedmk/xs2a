@@ -26,7 +26,6 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.pis.ReadPaymentStatusResponse;
-import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.consent.PisAspspDataService;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
@@ -53,14 +52,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReadSinglePaymentStatusServiceTest {
     private static final String PRODUCT = "sepa-credit-transfers";
-    private final static UUID X_REQUEST_ID = UUID.randomUUID();
+    private static final UUID X_REQUEST_ID = UUID.randomUUID();
     private static final List<PisPayment> PIS_PAYMENTS = getListPisPayment();
     private static final CommonPaymentData COMMON_PAYMENT_DATA = getCommonPaymentData();
     private static final SpiContextData SPI_CONTEXT_DATA = getSpiContextData();
@@ -86,14 +85,11 @@ public class ReadSinglePaymentStatusServiceTest {
     private SpiAspspConsentDataProviderFactory spiAspspConsentDataProviderFactory;
     @Mock
     private SpiAspspConsentDataProvider spiAspspConsentDataProvider;
-    @Mock
-    private RequestProviderService requestProviderService;
 
     @Before
     public void init() {
         when(spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(anyString()))
             .thenReturn(spiAspspConsentDataProvider);
-        when(requestProviderService.getRequestId()).thenReturn(UUID.randomUUID());
     }
 
     @Test

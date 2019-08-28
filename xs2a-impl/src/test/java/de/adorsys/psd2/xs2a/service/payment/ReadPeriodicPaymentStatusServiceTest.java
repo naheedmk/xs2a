@@ -26,8 +26,6 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.pis.ReadPaymentStatusResponse;
-import de.adorsys.psd2.xs2a.service.RequestProviderService;
-import de.adorsys.psd2.xs2a.service.consent.PisAspspDataService;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
@@ -59,7 +57,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ReadPeriodicPaymentStatusServiceTest {
     private static final String PRODUCT = "sepa-credit-transfers";
-    private final static UUID X_REQUEST_ID = UUID.randomUUID();
+    private static final UUID X_REQUEST_ID = UUID.randomUUID();
     private static final List<PisPayment> PIS_PAYMENTS = getListPisPayment();
     private static final SpiContextData SPI_CONTEXT_DATA = getSpiContextData();
     private static final SpiPeriodicPayment SPI_PERIODIC_PAYMENT = new SpiPeriodicPayment(PRODUCT);
@@ -74,8 +72,6 @@ public class ReadPeriodicPaymentStatusServiceTest {
     private ReadPeriodicPaymentStatusService readPeriodicPaymentStatusService;
 
     @Mock
-    private PisAspspDataService pisAspspDataService;
-    @Mock
     private SpiPaymentFactory spiPaymentFactory;
     @Mock
     private SpiErrorMapper spiErrorMapper;
@@ -85,14 +81,11 @@ public class ReadPeriodicPaymentStatusServiceTest {
     private SpiAspspConsentDataProviderFactory spiAspspConsentDataProviderFactory;
     @Mock
     private SpiAspspConsentDataProvider spiAspspConsentDataProvider;
-    @Mock
-    private RequestProviderService requestProviderService;
 
     @Before
     public void init() {
         when(spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(anyString()))
             .thenReturn(spiAspspConsentDataProvider);
-        when(requestProviderService.getRequestId()).thenReturn(UUID.randomUUID());
     }
 
     @Test

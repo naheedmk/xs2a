@@ -41,7 +41,7 @@ public class ReadSinglePaymentStatusService extends AbstractReadPaymentStatusSer
     @Autowired
     public ReadSinglePaymentStatusService(SinglePaymentSpi singlePaymentSpi, SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
                                     RequestProviderService requestProviderService, SpiPaymentFactory spiPaymentFactory) {
-        super(spiPaymentFactory, spiErrorMapper, aspspConsentDataProviderFactory, requestProviderService);
+        super(spiPaymentFactory, spiErrorMapper, aspspConsentDataProviderFactory);
         this.singlePaymentSpi = singlePaymentSpi;
     }
 

@@ -41,7 +41,7 @@ public class ReadPeriodicPaymentStatusService extends AbstractReadPaymentStatusS
     @Autowired
     public ReadPeriodicPaymentStatusService(PeriodicPaymentSpi periodicPaymentSpi, SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
                                         RequestProviderService requestProviderService, SpiPaymentFactory spiPaymentFactory) {
-        super(spiPaymentFactory, spiErrorMapper, aspspConsentDataProviderFactory, requestProviderService);
+        super(spiPaymentFactory, spiErrorMapper, aspspConsentDataProviderFactory);
         this.periodicPaymentSpi = periodicPaymentSpi;
     }
 
