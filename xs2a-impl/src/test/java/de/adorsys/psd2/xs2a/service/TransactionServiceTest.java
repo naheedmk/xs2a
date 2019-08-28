@@ -133,8 +133,6 @@ public class TransactionServiceTest {
     @Mock
     private AccountSpi accountSpi;
     @Mock
-    private AccountService accountService;
-    @Mock
     private SpiToXs2aBalanceMapper balanceMapper;
     @Mock
     private SpiToXs2aAccountReferenceMapper referenceMapper;
@@ -184,8 +182,6 @@ public class TransactionServiceTest {
         xs2aTransactionsDownloadResponse = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/xs2a-transactions-download-response.json", Xs2aTransactionsDownloadResponse.class);
         inputStream = new ByteArrayInputStream("test string".getBytes());
 
-        when(spiContextDataProvider.provideWithPsuIdData(any()))
-            .thenReturn(SPI_CONTEXT_DATA);
         when(getTransactionsReportValidator.validate(any(TransactionsReportByPeriodObject.class)))
             .thenReturn(ValidationResult.valid());
         when(getTransactionDetailsValidator.validate(any(CommonAccountTransactionsRequestObject.class)))
@@ -194,10 +190,7 @@ public class TransactionServiceTest {
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
             .thenReturn(Optional.of(accountConsent));
         when(accountHelperService.findAccountReference(any(), any(), any())).thenReturn(spiAccountReference);
-//        when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
-//        when(accountHelperService.createActionStatus()).thenReturn();
-//        when(accountHelperService.createActionStatus()).thenReturn();
-//        when(accountHelperService.needsToUpdateUsage(any())).thenReturn(accountConsent);
+        when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
     }
 
     @Test
