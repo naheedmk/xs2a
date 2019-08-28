@@ -19,6 +19,7 @@ package de.adorsys.psd2.xs2a.service.payment;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentCancellationRequest;
 import de.adorsys.psd2.xs2a.config.factory.ReadPaymentFactory;
+import de.adorsys.psd2.xs2a.config.factory.ReadPaymentStatusFactory;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
@@ -31,6 +32,9 @@ import de.adorsys.psd2.xs2a.service.payment.create.*;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadSinglePaymentService;
+import de.adorsys.psd2.xs2a.service.payment.status.ReadCommonPaymentStatusService;
+import de.adorsys.psd2.xs2a.service.payment.status.ReadPaymentStatusService;
+import de.adorsys.psd2.xs2a.service.payment.status.ReadSinglePaymentStatusService;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,16 +75,24 @@ public class PaymentServiceResolverTest {
     private CancelCommonPaymentService cancelCommonPaymentService;
     @Mock
     private CancelCertainPaymentService cancelCertainPaymentService;
+    @Mock
+    private ReadCommonPaymentStatusService readCommonPaymentStatusService;
+    @Mock
+    private ReadPaymentStatusFactory readPaymentStatusFactory;
+    @Mock
+    private ReadSinglePaymentStatusService readSinglePaymentStatusService;
 
     private PaymentInitiationParameters paymentInitiationParameters;
     private PisCommonPaymentResponse commonPaymentData;
     private PisPaymentCancellationRequest paymentCancellationRequest;
+    private PisCommonPaymentResponse pisCommonPaymentResponse;
 
     @Before
     public void setUp() {
         paymentInitiationParameters = new PaymentInitiationParameters();
         commonPaymentData = new PisCommonPaymentResponse();
         paymentCancellationRequest = new PisPaymentCancellationRequest(PaymentType.SINGLE, "", "", Boolean.TRUE, new TppRedirectUri("", ""));
+        pisCommonPaymentResponse = new PisCommonPaymentResponse();
         when(scaApproachResolver.resolveScaApproach()).thenReturn(ScaApproach.REDIRECT);
     }
 
@@ -133,7 +145,7 @@ public class PaymentServiceResolverTest {
     public void getReadPaymentService_commonPayment() {
         commonPaymentData.setPaymentData("body".getBytes());
         ReadPaymentService readPaymentService = paymentServiceResolver.getReadPaymentService(commonPaymentData);
-        assertTrue(readPaymentService instanceof ReadCommonPaymentService);
+        assertEquals(readCommonPaymentService, readPaymentService);
     }
 
     @Test
@@ -177,5 +189,22 @@ public class PaymentServiceResolverTest {
 
         CancelPaymentService cancelPaymentService = paymentServiceResolver.getCancelPaymentService(paymentCancellationRequest);
         assertEquals(cancelCertainPaymentService, cancelPaymentService);
+    }
+
+    @Test
+    public void getReadPaymentStatusService_commonPayment() {
+        pisCommonPaymentResponse.setPaymentData("body".getBytes());
+
+        ReadPaymentStatusService readPaymentStatusService = paymentServiceResolver.getReadPaymentStatusService(pisCommonPaymentResponse);
+        assertEquals(readCommonPaymentStatusService, readPaymentStatusService);
+    }
+
+    @Test
+    public void getReadPaymentStatusService_singlePayment() {
+        pisCommonPaymentResponse.setPaymentType(PaymentType.SINGLE);
+        when(readPaymentStatusFactory.getService("status-" + pisCommonPaymentResponse.getPaymentType().getValue())).thenReturn(readSinglePaymentStatusService);
+
+        ReadPaymentStatusService readPaymentStatusService = paymentServiceResolver.getReadPaymentStatusService(pisCommonPaymentResponse);
+        assertEquals(readSinglePaymentStatusService, readPaymentStatusService);
     }
 }
