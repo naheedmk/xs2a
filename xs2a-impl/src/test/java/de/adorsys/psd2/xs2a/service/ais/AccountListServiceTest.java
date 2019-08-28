@@ -132,7 +132,7 @@ public class AccountListServiceTest {
 
     @Before
     public void setUp() {
-        accountConsent = createConsent(CONSENT_ID, createAccountAccess(XS2A_ACCOUNT_REFERENCE));
+        accountConsent = createConsent(createAccountAccess(XS2A_ACCOUNT_REFERENCE));
 
         when(getAccountListValidator.validate(any(GetAccountListConsentObject.class)))
             .thenReturn(ValidationResult.valid());
@@ -159,9 +159,9 @@ public class AccountListServiceTest {
             .thenReturn(SPI_ACCOUNT_CONSENT);
 
         when(accountSpi.requestAccountList(SPI_CONTEXT_DATA, WITH_BALANCE, SPI_ACCOUNT_CONSENT, spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID)))
-            .thenReturn(buildErrorSpiResponse(EMPTY_ACCOUNT_DETAILS_LIST));
+            .thenReturn(buildErrorSpiResponse());
 
-        when(spiErrorMapper.mapToErrorHolder(buildErrorSpiResponse(EMPTY_ACCOUNT_DETAILS_LIST), ServiceType.AIS))
+        when(spiErrorMapper.mapToErrorHolder(buildErrorSpiResponse(), ServiceType.AIS))
             .thenReturn(ErrorHolder
                             .builder(ErrorType.AIS_400)
                             .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, ""))
@@ -209,7 +209,7 @@ public class AccountListServiceTest {
     @Test
     public void getAccountDetailsList_shouldUpdateAccountReferences() {
         // Given
-        AccountConsent accountConsent = createConsent(CONSENT_ID, createAccountAccess(XS2A_ACCOUNT_REFERENCE_WITHOUT_ASPSP_IDS));
+        AccountConsent accountConsent = createConsent(createAccountAccess(XS2A_ACCOUNT_REFERENCE_WITHOUT_ASPSP_IDS));
 
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
             .thenReturn(Optional.of(accountConsent));
@@ -227,7 +227,7 @@ public class AccountListServiceTest {
         when(accountDetailsMapper.mapToXs2aAccountDetailsList(spiAccountDetailsList))
             .thenReturn(xs2aAccountDetailsList);
 
-        AccountConsent updatedAccountConsent = createConsent(CONSENT_ID, createAccountAccess(XS2A_ACCOUNT_REFERENCE));
+        AccountConsent updatedAccountConsent = createConsent(createAccountAccess(XS2A_ACCOUNT_REFERENCE));
         when(accountReferenceUpdater.updateAccountReferences(CONSENT_ID, accountConsent.getAccess(), xs2aAccountDetailsList))
             .thenReturn(Optional.of(updatedAccountConsent));
 
@@ -371,9 +371,9 @@ public class AccountListServiceTest {
     }
 
     // Needed because SpiResponse is final, so it's impossible to mock it
-    private <T> SpiResponse<T> buildErrorSpiResponse(T payload) {
+    private <T> SpiResponse<T> buildErrorSpiResponse() {
         return SpiResponse.<T>builder()
-                   .payload(payload)
+                   .payload((T) AccountListServiceTest.EMPTY_ACCOUNT_DETAILS_LIST)
                    .error(new TppMessage(FORMAT_ERROR_CODE, "Format error"))
                    .build();
     }
@@ -386,8 +386,8 @@ public class AccountListServiceTest {
         return new AccountReference(null, null, IBAN, BBAN, PAN, MASKED_PAN, MSISDN, EUR_CURRENCY);
     }
 
-    private static AccountConsent createConsent(String id, Xs2aAccountAccess access) {
-        return new AccountConsent(id, access, false, LocalDate.now(), 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap());
+    private static AccountConsent createConsent(Xs2aAccountAccess access) {
+        return new AccountConsent(CONSENT_ID, access, false, LocalDate.now(), 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap());
     }
 
     private static AccountConsent createConsent(boolean recurringIndicator) {
