@@ -14,43 +14,45 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.payment;
+package de.adorsys.psd2.xs2a.service.payment.status;
 
 import de.adorsys.psd2.consent.api.pis.PisPayment;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
+import de.adorsys.psd2.xs2a.service.payment.SpiPaymentFactory;
+import de.adorsys.psd2.xs2a.service.payment.status.AbstractReadPaymentStatusService;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
-import de.adorsys.psd2.xs2a.spi.domain.payment.SpiBulkPayment;
+import de.adorsys.psd2.xs2a.spi.domain.payment.SpiSinglePayment;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiGetPaymentStatusResponse;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
-import de.adorsys.psd2.xs2a.spi.service.BulkPaymentSpi;
+import de.adorsys.psd2.xs2a.spi.service.SinglePaymentSpi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service("status-bulk-payments")
-public class ReadBulkPaymentStatusService extends AbstractReadPaymentStatusService {
+@Service("status-payments")
+public class ReadSinglePaymentStatusService extends AbstractReadPaymentStatusService {
 
-    private BulkPaymentSpi bulkPaymentSpi;
+    private SinglePaymentSpi singlePaymentSpi;
 
     @Autowired
-    public ReadBulkPaymentStatusService(BulkPaymentSpi bulkPaymentSpi, SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
-                                          RequestProviderService requestProviderService, SpiPaymentFactory spiPaymentFactory) {
+    public ReadSinglePaymentStatusService(SinglePaymentSpi singlePaymentSpi, SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
+                                    RequestProviderService requestProviderService, SpiPaymentFactory spiPaymentFactory) {
         super(spiPaymentFactory, spiErrorMapper, aspspConsentDataProviderFactory, requestProviderService);
-        this.bulkPaymentSpi = bulkPaymentSpi;
+        this.singlePaymentSpi = singlePaymentSpi;
     }
 
     @Override
-    public Optional<SpiBulkPayment> createSpiPayment(List<PisPayment> pisPayments, String paymentProduct) {
-        return spiPaymentFactory.createSpiBulkPayment(pisPayments, paymentProduct);
+    public Optional<SpiSinglePayment> createSpiPayment(List<PisPayment> pisPayments, String paymentProduct) {
+        return spiPaymentFactory.createSpiSinglePayment(pisPayments.get(0), paymentProduct);
     }
 
     @Override
     public SpiResponse<SpiGetPaymentStatusResponse> getSpiPaymentStatusById(SpiContextData spiContextData, Object spiPayment, SpiAspspConsentDataProvider aspspConsentDataProvider) {
-        return bulkPaymentSpi.getPaymentStatusById(spiContextData, (SpiBulkPayment) spiPayment, aspspConsentDataProvider);
+        return singlePaymentSpi.getPaymentStatusById(spiContextData, (SpiSinglePayment) spiPayment, aspspConsentDataProvider);
     }
 }

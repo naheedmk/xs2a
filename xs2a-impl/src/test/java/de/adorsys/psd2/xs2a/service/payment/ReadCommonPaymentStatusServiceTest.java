@@ -32,6 +32,7 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.Xs2aToSpiPaymentInfoMapper;
+import de.adorsys.psd2.xs2a.service.payment.status.ReadCommonPaymentStatusService;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;

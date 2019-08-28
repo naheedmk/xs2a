@@ -27,6 +27,8 @@ import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.payment.create.*;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadPaymentService;
+import de.adorsys.psd2.xs2a.service.payment.status.ReadCommonPaymentStatusService;
+import de.adorsys.psd2.xs2a.service.payment.status.ReadPaymentStatusService;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

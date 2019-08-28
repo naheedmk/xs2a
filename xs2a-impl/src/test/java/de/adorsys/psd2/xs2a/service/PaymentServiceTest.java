@@ -37,6 +37,7 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.payment.*;
 import de.adorsys.psd2.xs2a.service.payment.create.CreatePaymentService;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadPaymentService;
+import de.adorsys.psd2.xs2a.service.payment.status.AbstractReadPaymentStatusService;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;

@@ -35,6 +35,7 @@ import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.Xs2aToSpiPaymentInfo
 import de.adorsys.psd2.xs2a.service.payment.*;
 import de.adorsys.psd2.xs2a.service.payment.create.CreatePaymentService;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadPaymentService;
+import de.adorsys.psd2.xs2a.service.payment.status.ReadPaymentStatusService;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.pis.payment.*;
@@ -177,7 +178,7 @@ public class PaymentService {
         Optional<PisCommonPaymentResponse> pisCommonPaymentOptional = pisCommonPaymentService.getPisCommonPaymentById(encryptedPaymentId);
 
         if (!pisCommonPaymentOptional.isPresent()) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get Payment Status failed. PIS CommonPayment not found by id",
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get Payment Status failed. PIS CommonPayment not found by ID",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), encryptedPaymentId);
             return ResponseObject.<GetPaymentStatusResponse>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
@@ -191,7 +192,7 @@ public class PaymentService {
 
         ValidationResult validationResult = getPaymentStatusByIdValidator.validate(new GetPaymentStatusByIdPO(pisCommonPaymentResponse, paymentType, paymentProduct));
         if (validationResult.isNotValid()) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get payment status by id - validation failed: {}",
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get payment status by ID - validation failed: {}",
                      internalRequestId, xRequestId, encryptedPaymentId, validationResult.getMessageError());
             return ResponseObject.<GetPaymentStatusResponse>builder()
                        .fail(validationResult.getMessageError())
