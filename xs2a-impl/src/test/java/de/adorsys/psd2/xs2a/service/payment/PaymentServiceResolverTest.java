@@ -17,11 +17,16 @@
 package de.adorsys.psd2.xs2a.service.payment;
 
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
+import de.adorsys.psd2.consent.api.pis.proto.PisPaymentCancellationRequest;
 import de.adorsys.psd2.xs2a.config.factory.ReadPaymentFactory;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
+import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
+import de.adorsys.psd2.xs2a.service.payment.cancel.CancelCertainPaymentService;
+import de.adorsys.psd2.xs2a.service.payment.cancel.CancelCommonPaymentService;
+import de.adorsys.psd2.xs2a.service.payment.cancel.CancelPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.create.*;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadPaymentService;
@@ -60,17 +65,22 @@ public class PaymentServiceResolverTest {
     private ReadPaymentFactory readPaymentFactory;
     @Mock
     private ReadSinglePaymentService readSinglePaymentService;
-
     @Mock
     private ScaApproachResolver scaApproachResolver;
+    @Mock
+    private CancelCommonPaymentService cancelCommonPaymentService;
+    @Mock
+    private CancelCertainPaymentService cancelCertainPaymentService;
 
     private PaymentInitiationParameters paymentInitiationParameters;
     private PisCommonPaymentResponse commonPaymentData;
+    private PisPaymentCancellationRequest paymentCancellationRequest;
 
     @Before
     public void setUp() {
         paymentInitiationParameters = new PaymentInitiationParameters();
         commonPaymentData = new PisCommonPaymentResponse();
+        paymentCancellationRequest = new PisPaymentCancellationRequest(PaymentType.SINGLE, "", "", Boolean.TRUE, new TppRedirectUri("", ""));
         when(scaApproachResolver.resolveScaApproach()).thenReturn(ScaApproach.REDIRECT);
     }
 
@@ -80,7 +90,6 @@ public class PaymentServiceResolverTest {
 
         CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
         assertEquals(createCommonPaymentService, createPaymentService);
-        assertTrue(createPaymentService instanceof CreateCommonPaymentService);
     }
 
     @Test
@@ -90,7 +99,6 @@ public class PaymentServiceResolverTest {
 
         CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
         assertEquals(createSinglePaymentService, createPaymentService);
-        assertTrue(createPaymentService instanceof CreateSinglePaymentService);
     }
 
     @Test
@@ -100,7 +108,6 @@ public class PaymentServiceResolverTest {
 
         CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
         assertEquals(createPeriodicPaymentService, createPaymentService);
-        assertTrue(createPaymentService instanceof CreatePeriodicPaymentService);
     }
 
     @Test
@@ -154,5 +161,21 @@ public class PaymentServiceResolverTest {
 
         // When
         paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+    }
+
+    @Test
+    public void getCancelPaymentService_commonPayment() {
+        when(standardPaymentProductsResolver.isRawPaymentProduct(paymentCancellationRequest.getPaymentProduct())).thenReturn(true);
+
+        CancelPaymentService cancelPaymentService = paymentServiceResolver.getCancelPaymentService(paymentCancellationRequest);
+        assertEquals(cancelCommonPaymentService, cancelPaymentService);
+    }
+
+    @Test
+    public void getCancelPaymentService_certainPayment() {
+        when(standardPaymentProductsResolver.isRawPaymentProduct(paymentCancellationRequest.getPaymentProduct())).thenReturn(false);
+
+        CancelPaymentService cancelPaymentService = paymentServiceResolver.getCancelPaymentService(paymentCancellationRequest);
+        assertEquals(cancelCertainPaymentService, cancelPaymentService);
     }
 }

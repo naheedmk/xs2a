@@ -18,11 +18,15 @@ package de.adorsys.psd2.xs2a.service.payment;
 
 import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
+import de.adorsys.psd2.consent.api.pis.proto.PisPaymentCancellationRequest;
 import de.adorsys.psd2.xs2a.config.factory.ReadPaymentFactory;
 import de.adorsys.psd2.xs2a.config.factory.ReadPaymentStatusFactory;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
+import de.adorsys.psd2.xs2a.service.payment.cancel.CancelCertainPaymentService;
+import de.adorsys.psd2.xs2a.service.payment.cancel.CancelCommonPaymentService;
+import de.adorsys.psd2.xs2a.service.payment.cancel.CancelPaymentService;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.payment.create.*;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadCommonPaymentService;
@@ -55,6 +59,10 @@ public class PaymentServiceResolver {
 
     private final ScaApproachResolver scaApproachResolver;
 
+    private final CancelCommonPaymentService cancelCommonPaymentService;
+    private final CancelCertainPaymentService cancelCertainPaymentService;
+
+
     public CreatePaymentService getCreatePaymentService(PaymentInitiationParameters paymentInitiationParameters) {
         if (isNotSupportedScaApproach(scaApproachResolver.resolveScaApproach())) {
             throw new UnsupportedOperationException("Unsupported operation");
@@ -85,6 +93,13 @@ public class PaymentServiceResolver {
             return readCommonPaymentStatusService;
         }
         return readPaymentStatusFactory.getService(ReadPaymentStatusFactory.SERVICE_PREFIX + pisCommonPaymentResponse.getPaymentType().getValue());
+    }
+
+    public CancelPaymentService getCancelPaymentService(PisPaymentCancellationRequest paymentCancellationRequest) {
+        if (standardPaymentProductsResolver.isRawPaymentProduct(paymentCancellationRequest.getPaymentProduct())) {
+            return cancelCommonPaymentService;
+        }
+        return cancelCertainPaymentService;
     }
 
     private boolean isNotSupportedScaApproach(ScaApproach scaApproach) {
