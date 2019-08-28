@@ -38,7 +38,6 @@ import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.ais.AccountHelperService;
 import de.adorsys.psd2.xs2a.service.ais.TransactionService;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aAisConsentService;
-import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.event.Xs2aEventService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aAisConsentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
@@ -153,8 +152,6 @@ public class TransactionServiceTest {
     @Mock
     private Xs2aEventService xs2aEventService;
     @Mock
-    private SpiContextDataProvider spiContextDataProvider;
-    @Mock
     private SpiToXs2aTransactionMapper spiToXs2aTransactionMapper;
     @Mock
     private Transactions transactions;
@@ -177,7 +174,7 @@ public class TransactionServiceTest {
 
     @Before
     public void setUp() {
-        accountConsent = createConsent(CONSENT_ID, createAccountAccess());
+        accountConsent = createConsent(createAccountAccess());
         spiAccountReference = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/spi-account-reference.json", SpiAccountReference.class);
         xs2aTransactionsDownloadResponse = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/xs2a-transactions-download-response.json", Xs2aTransactionsDownloadResponse.class);
         inputStream = new ByteArrayInputStream("test string".getBytes());
@@ -288,7 +285,7 @@ public class TransactionServiceTest {
         Xs2aAccountAccess xs2aAccountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access-global.json", Xs2aAccountAccess.class);
         when(accountHelperService.findAccountReference(any(), any(), any())).thenReturn(SPI_ACCOUNT_REFERENCE_GLOBAL);
 
-        AccountConsent accountConsent = createConsent(CONSENT_ID, xs2aAccountAccess);
+        AccountConsent accountConsent = createConsent(xs2aAccountAccess);
 
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
             .thenReturn(Optional.of(accountConsent));
@@ -589,8 +586,8 @@ public class TransactionServiceTest {
         assertThat(actualResponse.hasError()).isFalse();
     }
 
-    private static AccountConsent createConsent(String id, Xs2aAccountAccess access) {
-        return new AccountConsent(id, access, false, LocalDate.now(), 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap());
+    private static AccountConsent createConsent(Xs2aAccountAccess access) {
+        return new AccountConsent(CONSENT_ID, access, false, LocalDate.now(), 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap());
     }
 
     private static TppInfo createTppInfo() {
