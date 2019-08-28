@@ -46,6 +46,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * This class handles traditional payments (single, bulk, periodic).
+ *
+ */
 @Slf4j
 public abstract class AbstractReadPaymentService implements ReadPaymentService {
 

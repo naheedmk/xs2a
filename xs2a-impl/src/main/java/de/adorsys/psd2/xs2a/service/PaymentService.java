@@ -32,7 +32,10 @@ import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.event.Xs2aEventService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.CmsToXs2aPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.Xs2aToSpiPaymentInfoMapper;
-import de.adorsys.psd2.xs2a.service.payment.*;
+import de.adorsys.psd2.xs2a.service.payment.CancelPaymentService;
+import de.adorsys.psd2.xs2a.service.payment.PaymentServiceResolver;
+import de.adorsys.psd2.xs2a.service.payment.SpiPaymentFactory;
+import de.adorsys.psd2.xs2a.service.payment.Xs2aUpdatePaymentAfterSpiService;
 import de.adorsys.psd2.xs2a.service.payment.create.CreatePaymentService;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.status.ReadPaymentStatusService;
@@ -173,22 +176,22 @@ public class PaymentService {
      * @param encryptedPaymentId String representation of payment primary ASPSP identifier
      * @return Information about the status of a payment
      */
-    public ResponseObject<GetPaymentStatusResponse> getPaymentStatusById(PaymentType paymentType, String paymentProduct, String encryptedPaymentId) {//NOPMD //TODO refactor method  and remove https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/683
+    public ResponseObject<GetPaymentStatusResponse> getPaymentStatusById(PaymentType paymentType, String paymentProduct, String encryptedPaymentId) {
         xs2aEventService.recordPisTppRequest(encryptedPaymentId, EventType.GET_TRANSACTION_STATUS_REQUEST_RECEIVED);
         Optional<PisCommonPaymentResponse> pisCommonPaymentOptional = pisCommonPaymentService.getPisCommonPaymentById(encryptedPaymentId);
 
+        UUID internalRequestId = requestProviderService.getInternalRequestId();
+        UUID xRequestId = requestProviderService.getRequestId();
+
         if (!pisCommonPaymentOptional.isPresent()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get Payment Status failed. PIS CommonPayment not found by ID",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), encryptedPaymentId);
+                     internalRequestId, xRequestId, encryptedPaymentId);
             return ResponseObject.<GetPaymentStatusResponse>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND_MESSAGE))
                        .build();
         }
 
         PisCommonPaymentResponse pisCommonPaymentResponse = pisCommonPaymentOptional.get();
-
-        UUID internalRequestId = requestProviderService.getInternalRequestId();
-        UUID xRequestId = requestProviderService.getRequestId();
 
         ValidationResult validationResult = getPaymentStatusByIdValidator.validate(new GetPaymentStatusByIdPO(pisCommonPaymentResponse, paymentType, paymentProduct));
         if (validationResult.isNotValid()) {

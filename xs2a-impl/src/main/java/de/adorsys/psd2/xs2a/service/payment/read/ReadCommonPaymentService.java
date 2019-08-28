@@ -37,6 +37,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+/**
+ * This class handles common payments (with byte array in the body).
+ *
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

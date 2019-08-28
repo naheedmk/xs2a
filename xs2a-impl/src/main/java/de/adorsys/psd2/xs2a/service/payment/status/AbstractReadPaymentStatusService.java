@@ -41,6 +41,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This class handles traditional payments (single, bulk, periodic).
+ *
+ */
 @Slf4j
 public abstract class AbstractReadPaymentStatusService implements ReadPaymentStatusService {
 
