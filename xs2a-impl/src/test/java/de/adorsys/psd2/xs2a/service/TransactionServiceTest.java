@@ -191,6 +191,16 @@ public class TransactionServiceTest {
     }
 
     @Test
+    public void getTransactionsReportByPeriod_Failure_NoAccountConsent() {
+        // Given
+        when(aisConsentService.getAccountConsentById(CONSENT_ID)).thenReturn(Optional.empty());
+        // When
+        ResponseObject<Xs2aTransactionsReport> actualResponse = transactionService.getTransactionsReportByPeriod(XS2A_TRANSACTIONS_REPORT_BY_PERIOD_REQUEST);
+        // Then
+        assertThatErrorIs(actualResponse, CONSENT_UNKNOWN_400);
+    }
+
+    @Test
     public void getTransactionsReportByPeriod_Failure_AllowedAccountDataHasError() {
         // Given
         when(getTransactionsReportValidator.validate(new TransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, ENTRY_REFERENCE_FROM, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS)))
@@ -241,6 +251,35 @@ public class TransactionServiceTest {
 
         // Then
         assertThatErrorIs(actualResponse, CONSENT_INVALID);
+    }
+
+    @Test
+    public void getTransactionsReportByPeriod_WithNullSpiTransactionReport() {
+        // Given
+        doNothing().when(validatorService).validateAccountIdPeriod(ACCOUNT_ID, DATE_FROM, DATE_TO);
+
+        when(aspspProfileService.isTransactionsWithoutBalancesSupported())
+            .thenReturn(true);
+
+        when(accountSpi.requestTransactionsForAccount(SPI_CONTEXT_DATA, MediaType.APPLICATION_JSON_VALUE, WITH_BALANCE, DATE_FROM, DATE_TO, BOOKING_STATUS, spiAccountReference, SPI_ACCOUNT_CONSENT, spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID)))
+            .thenReturn(buildSuccessSpiResponse(null));
+
+        Xs2aAccountReport xs2aAccountReport = new Xs2aAccountReport(Collections.emptyList(), Collections.emptyList(), null);
+
+        when(transactionsToAccountReportMapper.mapToXs2aAccountReport(Collections.emptyList(), null))
+            .thenReturn(Optional.of(xs2aAccountReport));
+
+        when(referenceMapper.mapToXs2aAccountReference(spiAccountReference))
+            .thenReturn(XS2A_ACCOUNT_REFERENCE);
+
+        when(consentMapper.mapToSpiAccountConsent(any()))
+            .thenReturn(SPI_ACCOUNT_CONSENT);
+
+        // When
+        ResponseObject<Xs2aTransactionsReport> actualResponse = transactionService.getTransactionsReportByPeriod(XS2A_TRANSACTIONS_REPORT_BY_PERIOD_REQUEST);
+
+        // Then
+        assertThatErrorIs(actualResponse, RESOURCE_UNKNOWN_404);
     }
 
     @Test
@@ -554,6 +593,12 @@ public class TransactionServiceTest {
         // Then
         verify(getTransactionDetailsValidator).validate(new CommonAccountTransactionsRequestObject(accountConsent, ACCOUNT_ID, REQUEST_URI));
         assertThatErrorIs(actualResponse, CONSENT_INVALID);
+    }
+
+    // Needed because SpiResponse is final, so it's impossible to mock it
+    private <T> SpiResponse<T> buildSuccessEmptySpiResponse() {
+        return SpiResponse.<T>builder()
+                   .build();
     }
 
     // Needed because SpiResponse is final, so it's impossible to mock it

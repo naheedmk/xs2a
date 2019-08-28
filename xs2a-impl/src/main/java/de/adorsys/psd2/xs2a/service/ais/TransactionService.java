@@ -124,13 +124,13 @@ public class TransactionService {
 
         SpiResponse<SpiTransactionReport> spiResponse = getSpiResponse(request, accountConsent);
 
-        if (spiResponse.hasError()) {
+        if (spiResponse.hasError()) { // if payload == null -> spiResponse.hasError() = true
             return getXs2aTransactionsReportResponseObjectWithError(request, spiResponse);
         }
 
         SpiTransactionReport spiTransactionReport = spiResponse.getPayload();
 
-        if (spiTransactionReport == null) {
+        if (spiTransactionReport == null) { // never called because of if payload == null -> spiResponse.hasError() = true
             return getXs2aTransactionsReportResponseObjectFail404(request);
         }
 
@@ -231,6 +231,8 @@ public class TransactionService {
         if (spiResponse.getErrors().get(0).getErrorCode() == SERVICE_NOT_SUPPORTED) {
             return getXs2aTransactionsReportResponseObjectWithErrorServiceNotSupported(request);
         }
+
+        //TODO probably move here if payload == null
 
         ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
         return getXs2aTransactionsReportResponseObjectWithErrorAnyOther(request, errorHolder);

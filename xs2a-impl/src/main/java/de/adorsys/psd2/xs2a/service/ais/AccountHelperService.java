@@ -66,21 +66,21 @@ public class AccountHelperService {
         return spiContextDataProvider.provideWithPsuIdData(psuIdData);
     }
 
-    public ActionStatus createActionStatus(boolean withBalance, ResponseObject response) {
+    ActionStatus createActionStatus(boolean withBalance, ResponseObject response) {
         return response.hasError()
                    ? consentMapper.mapActionStatusError(response.getError().getTppMessage().getMessageErrorCode(),
                                                         withBalance, TypeAccess.TRANSACTION)
                    : ActionStatus.SUCCESS;
     }
 
-    public ActionStatus createActionStatus(boolean withBalance, TypeAccess access, ResponseObject response) {
+    ActionStatus createActionStatus(boolean withBalance, TypeAccess access, ResponseObject response) {
         return response.hasError()
                    ? consentMapper.mapActionStatusError(response.getError().getTppMessage().getMessageErrorCode(),
                                                         withBalance, access)
                    : ActionStatus.SUCCESS;
     }
 
-    public boolean needsToUpdateUsage(AccountConsent accountConsent) {
+    boolean needsToUpdateUsage(AccountConsent accountConsent) {
         return accountConsent.isOneAccessType() || requestProviderService.isRequestFromTPP();
     }
 }
