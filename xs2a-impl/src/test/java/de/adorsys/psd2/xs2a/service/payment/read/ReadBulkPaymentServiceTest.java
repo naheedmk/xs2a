@@ -36,7 +36,6 @@ import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiToXs2aBulkPaymentMapper;
 import de.adorsys.psd2.xs2a.service.payment.SpiPaymentFactory;
 import de.adorsys.psd2.xs2a.service.payment.Xs2aUpdatePaymentAfterSpiService;
-import de.adorsys.psd2.xs2a.service.payment.read.ReadBulkPaymentService;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
@@ -57,8 +56,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,7 +64,7 @@ public class ReadBulkPaymentServiceTest {
     private static final String PRODUCT = "sepa-credit-transfers";
     private final static UUID X_REQUEST_ID = UUID.randomUUID();
     private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType");
-    private static final List<PisPayment> PIS_PAYMENTS = getListPisPayment();
+    private static final List<PisPayment> PIS_PAYMENTS = Collections.singletonList(new PisPayment());
     private static final BulkPayment BULK_PAYMENT = new BulkPayment();
     private static final SpiContextData SPI_CONTEXT_DATA = getSpiContextData();
     private static final SpiBulkPayment SPI_BULK_PAYMENT = new SpiBulkPayment();
@@ -118,8 +116,6 @@ public class ReadBulkPaymentServiceTest {
 
     @Test
     public void getPayment_success() {
-        //Given
-
         //When
         PaymentInformationResponse<CommonPayment> actualResponse = readBulkPaymentService.getPayment(pisCommonPaymentResponse, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
@@ -170,14 +166,32 @@ public class ReadBulkPaymentServiceTest {
     }
 
     @Test
+    public void getPayment_spiPaymentFactory_pisPaymentsListIsEmpty_failed() {
+        // Given
+        ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_400)
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "Payment not found"))
+                                        .build();
+        pisCommonPaymentResponse.setPayments(Collections.emptyList());
+
+        // When
+        PaymentInformationResponse<CommonPayment> actualResponse = readBulkPaymentService.getPayment(pisCommonPaymentResponse, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+
+        // Then
+        verify(spiPaymentFactory, never()).createSpiBulkPayment(any(), anyString());
+
+        assertThat(actualResponse.hasError()).isTrue();
+        assertThat(actualResponse.getPayment()).isNull();
+        assertThat(actualResponse.getErrorHolder()).isEqualToComparingFieldByField(expectedError);
+    }
+
+    @Test
     public void getPayment_spiPaymentFactory_createSpiBulkPayment_failed() {
         // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
                                         .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
                                         .build();
 
-        when(spiPaymentFactory.createSpiBulkPayment(PIS_PAYMENTS, PRODUCT))
-            .thenReturn(Optional.empty());
+        when(spiPaymentFactory.createSpiBulkPayment(PIS_PAYMENTS, PRODUCT)).thenReturn(Optional.empty());
 
         // When
         PaymentInformationResponse<CommonPayment> actualResponse = readBulkPaymentService.getPayment(pisCommonPaymentResponse, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
@@ -195,10 +209,6 @@ public class ReadBulkPaymentServiceTest {
             X_REQUEST_ID,
             UUID.randomUUID()
         );
-    }
-
-    private static List<PisPayment> getListPisPayment() {
-        return Collections.singletonList(new PisPayment());
     }
 
     private static SpiResponse<SpiBulkPayment> buildSpiResponse() {

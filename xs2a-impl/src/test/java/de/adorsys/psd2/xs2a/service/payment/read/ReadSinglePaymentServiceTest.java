@@ -59,8 +59,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReadSinglePaymentServiceTest {
@@ -74,7 +75,7 @@ public class ReadSinglePaymentServiceTest {
     private static final TransactionStatus TRANSACTION_STATUS = TransactionStatus.RCVD;
     private static final String PRODUCT = "sepa-credit-transfers";
     private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType");
-    private static final List<PisPayment> PIS_PAYMENTS = getListPisPayment();
+    private static final List<PisPayment> PIS_PAYMENTS = Collections.singletonList(new PisPayment());
     private static final SpiContextData SPI_CONTEXT_DATA = getSpiContextData();
     private static final SpiSinglePayment SPI_SINGLE_PAYMENT = new SpiSinglePayment(PRODUCT);
     private static final SinglePayment SINGLE_PAYMENT = buildSinglePayment();
@@ -170,6 +171,25 @@ public class ReadSinglePaymentServiceTest {
     }
 
     @Test
+    public void getPayment_spiPaymentFactory_pisPaymentsListIsEmpty_failed() {
+        // Given
+        ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_400)
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "Payment not found"))
+                                        .build();
+        pisCommonPaymentResponse.setPayments(Collections.emptyList());
+
+        // When
+        PaymentInformationResponse<CommonPayment> actualResponse = readSinglePaymentService.getPayment(pisCommonPaymentResponse, PSU_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+
+        // Then
+        verify(spiPaymentFactory, never()).createSpiSinglePayment(any(), anyString());
+
+        assertThat(actualResponse.hasError()).isTrue();
+        assertThat(actualResponse.getPayment()).isNull();
+        assertThat(actualResponse.getErrorHolder()).isEqualToComparingFieldByField(expectedError);
+    }
+
+    @Test
     public void getPayment_spiPaymentFactory_createSpiSinglePayment_failed() {
         // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
@@ -195,10 +215,6 @@ public class ReadSinglePaymentServiceTest {
             UUID.randomUUID(),
             UUID.randomUUID()
         );
-    }
-
-    private static List<PisPayment> getListPisPayment() {
-        return Collections.singletonList(new PisPayment());
     }
 
     private static SinglePayment buildSinglePayment() {

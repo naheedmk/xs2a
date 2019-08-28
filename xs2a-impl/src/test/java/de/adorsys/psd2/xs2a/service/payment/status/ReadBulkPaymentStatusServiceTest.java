@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.payment;
+package de.adorsys.psd2.xs2a.service.payment.status;
 
 import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.consent.api.pis.PisPayment;
@@ -29,6 +29,7 @@ import de.adorsys.psd2.xs2a.domain.pis.ReadPaymentStatusResponse;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
+import de.adorsys.psd2.xs2a.service.payment.SpiPaymentFactory;
 import de.adorsys.psd2.xs2a.service.payment.status.ReadBulkPaymentStatusService;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
@@ -38,6 +39,7 @@ import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiGetPaymentStatusRespo
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.BulkPaymentSpi;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -50,16 +52,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReadBulkPaymentStatusServiceTest {
     private static final String PRODUCT = "sepa-credit-transfers";
     private final static UUID X_REQUEST_ID = UUID.randomUUID();
     private final static UUID INTERNAL_REQUEST_ID = UUID.randomUUID();
-    private static final List<PisPayment> PIS_PAYMENTS = getListPisPayment();
-    private static final CommonPaymentData COMMON_PAYMENT_DATA = getCommonPaymentData();
+    private static final List<PisPayment> PIS_PAYMENTS = Collections.singletonList(new PisPayment());
     private static final SpiContextData SPI_CONTEXT_DATA = getSpiContextData();
     private static final SpiBulkPayment SPI_BULK_PAYMENT = new SpiBulkPayment();
     private static final SpiGetPaymentStatusResponse TRANSACTION_STATUS = new SpiGetPaymentStatusResponse(TransactionStatus.ACSP, null);
@@ -80,6 +82,12 @@ public class ReadBulkPaymentStatusServiceTest {
     private SpiAspspConsentDataProviderFactory spiAspspConsentDataProviderFactory;
     @Mock
     private SpiAspspConsentDataProvider spiAspspConsentDataProvider;
+    private PisCommonPaymentResponse commonPaymentData;
+
+    @Before
+    public void setUp() {
+        commonPaymentData = getCommonPaymentData();
+    }
 
     @Test
     public void readPaymentStatus_success() {
@@ -92,10 +100,28 @@ public class ReadBulkPaymentStatusServiceTest {
             .thenReturn(TRANSACTION_RESPONSE);
 
         // When
-        ReadPaymentStatusResponse actualResponse = readBulkPaymentStatusService.readPaymentStatus(COMMON_PAYMENT_DATA, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        ReadPaymentStatusResponse actualResponse = readBulkPaymentStatusService.readPaymentStatus(commonPaymentData, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         // Then
         assertThat(actualResponse).isEqualTo(READ_PAYMENT_STATUS_RESPONSE);
+    }
+
+    @Test
+    public void readPaymentStatus_spiPaymentFactory_pisPaymentsListIsEmpty_failed() {
+        //Given
+        ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_400)
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "Payment not found"))
+                                        .build();
+        commonPaymentData.setPayments(Collections.emptyList());
+
+        // When
+        ReadPaymentStatusResponse actualResponse = readBulkPaymentStatusService.readPaymentStatus(commonPaymentData, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+
+        // Then
+        verify(spiPaymentFactory, never()).createSpiBulkPayment(any(), anyString());
+
+        assertThat(actualResponse.hasError()).isTrue();
+        assertThat(actualResponse.getErrorHolder()).isEqualToComparingFieldByField(expectedError);
     }
 
     @Test
@@ -109,7 +135,7 @@ public class ReadBulkPaymentStatusServiceTest {
             .thenReturn(Optional.empty());
 
         // When
-        ReadPaymentStatusResponse actualResponse = readBulkPaymentStatusService.readPaymentStatus(COMMON_PAYMENT_DATA, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        ReadPaymentStatusResponse actualResponse = readBulkPaymentStatusService.readPaymentStatus(commonPaymentData, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         // Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -133,7 +159,7 @@ public class ReadBulkPaymentStatusServiceTest {
             .thenReturn(spiAspspConsentDataProvider);
 
         // When
-        ReadPaymentStatusResponse actualResponse = readBulkPaymentStatusService.readPaymentStatus(COMMON_PAYMENT_DATA, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
+        ReadPaymentStatusResponse actualResponse = readBulkPaymentStatusService.readPaymentStatus(commonPaymentData, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
         // Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -161,11 +187,7 @@ public class ReadBulkPaymentStatusServiceTest {
                    .build();
     }
 
-    private static List<PisPayment> getListPisPayment() {
-        return Collections.singletonList(new PisPayment());
-    }
-
-    private static CommonPaymentData getCommonPaymentData() {
+    private static PisCommonPaymentResponse getCommonPaymentData() {
         PisCommonPaymentResponse paymentData = new PisCommonPaymentResponse();
         paymentData.setPaymentProduct(PRODUCT);
         paymentData.setPayments(Collections.singletonList(new PisPayment()));

@@ -20,6 +20,7 @@ import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.consent.api.pis.PisPayment;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.Xs2aToSpiPaymentInfoMapper;
 import de.adorsys.psd2.xs2a.service.payment.CancelPaymentService;
+import de.adorsys.psd2.xs2a.spi.service.SpiPayment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,10 +40,11 @@ public class CancelCommonPaymentService extends AbstractCancelPaymentService {
     }
 
     @Override
-    protected Optional createSpiPayment(List<PisPayment> pisPayments, CommonPaymentData commonPaymentData) {
+    protected Optional<? extends SpiPayment> createSpiPayment(List<PisPayment> pisPayments, CommonPaymentData commonPaymentData) {
         return Optional.of(xs2aToSpiPaymentInfoMapper.mapToSpiPaymentInfo(commonPaymentData));
     }
 
+    @Override
     protected boolean isCommonPayment() {
         return true;
     }

@@ -17,7 +17,6 @@
 package de.adorsys.psd2.xs2a.service.payment.status;
 
 import de.adorsys.psd2.consent.api.pis.PisPayment;
-import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.payment.SpiPaymentFactory;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
@@ -39,8 +38,9 @@ public class ReadPeriodicPaymentStatusService extends AbstractReadPaymentStatusS
     private PeriodicPaymentSpi periodicPaymentSpi;
 
     @Autowired
-    public ReadPeriodicPaymentStatusService(PeriodicPaymentSpi periodicPaymentSpi, SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
-                                        RequestProviderService requestProviderService, SpiPaymentFactory spiPaymentFactory) {
+    public ReadPeriodicPaymentStatusService(PeriodicPaymentSpi periodicPaymentSpi, SpiErrorMapper spiErrorMapper,
+                                            SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
+                                            SpiPaymentFactory spiPaymentFactory) {
         super(spiPaymentFactory, spiErrorMapper, aspspConsentDataProviderFactory);
         this.periodicPaymentSpi = periodicPaymentSpi;
     }

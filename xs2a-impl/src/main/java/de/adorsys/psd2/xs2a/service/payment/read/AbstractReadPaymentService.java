@@ -63,7 +63,9 @@ public abstract class AbstractReadPaymentService implements ReadPaymentService {
     private RequestProviderService requestProviderService;
     private Xs2aUpdatePaymentAfterSpiService updatePaymentStatusAfterSpiService;
 
-    public AbstractReadPaymentService(SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory, RequestProviderService requestProviderService, Xs2aUpdatePaymentAfterSpiService updatePaymentStatusAfterSpiService, SpiContextDataProvider spiContextDataProvider, SpiPaymentFactory spiPaymentFactory) {
+    public AbstractReadPaymentService(SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
+                                      RequestProviderService requestProviderService, Xs2aUpdatePaymentAfterSpiService updatePaymentStatusAfterSpiService,
+                                      SpiContextDataProvider spiContextDataProvider, SpiPaymentFactory spiPaymentFactory) {
         this.spiContextDataProvider = spiContextDataProvider;
         this.spiPaymentFactory = spiPaymentFactory;
         this.spiErrorMapper = spiErrorMapper;
