@@ -49,6 +49,8 @@ public class QwacCertificateFilterTest {
     @InjectMocks
     private QwacCertificateFilter qwacCertificateFilter;
     @Mock
+    private TppInfoHolder holder;
+    @Mock
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;
