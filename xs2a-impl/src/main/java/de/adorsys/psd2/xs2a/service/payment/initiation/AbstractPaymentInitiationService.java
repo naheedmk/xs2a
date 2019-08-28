@@ -62,7 +62,7 @@ public abstract class AbstractPaymentInitiationService<T extends CommonPayment, 
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Create Payment failed. Can't initiate Payment at SPI-level. Error msg: {}.",
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Create Payment failed. Can't initiate Payment at SPI level. Error msg: {}.",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), payment.getPaymentId(), errorHolder);
             return new ErrorPaymentInitiationResponse(errorHolder);
         }
