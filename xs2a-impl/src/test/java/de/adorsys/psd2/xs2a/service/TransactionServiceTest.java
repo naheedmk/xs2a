@@ -597,7 +597,7 @@ public class TransactionServiceTest {
     }
 
     private static Xs2aAccountAccess createAccountAccess() {
-        return new Xs2aAccountAccess(Collections.singletonList(TransactionServiceTest.XS2A_ACCOUNT_REFERENCE), Collections.singletonList(TransactionServiceTest.XS2A_ACCOUNT_REFERENCE), Collections.singletonList(TransactionServiceTest.XS2A_ACCOUNT_REFERENCE), null, null, null);
+        return new Xs2aAccountAccess(Collections.singletonList(XS2A_ACCOUNT_REFERENCE), Collections.singletonList(XS2A_ACCOUNT_REFERENCE), Collections.singletonList(XS2A_ACCOUNT_REFERENCE), null, null, null);
     }
 
     private static SpiAccountReference buildSpiAccountReferenceGlobal() {
