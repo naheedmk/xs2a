@@ -133,9 +133,6 @@ public class PisDecoupledScaStartAuthorisationStageTest {
         when(request.getPsuData())
             .thenReturn(PSU_ID_DATA);
 
-        when(request.getAuthorisationId())
-            .thenReturn(AUTHORISATION_ID);
-
         when(xs2aToSpiPsuDataMapper.mapToSpiPsuData(PSU_ID_DATA))
             .thenReturn(SPI_PSU_DATA);
 
@@ -188,11 +185,10 @@ public class PisDecoupledScaStartAuthorisationStageTest {
     }
 
     @Test
-    public void apply_Success_withoutHeaders(){
+    public void apply_Success_withoutHeaders() {
         Xs2aUpdatePisCommonPaymentPsuDataRequest request = new Xs2aUpdatePisCommonPaymentPsuDataRequest();
         request.setPaymentId(PAYMENT_ID);
         request.setAuthorisationId(AUTHORISATION_ID);
-        request.setPaymentProduct(PAYMENT_PRODUCT);
         request.setPassword(PASSWORD);
 
         SpiResponse<SpiAuthorisationStatus> expectedResponse = buildSuccessSpiResponse();
@@ -201,7 +197,7 @@ public class PisDecoupledScaStartAuthorisationStageTest {
             .thenReturn(expectedResponse);
 
         when(pisCommonPaymentServiceEncrypted.getPisAuthorisationById(AUTHORISATION_ID))
-            .thenReturn(Optional.of(PIS_AUTHORISATION_RESPONSE) );
+            .thenReturn(Optional.of(PIS_AUTHORISATION_RESPONSE));
 
         when(pisCommonDecoupledService.proceedDecoupledInitiation(request, SPI_PAYMENT_INFO))
             .thenReturn(mockedExpectedResponse);
@@ -216,7 +212,7 @@ public class PisDecoupledScaStartAuthorisationStageTest {
         Xs2aUpdatePisCommonPaymentPsuDataRequest captured = captor.getValue();
         assertThat(captured).isNotNull();
         assertThat(captured.getPsuData().isEmpty()).isFalse();
-        assertThat(captured.getPsuData()).isEqualTo( PSU_ID_DATA );
+        assertThat(captured.getPsuData()).isEqualTo(PSU_ID_DATA);
     }
 
     private static PisPaymentInfo buildPisPaymentInfo() {
