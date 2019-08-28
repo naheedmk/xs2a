@@ -29,7 +29,6 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.payment.SpiPaymentFactory;
-import de.adorsys.psd2.xs2a.service.payment.status.ReadPeriodicPaymentStatusService;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
@@ -67,6 +66,7 @@ public class ReadPeriodicPaymentStatusServiceTest {
     private static final SpiResponse<SpiGetPaymentStatusResponse> TRANSACTION_RESPONSE_FAILURE = buildFailSpiResponseTransactionStatus();
     private static final ReadPaymentStatusResponse READ_PAYMENT_STATUS_RESPONSE = new ReadPaymentStatusResponse(TRANSACTION_RESPONSE.getPayload().getTransactionStatus(), TRANSACTION_RESPONSE.getPayload().getFundsAvailable());
     private static final String SOME_ENCRYPTED_PAYMENT_ID = "Encrypted Payment Id";
+    private static final String PAYMENT_NOT_FOUND = "Payment not found";
 
     @InjectMocks
     private ReadPeriodicPaymentStatusService readPeriodicPaymentStatusService;
@@ -81,6 +81,7 @@ public class ReadPeriodicPaymentStatusServiceTest {
     private SpiAspspConsentDataProviderFactory spiAspspConsentDataProviderFactory;
     @Mock
     private SpiAspspConsentDataProvider spiAspspConsentDataProvider;
+
     private PisCommonPaymentResponse commonPaymentData;
 
     @Before
@@ -92,24 +93,24 @@ public class ReadPeriodicPaymentStatusServiceTest {
 
     @Test
     public void readPaymentStatus_success() {
-        //Given
+        // Given
         when(spiPaymentFactory.createSpiPeriodicPayment(PIS_PAYMENTS.get(0), PRODUCT))
             .thenReturn(Optional.of(SPI_PERIODIC_PAYMENT));
         when(periodicPaymentSpi.getPaymentStatusById(SPI_CONTEXT_DATA, SPI_PERIODIC_PAYMENT, spiAspspConsentDataProvider))
             .thenReturn(TRANSACTION_RESPONSE);
 
-        //When
+        // When
         ReadPaymentStatusResponse actualResponse = readPeriodicPaymentStatusService.readPaymentStatus(commonPaymentData, SPI_CONTEXT_DATA, SOME_ENCRYPTED_PAYMENT_ID);
 
-        //Then
+        // Then
         assertThat(actualResponse).isEqualTo(READ_PAYMENT_STATUS_RESPONSE);
     }
 
     @Test
     public void readPaymentStatus_periodicPaymentSpi_pisPaymentsListIsEmpty_failed() {
-        //Given
+        // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_400)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, PAYMENT_NOT_FOUND))
                                         .build();
         commonPaymentData.setPayments(Collections.emptyList());
 
@@ -127,7 +128,7 @@ public class ReadPeriodicPaymentStatusServiceTest {
     public void readPaymentStatus_periodicPaymentSpi_getPaymentStatusById_failed() {
         // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND))
                                         .build();
 
         when(spiPaymentFactory.createSpiPeriodicPayment(PIS_PAYMENTS.get(0), PRODUCT))
@@ -145,7 +146,7 @@ public class ReadPeriodicPaymentStatusServiceTest {
     public void readPaymentStatus_spiPaymentFactory_createSpiPeriodicPayment_failed() {
         // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND))
                                         .build();
 
         when(spiPaymentFactory.createSpiPeriodicPayment(PIS_PAYMENTS.get(0), PRODUCT))

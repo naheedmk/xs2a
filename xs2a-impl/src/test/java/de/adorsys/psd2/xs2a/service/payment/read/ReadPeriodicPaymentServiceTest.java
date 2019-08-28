@@ -36,7 +36,6 @@ import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiToXs2aPeriodicPaymentMapper;
 import de.adorsys.psd2.xs2a.service.payment.SpiPaymentFactory;
 import de.adorsys.psd2.xs2a.service.payment.Xs2aUpdatePaymentAfterSpiService;
-import de.adorsys.psd2.xs2a.service.payment.read.ReadPeriodicPaymentService;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
@@ -72,6 +71,7 @@ public class ReadPeriodicPaymentServiceTest {
     private static final SpiPeriodicPayment SPI_PERIODIC_PAYMENT = new SpiPeriodicPayment(PRODUCT);
     private static final PeriodicPayment PERIODIC_PAYMENT = buildPeriodicPayment();
     private static final String SOME_ENCRYPTED_PAYMENT_ID = "Encrypted Payment Id";
+    private static final String PAYMENT_NOT_FOUND = "Payment not found";
 
     @InjectMocks
     private ReadPeriodicPaymentService readPeriodicPaymentService;
@@ -145,7 +145,7 @@ public class ReadPeriodicPaymentServiceTest {
     public void getPayment_spiPaymentFactory_createSpiPeriodicPayment_failed() {
         // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND))
                                         .build();
 
         when(spiPaymentFactory.createSpiPeriodicPayment(PIS_PAYMENTS.get(0), PRODUCT))
@@ -165,7 +165,7 @@ public class ReadPeriodicPaymentServiceTest {
     public void getPayment_periodicPaymentSpi_pisPaymentsListIsEmpty_failed() {
         // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_400)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, PAYMENT_NOT_FOUND))
                                         .build();
         pisCommonPaymentResponse.setPayments(Collections.emptyList());
 
@@ -188,7 +188,7 @@ public class ReadPeriodicPaymentServiceTest {
                                                                .build();
 
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND))
                                         .build();
 
         when(periodicPaymentSpi.getPaymentById(SPI_CONTEXT_DATA, SPI_PERIODIC_PAYMENT, spiAspspConsentDataProvider))

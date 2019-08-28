@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.service.payment.status;
 
-import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.consent.api.pis.PisPayment;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
@@ -30,7 +29,6 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.payment.SpiPaymentFactory;
-import de.adorsys.psd2.xs2a.service.payment.status.ReadBulkPaymentStatusService;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
@@ -69,6 +67,7 @@ public class ReadBulkPaymentStatusServiceTest {
     private static final SpiResponse<SpiGetPaymentStatusResponse> TRANSACTION_RESPONSE_FAILURE = buildFailSpiResponseTransactionStatus();
     private static final ReadPaymentStatusResponse READ_PAYMENT_STATUS_RESPONSE = new ReadPaymentStatusResponse(TRANSACTION_RESPONSE.getPayload().getTransactionStatus(), TRANSACTION_RESPONSE.getPayload().getFundsAvailable());
     private static final String SOME_ENCRYPTED_PAYMENT_ID = "Encrypted Payment Id";
+    private static final String PAYMENT_NOT_FOUND = "Payment not found";
 
     @InjectMocks
     private ReadBulkPaymentStatusService readBulkPaymentStatusService;
@@ -110,7 +109,7 @@ public class ReadBulkPaymentStatusServiceTest {
     public void readPaymentStatus_spiPaymentFactory_pisPaymentsListIsEmpty_failed() {
         //Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_400)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, PAYMENT_NOT_FOUND))
                                         .build();
         commonPaymentData.setPayments(Collections.emptyList());
 
@@ -128,7 +127,7 @@ public class ReadBulkPaymentStatusServiceTest {
     public void readPaymentStatus_spiPaymentFactory_createSpiBulkPayment_failed() {
         //Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND))
                                         .build();
 
         when(spiPaymentFactory.createSpiBulkPayment(PIS_PAYMENTS, PRODUCT))
@@ -146,7 +145,7 @@ public class ReadBulkPaymentStatusServiceTest {
     public void readPaymentStatus_bulkPaymentSpi_getPaymentStatusById_failed() {
         //Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND))
                                         .build();
 
         when(spiPaymentFactory.createSpiBulkPayment(PIS_PAYMENTS, PRODUCT))

@@ -36,7 +36,6 @@ import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiToXs2aSinglePaymentMapper;
 import de.adorsys.psd2.xs2a.service.payment.SpiPaymentFactory;
 import de.adorsys.psd2.xs2a.service.payment.Xs2aUpdatePaymentAfterSpiService;
-import de.adorsys.psd2.xs2a.service.payment.read.ReadSinglePaymentService;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
@@ -80,6 +79,7 @@ public class ReadSinglePaymentServiceTest {
     private static final SpiSinglePayment SPI_SINGLE_PAYMENT = new SpiSinglePayment(PRODUCT);
     private static final SinglePayment SINGLE_PAYMENT = buildSinglePayment();
     private static final String SOME_ENCRYPTED_PAYMENT_ID = "Encrypted Payment Id";
+    private static final String PAYMENT_NOT_FOUND = "Payment not found";
 
     @InjectMocks
     private ReadSinglePaymentService readSinglePaymentService;
@@ -174,7 +174,7 @@ public class ReadSinglePaymentServiceTest {
     public void getPayment_spiPaymentFactory_pisPaymentsListIsEmpty_failed() {
         // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_400)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, PAYMENT_NOT_FOUND))
                                         .build();
         pisCommonPaymentResponse.setPayments(Collections.emptyList());
 
@@ -193,7 +193,7 @@ public class ReadSinglePaymentServiceTest {
     public void getPayment_spiPaymentFactory_createSpiSinglePayment_failed() {
         // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
-            .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
+            .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND))
             .build();
 
         when(spiPaymentFactory.createSpiSinglePayment(PIS_PAYMENTS.get(0), PRODUCT)).thenReturn(Optional.empty());

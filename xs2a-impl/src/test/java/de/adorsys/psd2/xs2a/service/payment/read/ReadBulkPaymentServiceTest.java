@@ -28,7 +28,6 @@ import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
 import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInformationResponse;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
-import de.adorsys.psd2.xs2a.service.consent.PisAspspDataService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
@@ -70,12 +69,11 @@ public class ReadBulkPaymentServiceTest {
     private static final SpiBulkPayment SPI_BULK_PAYMENT = new SpiBulkPayment();
     private static final SpiResponse<SpiBulkPayment> BULK_PAYMENT_SPI_RESPONSE = buildSpiResponse();
     private static final String SOME_ENCRYPTED_PAYMENT_ID = "Encrypted Payment Id";
+    private static final String PAYMENT_NOT_FOUND = "Payment not found";
 
     @InjectMocks
     private ReadBulkPaymentService readBulkPaymentService;
 
-    @Mock
-    private PisAspspDataService pisAspspDataService;
     @Mock
     private SpiContextDataProvider spiContextDataProvider;
     @Mock
@@ -148,7 +146,7 @@ public class ReadBulkPaymentServiceTest {
                                                            .error(new TppMessage(MessageErrorCode.FORMAT_ERROR, "Format error"))
                                                            .build();
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND))
                                         .build();
 
         when(bulkPaymentSpi.getPaymentById(SPI_CONTEXT_DATA, SPI_BULK_PAYMENT, spiAspspConsentDataProvider))
@@ -169,7 +167,7 @@ public class ReadBulkPaymentServiceTest {
     public void getPayment_spiPaymentFactory_pisPaymentsListIsEmpty_failed() {
         // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_400)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR, PAYMENT_NOT_FOUND))
                                         .build();
         pisCommonPaymentResponse.setPayments(Collections.emptyList());
 
@@ -188,7 +186,7 @@ public class ReadBulkPaymentServiceTest {
     public void getPayment_spiPaymentFactory_createSpiBulkPayment_failed() {
         // Given
         ErrorHolder expectedError = ErrorHolder.builder(ErrorType.PIS_404)
-                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, "Payment not found"))
+                                        .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404, PAYMENT_NOT_FOUND))
                                         .build();
 
         when(spiPaymentFactory.createSpiBulkPayment(PIS_PAYMENTS, PRODUCT)).thenReturn(Optional.empty());
