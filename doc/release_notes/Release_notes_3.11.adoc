@@ -98,5 +98,6 @@ values in `ais_consent`, `pis_common_payment` and `piis_consent` were replaced b
 version 5.2.
 
 == Remove TPP Role validation based on certificate
+
 From now on, validation of TPP Roles, based on the certificate, has been completely removed from XS2A.
 This validation is already performed beforehand.
