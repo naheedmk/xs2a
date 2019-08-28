@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.domain.pis;
+package de.adorsys.psd2.xs2a.service.payment.initiation;
 
-import de.adorsys.psd2.xs2a.core.profile.PaymentType;
-import de.adorsys.psd2.xs2a.domain.ErrorHolder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
+import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
 
-@Data
-@NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class CommonPaymentInitiationResponse extends PaymentInitiationResponse {
-    private PaymentType paymentType;
-
-    public CommonPaymentInitiationResponse(ErrorHolder errorHolder) {
-        super(errorHolder);
-    }
+/**
+ * Service for initiating payments in SPI layer
+ *
+ * @param <T> type of the payment initiated by this service
+ */
+public interface PaymentInitiationService<T extends CommonPayment> {
+    PaymentInitiationResponse initiatePayment(T payment, TppInfo tppInfo, String paymentProduct, PsuIdData psuIdData);
 }

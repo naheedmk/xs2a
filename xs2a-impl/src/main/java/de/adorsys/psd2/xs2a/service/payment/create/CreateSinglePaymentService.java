@@ -16,8 +16,6 @@
 
 package de.adorsys.psd2.xs2a.service.payment.create;
 
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
@@ -26,37 +24,26 @@ import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationService
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aToCmsPisCommonPaymentRequestMapper;
-import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentService;
-import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentServiceResolver;
+import de.adorsys.psd2.xs2a.service.payment.initiation.SinglePaymentInitiationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CreateSinglePaymentService extends AbstractCreatePaymentService<SinglePayment> {
-    private ScaPaymentServiceResolver scaPaymentServiceResolver;
-
+public class CreateSinglePaymentService extends AbstractCreatePaymentService<SinglePayment, SinglePaymentInitiationService> {
     @Autowired
-    public CreateSinglePaymentService(ScaPaymentServiceResolver scaPaymentServiceResolver,
-                                      Xs2aPisCommonPaymentService pisCommonPaymentService,
+    public CreateSinglePaymentService(Xs2aPisCommonPaymentService pisCommonPaymentService,
                                       PisScaAuthorisationServiceResolver pisScaAuthorisationServiceResolver,
                                       AuthorisationMethodDecider authorisationMethodDecider,
                                       Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper,
-                                      Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper) {
+                                      Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper,
+                                      SinglePaymentInitiationService paymentInitiationService) {
         super(pisCommonPaymentService, pisScaAuthorisationServiceResolver, authorisationMethodDecider,
-              xs2aPisCommonPaymentMapper, xs2aToCmsPisCommonPaymentRequestMapper);
-        this.scaPaymentServiceResolver = scaPaymentServiceResolver;
+              xs2aPisCommonPaymentMapper, xs2aToCmsPisCommonPaymentRequestMapper, paymentInitiationService);
     }
 
     @Override
     protected SinglePayment getPaymentRequest(Object payment, PaymentInitiationParameters paymentInitiationParameters) {
         return (SinglePayment) payment;
-    }
-
-    @Override
-    protected PaymentInitiationResponse initiatePayment(SinglePayment paymentRequest, PaymentInitiationParameters paymentInitiationParameters,
-                                                              TppInfo tppInfo, PsuIdData psuData) {
-        ScaPaymentService scaPaymentService = scaPaymentServiceResolver.getService();
-        return scaPaymentService.createSinglePayment(paymentRequest, tppInfo, paymentInitiationParameters.getPaymentProduct(), psuData);
     }
 
     @Override

@@ -21,7 +21,9 @@ import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.config.factory.ReadPaymentFactory;
 import de.adorsys.psd2.xs2a.config.factory.ReadPaymentStatusFactory;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
+import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
+import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.payment.create.*;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadPaymentService;
@@ -30,11 +32,12 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
+
 @Slf4j
 @Component
 @AllArgsConstructor
 public class PaymentServiceResolver {
-
     private final StandardPaymentProductsResolver standardPaymentProductsResolver;
 
     private final CreateCommonPaymentService createCommonPaymentService;
@@ -48,8 +51,13 @@ public class PaymentServiceResolver {
     private final ReadCommonPaymentStatusService readCommonPaymentStatusService;
     private final ReadPaymentStatusFactory readPaymentStatusFactory;
 
+    private final ScaApproachResolver scaApproachResolver;
 
     public CreatePaymentService getCreatePaymentService(PaymentInitiationParameters paymentInitiationParameters) {
+        if (isNotSupportedScaApproach(scaApproachResolver.resolveScaApproach())) {
+            throw new UnsupportedOperationException("Unsupported operation");
+        }
+
         if (standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())) {
             return createCommonPaymentService;
         }
@@ -77,4 +85,7 @@ public class PaymentServiceResolver {
         return readPaymentStatusFactory.getService(ReadPaymentStatusFactory.SERVICE_PREFIX + pisCommonPaymentResponse.getPaymentType().getValue());
     }
 
+    private boolean isNotSupportedScaApproach(ScaApproach scaApproach) {
+        return !EnumSet.of(ScaApproach.REDIRECT, ScaApproach.EMBEDDED, ScaApproach.DECOUPLED).contains(scaApproach);
+    }
 }

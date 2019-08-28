@@ -40,9 +40,7 @@ import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aToCmsPisCommonPaymentRequestMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
-import de.adorsys.psd2.xs2a.service.payment.create.CreateBulkPaymentService;
-import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentService;
-import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentServiceResolver;
+import de.adorsys.psd2.xs2a.service.payment.initiation.BulkPaymentInitiationService;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,9 +74,7 @@ public class CreateBulkPaymentServiceTest {
     @InjectMocks
     private CreateBulkPaymentService createBulkPaymentService;
     @Mock
-    private ScaPaymentService scaPaymentService;
-    @Mock
-    private ScaPaymentServiceResolver scaPaymentServiceResolver;
+    private BulkPaymentInitiationService bulkPaymentInitiationService;
     @Mock
     private Xs2aPisCommonPaymentService pisCommonPaymentService;
     @Mock
@@ -100,13 +96,12 @@ public class CreateBulkPaymentServiceTest {
     public void init() {
         BulkPaymentInitiationResponse buildBulkPaymentInitiationResponse = buildBulkPaymentInitiationResponse(initialSpiAspspConsentDataProvider);
 
-        when(scaPaymentService.createBulkPayment(buildBulkPayment(), TPP_INFO, "sepa-credit-transfers", PSU_DATA)).thenReturn(buildBulkPaymentInitiationResponse);
-        when(scaPaymentService.createBulkPayment(buildBulkPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForBulkPayment());
+        when(bulkPaymentInitiationService.initiatePayment(buildBulkPayment(), TPP_INFO, "sepa-credit-transfers", PSU_DATA)).thenReturn(buildBulkPaymentInitiationResponse);
+        when(bulkPaymentInitiationService.initiatePayment(buildBulkPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForBulkPayment());
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
         when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PSU_DATA)).thenReturn(PIS_COMMON_PAYMENT);
         when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, buildBulkPaymentInitiationResponse, null))
             .thenReturn(PAYMENT_INFO);
-        when(scaPaymentServiceResolver.getService()).thenReturn(scaPaymentService);
     }
 
     @Test

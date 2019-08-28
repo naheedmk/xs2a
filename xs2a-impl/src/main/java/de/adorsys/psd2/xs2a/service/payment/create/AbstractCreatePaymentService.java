@@ -22,13 +22,16 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aPisCommonPayment;
-import de.adorsys.psd2.xs2a.domain.pis.*;
+import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationService;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationServiceResolver;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aToCmsPisCommonPaymentRequestMapper;
+import de.adorsys.psd2.xs2a.service.payment.initiation.PaymentInitiationService;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -40,12 +43,13 @@ import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
 import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.PIS_400;
 
 @RequiredArgsConstructor
-public abstract class AbstractCreatePaymentService<P extends CommonPayment> implements CreatePaymentService {
+public abstract class AbstractCreatePaymentService<P extends CommonPayment, S extends PaymentInitiationService<P>> implements CreatePaymentService {
     protected final Xs2aPisCommonPaymentService pisCommonPaymentService;
     private final PisScaAuthorisationServiceResolver pisScaAuthorisationServiceResolver;
     private final AuthorisationMethodDecider authorisationMethodDecider;
     private final Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper;
     private final Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper;
+    private final S paymentInitiationService;
 
     /**
      * Initiates payment
@@ -60,7 +64,7 @@ public abstract class AbstractCreatePaymentService<P extends CommonPayment> impl
         PsuIdData psuData = paymentInitiationParameters.getPsuData();
 
         P paymentRequest = getPaymentRequest(payment, paymentInitiationParameters);
-        PaymentInitiationResponse response = initiatePayment(paymentRequest, paymentInitiationParameters, tppInfo, psuData);
+        PaymentInitiationResponse response = paymentInitiationService.initiatePayment(paymentRequest, tppInfo, paymentInitiationParameters.getPaymentProduct(), psuData);
 
         if (response.hasError()) {
             return buildErrorResponse(response.getErrorHolder());
@@ -105,10 +109,6 @@ public abstract class AbstractCreatePaymentService<P extends CommonPayment> impl
     }
 
     protected abstract P getPaymentRequest(Object payment, PaymentInitiationParameters paymentInitiationParameters);
-
-    protected abstract PaymentInitiationResponse initiatePayment(P paymentRequest,
-                                                                               PaymentInitiationParameters paymentInitiationParameters,
-                                                                               TppInfo tppInfo, PsuIdData psuData);
 
     protected abstract P updateCommonPayment(P paymentRequest, PaymentInitiationParameters paymentInitiationParameters,
                                              PaymentInitiationResponse response, String paymentId);

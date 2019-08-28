@@ -19,7 +19,9 @@ package de.adorsys.psd2.xs2a.service.payment;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.config.factory.ReadPaymentFactory;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
+import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
+import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.payment.create.*;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.payment.read.ReadPaymentService;
@@ -32,7 +34,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -58,6 +61,9 @@ public class PaymentServiceResolverTest {
     @Mock
     private ReadSinglePaymentService readSinglePaymentService;
 
+    @Mock
+    private ScaApproachResolver scaApproachResolver;
+
     private PaymentInitiationParameters paymentInitiationParameters;
     private PisCommonPaymentResponse commonPaymentData;
 
@@ -65,6 +71,7 @@ public class PaymentServiceResolverTest {
     public void setUp() {
         paymentInitiationParameters = new PaymentInitiationParameters();
         commonPaymentData = new PisCommonPaymentResponse();
+        when(scaApproachResolver.resolveScaApproach()).thenReturn(ScaApproach.REDIRECT);
     }
 
     @Test
@@ -72,6 +79,7 @@ public class PaymentServiceResolverTest {
         when(standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())).thenReturn(true);
 
         CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        assertEquals(createCommonPaymentService, createPaymentService);
         assertTrue(createPaymentService instanceof CreateCommonPaymentService);
     }
 
@@ -81,6 +89,7 @@ public class PaymentServiceResolverTest {
         when(standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())).thenReturn(false);
 
         CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        assertEquals(createSinglePaymentService, createPaymentService);
         assertTrue(createPaymentService instanceof CreateSinglePaymentService);
     }
 
@@ -90,6 +99,7 @@ public class PaymentServiceResolverTest {
         when(standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())).thenReturn(false);
 
         CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        assertEquals(createPeriodicPaymentService, createPaymentService);
         assertTrue(createPaymentService instanceof CreatePeriodicPaymentService);
     }
 
@@ -99,6 +109,7 @@ public class PaymentServiceResolverTest {
         when(standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())).thenReturn(false);
 
         CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        assertEquals(createBulkPaymentService, createPaymentService);
         assertTrue(createPaymentService instanceof CreateBulkPaymentService);
     }
 
@@ -107,6 +118,7 @@ public class PaymentServiceResolverTest {
         when(standardPaymentProductsResolver.isRawPaymentProduct(paymentInitiationParameters.getPaymentProduct())).thenReturn(false);
 
         CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+        assertEquals(createBulkPaymentService, createPaymentService);
         assertTrue(createPaymentService instanceof CreateBulkPaymentService);
     }
 
@@ -124,5 +136,23 @@ public class PaymentServiceResolverTest {
 
         ReadPaymentService readPaymentService = paymentServiceResolver.getReadPaymentService(commonPaymentData);
         assertTrue(readPaymentService instanceof ReadSinglePaymentService);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void getCreatePaymentService_withOauthApproach() {
+        // Given
+        when(scaApproachResolver.resolveScaApproach()).thenReturn(ScaApproach.OAUTH);
+
+        // When
+        paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void getCreatePaymentService_withUndefinedApproach() {
+        // Given
+        when(scaApproachResolver.resolveScaApproach()).thenReturn(ScaApproach.UNDEFINED);
+
+        // When
+        paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
     }
 }

@@ -43,9 +43,7 @@ import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aToCmsPisCommonPaymentRequestMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
-import de.adorsys.psd2.xs2a.service.payment.create.CreateCommonPaymentService;
-import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentService;
-import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentServiceResolver;
+import de.adorsys.psd2.xs2a.service.payment.initiation.CommonPaymentInitiationService;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import org.junit.Before;
@@ -55,7 +53,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -86,10 +83,11 @@ public class CreateCommonPaymentServiceTest {
     @InjectMocks
     private CreateCommonPaymentService createCommonPaymentService;
     @Mock
-    private ScaPaymentService scaPaymentService;
+    private CommonPaymentInitiationService commonPaymentInitiationService;
     @Mock
     private Xs2aPisCommonPaymentService pisCommonPaymentService;
-    @Mock    private PisAspspDataService pisAspspDataService;
+    @Mock
+    private PisAspspDataService pisAspspDataService;
     @Mock
     private AspspDataService aspspDataService;
     @Mock
@@ -100,8 +98,6 @@ public class CreateCommonPaymentServiceTest {
     private Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper;
     @Mock
     private Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper;
-    @Mock
-    private ScaPaymentServiceResolver scaPaymentServiceResolver;
     @SuppressWarnings("unused") //mocks boolean value that returns false by default
     @Mock
     private AuthorisationMethodDecider authorisationMethodDecider;
@@ -111,13 +107,11 @@ public class CreateCommonPaymentServiceTest {
         InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider =
             new SpiAspspConsentDataProviderFactory(aspspDataService).getInitialAspspConsentDataProvider();
         commonPaymentInitiationResponse = buildCommonPaymentInitiationResponse(initialSpiAspspConsentDataProvider);
-        when(scaPaymentService.createCommonPayment(COMMON_PAYMENT, TPP_INFO, PRODUCT, PSU_DATA)).thenReturn(commonPaymentInitiationResponse);
+        when(commonPaymentInitiationService.initiatePayment(COMMON_PAYMENT, TPP_INFO, PRODUCT, PSU_DATA)).thenReturn(commonPaymentInitiationResponse);
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
         when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PSU_DATA)).thenReturn(PIS_COMMON_PAYMENT);
         when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, commonPaymentInitiationResponse, COMMON_PAYMENT.getPaymentData()))
             .thenReturn(PAYMENT_INFO);
-        when(scaPaymentServiceResolver.getService())
-            .thenReturn(scaPaymentService);
     }
 
     @Test
@@ -142,7 +136,7 @@ public class CreateCommonPaymentServiceTest {
 
         CommonPayment commonPayment = buildCommonPayment();
         commonPayment.setPsuDataList(Collections.singletonList(WRONG_PSU_DATA));
-        when(scaPaymentService.createCommonPayment(commonPayment, WRONG_TPP_INFO, PRODUCT, WRONG_PSU_DATA)).thenReturn(buildSpiErrorForCommonPayment());
+        when(commonPaymentInitiationService.initiatePayment(commonPayment, WRONG_TPP_INFO, PRODUCT, WRONG_PSU_DATA)).thenReturn(buildSpiErrorForCommonPayment());
 
         //When
         ResponseObject<PaymentInitiationResponse> actualResponse = createCommonPaymentService.createPayment(PAYMENT_DATA_IN_BYTES, param, WRONG_TPP_INFO);
@@ -168,7 +162,7 @@ public class CreateCommonPaymentServiceTest {
     }
 
     @Test
-    public void createPayment_authorisationMethodDecider_isImplicitMethod_success() throws IOException {
+    public void createPayment_authorisationMethodDecider_isImplicitMethod_success() {
         // Given
         when(authorisationMethodDecider.isImplicitMethod(false, false))
             .thenReturn(true);

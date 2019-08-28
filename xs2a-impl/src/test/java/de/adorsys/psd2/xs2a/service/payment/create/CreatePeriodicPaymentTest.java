@@ -44,9 +44,7 @@ import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aToCmsPisCommonPaymentRequestMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
-import de.adorsys.psd2.xs2a.service.payment.create.CreatePeriodicPaymentService;
-import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentService;
-import de.adorsys.psd2.xs2a.service.payment.sca.ScaPaymentServiceResolver;
+import de.adorsys.psd2.xs2a.service.payment.initiation.PeriodicPaymentInitiationService;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import org.junit.Before;
@@ -80,19 +78,16 @@ public class CreatePeriodicPaymentTest {
     private final Xs2aPisCommonPayment PIS_COMMON_PAYMENT_FAIL = new Xs2aPisCommonPayment(null, PSU_ID_DATA);
     private static final Xs2aCreatePisAuthorisationResponse CREATE_PIS_AUTHORISATION_RESPONSE = new Xs2aCreatePisAuthorisationResponse(null, null, null, null);
 
-
     @InjectMocks
     private CreatePeriodicPaymentService createPeriodicPaymentService;
     @Mock
-    private ScaPaymentService scaPaymentService;
+    private PeriodicPaymentInitiationService periodicPaymentInitiationService;
     @Mock
     private Xs2aPisCommonPaymentService pisCommonPaymentService;
     @Mock
     private Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper;
     @Mock
     private Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper;
-    @Mock
-    private ScaPaymentServiceResolver scaPaymentServiceResolver;
     @Mock
     private AspspDataService aspspDataService;
     @SuppressWarnings("unused") //mocks boolean value that returns false by default
@@ -110,14 +105,13 @@ public class CreatePeriodicPaymentTest {
     @Before
     public void setUp() {
         periodicPaymentInitiationResponse = buildPeriodicPaymentInitiationResponse(new SpiAspspConsentDataProviderFactory(aspspDataService).getInitialAspspConsentDataProvider());
-        when(scaPaymentService.createPeriodicPayment(buildPeriodicPayment(), TPP_INFO, "sepa-credit-transfers", PSU_ID_DATA)).thenReturn(periodicPaymentInitiationResponse);
+        when(periodicPaymentInitiationService.initiatePayment(buildPeriodicPayment(), TPP_INFO, "sepa-credit-transfers", PSU_ID_DATA)).thenReturn(periodicPaymentInitiationResponse);
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
         when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PARAM.getPsuData())).thenReturn(PIS_COMMON_PAYMENT);
         when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, periodicPaymentInitiationResponse, null))
             .thenReturn(PAYMENT_INFO);
-        when(scaPaymentService.createPeriodicPayment(buildPeriodicPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA))
+        when(periodicPaymentInitiationService.initiatePayment(buildPeriodicPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA))
             .thenReturn(buildSpiErrorForPeriodicPayment());
-        when(scaPaymentServiceResolver.getService()).thenReturn(scaPaymentService);
     }
 
     @Test
@@ -150,7 +144,7 @@ public class CreatePeriodicPaymentTest {
         PaymentInitiationParameters param = buildPaymentInitiationParameters();
         param.setPsuData(WRONG_PSU_DATA);
 
-        when(scaPaymentService.createPeriodicPayment(buildPeriodicPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForPeriodicPayment());
+        when(periodicPaymentInitiationService.initiatePayment(buildPeriodicPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForPeriodicPayment());
         //When
         ResponseObject<PaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), param, WRONG_TPP_INFO);
 

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.payment.sca;
+package de.adorsys.psd2.xs2a.domain.pis;
 
-import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
-import de.adorsys.psd2.xs2a.service.authorization.ScaServiceResolver;
-import org.springframework.stereotype.Service;
+import de.adorsys.psd2.xs2a.domain.ErrorHolder;
+import lombok.EqualsAndHashCode;
 
-import java.util.List;
-
-@Service
-public class ScaPaymentServiceResolver extends ScaServiceResolver<ScaPaymentService> {
-
-    public ScaPaymentServiceResolver(List<ScaPaymentService> services, ScaApproachResolver scaApproachResolver) {
-        super(services, scaApproachResolver);
+/**
+ * Payment initiation response for error cases
+ */
+@EqualsAndHashCode(callSuper = true)
+public class ErrorPaymentInitiationResponse extends PaymentInitiationResponse {
+    public ErrorPaymentInitiationResponse(ErrorHolder errorHolder) {
+        super(errorHolder);
     }
 }
