@@ -39,7 +39,6 @@ public abstract class AbstractCancelPaymentService implements CancelPaymentServi
 
     private final de.adorsys.psd2.xs2a.service.payment.CancelPaymentService cancelPaymentService;
 
-
     @Override
     public ResponseObject<CancelPaymentResponse> cancelPayment(CommonPaymentData commonPaymentData, PisPaymentCancellationRequest paymentCancellationRequest) {
         List<PisPayment> pisPayments = getPisPayments(commonPaymentData);

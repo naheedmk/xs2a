@@ -32,15 +32,16 @@ import java.util.stream.Collectors;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class BulkPayment extends CommonPayment implements AccountReferenceCollector {
-    private Boolean batchBookingPreferred;
-//    @EqualsAndHashCode.Exclude
-//    protected String paymentProduct;
+
+    protected String paymentProduct;
     protected PaymentType paymentType = PaymentType.BULK;
+
     @NotNull
     private AccountReference debtorAccount;
     private LocalDate requestedExecutionDate;
     private OffsetDateTime requestedExecutionTime;
     private List<SinglePayment> payments;
+    private Boolean batchBookingPreferred;
 
     @Override
     public Set<AccountReference> getAccountReferences() {
