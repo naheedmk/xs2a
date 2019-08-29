@@ -501,6 +501,24 @@ public class TransactionServiceTest {
     }
 
     @Test
+    public void downloadTransactions_WithNullSpiTransactionsDownloadResponse() {
+        // Given
+        when(downloadTransactionsReportValidator.validate(any(DownloadTransactionListRequestObject.class)))
+            .thenReturn(ValidationResult.valid());
+        when(consentMapper.mapToSpiAccountConsent(any()))
+            .thenReturn(SPI_ACCOUNT_CONSENT);
+
+        when(accountSpi.requestTransactionsByDownloadLink(SPI_CONTEXT_DATA, SPI_ACCOUNT_CONSENT, new String(Base64.getDecoder().decode(BASE64_STRING_EXAMPLE)), spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID)))
+            .thenReturn(buildErrorSpiResponse(null));
+
+        // When
+        ResponseObject<Xs2aTransactionsDownloadResponse> actualResponse = transactionService.downloadTransactions(CONSENT_ID, ACCOUNT_ID, BASE64_STRING_EXAMPLE);
+
+        // Then
+        assertThatErrorIs(actualResponse, RESOURCE_UNKNOWN_404);
+    }
+
+    @Test
     public void getTransactionDetails_Failure_NoAccountConsent() {
         // Given
         when(aisConsentService.getAccountConsentById(CONSENT_ID)).thenReturn(Optional.empty());

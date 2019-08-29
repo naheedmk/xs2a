@@ -421,6 +421,14 @@ public class TransactionService {
                                                                                                                 decodedDownloadId,
                                                                                                                 aspspConsentDataProvider);
         if (spiResponse.hasError()) {
+            if (spiResponse.getPayload() == null) {
+                log.info("X-Request-ID: [{}], Consent-ID [{}], Account-ID: [{}], Download-ID: [{}]. Download transactions failed: spiResponse is empty.",
+                         xRequestId, consentId, accountId, downloadId);
+                return ResponseObject.<Xs2aTransactionsDownloadResponse>builder()
+                           .fail(ErrorType.AIS_404, of(RESOURCE_UNKNOWN_404))
+                           .build();
+            }
+
             log.info("X-Request-ID: [{}], Consent-ID [{}], Account-ID: [{}], Download-ID: [{}]. Download transactions failed: couldn't get download transactions stream by link.",
                      xRequestId, consentId, accountId, downloadId);
             return ResponseObject.<Xs2aTransactionsDownloadResponse>builder()
@@ -428,17 +436,11 @@ public class TransactionService {
                        .build();
         }
 
-        if (spiResponse.getPayload() == null) {
-            log.info("X-Request-ID: [{}], Consent-ID [{}], Account-ID: [{}], Download-ID: [{}]. Download transactions failed: spiResponse is empty.",
-                     xRequestId, consentId, accountId, downloadId);
-            return ResponseObject.<Xs2aTransactionsDownloadResponse>builder()
-                       .fail(ErrorType.AIS_404, of(RESOURCE_UNKNOWN_404))
-                       .build();
-        }
-
         SpiTransactionsDownloadResponse spiPayload = spiResponse.getPayload();
+        Xs2aTransactionsDownloadResponse transactionsDownloadResponse = spiToXs2aDownloadTransactionsMapper.mapToXs2aTransactionsDownloadResponse(spiPayload);
+
         return ResponseObject.<Xs2aTransactionsDownloadResponse>builder()
-                   .body(spiToXs2aDownloadTransactionsMapper.mapToXs2aTransactionsDownloadResponse(spiPayload))
+                   .body(transactionsDownloadResponse)
                    .build();
     }
 }
