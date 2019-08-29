@@ -105,6 +105,7 @@ public class TransactionServiceTest {
     private static final LocalDate DATE_FROM = LocalDate.of(2018, 1, 1);
     private static final LocalDate DATE_TO = LocalDate.now();
     private static final MessageErrorCode FORMAT_ERROR_CODE = MessageErrorCode.FORMAT_ERROR;
+    private static final MessageErrorCode SERVICE_NOT_SUPPORTED_ERROR_CODE = SERVICE_NOT_SUPPORTED;
     private static final MessageError CONSENT_INVALID_MESSAGE_ERROR = new MessageError(ErrorType.AIS_401, of(CONSENT_INVALID));
     private static final SpiAccountConsent SPI_ACCOUNT_CONSENT = new SpiAccountConsent();
     private static final SpiAccountReference SPI_ACCOUNT_REFERENCE_GLOBAL = buildSpiAccountReferenceGlobal();
@@ -254,6 +255,27 @@ public class TransactionServiceTest {
     }
 
     @Test
+    public void getTransactionsReportByPeriod_With406ErrorInSpiTransactionReport() {
+        // Given
+        doNothing().when(validatorService).validateAccountIdPeriod(ACCOUNT_ID, DATE_FROM, DATE_TO);
+
+        when(aspspProfileService.isTransactionsWithoutBalancesSupported())
+            .thenReturn(true);
+
+        when(accountSpi.requestTransactionsForAccount(SPI_CONTEXT_DATA, MediaType.APPLICATION_JSON_VALUE, WITH_BALANCE, DATE_FROM, DATE_TO, BOOKING_STATUS, spiAccountReference, SPI_ACCOUNT_CONSENT, spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID)))
+            .thenReturn(buildErrorServiceNotSupportedSpiResponse());
+
+        when(consentMapper.mapToSpiAccountConsent(any()))
+            .thenReturn(SPI_ACCOUNT_CONSENT);
+
+        // When
+        ResponseObject<Xs2aTransactionsReport> actualResponse = transactionService.getTransactionsReportByPeriod(XS2A_TRANSACTIONS_REPORT_BY_PERIOD_REQUEST);
+
+        // Then
+        assertThatErrorIs(actualResponse, REQUESTED_FORMATS_INVALID);
+    }
+
+    @Test
     public void getTransactionsReportByPeriod_WithNullSpiTransactionReport() {
         // Given
         doNothing().when(validatorService).validateAccountIdPeriod(ACCOUNT_ID, DATE_FROM, DATE_TO);
@@ -263,14 +285,6 @@ public class TransactionServiceTest {
 
         when(accountSpi.requestTransactionsForAccount(SPI_CONTEXT_DATA, MediaType.APPLICATION_JSON_VALUE, WITH_BALANCE, DATE_FROM, DATE_TO, BOOKING_STATUS, spiAccountReference, SPI_ACCOUNT_CONSENT, spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID)))
             .thenReturn(buildSuccessSpiResponse(null));
-
-        Xs2aAccountReport xs2aAccountReport = new Xs2aAccountReport(Collections.emptyList(), Collections.emptyList(), null);
-
-        when(transactionsToAccountReportMapper.mapToXs2aAccountReport(Collections.emptyList(), null))
-            .thenReturn(Optional.of(xs2aAccountReport));
-
-        when(referenceMapper.mapToXs2aAccountReference(spiAccountReference))
-            .thenReturn(XS2A_ACCOUNT_REFERENCE);
 
         when(consentMapper.mapToSpiAccountConsent(any()))
             .thenReturn(SPI_ACCOUNT_CONSENT);
@@ -596,12 +610,6 @@ public class TransactionServiceTest {
     }
 
     // Needed because SpiResponse is final, so it's impossible to mock it
-    private <T> SpiResponse<T> buildSuccessEmptySpiResponse() {
-        return SpiResponse.<T>builder()
-                   .build();
-    }
-
-    // Needed because SpiResponse is final, so it's impossible to mock it
     private <T> SpiResponse<T> buildSuccessSpiResponse(T payload) {
         return SpiResponse.<T>builder()
                    .payload(payload)
@@ -613,6 +621,14 @@ public class TransactionServiceTest {
         return SpiResponse.<T>builder()
                    .payload(payload)
                    .error(new TppMessage(FORMAT_ERROR_CODE, "Format error"))
+                   .build();
+    }
+
+    // Needed because SpiResponse is final, so it's impossible to mock it
+    private <T> SpiResponse<T> buildErrorServiceNotSupportedSpiResponse() {
+        return SpiResponse.<T>builder()
+                   .payload((T) SPI_TRANSACTION_REPORT)
+                   .error(new TppMessage(SERVICE_NOT_SUPPORTED_ERROR_CODE, "Service not supported error"))
                    .build();
     }
 
