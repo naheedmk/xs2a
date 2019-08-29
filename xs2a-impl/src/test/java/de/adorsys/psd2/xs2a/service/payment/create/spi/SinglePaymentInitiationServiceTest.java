@@ -21,7 +21,6 @@ import de.adorsys.psd2.xs2a.core.error.TppMessage;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.core.tpp.TppRole;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
@@ -48,7 +47,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +60,6 @@ public class SinglePaymentInitiationServiceTest {
     private static final String PRODUCT = "sepa-credit-transfers";
     private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType");
     private static final SpiContextData SPI_CONTEXT_DATA = getSpiContextData();
-    private static final TppInfo TPP_INFO = buildTppInfo();
 
     private static final SinglePayment SINGLE_PAYMENT = new SinglePayment();
     private static final SpiSinglePayment SPI_SINGLE_PAYMENT = new SpiSinglePayment(PRODUCT);
@@ -112,7 +109,7 @@ public class SinglePaymentInitiationServiceTest {
             .thenReturn(SINGLE_PAYMENT_RESPONSE);
 
         //When
-        PaymentInitiationResponse actualResponse = singlePaymentService.initiatePayment(SINGLE_PAYMENT, TPP_INFO, PRODUCT, PSU_DATA);
+        PaymentInitiationResponse actualResponse = singlePaymentService.initiatePayment(SINGLE_PAYMENT, PRODUCT, PSU_DATA);
 
         //Then
         assertThat(actualResponse).isNotNull();
@@ -135,7 +132,7 @@ public class SinglePaymentInitiationServiceTest {
             .thenReturn(EXPECTED_ERROR);
 
         // When
-        PaymentInitiationResponse actualResponse = singlePaymentService.initiatePayment(SINGLE_PAYMENT, TPP_INFO, PRODUCT, PSU_DATA);
+        PaymentInitiationResponse actualResponse = singlePaymentService.initiatePayment(SINGLE_PAYMENT, PRODUCT, PSU_DATA);
 
         // Then
         assertThat(actualResponse.hasError()).isTrue();
@@ -151,15 +148,6 @@ public class SinglePaymentInitiationServiceTest {
             UUID.randomUUID(),
             UUID.randomUUID()
         );
-    }
-
-    private static TppInfo buildTppInfo() {
-        TppInfo tppInfo = new TppInfo();
-        tppInfo.setAuthorisationNumber("registrationNumber");
-        tppInfo.setTppName("tppName");
-        tppInfo.setTppRoles(Collections.singletonList(TppRole.PISP));
-        tppInfo.setAuthorityId("authorityId");
-        return tppInfo;
     }
 
     private static SpiSinglePaymentInitiationResponse buildSpiSinglePaymentInitiationResponse() {

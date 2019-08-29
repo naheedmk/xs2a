@@ -18,7 +18,6 @@ package de.adorsys.psd2.xs2a.service.payment.create.spi;
 
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.ErrorPaymentInitiationResponse;
@@ -48,7 +47,7 @@ public abstract class AbstractPaymentInitiationService<T extends CommonPayment, 
     private final SpiErrorMapper spiErrorMapper;
 
     @Override
-    public PaymentInitiationResponse initiatePayment(T payment, TppInfo tppInfo, String paymentProduct, PsuIdData psuIdData) {
+    public PaymentInitiationResponse initiatePayment(T payment, String paymentProduct, PsuIdData psuIdData) {
         SpiContextData spiContextData = spiContextDataProvider.provideWithPsuIdData(psuIdData);
         InitialSpiAspspConsentDataProvider aspspConsentDataProvider =
             aspspConsentDataProviderFactory.getInitialAspspConsentDataProvider();

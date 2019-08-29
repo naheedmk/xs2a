@@ -96,8 +96,8 @@ public class CreateBulkPaymentServiceTest {
     public void init() {
         BulkPaymentInitiationResponse buildBulkPaymentInitiationResponse = buildBulkPaymentInitiationResponse(initialSpiAspspConsentDataProvider);
 
-        when(bulkPaymentInitiationService.initiatePayment(buildBulkPayment(), TPP_INFO, "sepa-credit-transfers", PSU_DATA)).thenReturn(buildBulkPaymentInitiationResponse);
-        when(bulkPaymentInitiationService.initiatePayment(buildBulkPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForBulkPayment());
+        when(bulkPaymentInitiationService.initiatePayment(buildBulkPayment(), "sepa-credit-transfers", PSU_DATA)).thenReturn(buildBulkPaymentInitiationResponse);
+        when(bulkPaymentInitiationService.initiatePayment(buildBulkPayment(), "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForBulkPayment());
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
         when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PSU_DATA)).thenReturn(PIS_COMMON_PAYMENT);
         when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, buildBulkPaymentInitiationResponse, null))

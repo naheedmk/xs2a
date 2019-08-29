@@ -64,7 +64,7 @@ public abstract class AbstractCreatePaymentService<P extends CommonPayment, S ex
         PsuIdData psuData = paymentInitiationParameters.getPsuData();
 
         P paymentRequest = getPaymentRequest(payment, paymentInitiationParameters);
-        PaymentInitiationResponse response = paymentInitiationService.initiatePayment(paymentRequest, tppInfo, paymentInitiationParameters.getPaymentProduct(), psuData);
+        PaymentInitiationResponse response = paymentInitiationService.initiatePayment(paymentRequest, paymentInitiationParameters.getPaymentProduct(), psuData);
 
         if (response.hasError()) {
             return buildErrorResponse(response.getErrorHolder());

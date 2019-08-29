@@ -105,12 +105,12 @@ public class CreatePeriodicPaymentTest {
     @Before
     public void setUp() {
         periodicPaymentInitiationResponse = buildPeriodicPaymentInitiationResponse(new SpiAspspConsentDataProviderFactory(aspspDataService).getInitialAspspConsentDataProvider());
-        when(periodicPaymentInitiationService.initiatePayment(buildPeriodicPayment(), TPP_INFO, "sepa-credit-transfers", PSU_ID_DATA)).thenReturn(periodicPaymentInitiationResponse);
+        when(periodicPaymentInitiationService.initiatePayment(buildPeriodicPayment(), "sepa-credit-transfers", PSU_ID_DATA)).thenReturn(periodicPaymentInitiationResponse);
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
         when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PARAM.getPsuData())).thenReturn(PIS_COMMON_PAYMENT);
         when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, periodicPaymentInitiationResponse, null))
             .thenReturn(PAYMENT_INFO);
-        when(periodicPaymentInitiationService.initiatePayment(buildPeriodicPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA))
+        when(periodicPaymentInitiationService.initiatePayment(buildPeriodicPayment(), "sepa-credit-transfers", WRONG_PSU_DATA))
             .thenReturn(buildSpiErrorForPeriodicPayment());
     }
 
@@ -144,7 +144,7 @@ public class CreatePeriodicPaymentTest {
         PaymentInitiationParameters param = buildPaymentInitiationParameters();
         param.setPsuData(WRONG_PSU_DATA);
 
-        when(periodicPaymentInitiationService.initiatePayment(buildPeriodicPayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForPeriodicPayment());
+        when(periodicPaymentInitiationService.initiatePayment(buildPeriodicPayment(), "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForPeriodicPayment());
         //When
         ResponseObject<PaymentInitiationResponse> actualResponse = createPeriodicPaymentService.createPayment(buildPeriodicPayment(), param, WRONG_TPP_INFO);
 

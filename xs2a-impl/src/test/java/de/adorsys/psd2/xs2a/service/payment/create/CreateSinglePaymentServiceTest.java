@@ -102,13 +102,13 @@ public class CreateSinglePaymentServiceTest {
     @Before
     public void init() {
         singlePaymentInitiationResponse = buildSinglePaymentInitiationResponse(new SpiAspspConsentDataProviderFactory(aspspDataService).getInitialAspspConsentDataProvider());
-        when(singlePaymentInitiationService.initiatePayment(buildSinglePayment(), TPP_INFO, "sepa-credit-transfers", PSU_DATA)).thenReturn(singlePaymentInitiationResponse);
-        when(singlePaymentInitiationService.initiatePayment(buildSinglePayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForSinglePayment());
+        when(singlePaymentInitiationService.initiatePayment(buildSinglePayment(), "sepa-credit-transfers", PSU_DATA)).thenReturn(singlePaymentInitiationResponse);
+        when(singlePaymentInitiationService.initiatePayment(buildSinglePayment(), "sepa-credit-transfers", WRONG_PSU_DATA)).thenReturn(buildSpiErrorForSinglePayment());
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
         when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PARAM.getPsuData())).thenReturn(PIS_COMMON_PAYMENT);
         when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, singlePaymentInitiationResponse, null))
             .thenReturn(PAYMENT_INFO);
-        when(singlePaymentInitiationService.initiatePayment(buildSinglePayment(), WRONG_TPP_INFO, "sepa-credit-transfers", WRONG_PSU_DATA))
+        when(singlePaymentInitiationService.initiatePayment(buildSinglePayment(), "sepa-credit-transfers", WRONG_PSU_DATA))
             .thenReturn(buildSpiErrorForSinglePayment());
     }
 

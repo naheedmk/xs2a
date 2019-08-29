@@ -17,7 +17,6 @@
 package de.adorsys.psd2.xs2a.service.payment.create.spi;
 
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
 
@@ -27,5 +26,5 @@ import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
  * @param <T> type of the payment initiated by this service
  */
 public interface PaymentInitiationService<T extends CommonPayment> {
-    PaymentInitiationResponse initiatePayment(T payment, TppInfo tppInfo, String paymentProduct, PsuIdData psuIdData);
+    PaymentInitiationResponse initiatePayment(T payment, String paymentProduct, PsuIdData psuIdData);
 }

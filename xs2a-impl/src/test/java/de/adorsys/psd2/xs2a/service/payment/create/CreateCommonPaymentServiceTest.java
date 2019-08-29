@@ -107,7 +107,7 @@ public class CreateCommonPaymentServiceTest {
         InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider =
             new SpiAspspConsentDataProviderFactory(aspspDataService).getInitialAspspConsentDataProvider();
         commonPaymentInitiationResponse = buildCommonPaymentInitiationResponse(initialSpiAspspConsentDataProvider);
-        when(commonPaymentInitiationService.initiatePayment(COMMON_PAYMENT, TPP_INFO, PRODUCT, PSU_DATA)).thenReturn(commonPaymentInitiationResponse);
+        when(commonPaymentInitiationService.initiatePayment(COMMON_PAYMENT, PRODUCT, PSU_DATA)).thenReturn(commonPaymentInitiationResponse);
         when(pisCommonPaymentService.createCommonPayment(PAYMENT_INFO)).thenReturn(PIS_COMMON_PAYMENT_RESPONSE);
         when(xs2aPisCommonPaymentMapper.mapToXs2aPisCommonPayment(PIS_COMMON_PAYMENT_RESPONSE, PSU_DATA)).thenReturn(PIS_COMMON_PAYMENT);
         when(xs2aToCmsPisCommonPaymentRequestMapper.mapToPisPaymentInfo(PARAM, TPP_INFO, commonPaymentInitiationResponse, COMMON_PAYMENT.getPaymentData()))
@@ -136,7 +136,7 @@ public class CreateCommonPaymentServiceTest {
 
         CommonPayment commonPayment = buildCommonPayment();
         commonPayment.setPsuDataList(Collections.singletonList(WRONG_PSU_DATA));
-        when(commonPaymentInitiationService.initiatePayment(commonPayment, WRONG_TPP_INFO, PRODUCT, WRONG_PSU_DATA)).thenReturn(buildSpiErrorForCommonPayment());
+        when(commonPaymentInitiationService.initiatePayment(commonPayment, PRODUCT, WRONG_PSU_DATA)).thenReturn(buildSpiErrorForCommonPayment());
 
         //When
         ResponseObject<PaymentInitiationResponse> actualResponse = createCommonPaymentService.createPayment(PAYMENT_DATA_IN_BYTES, param, WRONG_TPP_INFO);
