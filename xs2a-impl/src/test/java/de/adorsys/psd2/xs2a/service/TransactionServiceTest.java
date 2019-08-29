@@ -501,6 +501,34 @@ public class TransactionServiceTest {
     }
 
     @Test
+    public void getTransactionDetails_Failure_NoAccountConsent() {
+        // Given
+        when(aisConsentService.getAccountConsentById(CONSENT_ID)).thenReturn(Optional.empty());
+        // When
+        ResponseObject<Transactions> actualResponse = transactionService.getTransactionDetails(CONSENT_ID, ACCOUNT_ID, TRANSACTION_ID, REQUEST_URI);
+        // Then
+        assertThatErrorIs(actualResponse, CONSENT_UNKNOWN_400);
+    }
+
+    @Test
+    public void getTransactionDetails_WithNullSpiTransaction() {
+        // Given
+        doNothing().when(validatorService).validateAccountIdTransactionId(ACCOUNT_ID, TRANSACTION_ID);
+
+        when(consentMapper.mapToSpiAccountConsent(any()))
+            .thenReturn(SPI_ACCOUNT_CONSENT);
+
+        when(accountSpi.requestTransactionForAccountByTransactionId(SPI_CONTEXT_DATA, TRANSACTION_ID, spiAccountReference, SPI_ACCOUNT_CONSENT, spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID)))
+            .thenReturn(buildErrorSpiResponse(null));
+
+        // When
+        ResponseObject<Transactions> actualResponse = transactionService.getTransactionDetails(CONSENT_ID, ACCOUNT_ID, TRANSACTION_ID, REQUEST_URI);
+
+        // Then
+        assertThatErrorIs(actualResponse, RESOURCE_UNKNOWN_404);
+    }
+
+    @Test
     public void getTransactionDetails_Failure_AllowedAccountDataHasError() {
         // Given
         when(getTransactionDetailsValidator.validate(new CommonAccountTransactionsRequestObject(accountConsent, ACCOUNT_ID, REQUEST_URI)))

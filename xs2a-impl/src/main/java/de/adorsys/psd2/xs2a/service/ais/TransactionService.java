@@ -344,6 +344,14 @@ public class TransactionService {
             accountSpi.requestTransactionForAccountByTransactionId(contextData, transactionId, requestedAccountReference, consentMapper.mapToSpiAccountConsent(accountConsent), aspspConsentDataProvider);
 
         if (spiResponse.hasError()) {
+            if (spiResponse.getPayload() == null) {
+                log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get transaction details failed: transaction details empty for account and transaction.",
+                         internalRequestId, xRequestId, accountId, consentId);
+                return ResponseObject.<Transactions>builder()
+                           .fail(ErrorType.AIS_404, of(RESOURCE_UNKNOWN_404))
+                           .build();
+            }
+
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
             log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get transaction details failed: Request transactions for account fail at SPI level: {}",
                      internalRequestId, xRequestId, accountId, consentId, errorHolder);
@@ -353,14 +361,6 @@ public class TransactionService {
         }
 
         SpiTransaction payload = spiResponse.getPayload();
-
-        if (payload == null) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get transaction details failed: transaction details empty for account and transaction.",
-                     internalRequestId, xRequestId, accountId, consentId);
-            return ResponseObject.<Transactions>builder()
-                       .fail(ErrorType.AIS_404, of(RESOURCE_UNKNOWN_404))
-                       .build();
-        }
 
         Transactions transactions = spiToXs2aTransactionMapper.mapToXs2aTransaction(payload);
 
