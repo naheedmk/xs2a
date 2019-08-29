@@ -21,15 +21,29 @@
 
     <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-1">
         <comment>
-            Remove tpp_info_id foreign key constraints from ais_consent, pis_common_payment and piis_consent tables
+            Remove tpp_info_id foreign key constraint from ais_consent table
         </comment>
 
         <dropForeignKeyConstraint baseTableName="ais_consent" constraintName="fk__ais_consent__tpp_info"/>
-        <dropForeignKeyConstraint baseTableName="pis_common_payment" constraintName="fk_com_payment_tpp_info"/>
-        <dropForeignKeyConstraint baseTableName="piis_consent" constraintName="fk__piis_consent__tpp_info"/>
     </changeSet>
 
     <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-2">
+        <comment>
+            Remove tpp_info_id foreign key constraint from pis_common_payment table
+        </comment>
+
+        <dropForeignKeyConstraint baseTableName="pis_common_payment" constraintName="fk_com_payment_tpp_info"/>
+    </changeSet>
+
+    <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-3">
+        <comment>
+            Remove tpp_info_id foreign key constraint from piis_consent table
+        </comment>
+
+        <dropForeignKeyConstraint baseTableName="piis_consent" constraintName="fk__piis_consent__tpp_info"/>
+    </changeSet>
+
+    <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-4">
         <comment>
             Update tpp_info_id in ais_consent, pis_common_payment, piis_consent and tpp_info_role tables;
             Delete non-unique records in tpp_info_role and tpp_info tables;
@@ -103,20 +117,32 @@
         </sql>
     </changeSet>
 
-    <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-3">
+    <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-5">
         <comment>
-            Add foreign key constraints for tpp_info column to ais_consent, pis_common_payment and piis_consent tables
+            Add foreign key constraint for tpp_info column to ais_consent piis_consent table
         </comment>
 
         <addForeignKeyConstraint baseColumnNames="tpp_info_id" baseTableName="ais_consent"
                                  constraintName="fk__ais_consent__tpp_info" deferrable="false"
                                  initiallyDeferred="false"
                                  referencedColumnNames="tpp_info_id" referencedTableName="tpp_info"/>
+    </changeSet>
+
+    <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-6">
+        <comment>
+            Add foreign key constraint for tpp_info column to pis_common_payment table
+        </comment>
 
         <addForeignKeyConstraint baseColumnNames="tpp_info_id" baseTableName="pis_common_payment"
                                  constraintName="fk_com_payment_tpp_info" deferrable="false"
                                  initiallyDeferred="false"
                                  referencedColumnNames="tpp_info_id" referencedTableName="tpp_info"/>
+    </changeSet>
+
+    <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-7">
+        <comment>
+            Add foreign key constraint for tpp_info column to piis_consent table
+        </comment>
 
         <addForeignKeyConstraint baseColumnNames="tpp_info_id" baseTableName="piis_consent"
                                  constraintName="fk__piis_consent__tpp_info" deferrable="false"
@@ -124,7 +150,7 @@
                                  referencedColumnNames="tpp_info_id" referencedTableName="tpp_info"/>
     </changeSet>
 
-    <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-4">
+    <changeSet author="iiu@adorsys.com.ua" id="2019-08-27-8">
         <comment>
             Add unique constraint for authorisation_number column in tpp_info table
         </comment>
