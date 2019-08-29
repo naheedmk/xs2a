@@ -16,20 +16,27 @@
 
 package de.adorsys.psd2.consent.api.pis;
 
+import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
+import de.adorsys.psd2.xs2a.core.profile.PaymentType;
+import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
 public interface CommonPaymentData {
     String getExternalId();
 
-    java.util.List<de.adorsys.psd2.xs2a.core.psu.PsuIdData> getPsuData();
+    List<PsuIdData> getPsuData();
 
     byte[] getPaymentData();
 
-    de.adorsys.psd2.xs2a.core.pis.TransactionStatus getTransactionStatus();
+    TransactionStatus getTransactionStatus();
 
-    java.time.OffsetDateTime getStatusChangeTimestamp();
+    OffsetDateTime getStatusChangeTimestamp();
 
     String getPaymentProduct();
 
-    de.adorsys.psd2.xs2a.core.profile.PaymentType getPaymentType();
+    PaymentType getPaymentType();
 
-    java.util.List<PisPayment> getPayments();
+    List<PisPayment> getPayments();
 }
