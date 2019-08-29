@@ -45,7 +45,6 @@ import de.adorsys.psd2.xs2a.service.validator.ais.account.GetTransactionsReportV
 import de.adorsys.psd2.xs2a.service.validator.ais.account.dto.CommonAccountTransactionsRequestObject;
 import de.adorsys.psd2.xs2a.service.validator.ais.account.dto.DownloadTransactionListRequestObject;
 import de.adorsys.psd2.xs2a.service.validator.ais.account.dto.TransactionsReportByPeriodObject;
-import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.account.SpiAccountReference;
 import de.adorsys.psd2.xs2a.spi.domain.account.SpiTransaction;
@@ -109,187 +108,26 @@ public class TransactionService {
      */
     public ResponseObject<Xs2aTransactionsReport> getTransactionsReportByPeriod(Xs2aTransactionsReportByPeriodRequest request) {
 
-        Optional<AccountConsent> accountConsentOptional = getAccountConsentOptional(request);
+        Optional<AccountConsent> accountConsentOptional = recordAisTppRequestAndGetAccountConsentOptional(request.getConsentId(), EventType.READ_TRANSACTION_LIST_REQUEST_RECEIVED);
 
         if (!accountConsentOptional.isPresent()) {
-            return getXs2aTransactionsReportResponseObjectFail400(request);
+            return buildResponseXs2aTransactionsReportWithError400(request);
         }
 
         AccountConsent accountConsent = accountConsentOptional.get();
-        ValidationResult validationResult = getValidationResult(request, accountConsent);
+        ValidationResult validationResult = getValidationResultForTransactionsReportByPeriod(request, accountConsent);
 
         if (validationResult.isNotValid()) {
-            return getXs2aTransactionsReportResponseObjectWithNotValidResult(request, validationResult);
+            return buildResponseXs2aTransactionsReportWithErrorWithValidationResultError(request, validationResult);
         }
 
-        SpiResponse<SpiTransactionReport> spiResponse = getSpiResponse(request, accountConsent);
+        SpiResponse<SpiTransactionReport> spiResponse = getSpiResponseSpiTransactionReport(request, accountConsent);
 
         if (spiResponse.hasError()) {
-            return getXs2aTransactionsReportResponseObjectWithError(request, spiResponse);
+            return buildResponseXs2aTransactionsReportWithErrorWithSpiResponseError(request, spiResponse);
         }
 
-        return buildXs2aTransactionsReportResponseObjectSuccess(request, accountConsent, spiResponse.getPayload());
-    }
-
-    private Optional<AccountConsent> getAccountConsentOptional(Xs2aTransactionsReportByPeriodRequest request) {
-        String consentId = request.getConsentId();
-        xs2aEventService.recordAisTppRequest(consentId, EventType.READ_TRANSACTION_LIST_REQUEST_RECEIVED);
-
-        Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
-
-        return accountConsentOptional;
-    }
-
-    @NotNull
-    private ValidationResult getValidationResult(Xs2aTransactionsReportByPeriodRequest request, AccountConsent accountConsent) {
-        TransactionsReportByPeriodObject validatorObject = new TransactionsReportByPeriodObject(accountConsent, request.getAccountId(),
-                                                                                                request.isWithBalance(), request.getRequestUri(),
-                                                                                                request.getEntryReferenceFrom(),
-                                                                                                request.getDeltaList(),
-                                                                                                request.getAcceptHeader(),
-                                                                                                request.getBookingStatus());
-        return getTransactionsReportValidator.validate(validatorObject);
-    }
-
-    @NotNull
-    private SpiResponse<SpiTransactionReport> getSpiResponse(Xs2aTransactionsReportByPeriodRequest request, AccountConsent accountConsent) {
-        Xs2aAccountAccess access = accountConsent.getAccess();
-        SpiAccountReference requestedAccountReference = accountHelperService.findAccountReference(access.getAllPsd2(), access.getTransactions(), request.getAccountId());
-
-        LocalDate dateFrom = request.getDateFrom();
-        LocalDate dateTo = request.getDateTo();
-        LocalDate dateToChecked = Optional.ofNullable(dateTo)
-                                      .orElseGet(LocalDate::now);
-        validatorService.validateAccountIdPeriod(request.getAccountId(), dateFrom, dateToChecked);
-
-        boolean isTransactionsShouldContainBalances =
-            !aspspProfileService.isTransactionsWithoutBalancesSupported() || request.isWithBalance();
-        SpiContextData contextData = accountHelperService.getSpiContextData();
-
-        SpiAspspConsentDataProvider aspspConsentDataProvider =
-            aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getConsentId());
-
-        return accountSpi.requestTransactionsForAccount(
-            contextData,
-            request.getAcceptHeader(),
-            isTransactionsShouldContainBalances, dateFrom, dateToChecked,
-            request.getBookingStatus(),
-            requestedAccountReference,
-            consentMapper.mapToSpiAccountConsent(accountConsent),
-            aspspConsentDataProvider);
-    }
-
-    @NotNull
-    private ResponseObject<Xs2aTransactionsReport> buildXs2aTransactionsReportResponseObjectSuccess(Xs2aTransactionsReportByPeriodRequest request, AccountConsent accountConsent, SpiTransactionReport spiTransactionReport) {
-        Xs2aAccountAccess access = accountConsent.getAccess();
-        SpiAccountReference requestedAccountReference = accountHelperService.findAccountReference(access.getAllPsd2(), access.getTransactions(), request.getAccountId());
-
-        Optional<Xs2aAccountReport> report =
-            transactionsToAccountReportMapper.mapToXs2aAccountReport(spiTransactionReport.getTransactions(), spiTransactionReport.getTransactionsRaw());
-
-        Xs2aTransactionsReport transactionsReport = getXs2aTransactionsReport(report.orElse(null),
-                                                                              requestedAccountReference,
-                                                                              spiTransactionReport);
-        if (spiTransactionReport.getDownloadId() != null) {
-            String encodedDownloadId = Base64.getUrlEncoder().encodeToString(spiTransactionReport.getDownloadId().getBytes());
-            transactionsReport.setDownloadId(encodedDownloadId);
-        }
-
-        return getXs2aTransactionsReportResponseObjectSuccess(request, accountConsent, transactionsReport);
-    }
-
-    @NotNull
-    private ResponseObject<Xs2aTransactionsReport> getXs2aTransactionsReportResponseObjectSuccess(Xs2aTransactionsReportByPeriodRequest request, AccountConsent accountConsent, Xs2aTransactionsReport transactionsReport) {
-        ResponseObject<Xs2aTransactionsReport> response =
-            ResponseObject.<Xs2aTransactionsReport>builder().body(transactionsReport).build();
-
-        aisConsentService.consentActionLog(tppService.getTppId(), request.getConsentId(),
-                                           accountHelperService.createActionStatus(request.isWithBalance(), response),
-                                           request.getRequestUri(), accountHelperService.needsToUpdateUsage(accountConsent));
-        return response;
-    }
-
-    private ResponseObject<Xs2aTransactionsReport> getXs2aTransactionsReportResponseObjectFail404(Xs2aTransactionsReportByPeriodRequest request) {
-        UUID xRequestId = requestProviderService.getRequestId();
-        UUID internalRequestId = requestProviderService.getInternalRequestId();
-
-        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get transactions report by period failed: transactions empty for account.",
-                 internalRequestId, xRequestId, request.getAccountId(), request.getConsentId());
-        return ResponseObject.<Xs2aTransactionsReport>builder()
-                   .fail(ErrorType.AIS_404, of(RESOURCE_UNKNOWN_404))
-                   .build();
-    }
-
-    private ResponseObject<Xs2aTransactionsReport> getXs2aTransactionsReportResponseObjectWithError(Xs2aTransactionsReportByPeriodRequest request, SpiResponse<SpiTransactionReport> spiResponse) {
-        // in this particular call we use NOT_SUPPORTED to indicate that requested Content-type is not ok for us
-        if (spiResponse.getErrors().get(0).getErrorCode() == SERVICE_NOT_SUPPORTED) {
-            return getXs2aTransactionsReportResponseObjectWithErrorServiceNotSupported(request);
-        }
-
-        if (spiResponse.getPayload() == null) {
-            return getXs2aTransactionsReportResponseObjectFail404(request);
-        }
-
-        ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
-        return getXs2aTransactionsReportResponseObjectWithErrorAnyOther(request, errorHolder);
-    }
-
-    private ResponseObject<Xs2aTransactionsReport> getXs2aTransactionsReportResponseObjectWithErrorAnyOther(Xs2aTransactionsReportByPeriodRequest request, ErrorHolder errorHolder) {
-        UUID xRequestId = requestProviderService.getRequestId();
-        UUID internalRequestId = requestProviderService.getInternalRequestId();
-
-        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get transactions report by period failed: Request transactions for account fail at SPI level: {}",
-                 internalRequestId, xRequestId, request.getAccountId(), request.getConsentId(), errorHolder);
-        return ResponseObject.<Xs2aTransactionsReport>builder()
-                   .fail(errorHolder)
-                   .build();
-    }
-
-    private ResponseObject<Xs2aTransactionsReport> getXs2aTransactionsReportResponseObjectWithErrorServiceNotSupported(Xs2aTransactionsReportByPeriodRequest request) {
-        UUID xRequestId = requestProviderService.getRequestId();
-        UUID internalRequestId = requestProviderService.getInternalRequestId();
-
-        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get transactions report by period failed: requested content-type not json or text.",
-                 internalRequestId, xRequestId, request.getAccountId(), request.getConsentId());
-        return ResponseObject.<Xs2aTransactionsReport>builder()
-                   .fail(ErrorType.AIS_406, of(REQUESTED_FORMATS_INVALID))
-                   .build();
-    }
-
-    private ResponseObject<Xs2aTransactionsReport> getXs2aTransactionsReportResponseObjectWithNotValidResult(Xs2aTransactionsReportByPeriodRequest request,
-                                                                                                             ValidationResult validationResult) {
-
-        UUID xRequestId = requestProviderService.getRequestId();
-        UUID internalRequestId = requestProviderService.getInternalRequestId();
-
-        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID [{}], WithBalance [{}], RequestUri [{}]. Get transactions report by period - validation failed: {}",
-                 internalRequestId, xRequestId, request.getAccountId(), request.getConsentId(), request.isWithBalance(), request.getRequestUri(), validationResult.getMessageError());
-        return ResponseObject.<Xs2aTransactionsReport>builder()
-                   .fail(validationResult.getMessageError())
-                   .build();
-    }
-
-    private ResponseObject<Xs2aTransactionsReport> getXs2aTransactionsReportResponseObjectFail400(Xs2aTransactionsReportByPeriodRequest request) {
-
-        UUID xRequestId = requestProviderService.getRequestId();
-        UUID internalRequestId = requestProviderService.getInternalRequestId();
-
-        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID [{}]. Get transactions report by period failed. Account consent not found by id",
-                 internalRequestId, xRequestId, request.getAccountId(), request.getConsentId());
-        return ResponseObject.<Xs2aTransactionsReport>builder()
-                   .fail(AIS_400, of(CONSENT_UNKNOWN_400))
-                   .build();
-    }
-
-    private Xs2aTransactionsReport getXs2aTransactionsReport(Xs2aAccountReport report,
-                                                             SpiAccountReference requestedAccountReference,
-                                                             SpiTransactionReport spiTransactionReport) {
-        Xs2aTransactionsReport transactionsReport = new Xs2aTransactionsReport();
-        transactionsReport.setAccountReport(report);
-        transactionsReport.setAccountReference(referenceMapper.mapToXs2aAccountReference(requestedAccountReference));
-        transactionsReport.setBalances(balanceMapper.mapToXs2aBalanceList(spiTransactionReport.getBalances()));
-        transactionsReport.setResponseContentType(spiTransactionReport.getResponseContentType());
-        return transactionsReport;
+        return getTransactionsReportByPeriodSuccess(request, accountConsent, spiResponse.getPayload());
     }
 
     /**
@@ -303,9 +141,7 @@ public class TransactionService {
      */
     public ResponseObject<Transactions> getTransactionDetails(String consentId, String accountId,
                                                               String transactionId, String requestUri) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.READ_TRANSACTION_DETAILS_REQUEST_RECEIVED);
-
-        Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
+        Optional<AccountConsent> accountConsentOptional = recordAisTppRequestAndGetAccountConsentOptional(consentId, EventType.READ_TRANSACTION_DETAILS_REQUEST_RECEIVED);
 
         UUID internalRequestId = requestProviderService.getInternalRequestId();
         UUID xRequestId = requestProviderService.getRequestId();
@@ -320,8 +156,7 @@ public class TransactionService {
 
         AccountConsent accountConsent = accountConsentOptional.get();
 
-        ValidationResult validationResult = getTransactionDetailsValidator.validate(
-            new CommonAccountTransactionsRequestObject(accountConsent, accountId, requestUri));
+        ValidationResult validationResult = getValidationResultForCommonAccountTransactions(accountId, requestUri, accountConsent);
 
         if (validationResult.isNotValid()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID [{}], RequestUri [{}]. Get transaction details - validation failed: {}",
@@ -331,17 +166,7 @@ public class TransactionService {
                        .build();
         }
 
-        Xs2aAccountAccess access = accountConsent.getAccess();
-        SpiAccountReference requestedAccountReference = accountHelperService.findAccountReference(access.getAllPsd2(), access.getTransactions(), accountId);
-        validatorService.validateAccountIdTransactionId(accountId, transactionId);
-
-        SpiContextData contextData = accountHelperService.getSpiContextData();
-
-        SpiAspspConsentDataProvider aspspConsentDataProvider =
-            aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId);
-
-        SpiResponse<SpiTransaction> spiResponse =
-            accountSpi.requestTransactionForAccountByTransactionId(contextData, transactionId, requestedAccountReference, consentMapper.mapToSpiAccountConsent(accountConsent), aspspConsentDataProvider);
+        SpiResponse<SpiTransaction> spiResponse = getSpiResponseSpiTransaction(accountConsent, consentId, accountId, transactionId);
 
         if (spiResponse.hasError()) {
             if (spiResponse.getPayload() == null) {
@@ -385,9 +210,7 @@ public class TransactionService {
      * @return Response with transaction list stream.
      */
     public ResponseObject<Xs2aTransactionsDownloadResponse> downloadTransactions(String consentId, String accountId, String downloadId) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.DOWNLOAD_TRANSACTION_LIST_REQUEST_RECEIVED);
-
-        Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
+        Optional<AccountConsent> accountConsentOptional = recordAisTppRequestAndGetAccountConsentOptional(consentId, EventType.DOWNLOAD_TRANSACTION_LIST_REQUEST_RECEIVED);
 
         UUID internalRequestId = requestProviderService.getInternalRequestId();
         UUID xRequestId = requestProviderService.getRequestId();
@@ -401,8 +224,7 @@ public class TransactionService {
         }
 
         AccountConsent accountConsent = accountConsentOptional.get();
-        ValidationResult validationResult = downloadTransactionsReportValidator.validate(
-            new DownloadTransactionListRequestObject(accountConsent));
+        ValidationResult validationResult = getValidationResultForDownloadTransactionRequest(accountConsent);
 
         if (validationResult.isNotValid()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Consent-ID [{}], Account-ID: [{}], Download-ID: [{}]. Download transactions - validation failed: {}",
@@ -412,14 +234,8 @@ public class TransactionService {
                        .build();
         }
 
-        String decodedDownloadId = new String(Base64.getUrlDecoder().decode(downloadId));
-        SpiContextData contextData = accountHelperService.getSpiContextData();
-        SpiAspspConsentDataProvider aspspConsentDataProvider =
-            aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId);
-        SpiResponse<SpiTransactionsDownloadResponse> spiResponse = accountSpi.requestTransactionsByDownloadLink(contextData,
-                                                                                                                consentMapper.mapToSpiAccountConsent(accountConsent),
-                                                                                                                decodedDownloadId,
-                                                                                                                aspspConsentDataProvider);
+        SpiResponse<SpiTransactionsDownloadResponse> spiResponse = getSpiResponseSpiTransactionsDownloadResponse(accountConsent, consentId, downloadId);
+
         if (spiResponse.hasError()) {
             if (spiResponse.getPayload() == null) {
                 log.info("X-Request-ID: [{}], Consent-ID [{}], Account-ID: [{}], Download-ID: [{}]. Download transactions failed: spiResponse is empty.",
@@ -442,5 +258,192 @@ public class TransactionService {
         return ResponseObject.<Xs2aTransactionsDownloadResponse>builder()
                    .body(transactionsDownloadResponse)
                    .build();
+    }
+
+    // first called in getTransactionsReportByPeriod, getTransactionDetails, downloadTransactions
+    private Optional<AccountConsent> recordAisTppRequestAndGetAccountConsentOptional(String consentId, EventType eventType) {
+        xs2aEventService.recordAisTppRequest(consentId, eventType);
+        return aisConsentService.getAccountConsentById(consentId);
+    }
+
+    // return first in getTransactionsReportByPeriod if !accountConsentOptional.isPresent()
+    private ResponseObject<Xs2aTransactionsReport> buildResponseXs2aTransactionsReportWithError400(Xs2aTransactionsReportByPeriodRequest request) {
+        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID [{}]. Get transactions report by period failed. Account consent not found by id",
+                 requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getAccountId(), request.getConsentId());
+        return ResponseObject.<Xs2aTransactionsReport>builder()
+                   .fail(AIS_400, of(CONSENT_UNKNOWN_400))
+                   .build();
+    }
+
+    // second call in getTransactionsReportByPeriod
+    @NotNull
+    private ValidationResult getValidationResultForTransactionsReportByPeriod(Xs2aTransactionsReportByPeriodRequest request, AccountConsent accountConsent) {
+        TransactionsReportByPeriodObject validatorObject = new TransactionsReportByPeriodObject(accountConsent, request.getAccountId(),
+                                                                                                request.isWithBalance(), request.getRequestUri(),
+                                                                                                request.getEntryReferenceFrom(),
+                                                                                                request.getDeltaList(),
+                                                                                                request.getAcceptHeader(),
+                                                                                                request.getBookingStatus());
+        return getTransactionsReportValidator.validate(validatorObject);
+    }
+
+    // return second in getTransactionsReportByPeriod if validationResult.isNotValid()
+    private ResponseObject<Xs2aTransactionsReport> buildResponseXs2aTransactionsReportWithErrorWithValidationResultError(Xs2aTransactionsReportByPeriodRequest request, ValidationResult validationResult) {
+        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID [{}], WithBalance [{}], RequestUri [{}]. Get transactions report by period - validation failed: {}",
+                 requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getAccountId(), request.getConsentId(), request.isWithBalance(), request.getRequestUri(), validationResult.getMessageError());
+        return ResponseObject.<Xs2aTransactionsReport>builder()
+                   .fail(validationResult.getMessageError())
+                   .build();
+    }
+
+    // second call in getTransactionDetails
+    @NotNull
+    private ValidationResult getValidationResultForCommonAccountTransactions(String accountId, String requestUri, AccountConsent accountConsent) {
+        CommonAccountTransactionsRequestObject validatorObject = new CommonAccountTransactionsRequestObject(accountConsent, accountId, requestUri);
+        return getTransactionDetailsValidator.validate(validatorObject);
+    }
+
+    // second call in downloadTransactions
+    @NotNull
+    private ValidationResult getValidationResultForDownloadTransactionRequest(AccountConsent accountConsent) {
+        DownloadTransactionListRequestObject validatorObject = new DownloadTransactionListRequestObject(accountConsent);
+        return downloadTransactionsReportValidator.validate(validatorObject);
+    }
+
+    // third call in getTransactionsReportByPeriod
+    @NotNull
+    private SpiResponse<SpiTransactionReport> getSpiResponseSpiTransactionReport(Xs2aTransactionsReportByPeriodRequest request, AccountConsent accountConsent) {
+        LocalDate dateFrom = request.getDateFrom();
+        LocalDate dateToChecked = Optional.ofNullable(request.getDateTo())
+                                      .orElseGet(LocalDate::now);
+
+        validatorService.validateAccountIdPeriod(request.getAccountId(), dateFrom, dateToChecked);
+
+        boolean isTransactionsShouldContainBalances =
+            !aspspProfileService.isTransactionsWithoutBalancesSupported() || request.isWithBalance();
+
+        return accountSpi.requestTransactionsForAccount(accountHelperService.getSpiContextData(),
+                                                        request.getAcceptHeader(),
+                                                        isTransactionsShouldContainBalances,
+                                                        dateFrom,
+                                                        dateToChecked,
+                                                        request.getBookingStatus(),
+                                                        getRequestedAccountReference(accountConsent, request.getAccountId()),
+                                                        consentMapper.mapToSpiAccountConsent(accountConsent),
+                                                        aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getConsentId()));
+    }
+
+    // return third in getTransactionsReportByPeriod if spiResponse.hasError()
+    private ResponseObject<Xs2aTransactionsReport> buildResponseXs2aTransactionsReportWithErrorWithSpiResponseError(Xs2aTransactionsReportByPeriodRequest request, SpiResponse<SpiTransactionReport> spiResponse) {
+        // in this particular call we use NOT_SUPPORTED to indicate that requested Content-type is not ok for us
+        if (spiResponse.getErrors().get(0).getErrorCode() == SERVICE_NOT_SUPPORTED) {
+            return buildResponseXs2aTransactionsReportWithErrorWithSpiResponseError406(request);
+        }
+
+        if (spiResponse.getPayload() == null) {
+            return buildResponseXs2aTransactionsReportWithErrorWithSpiResponseError404(request);
+        }
+
+        ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
+        return buildResponseXs2aTransactionsReportWithErrorWithSpiResponseErrorElse(request, errorHolder);
+    }
+
+    // return first in buildResponseXs2aTransactionsReportWithErrorWithSpiResponseError if error code is SERVICE_NOT_SUPPORTED
+    private ResponseObject<Xs2aTransactionsReport> buildResponseXs2aTransactionsReportWithErrorWithSpiResponseError406(Xs2aTransactionsReportByPeriodRequest request) {
+        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get transactions report by period failed: requested content-type not json or text.",
+                 requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getAccountId(), request.getConsentId());
+        return ResponseObject.<Xs2aTransactionsReport>builder()
+                   .fail(ErrorType.AIS_406, of(REQUESTED_FORMATS_INVALID))
+                   .build();
+    }
+
+    // return second in buildResponseXs2aTransactionsReportWithErrorWithSpiResponseError if payload is null
+    private ResponseObject<Xs2aTransactionsReport> buildResponseXs2aTransactionsReportWithErrorWithSpiResponseError404(Xs2aTransactionsReportByPeriodRequest request) {
+        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get transactions report by period failed: transactions empty for account.",
+                 requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getAccountId(), request.getConsentId());
+        return ResponseObject.<Xs2aTransactionsReport>builder()
+                   .fail(ErrorType.AIS_404, of(RESOURCE_UNKNOWN_404))
+                   .build();
+    }
+
+    // return third in buildResponseXs2aTransactionsReportWithErrorWithSpiResponseError in else cases
+    private ResponseObject<Xs2aTransactionsReport> buildResponseXs2aTransactionsReportWithErrorWithSpiResponseErrorElse(Xs2aTransactionsReportByPeriodRequest request, ErrorHolder errorHolder) {
+        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get transactions report by period failed: Request transactions for account fail at SPI level: {}",
+                 requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getAccountId(), request.getConsentId(), errorHolder);
+        return ResponseObject.<Xs2aTransactionsReport>builder()
+                   .fail(errorHolder)
+                   .build();
+    }
+
+    // third call in getTransactionDetails
+    @NotNull
+    private SpiResponse<SpiTransaction> getSpiResponseSpiTransaction(AccountConsent accountConsent, String consentId, String accountId, String transactionId) {
+        validatorService.validateAccountIdTransactionId(accountId, transactionId);
+
+        return accountSpi.requestTransactionForAccountByTransactionId(accountHelperService.getSpiContextData(),
+                                                                      transactionId,
+                                                                      getRequestedAccountReference(accountConsent, accountId),
+                                                                      consentMapper.mapToSpiAccountConsent(accountConsent),
+                                                                      aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId));
+    }
+
+    // third call in downloadTransactions
+    @NotNull
+    private SpiResponse<SpiTransactionsDownloadResponse> getSpiResponseSpiTransactionsDownloadResponse(AccountConsent accountConsent, String consentId, String downloadId) {
+        String decodedDownloadId = new String(Base64.getUrlDecoder().decode(downloadId));
+        return accountSpi.requestTransactionsByDownloadLink(accountHelperService.getSpiContextData(),
+                                                            consentMapper.mapToSpiAccountConsent(accountConsent),
+                                                            decodedDownloadId,
+                                                            aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId));
+    }
+
+    // fourth call in getTransactionsReportByPeriod
+    @NotNull
+    private ResponseObject<Xs2aTransactionsReport> getTransactionsReportByPeriodSuccess(Xs2aTransactionsReportByPeriodRequest request, AccountConsent accountConsent, SpiTransactionReport spiTransactionReport) {
+        Xs2aAccountReport report = transactionsToAccountReportMapper.mapToXs2aAccountReport(spiTransactionReport.getTransactions(),
+                                                                                            spiTransactionReport.getTransactionsRaw())
+                                       .orElse(null);
+
+        Xs2aTransactionsReport transactionsReport = getXs2aTransactionsReport(report,
+                                                                              getRequestedAccountReference(accountConsent, request.getAccountId()),
+                                                                              spiTransactionReport);
+        if (spiTransactionReport.getDownloadId() != null) {
+            String encodedDownloadId = Base64.getUrlEncoder().encodeToString(spiTransactionReport.getDownloadId().getBytes());
+            transactionsReport.setDownloadId(encodedDownloadId);
+        }
+
+        return buildResponseXs2aTransactionsReport(request, accountConsent, transactionsReport);
+    }
+
+    // returned fourth in getTransactionsReportByPeriodSuccess
+    @NotNull
+    private ResponseObject<Xs2aTransactionsReport> buildResponseXs2aTransactionsReport(Xs2aTransactionsReportByPeriodRequest request, AccountConsent accountConsent, Xs2aTransactionsReport transactionsReport) {
+        ResponseObject<Xs2aTransactionsReport> response =
+            ResponseObject.<Xs2aTransactionsReport>builder().body(transactionsReport).build();
+
+        aisConsentService.consentActionLog(tppService.getTppId(),
+                                           request.getConsentId(),
+                                           accountHelperService.createActionStatus(request.isWithBalance(), response),
+                                           request.getRequestUri(),
+                                           accountHelperService.needsToUpdateUsage(accountConsent));
+        return response;
+    }
+
+    // used in getTransactionsReportByPeriodSuccess
+    private Xs2aTransactionsReport getXs2aTransactionsReport(Xs2aAccountReport report,
+                                                             SpiAccountReference requestedAccountReference,
+                                                             SpiTransactionReport spiTransactionReport) {
+        Xs2aTransactionsReport transactionsReport = new Xs2aTransactionsReport();
+        transactionsReport.setAccountReport(report);
+        transactionsReport.setAccountReference(referenceMapper.mapToXs2aAccountReference(requestedAccountReference));
+        transactionsReport.setBalances(balanceMapper.mapToXs2aBalanceList(spiTransactionReport.getBalances()));
+        transactionsReport.setResponseContentType(spiTransactionReport.getResponseContentType());
+        return transactionsReport;
+    }
+
+    // used in getSpiResponseSpiTransactionReport, getSpiResponseSpiTransaction, getTransactionsReportByPeriodSuccess
+    private SpiAccountReference getRequestedAccountReference(AccountConsent accountConsent, String accountId) {
+        Xs2aAccountAccess access = accountConsent.getAccess();
+        return accountHelperService.findAccountReference(access.getAllPsd2(), access.getTransactions(), accountId);
     }
 }
