@@ -14,47 +14,45 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.payment.initiation;
+package de.adorsys.psd2.xs2a.service.payment.create.spi;
 
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPaymentInitiationResponse;
-import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiToXs2aPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.Xs2aToSpiPeriodicPaymentMapper;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
-import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPeriodicPayment;
+import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPeriodicPaymentInitiationResponse;
-import de.adorsys.psd2.xs2a.spi.service.PaymentSpi;
+import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.PeriodicPaymentSpi;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PeriodicPaymentInitiationService extends AbstractPaymentInitiationService<PeriodicPayment, SpiPeriodicPayment, SpiPeriodicPaymentInitiationResponse> {
+public class PeriodicPaymentInitiationService extends AbstractPaymentInitiationService<PeriodicPayment, SpiPeriodicPaymentInitiationResponse> {
     private final SpiToXs2aPaymentMapper spiToXs2aPaymentMapper;
     private final Xs2aToSpiPeriodicPaymentMapper xs2aToSpiPeriodicPaymentMapper;
     private final PeriodicPaymentSpi periodicPaymentSpi;
 
-    public PeriodicPaymentInitiationService(SpiContextDataProvider spiContextDataProvider, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
-                                            SpiErrorMapper spiErrorMapper, RequestProviderService requestProviderService,
-                                            SpiToXs2aPaymentMapper spiToXs2aPaymentMapper, Xs2aToSpiPeriodicPaymentMapper xs2aToSpiPeriodicPaymentMapper, PeriodicPaymentSpi periodicPaymentSpi) {
-        super(spiContextDataProvider, aspspConsentDataProviderFactory, spiErrorMapper, requestProviderService);
+    public PeriodicPaymentInitiationService(SpiContextDataProvider spiContextDataProvider,
+                                            SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
+                                            SpiErrorMapper spiErrorMapper, SpiToXs2aPaymentMapper spiToXs2aPaymentMapper,
+                                            Xs2aToSpiPeriodicPaymentMapper xs2aToSpiPeriodicPaymentMapper, PeriodicPaymentSpi periodicPaymentSpi) {
+        super(spiContextDataProvider, aspspConsentDataProviderFactory, spiErrorMapper);
         this.spiToXs2aPaymentMapper = spiToXs2aPaymentMapper;
         this.xs2aToSpiPeriodicPaymentMapper = xs2aToSpiPeriodicPaymentMapper;
         this.periodicPaymentSpi = periodicPaymentSpi;
     }
 
     @Override
-    PaymentSpi<SpiPeriodicPayment, SpiPeriodicPaymentInitiationResponse> getSpiService() {
-        return periodicPaymentSpi;
-    }
-
-    @Override
-    SpiPeriodicPayment mapToSpiPayment(PeriodicPayment xs2aPayment, String paymentProduct) {
-        return xs2aToSpiPeriodicPaymentMapper.mapToSpiPeriodicPayment(xs2aPayment, paymentProduct);
+    SpiResponse<SpiPeriodicPaymentInitiationResponse> initiateSpiPayment(SpiContextData spiContextData, PeriodicPayment payment, String paymentProduct,
+                                                                         InitialSpiAspspConsentDataProvider aspspConsentDataProvider) {
+        return periodicPaymentSpi.initiatePayment(spiContextData,
+                                                  xs2aToSpiPeriodicPaymentMapper.mapToSpiPeriodicPayment(payment, paymentProduct),
+                                                  aspspConsentDataProvider);
     }
 
     @Override

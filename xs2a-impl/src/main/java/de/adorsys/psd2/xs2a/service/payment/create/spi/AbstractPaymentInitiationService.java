@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.payment.initiation;
+package de.adorsys.psd2.xs2a.service.payment.create.spi;
 
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -23,7 +23,6 @@ import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.ErrorPaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationResponse;
-import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
@@ -32,8 +31,6 @@ import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentInitiationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
-import de.adorsys.psd2.xs2a.spi.service.PaymentSpi;
-import de.adorsys.psd2.xs2a.spi.service.SpiPayment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,16 +38,14 @@ import lombok.extern.slf4j.Slf4j;
  * Common service for initiating payments in SPI
  *
  * @param <T> type of payments handled by this service
- * @param <S> type of corresponding SPI payments
  * @param <R> type of SPI response on payment initiation
  */
 @Slf4j
 @RequiredArgsConstructor
-public abstract class AbstractPaymentInitiationService<T extends CommonPayment, S extends SpiPayment, R extends SpiPaymentInitiationResponse> implements PaymentInitiationService<T> {
+public abstract class AbstractPaymentInitiationService<T extends CommonPayment, R extends SpiPaymentInitiationResponse> implements PaymentInitiationService<T> {
     private final SpiContextDataProvider spiContextDataProvider;
     private final SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
     private final SpiErrorMapper spiErrorMapper;
-    private final RequestProviderService requestProviderService;
 
     @Override
     public PaymentInitiationResponse initiatePayment(T payment, TppInfo tppInfo, String paymentProduct, PsuIdData psuIdData) {
@@ -58,21 +53,18 @@ public abstract class AbstractPaymentInitiationService<T extends CommonPayment, 
         InitialSpiAspspConsentDataProvider aspspConsentDataProvider =
             aspspConsentDataProviderFactory.getInitialAspspConsentDataProvider();
 
-        SpiResponse<R> spiResponse = getSpiService().initiatePayment(spiContextData, mapToSpiPayment(payment, paymentProduct), aspspConsentDataProvider);
+        SpiResponse<R> spiResponse = initiateSpiPayment(spiContextData, payment, paymentProduct, aspspConsentDataProvider);
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Create Payment failed. Can't initiate Payment at SPI level. Error msg: {}.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), payment.getPaymentId(), errorHolder);
             return new ErrorPaymentInitiationResponse(errorHolder);
         }
 
         return mapToXs2aResponse(spiResponse.getPayload(), aspspConsentDataProvider, payment.getPaymentType());
     }
 
-    abstract PaymentSpi<S, R> getSpiService();
-
-    abstract S mapToSpiPayment(T xs2aPayment, String paymentProduct);
+    abstract SpiResponse<R> initiateSpiPayment(SpiContextData spiContextData, T payment, String paymentProduct,
+                                               InitialSpiAspspConsentDataProvider aspspConsentDataProvider);
 
     abstract PaymentInitiationResponse mapToXs2aResponse(R spiResponse, InitialSpiAspspConsentDataProvider provider, PaymentType paymentType);
 }

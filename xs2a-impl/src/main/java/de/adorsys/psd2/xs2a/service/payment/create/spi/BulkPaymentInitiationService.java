@@ -14,51 +14,49 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.payment.initiation;
+package de.adorsys.psd2.xs2a.service.payment.create.spi;
 
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPaymentInitiationResponse;
-import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiToXs2aPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.Xs2aToSpiBulkPaymentMapper;
 import de.adorsys.psd2.xs2a.service.spi.InitialSpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
-import de.adorsys.psd2.xs2a.spi.domain.payment.SpiBulkPayment;
+import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiBulkPaymentInitiationResponse;
+import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.BulkPaymentSpi;
-import de.adorsys.psd2.xs2a.spi.service.PaymentSpi;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BulkPaymentInitiationService extends AbstractPaymentInitiationService<BulkPayment, SpiBulkPayment, SpiBulkPaymentInitiationResponse> {
+public class BulkPaymentInitiationService extends AbstractPaymentInitiationService<BulkPayment, SpiBulkPaymentInitiationResponse> {
     private final SpiToXs2aPaymentMapper spiToXs2aPaymentMapper;
     private final Xs2aToSpiBulkPaymentMapper xs2aToSpiBulkPaymentMapper;
     private final BulkPaymentSpi bulkPaymentSpi;
 
-    public BulkPaymentInitiationService(SpiContextDataProvider spiContextDataProvider, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
-                                        SpiErrorMapper spiErrorMapper, RequestProviderService requestProviderService,
-                                        SpiToXs2aPaymentMapper spiToXs2aPaymentMapper, Xs2aToSpiBulkPaymentMapper xs2aToSpiBulkPaymentMapper, BulkPaymentSpi bulkPaymentSpi) {
-        super(spiContextDataProvider, aspspConsentDataProviderFactory, spiErrorMapper, requestProviderService);
+    public BulkPaymentInitiationService(SpiContextDataProvider spiContextDataProvider,
+                                        SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
+                                        SpiErrorMapper spiErrorMapper, SpiToXs2aPaymentMapper spiToXs2aPaymentMapper,
+                                        Xs2aToSpiBulkPaymentMapper xs2aToSpiBulkPaymentMapper, BulkPaymentSpi bulkPaymentSpi) {
+        super(spiContextDataProvider, aspspConsentDataProviderFactory, spiErrorMapper);
         this.spiToXs2aPaymentMapper = spiToXs2aPaymentMapper;
         this.xs2aToSpiBulkPaymentMapper = xs2aToSpiBulkPaymentMapper;
         this.bulkPaymentSpi = bulkPaymentSpi;
     }
 
     @Override
-    PaymentSpi<SpiBulkPayment, SpiBulkPaymentInitiationResponse> getSpiService() {
-        return bulkPaymentSpi;
-    }
-
-    @Override
-    SpiBulkPayment mapToSpiPayment(BulkPayment xs2aPayment, String paymentProduct) {
-        return xs2aToSpiBulkPaymentMapper.mapToSpiBulkPayment(xs2aPayment, paymentProduct);
-    }
-
-    @Override
     BulkPaymentInitiationResponse mapToXs2aResponse(SpiBulkPaymentInitiationResponse spiResponse, InitialSpiAspspConsentDataProvider provider, PaymentType paymentType) {
         return spiToXs2aPaymentMapper.mapToPaymentInitiateResponse(spiResponse, provider);
+    }
+
+    @Override
+    SpiResponse<SpiBulkPaymentInitiationResponse> initiateSpiPayment(SpiContextData spiContextData, BulkPayment payment, String paymentProduct,
+                                                                     InitialSpiAspspConsentDataProvider aspspConsentDataProvider) {
+        return bulkPaymentSpi.initiatePayment(spiContextData,
+                                              xs2aToSpiBulkPaymentMapper.mapToSpiBulkPayment(payment, paymentProduct),
+                                              aspspConsentDataProvider);
     }
 }
