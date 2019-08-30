@@ -38,13 +38,12 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class SinglePayment extends CommonPayment implements AccountReferenceCollector {
-    @Size(max = 35)
+
     private String endToEndIdentification;
 
     @NotNull
     private AccountReference debtorAccount;
 
-    @Size(max = 70)
     private String ultimateDebtor;
 
     @Valid
@@ -57,13 +56,11 @@ public class SinglePayment extends CommonPayment implements AccountReferenceColl
     private String creditorAgent;
 
     @NotNull
-    @Size(max = 70)
     private String creditorName;
 
     @Valid
     private Xs2aAddress creditorAddress;
 
-    @Size(max = 70)
     private String ultimateCreditor;
 
     private PurposeCode purposeCode;
