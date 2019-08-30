@@ -36,14 +36,13 @@ import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.ais.account.GetBalancesReportValidator;
 import de.adorsys.psd2.xs2a.service.validator.ais.account.dto.CommonAccountBalanceRequestObject;
-import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
-import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.account.SpiAccountBalance;
 import de.adorsys.psd2.xs2a.spi.domain.account.SpiAccountReference;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.AccountSpi;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -102,8 +101,7 @@ public class BalanceService {
 
         AccountConsent accountConsent = accountConsentOptional.get();
 
-        ValidationResult validationResult = getBalancesReportValidator.validate(
-            new CommonAccountBalanceRequestObject(accountConsent, accountId, requestUri));
+        ValidationResult validationResult = getValidationResultForCommonAccountBalanceRequest(accountId, requestUri, accountConsent);
 
         if (validationResult.isNotValid()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID [{}], RequestUri [{}]. Get balances report - validation failed: {}",
@@ -113,24 +111,34 @@ public class BalanceService {
                        .build();
         }
 
+        SpiResponse<List<SpiAccountBalance>> spiResponse = getSpiResponse(accountConsent, consentId, accountId);
+
+        if (spiResponse.hasError()) {
+            return checkSpiResponse(consentId, accountId, spiResponse);
+        }
+
+        return getXs2aBalancesReportResponseObject(accountConsent, accountId, consentId, requestUri, spiResponse.getPayload());
+    }
+
+    @NotNull
+    private ValidationResult getValidationResultForCommonAccountBalanceRequest(String accountId, String requestUri, AccountConsent accountConsent) {
+        return getBalancesReportValidator.validate(
+            new CommonAccountBalanceRequestObject(accountConsent, accountId, requestUri));
+    }
+
+    private SpiResponse<List<SpiAccountBalance>> getSpiResponse(AccountConsent accountConsent, String consentId, String accountId) {
         Xs2aAccountAccess access = accountConsent.getAccess();
         SpiAccountReference requestedAccountReference = accountHelperService.findAccountReference(access.getAllPsd2(), access.getBalances(), accountId);
-        SpiContextData contextData = accountHelperService.getSpiContextData();
 
-        SpiAspspConsentDataProvider aspspConsentDataProvider =
-            aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId);
+        return accountSpi.requestBalancesForAccount(accountHelperService.getSpiContextData(),
+                                                    requestedAccountReference,
+                                                    consentMapper.mapToSpiAccountConsent(accountConsent),
+                                                    aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId));
+    }
 
-        SpiResponse<List<SpiAccountBalance>> spiResponse =
-            accountSpi.requestBalancesForAccount(contextData, requestedAccountReference,
-                                                 consentMapper.mapToSpiAccountConsent(accountConsent),
-                                                 aspspConsentDataProvider);
-        if (spiResponse.hasError()) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get balances report failed: couldn't get balances by account id.",
-                     internalRequestId, xRequestId, accountId, consentId);
-            return ResponseObject.<Xs2aBalancesReport>builder()
-                       .fail(new MessageError(spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS)))
-                       .build();
-        }
+    private ResponseObject<Xs2aBalancesReport> checkSpiResponse(String consentId, String accountId, SpiResponse<List<SpiAccountBalance>> spiResponse) {
+        UUID internalRequestId = requestProviderService.getInternalRequestId();
+        UUID xRequestId = requestProviderService.getRequestId();
 
         if (spiResponse.getPayload() == null) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get balances report failed: balances empty for account.",
@@ -140,11 +148,27 @@ public class BalanceService {
                        .build();
         }
 
-        Xs2aBalancesReport balancesReport = balanceReportMapper.mapToXs2aBalancesReport(requestedAccountReference,
-                                                                                        spiResponse.getPayload());
+        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get balances report failed: couldn't get balances by account id.",
+                 internalRequestId, xRequestId, accountId, consentId);
+        return ResponseObject.<Xs2aBalancesReport>builder()
+                   .fail(new MessageError(spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS)))
+                   .build();
+    }
 
-        ResponseObject<Xs2aBalancesReport> response =
-            ResponseObject.<Xs2aBalancesReport>builder().body(balancesReport).build();
+    @NotNull
+    private ResponseObject<Xs2aBalancesReport> getXs2aBalancesReportResponseObject(AccountConsent accountConsent,
+                                                                                   String accountId,
+                                                                                   String consentId,
+                                                                                   String requestUri,
+                                                                                   List<SpiAccountBalance> payload) {
+        Xs2aAccountAccess access = accountConsent.getAccess();
+        SpiAccountReference requestedAccountReference = accountHelperService.findAccountReference(access.getAllPsd2(), access.getBalances(), accountId);
+
+        Xs2aBalancesReport balancesReport = balanceReportMapper.mapToXs2aBalancesReport(requestedAccountReference, payload);
+
+        ResponseObject<Xs2aBalancesReport> response = ResponseObject.<Xs2aBalancesReport>builder()
+                                                          .body(balancesReport)
+                                                          .build();
 
         aisConsentService.consentActionLog(tppService.getTppId(), consentId,
                                            accountHelperService.createActionStatus(false, TypeAccess.BALANCE, response),

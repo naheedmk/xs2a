@@ -66,7 +66,7 @@ import java.util.Currency;
 import java.util.Optional;
 import java.util.UUID;
 
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -141,6 +141,19 @@ public class BalanceServiceTest {
     }
 
     @Test
+    public void getBalancesReport_Failure_NoAccountConsent() {
+        // Given
+        when(aisConsentService.getAccountConsentById(CONSENT_ID))
+            .thenReturn(Optional.empty());
+
+        // When
+        ResponseObject<Xs2aBalancesReport> actualResponse = balanceService.getBalancesReport(CONSENT_ID, ACCOUNT_ID, REQUEST_URI);
+
+        // Then
+        assertThatErrorIs(actualResponse, CONSENT_UNKNOWN_400);
+    }
+
+    @Test
     public void getBalancesReport_Failure_AllowedAccountDataHasError() {
         // Given
         when(getBalancesReportValidator.validate(new CommonAccountBalanceRequestObject(accountConsent, ACCOUNT_ID, REQUEST_URI)))
@@ -151,6 +164,22 @@ public class BalanceServiceTest {
 
         // Then
         assertThatErrorIs(actualResponse, CONSENT_INVALID);
+    }
+
+    @Test
+    public void getBalancesReport_Failure_SpiResponseHasNullPayload() {
+        // Given
+        when(accountSpi.requestBalancesForAccount(SPI_CONTEXT_DATA, spiAccountReference, SPI_ACCOUNT_CONSENT, spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID)))
+            .thenReturn(buildErrorSpiResponse(null));
+
+        when(consentMapper.mapToSpiAccountConsent(any()))
+            .thenReturn(SPI_ACCOUNT_CONSENT);
+
+        // When
+        ResponseObject<Xs2aBalancesReport> actualResponse = balanceService.getBalancesReport(CONSENT_ID, ACCOUNT_ID, REQUEST_URI);
+
+        // Then
+        assertThatErrorIs(actualResponse, RESOURCE_UNKNOWN_404);
     }
 
     @Test
