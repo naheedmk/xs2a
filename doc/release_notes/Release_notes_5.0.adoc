@@ -5,5 +5,5 @@
 
 == Bugfix: TPP domain validator ignores non-domain `tppName` field
 
-From now on, if `tppName` is not a proper domain name, if will be ignore by XS2A of TPP domain validation. Before,
+From now on, if `tppName` is not a proper domain name, it will be ignored by XS2A in TPP domain validation. Before,
 java `IllegalArgumentException` was thrown by the validator.
