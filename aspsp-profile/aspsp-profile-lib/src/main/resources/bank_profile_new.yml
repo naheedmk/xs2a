@@ -1,0 +1,54 @@
+---
+setting:
+  AIS:
+    consent types:
+      bankOfferedConsentSupported: FALSE
+      globalConsentSupported: FALSE
+      availableAccountsConsentSupported: TRUE
+      accountAccessFrequencyPerDay: 4
+      notConfirmedConsentExpirationTimeMs: 86400000
+      maxConsentValidityDays: 0
+    redirect link to online-banking:
+      aisRedirectUrlToAspsp: http://localhost:4200/ais/
+    transaction parameters:
+      availableBookingStatuses:
+        - BOOKED
+        - PENDING
+      transactionsWithoutBalancesSupported: FALSE
+      supportedTransactionApplicationTypes:
+        - JSON
+    deltaReportSupported:
+      entryReferenceFromSupported: FALSE
+      deltaListSupported: FALSE
+    oneTimeConsentScaRequired:
+      scaByOneTimeAvailableAccountsConsentRequired: TRUE
+  PIS:
+    supportedPaymentTypeAndProductMatrix:
+      SINGLE:
+        - sepa-credit-transfers
+        - instant-sepa-credit-transfers
+    maxTransactionValidityDays: 0
+    notConfirmedPaymentExpirationTimeMs: 86400000
+    paymentCancellationAuthorizationMandated: FALSE
+    redirect link to online-banking:
+      pisRedirectUrlToAspsp: http://localhost:4200/pis/
+      pisPaymentCancellationRedirectUrlToAspsp: http://localhost:4200/pis/cancellation/
+      paymentCancellationRedirectUrlExpirationTimeMs: 600000
+  PIIS:
+    piisConsentSupported: FALSE
+  Common:
+    scaApproachesSupported:
+      - REDIRECT
+    scaRedirectFlow: REDIRECT
+    startAuthorisationMode: Auto
+    tppSignatureRequired: FALSE
+    psuInInitialRequestMandated: FALSE
+    redirectUrlExpirationTimeMs: 600000
+    authorisationExpirationTimeMs: 86400000
+    forceXs2aBaseLinksUrl: FALSE
+    xs2aBaseLinksUrl: http://myhost.com/
+    supportedAccountReferenceFields:
+      - MSISDN
+    multicurrencyAccountLevelSupported: SUBACCOUNT
+    aisPisSessionsSupported: FALSE
+    signingBasketSupported: FALSE
