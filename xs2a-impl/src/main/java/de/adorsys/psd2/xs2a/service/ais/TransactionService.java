@@ -248,7 +248,7 @@ public class TransactionService {
     }
 
     private Optional<AccountConsent> recordAisTppRequestAndGetAccountConsentOptional(String consentId, EventType eventType) {
-        xs2aEventService.recordAisTppRequest(consentId, eventType);
+        xs2aEventService.recordAisTppRequest(consentId, eventType);//TODO HAS DUPLICATE
         return aisConsentService.getAccountConsentById(consentId);
     }
 

@@ -45,6 +45,7 @@ import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.AccountSpi;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -89,9 +90,7 @@ public class AccountDetailsService {
      */
     public ResponseObject<Xs2aAccountDetailsHolder> getAccountDetails(String consentId, String accountId,
                                                                       boolean withBalance, String requestUri) {
-        xs2aEventService.recordAisTppRequest(consentId, EventType.READ_ACCOUNT_DETAILS_REQUEST_RECEIVED);
-
-        Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
+        Optional<AccountConsent> accountConsentOptional = recordAisTppRequestAndGetAccountConsentOptional(consentId, EventType.READ_ACCOUNT_DETAILS_REQUEST_RECEIVED);
 
         UUID internalRequestId = requestProviderService.getInternalRequestId();
         UUID xRequestId = requestProviderService.getRequestId();
@@ -105,9 +104,7 @@ public class AccountDetailsService {
         }
 
         AccountConsent accountConsent = accountConsentOptional.get();
-
-        ValidationResult validationResult = getAccountDetailsValidator.validate(
-            new CommonAccountRequestObject(accountConsent, accountId, withBalance, requestUri));
+        ValidationResult validationResult = getValidationResultForCommonAccountRequest(accountId, withBalance, requestUri, accountConsent);
 
         if (validationResult.isNotValid()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID [{}], WithBalance [{}], RequestUri [{}]. Get account details - validation failed: {}",
@@ -117,29 +114,58 @@ public class AccountDetailsService {
                        .build();
         }
 
-        Xs2aAccountAccess access = accountConsent.getAccess();
-        SpiAccountReference requestedAccountReference = accountHelperService.findAccountReference(access.getAllPsd2(), access.getAccounts(), accountId);
-        SpiContextData contextData = accountHelperService.getSpiContextData();
+        SpiResponse<SpiAccountDetails> spiResponse = getSpiResponseSpiAccountDetails(accountConsent, consentId, accountId, withBalance);
 
-        SpiAspspConsentDataProvider aspspConsentDataProvider =
-            aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId);
-
-        SpiResponse<SpiAccountDetails> spiResponse =
-            accountSpi.requestAccountDetailForAccount(contextData, withBalance, requestedAccountReference,
-                                                      consentMapper.mapToSpiAccountConsent(accountConsent),
-                                                      aspspConsentDataProvider);
         if (spiResponse.hasError()) {
-            ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get account details failed: couldn't get account details. Error msg: [{}]",
-                     internalRequestId, xRequestId, accountId, consentId, errorHolder);
-            return ResponseObject.<Xs2aAccountDetailsHolder>builder()
-                       .fail(errorHolder)
-                       .build();
+            return checkSpiResponse(consentId, accountId, spiResponse);
         }
 
-        SpiAccountDetails spiAccountDetails = spiResponse.getPayload();
+        Xs2aAccountDetailsHolder xs2aAccountDetailsHolder = mapToXs2aAccountDetailsHolder(spiResponse, accountConsent);
 
-        if (spiAccountDetails == null) {
+        ResponseObject<Xs2aAccountDetailsHolder> response = ResponseObject.<Xs2aAccountDetailsHolder>builder()
+                                                                .body(xs2aAccountDetailsHolder)
+                                                                .build();
+
+        aisConsentService.consentActionLog(tppService.getTppId(), consentId,
+                                           accountHelperService.createActionStatus(withBalance, TypeAccess.ACCOUNT, response),
+                                           requestUri, accountHelperService.needsToUpdateUsage(accountConsent));
+
+        return response;
+    }
+
+    private Xs2aAccountDetailsHolder mapToXs2aAccountDetailsHolder(SpiResponse<SpiAccountDetails> spiResponse,
+                                                                   AccountConsent accountConsent) {
+        Xs2aAccountDetails accountDetails = accountDetailsMapper.mapToXs2aAccountDetails(spiResponse.getPayload());
+        return new Xs2aAccountDetailsHolder(accountDetails, accountConsent);
+    }
+
+    @NotNull
+    private ValidationResult getValidationResultForCommonAccountRequest(String accountId, boolean withBalance, String requestUri, AccountConsent accountConsent) {
+        CommonAccountRequestObject validatorObject =  new CommonAccountRequestObject(accountConsent, accountId, withBalance, requestUri);
+        return getAccountDetailsValidator.validate(validatorObject);
+    }
+
+    private Optional<AccountConsent> recordAisTppRequestAndGetAccountConsentOptional(String consentId, EventType eventType) {
+        xs2aEventService.recordAisTppRequest(consentId, eventType); //TODO HAS DUPLICATE
+        return aisConsentService.getAccountConsentById(consentId);
+    }
+
+    private SpiResponse<SpiAccountDetails> getSpiResponseSpiAccountDetails(AccountConsent accountConsent, String consentId,
+                                                                           String accountId, boolean withBalance) {
+        Xs2aAccountAccess access = accountConsent.getAccess();
+        SpiAccountReference requestedAccountReference = accountHelperService.findAccountReference(access.getAllPsd2(), access.getAccounts(), accountId);
+
+        return accountSpi.requestAccountDetailForAccount(accountHelperService.getSpiContextData(),
+                                                         withBalance, requestedAccountReference,
+                                                         consentMapper.mapToSpiAccountConsent(accountConsent),
+                                                         aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId));
+    }
+
+    private ResponseObject<Xs2aAccountDetailsHolder> checkSpiResponse(String consentId, String accountId, SpiResponse<SpiAccountDetails> spiResponse) {
+        UUID internalRequestId = requestProviderService.getInternalRequestId();
+        UUID xRequestId = requestProviderService.getRequestId();
+
+        if (spiResponse.getPayload() == null) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get account details failed: account details empty for consent.",
                      internalRequestId, xRequestId, accountId, consentId);
             return ResponseObject.<Xs2aAccountDetailsHolder>builder()
@@ -147,17 +173,11 @@ public class AccountDetailsService {
                        .build();
         }
 
-        Xs2aAccountDetails accountDetails = accountDetailsMapper.mapToXs2aAccountDetails(spiAccountDetails);
-
-        Xs2aAccountDetailsHolder xs2aAccountDetailsHolder = new Xs2aAccountDetailsHolder(accountDetails, accountConsent);
-
-        ResponseObject<Xs2aAccountDetailsHolder> response =
-            ResponseObject.<Xs2aAccountDetailsHolder>builder().body(xs2aAccountDetailsHolder).build();
-
-        aisConsentService.consentActionLog(tppService.getTppId(), consentId,
-                                           accountHelperService.createActionStatus(withBalance, TypeAccess.ACCOUNT, response),
-                                           requestUri, accountHelperService.needsToUpdateUsage(accountConsent));
-
-        return response;
+        ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
+        log.info("InR-ID: [{}], X-Request-ID: [{}], Account-ID [{}], Consent-ID: [{}]. Get account details failed: couldn't get account details. Error msg: [{}]",
+                 internalRequestId, xRequestId, accountId, consentId, errorHolder);
+        return ResponseObject.<Xs2aAccountDetailsHolder>builder()
+                   .fail(errorHolder)
+                   .build();
     }
 }
