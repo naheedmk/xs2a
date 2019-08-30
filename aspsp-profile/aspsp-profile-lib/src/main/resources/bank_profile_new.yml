@@ -17,10 +17,10 @@ setting:
       transactionsWithoutBalancesSupported: FALSE
       supportedTransactionApplicationTypes:
         - JSON
-    deltaReportSupported:
+    delta report settings:
       entryReferenceFromSupported: FALSE
       deltaListSupported: FALSE
-    oneTimeConsentScaRequired:
+    sca requirements for one-time consents:
       scaByOneTimeAvailableAccountsConsentRequired: TRUE
   PIS:
     supportedPaymentTypeAndProductMatrix:
