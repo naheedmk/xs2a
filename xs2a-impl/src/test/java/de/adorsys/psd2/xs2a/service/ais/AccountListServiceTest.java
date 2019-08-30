@@ -67,6 +67,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_UNKNOWN_400;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -144,6 +145,18 @@ public class AccountListServiceTest {
     }
 
     @Test
+    public void getAccountDetailsList_Failure_NoAccountConsent() {
+        // Given
+        when(aisConsentService.getAccountConsentById(CONSENT_ID)).thenReturn(Optional.empty());
+
+        // When
+        ResponseObject<Xs2aAccountListHolder> actualResponse = accountListService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
+
+        // Then
+        assertThatErrorIs(actualResponse, CONSENT_UNKNOWN_400);
+    }
+
+    @Test
     public void getAccountDetailsList_Failure_AllowedAccountDataHasError() {
         when(getAccountListValidator.validate(new GetAccountListConsentObject(accountConsent, WITH_BALANCE, REQUEST_URI)))
             .thenReturn(ValidationResult.invalid(CONSENT_INVALID_MESSAGE_ERROR));
@@ -170,6 +183,31 @@ public class AccountListServiceTest {
         ResponseObject<Xs2aAccountListHolder> actualResponse = accountListService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
 
         assertThatErrorIs(actualResponse, FORMAT_ERROR_CODE);
+    }
+
+    @Test
+    public void getAccountDetailsList_Failure_AccountConsentUpdatedIsEmpty() {
+        // Given
+        List<SpiAccountDetails> spiAccountDetailsList = Collections.singletonList(spiAccountDetails);
+
+        when(consentMapper.mapToSpiAccountConsent(any()))
+            .thenReturn(SPI_ACCOUNT_CONSENT);
+
+        when(accountSpi.requestAccountList(SPI_CONTEXT_DATA, WITH_BALANCE, SPI_ACCOUNT_CONSENT, spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID)))
+            .thenReturn(buildSuccessSpiResponse(spiAccountDetailsList));
+
+        List<Xs2aAccountDetails> xs2aAccountDetailsList = Collections.singletonList(xs2aAccountDetails);
+
+        when(accountDetailsMapper.mapToXs2aAccountDetailsList(spiAccountDetailsList))
+            .thenReturn(xs2aAccountDetailsList);
+
+        when(accountReferenceUpdater.updateAccountReferences(eq(CONSENT_ID), any(), anyList())).thenReturn(Optional.empty());
+
+        // When
+        ResponseObject<Xs2aAccountListHolder> actualResponse = accountListService.getAccountList(CONSENT_ID, WITH_BALANCE, REQUEST_URI);
+
+        // Then
+        assertThatErrorIs(actualResponse, CONSENT_UNKNOWN_400);
     }
 
     @Test
