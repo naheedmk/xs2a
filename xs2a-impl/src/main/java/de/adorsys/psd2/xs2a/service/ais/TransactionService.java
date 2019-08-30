@@ -127,7 +127,8 @@ public class TransactionService {
             return checkSpiResponseForTransactionsReport(request, spiResponse);
         }
 
-        return getTransactionsReportByPeriodSuccess(request, accountConsent, spiResponse.getPayload());
+        Xs2aTransactionsReport transactionsReport =  mapToTransactionsReport(request, accountConsent, spiResponse.getPayload());
+        return buildResponseObjectTransactionsReport(request, accountConsent, transactionsReport);
     }
 
     /**
@@ -162,20 +163,7 @@ public class TransactionService {
             return checkSpiResponseForTransactions(consentId, accountId, spiResponse);
         }
 
-        SpiTransaction payload = spiResponse.getPayload();
-
-        Transactions transactions = spiToXs2aTransactionMapper.mapToXs2aTransaction(payload);
-
-        ResponseObject<Transactions> response =
-            ResponseObject.<Transactions>builder()
-                .body(transactions)
-                .build();
-
-        aisConsentService.consentActionLog(tppService.getTppId(), consentId,
-                                           accountHelperService.createActionStatus(false, response),
-                                           requestUri, accountHelperService.needsToUpdateUsage(accountConsent));
-
-        return response;
+        return buildResponseObjectTransactions(consentId, requestUri, accountConsent, spiResponse.getPayload());
     }
 
     /**
@@ -206,12 +194,7 @@ public class TransactionService {
             return checkSpiResponseForTransactionDownloadResponse(consentId, accountId, downloadId, spiResponse);
         }
 
-        SpiTransactionsDownloadResponse spiPayload = spiResponse.getPayload();
-        Xs2aTransactionsDownloadResponse transactionsDownloadResponse = spiToXs2aDownloadTransactionsMapper.mapToXs2aTransactionsDownloadResponse(spiPayload);
-
-        return ResponseObject.<Xs2aTransactionsDownloadResponse>builder()
-                   .body(transactionsDownloadResponse)
-                   .build();
+        return buildResponseObjectTransactionsDownloadResponse(spiResponse.getPayload());
     }
 
     // first called in getTransactionsReportByPeriod, getTransactionDetails, downloadTransactions
@@ -508,9 +491,9 @@ public class TransactionService {
 
     // fourth call in getTransactionsReportByPeriod
     @NotNull
-    private ResponseObject<Xs2aTransactionsReport> getTransactionsReportByPeriodSuccess(Xs2aTransactionsReportByPeriodRequest request,
-                                                                                        AccountConsent accountConsent,
-                                                                                        SpiTransactionReport spiTransactionReport) {
+    private Xs2aTransactionsReport mapToTransactionsReport(Xs2aTransactionsReportByPeriodRequest request,
+                                                                           AccountConsent accountConsent,
+                                                                           SpiTransactionReport spiTransactionReport) {
         Xs2aAccountReport report = transactionsToAccountReportMapper
                                        .mapToXs2aAccountReport(spiTransactionReport.getTransactions(),
                                                                spiTransactionReport.getTransactionsRaw())
@@ -523,8 +506,7 @@ public class TransactionService {
             String encodedDownloadId = Base64.getUrlEncoder().encodeToString(spiTransactionReport.getDownloadId().getBytes());
             transactionsReport.setDownloadId(encodedDownloadId);
         }
-
-        return buildResponseObjectTransactionsReport(request, accountConsent, transactionsReport);
+        return transactionsReport;
     }
 
     // returned fourth in getTransactionsReportByPeriodSuccess
@@ -545,7 +527,34 @@ public class TransactionService {
         return response;
     }
 
-    // used in getTransactionsReportByPeriodSuccess
+    // returned fourth in getTransactionDetails
+    @NotNull
+    private ResponseObject<Transactions> buildResponseObjectTransactions(String consentId, String requestUri, AccountConsent accountConsent, SpiTransaction payload) {
+        Transactions transactions = spiToXs2aTransactionMapper.mapToXs2aTransaction(payload);
+
+        ResponseObject<Transactions> response =
+            ResponseObject.<Transactions>builder()
+                .body(transactions)
+                .build();
+
+        aisConsentService.consentActionLog(tppService.getTppId(),
+                                           consentId,
+                                           accountHelperService.createActionStatus(false, response),
+                                           requestUri,
+                                           accountHelperService.needsToUpdateUsage(accountConsent));
+
+        return response;
+    }
+
+    // returned fourth in downloadTransactions
+    private ResponseObject<Xs2aTransactionsDownloadResponse> buildResponseObjectTransactionsDownloadResponse(SpiTransactionsDownloadResponse spiPayload) {
+        Xs2aTransactionsDownloadResponse transactionsDownloadResponse = spiToXs2aDownloadTransactionsMapper.mapToXs2aTransactionsDownloadResponse(spiPayload);
+
+        return ResponseObject.<Xs2aTransactionsDownloadResponse>builder()
+                   .body(transactionsDownloadResponse)
+                   .build();
+    }
+
     private Xs2aTransactionsReport getXs2aTransactionsReport(Xs2aAccountReport report,
                                                              SpiAccountReference requestedAccountReference,
                                                              SpiTransactionReport spiTransactionReport) {
@@ -557,7 +566,6 @@ public class TransactionService {
         return transactionsReport;
     }
 
-    // used in getSpiResponseSpiTransactionReport, getSpiResponseSpiTransaction, getTransactionsReportByPeriodSuccess
     private SpiAccountReference getRequestedAccountReference(AccountConsent accountConsent, String accountId) {
         Xs2aAccountAccess access = accountConsent.getAccess();
         return accountHelperService.findAccountReference(access.getAllPsd2(), access.getTransactions(), accountId);
