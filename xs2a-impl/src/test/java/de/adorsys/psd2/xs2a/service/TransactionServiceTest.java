@@ -719,5 +719,4 @@ public class TransactionServiceTest {
     private static SpiTransactionReport buildSpiTransactionReport() {
         return new SpiTransactionReport(BASE64_STRING_EXAMPLE, Collections.emptyList(), Collections.emptyList(), SpiTransactionReport.RESPONSE_TYPE_JSON, null);
     }
-
 }
