@@ -1,3 +1,12 @@
 = Release notes v. 5.0
 
 == Table of Contents
+
+* Bugfix: statuses of obsoleted AIS consents
+
+== Bugfix: statuses of obsoleted AIS consents
+
+Some changes were made in AIS consents statuses switching: obsoleted consents that were not confirmed with authorisation
+now get status `REJECTED` (before it was `EXPIRED`).
+When new AIS consent for account for one TPP and one PSU is created with reccuringIndicator=true, old authorised consents
+get status `TERMINATED_BY_TPP`, but old unauthorised consents get status `REJECTED`.
