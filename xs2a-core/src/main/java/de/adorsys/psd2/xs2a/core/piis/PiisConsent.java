@@ -37,9 +37,6 @@ public class PiisConsent {
     private LocalDate lastActionDate;
     private LocalDate expireDate;
     private PsuIdData psuData;
-    // TODO: Remove the field in scope of https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/971 use tppAuthorisationNumber instead
-    @Deprecated
-    private TppInfo tppInfo;
     private ConsentStatus consentStatus;
     private AccountReference account;
     private PiisConsentTppAccessType tppAccessType;

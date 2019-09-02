@@ -92,14 +92,13 @@ public class CmsAspspPiisServiceInternalTest {
         psuIdData = buildPsuIdData();
         when(piisConsentMapper.mapToPiisConsent(buildPiisConsentEntity())).thenReturn(buildPiisConsent());
         when(piisConsentRepository.save(any(PiisConsentEntity.class))).thenReturn(buildPiisConsentEntity());
-        when(tppInfoRepository.findByAuthorisationNumber(any())).thenReturn(Optional.of(buildTppInfoEntity()));
     }
 
     @Test
     public void createConsent_success() {
         PiisConsentEntity piisConsentEntity = buildConsent();
         LocalDate validUntil = LocalDate.now().plusDays(1);
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(tppInfo, buildAccountReference(), validUntil);
+        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(buildAccountReference(), validUntil);
         when(piisConsentMapper.mapToPiisConsentEntity(psuIdData, request)).thenReturn(piisConsentEntity);
         when(piisConsentRepository.save(any(PiisConsentEntity.class)))
             .thenReturn(piisConsentEntity);
@@ -118,7 +117,6 @@ public class CmsAspspPiisServiceInternalTest {
 
         PiisConsentEntity piisConsent = argumentCaptor.getValue();
         assertThat(StringUtils.isNotBlank(piisConsent.getExternalId())).isTrue();
-        Assert.assertEquals(buildTppInfoEntity(), piisConsent.getTppInfo());
         Assert.assertEquals(buildAccountReferenceEntity(), piisConsent.getAccount());
         Assert.assertEquals(validUntil, piisConsent.getExpireDate());
         Assert.assertEquals(request.getAllowedFrequencyPerDay(), piisConsent.getAllowedFrequencyPerDay());
@@ -132,7 +130,7 @@ public class CmsAspspPiisServiceInternalTest {
     public void createConsentClosePreviousPiisConsents_success() {
         PiisConsentEntity piisConsentEntity = buildConsent();
         LocalDate validUntil = LocalDate.now().plusDays(1);
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(tppInfo, buildAccountReference(), validUntil);
+        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(buildAccountReference(), validUntil);
         when(piisConsentMapper.mapToPiisConsentEntity(psuIdData, request)).thenReturn(piisConsentEntity);
         when(piisConsentRepository.save(any(PiisConsentEntity.class)))
             .thenReturn(piisConsentEntity);
@@ -140,7 +138,7 @@ public class CmsAspspPiisServiceInternalTest {
         // Given
         AccountReference accountReference = buildAccountReference();
 
-        when(piisConsentEntitySpecification.byPsuIdDataAndTppInfoAndAccountReference(psuIdData, tppInfo.getAuthorisationNumber(), accountReference))
+        when(piisConsentEntitySpecification.byPsuIdDataAndAuthorisationNumberAndAccountReference(psuIdData, tppInfo.getAuthorisationNumber(), accountReference))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         List<PiisConsentEntity> piisConsentEntities = Arrays.asList(buildPiisConsentEntity(), buildPiisConsentEntity());
         //noinspection unchecked
@@ -159,7 +157,7 @@ public class CmsAspspPiisServiceInternalTest {
         assertEquals(piisConsentEntities.size(), previousPiisConsent.size());
 
         verify(piisConsentEntitySpecification, times(1))
-            .byPsuIdDataAndTppInfoAndAccountReference(psuIdData, tppInfo.getAuthorisationNumber(), accountReference);
+            .byPsuIdDataAndAuthorisationNumberAndAccountReference(psuIdData, tppInfo.getAuthorisationNumber(), accountReference);
 
         Set<ConsentStatus> consentStatuses = previousPiisConsent.stream()
                                                  .map(PiisConsentEntity::getConsentStatus)
@@ -174,7 +172,7 @@ public class CmsAspspPiisServiceInternalTest {
         // Given
         PiisConsentEntity piisConsentEntity = buildConsent();
         LocalDate validUntil = LocalDate.now().plusDays(1);
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(tppInfo, buildAccountReference(), validUntil);
+        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(buildAccountReference(), validUntil);
         when(piisConsentMapper.mapToPiisConsentEntity(psuIdData, request)).thenReturn(piisConsentEntity);
         when(piisConsentRepository.save(any(PiisConsentEntity.class)))
             .thenReturn(piisConsentEntity);
@@ -189,28 +187,10 @@ public class CmsAspspPiisServiceInternalTest {
     }
 
     @Test
-    public void createConsent_withTppInfo_success() {
-        // Given
-        PiisConsentEntity piisConsentEntity = buildConsent();
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(tppInfo, buildAccountReference(), EXPIRE_DATE);
-        when(piisConsentMapper.mapToPiisConsentEntity(psuIdData, request)).thenReturn(piisConsentEntity);
-        when(piisConsentRepository.save(any(PiisConsentEntity.class)))
-            .thenReturn(buildConsent());
-
-        // When
-        Optional<String> actual = cmsAspspPiisServiceInternal.createConsent(psuIdData, request);
-
-        // Then
-        assertThat(actual.isPresent()).isTrue();
-        //noinspection OptionalGetWithoutIsPresent
-        assertThat(StringUtils.isNotBlank(actual.get())).isTrue();
-    }
-
-    @Test
     public void createConsent_savingFailed_shouldFail() {
         // Given
         PiisConsentEntity piisConsentEntity = buildConsent(null);
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(tppInfo, buildAccountReference(), EXPIRE_DATE);
+        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(buildAccountReference(), EXPIRE_DATE);
         when(piisConsentMapper.mapToPiisConsentEntity(psuIdData, request)).thenReturn(piisConsentEntity);
         when(piisConsentRepository.save(any(PiisConsentEntity.class)))
             .thenReturn(piisConsentEntity);
@@ -226,7 +206,7 @@ public class CmsAspspPiisServiceInternalTest {
     public void createConsent_withEmptyPsuIdDate_shouldFail() {
         // Given
         PsuIdData emptyPsuIdData = new PsuIdData(null, null, null, null);
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(tppInfo, null, EXPIRE_DATE);
+        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(null, EXPIRE_DATE);
 
         // When
         Optional<String> actual = cmsAspspPiisServiceInternal.createConsent(emptyPsuIdData, request);
@@ -237,36 +217,10 @@ public class CmsAspspPiisServiceInternalTest {
     }
 
     @Test
-    public void createConsent_withEmptyTppInfo_shouldFail() {
-        // Given
-        PsuIdData psuIdData = buildPsuIdData();
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(new TppInfo(), buildAccountReference(), EXPIRE_DATE);
-
-        // When
-        Optional<String> actual = cmsAspspPiisServiceInternal.createConsent(psuIdData, request);
-
-        // Then
-        assertThat(actual.isPresent()).isFalse();
-    }
-
-    @Test
-    public void createConsent_withNullTppInfo_shouldFail() {
-        // Given
-        PsuIdData psuIdData = buildPsuIdData();
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(null, buildAccountReference(), EXPIRE_DATE);
-
-        // When
-        Optional<String> actual = cmsAspspPiisServiceInternal.createConsent(psuIdData, request);
-
-        // Then
-        assertThat(actual.isPresent()).isFalse();
-    }
-
-    @Test
     public void createConsent_withNullAccounts_shouldFail() {
         // Given
         PsuIdData psuIdData = buildPsuIdData();
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(tppInfo, null, EXPIRE_DATE);
+        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(null, EXPIRE_DATE);
 
         // When
         Optional<String> actual = cmsAspspPiisServiceInternal.createConsent(psuIdData, request);
@@ -281,7 +235,7 @@ public class CmsAspspPiisServiceInternalTest {
         // Given
         PsuIdData psuIdData = buildPsuIdData();
         LocalDate yesterdayDate = LocalDate.now().minusDays(1);
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(tppInfo, null, yesterdayDate);
+        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(null, yesterdayDate);
 
         // When
         Optional<String> actual = cmsAspspPiisServiceInternal.createConsent(psuIdData, request);
@@ -295,7 +249,7 @@ public class CmsAspspPiisServiceInternalTest {
     public void createConsent_withNullExpireDate_shouldFail() {
         // Given
         PsuIdData psuIdData = buildPsuIdData();
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(tppInfo, buildAccountReference(), null);
+        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(buildAccountReference(), null);
 
         // When
         Optional<String> actual = cmsAspspPiisServiceInternal.createConsent(psuIdData, request);
@@ -310,7 +264,7 @@ public class CmsAspspPiisServiceInternalTest {
         // Given
         PsuIdData psuIdData = buildPsuIdData();
         LocalDate yesterdayDate = LocalDate.now().minusDays(1);
-        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(tppInfo, null, yesterdayDate);
+        CreatePiisConsentRequest request = buildCreatePiisConsentRequest(null, yesterdayDate);
         request.setCardExpiryDate(LocalDate.now().minusDays(1));
 
         // When
@@ -396,7 +350,6 @@ public class CmsAspspPiisServiceInternalTest {
     private PiisConsentEntity buildConsent(Long id) {
         PiisConsentEntity piisConsent = new PiisConsentEntity();
         piisConsent.setId(id);
-        piisConsent.setTppInfo(buildTppInfoEntity());
         piisConsent.setAccount(buildAccountReferenceEntity());
         piisConsent.setExternalId(CONSENT_EXTERNAL_ID);
         piisConsent.setRequestDateTime(OffsetDateTime.now());
@@ -467,9 +420,8 @@ public class CmsAspspPiisServiceInternalTest {
         return tppInfo;
     }
 
-    private CreatePiisConsentRequest buildCreatePiisConsentRequest(TppInfo tppInfo, AccountReference account, LocalDate validUntil) {
+    private CreatePiisConsentRequest buildCreatePiisConsentRequest(AccountReference account, LocalDate validUntil) {
         CreatePiisConsentRequest request = new CreatePiisConsentRequest();
-        request.setTppInfo(tppInfo);
         request.setAccount(account);
         request.setValidUntil(validUntil);
         request.setAllowedFrequencyPerDay(FREQUENCY_PER_DAY);
@@ -477,6 +429,7 @@ public class CmsAspspPiisServiceInternalTest {
         request.setCardExpiryDate(CARD_EXPIRY_DATE);
         request.setCardInformation(CARD_INFORMATION);
         request.setRegistrationInformation(REGISTRATION_INFORMATION);
+        request.setTppAuthorisationNumber(TPP_AUTHORISATION_NUMBER);
         return request;
     }
 }

@@ -27,11 +27,6 @@ import java.time.LocalDate;
 @Data
 @ApiModel(description = "Piis consent request", value = "PiisConsentRequest")
 public class CreatePiisConsentRequest {
-
-    @Deprecated // TODO: Remove the field in scope of https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/971
-    @ApiModelProperty(value = "Tpp for which the consent will be created. If the property is omitted, the consent will be created for all TPPs")
-    private TppInfo tppInfo;
-
     @ApiModelProperty(value = "Tpp attribute that fully described Tpp for which the consent will be created. If the property is omitted, the consent will be created for all TPPs")
     private String tppAuthorisationNumber;
 

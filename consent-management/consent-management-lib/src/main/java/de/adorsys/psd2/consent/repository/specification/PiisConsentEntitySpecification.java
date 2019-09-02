@@ -58,7 +58,8 @@ public class PiisConsentEntitySpecification extends GenericSpecification {
                                                                                               @Nullable LocalDate createDateTo,
                                                                                               @Nullable PsuIdData psuIdData,
                                                                                               @Nullable String instanceId) {
-        return Specifications.<PiisConsentEntity>where(byTppAuthorisationNumber(tppAuthorisationNumber))
+
+        return Specifications.<PiisConsentEntity>where(byTppAuthorisationNumberWithoutJoin(tppAuthorisationNumber))
                    .and(byCreationTimestamp(createDateFrom, createDateTo))
                    .and(byPsuIdData(psuIdData))
                    .and(byInstanceId(instanceId));
@@ -109,25 +110,9 @@ public class PiisConsentEntitySpecification extends GenericSpecification {
      * @param accountReference       mandatory PIIS Account Reference
      * @return resulting specification for PiisConsentEntity
      */
-    public Specification<PiisConsentEntity> byPsuIdDataAndTppInfoAndAccountReference(@NotNull PsuIdData psuIdData,
-                                                                                     @NotNull String tppAuthorisationNumber,
-                                                                                     @NotNull AccountReference accountReference) {
-        return Specifications.<PiisConsentEntity>where(byPsuIdData(psuIdData))
-                   .and(byTppAuthorisationNumber(tppAuthorisationNumber))
-                   .and(byAccountReference(accountReference));
-    }
-
-    /**
-     * Returns specification for PiisConsentEntity for filtering consents by PsuIdData, TppInfo and AccountReference.
-     *
-     * @param psuIdData              mandatory PSU ID data
-     * @param tppAuthorisationNumber mandatory TPP authorisation number
-     * @param accountReference       mandatory PIIS Account Reference
-     * @return resulting specification for PiisConsentEntity
-     */
-    public Specification<PiisConsentEntity> byPsuIdDataAndTppInfoAndAccountReferenceWithoutJoin(@NotNull PsuIdData psuIdData,
-                                                                                     @NotNull String tppAuthorisationNumber,
-                                                                                     @NotNull AccountReference accountReference) {
+    public Specification<PiisConsentEntity> byPsuIdDataAndAuthorisationNumberAndAccountReference(@NotNull PsuIdData psuIdData,
+                                                                                                 @NotNull String tppAuthorisationNumber,
+                                                                                                 @NotNull AccountReference accountReference) {
         return Specification.<PiisConsentEntity>where(byPsuIdData(psuIdData))
                    .and(byTppAuthorisationNumberWithoutJoin(tppAuthorisationNumber))
                    .and(byAccountReference(accountReference));
