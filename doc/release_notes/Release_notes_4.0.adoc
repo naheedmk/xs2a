@@ -1,3 +1,9 @@
 = Release notes v.4.0
 
 == Table of Contents
+
+* Remove column `tpp_info_id` from `authorisation_template` table
+
+== Remove column `tpp_info_id` from `authorisation_template` table
+
+From now on, `tpp_info_id` column has been removed from `authorisation_template` table.
