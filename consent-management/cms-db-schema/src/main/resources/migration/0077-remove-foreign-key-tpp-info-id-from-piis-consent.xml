@@ -33,10 +33,17 @@
         </sql>
     </changeSet>
 
-    <changeSet author="ske@adorsys.com.ua" id="2019-09-02-2">
+    <changeSet author="ske@adorsys.de" id="2019-09-02-2">
         <comment>
             Drop foreign key tpp_info_id from piis_consent table
         </comment>
         <dropForeignKeyConstraint baseTableName="piis_consent" constraintName="fk__piis_consent__tpp_info"/>
+    </changeSet>
+
+    <changeSet author="ske@adorsys.de" id="2019-09-03-3">
+        <comment>
+            Drop column tpp_info_id from piis_consent table
+        </comment>
+        <dropColumn tableName="piis_consent" columnName="tpp_info_id"/>
     </changeSet>
 </databaseChangeLog>
