@@ -144,7 +144,7 @@ public class AspspProfileServiceWrapper {
      * @return true if payment cancellation authorization is mandated, false if doesn't
      */
     public boolean isPaymentCancellationAuthorizationMandated() {
-        return readAspspSettings().isPaymentCancellationAuthorizationMandated();
+        return readAspspSettings().isPaymentCancellationAuthorisationMandated();
     }
 
     /**

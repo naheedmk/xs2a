@@ -1,42 +1,42 @@
 ---
 setting:
-  AIS:
-    consent types:
+  ais:
+    consentTypes:
       bankOfferedConsentSupported: FALSE
       globalConsentSupported: FALSE
       availableAccountsConsentSupported: TRUE
       accountAccessFrequencyPerDay: 4
       notConfirmedConsentExpirationTimeMs: 86400000
       maxConsentValidityDays: 0
-    redirect link to online-banking:
+    redirectLinkToOnlineBanking:
       aisRedirectUrlToAspsp: http://localhost:4200/ais/
-    transaction parameters:
+    transactionParameters:
       availableBookingStatuses:
         - BOOKED
         - PENDING
       transactionsWithoutBalancesSupported: FALSE
       supportedTransactionApplicationTypes:
         - JSON
-    delta report settings:
+    deltaReportSettings:
       entryReferenceFromSupported: FALSE
       deltaListSupported: FALSE
-    sca requirements for one-time consents:
+    scaRequirementsForOneTimeConsents:
       scaByOneTimeAvailableAccountsConsentRequired: TRUE
-  PIS:
+  pis:
     supportedPaymentTypeAndProductMatrix:
       SINGLE:
         - sepa-credit-transfers
         - instant-sepa-credit-transfers
     maxTransactionValidityDays: 0
     notConfirmedPaymentExpirationTimeMs: 86400000
-    paymentCancellationAuthorizationMandated: FALSE
-    redirect link to online-banking:
+    paymentCancellationAuthorisationMandated: FALSE
+    redirectLinkToOnlineBanking:
       pisRedirectUrlToAspsp: http://localhost:4200/pis/
       pisPaymentCancellationRedirectUrlToAspsp: http://localhost:4200/pis/cancellation/
       paymentCancellationRedirectUrlExpirationTimeMs: 600000
-  PIIS:
+  piis:
     piisConsentSupported: FALSE
-  Common:
+  common:
     scaApproachesSupported:
       - REDIRECT
     scaRedirectFlow: REDIRECT

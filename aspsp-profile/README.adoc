@@ -35,7 +35,7 @@ To supply file please provide a property to spring framework (i.e. via applicati
 |Option |Description |Default value |Possible values
 
 |*AIS:* | | |
-| *consent types:* | | |
+| *consentTypes:* | | |
 |bankOfferedConsentSupported |This field defines whether the ASPSP supports Bank offered consent:
 
 If parameter = FALSE then XS2A sends the response with HTTP code 405 SERVICE_INVALID|FALSE |TRUE, FALSE
@@ -54,9 +54,9 @@ Attribute frequencyPerDay is mandatory for Account Information Consent request. 
 
 Not confirmed during this period of time AIS consents will be considered obsolete. The default value is set to 24 hours. |86 400 000 |milliseconds (1, 2,...)
 |maxConsentValidityDays |This field defines consent lifetime - maximum validity days of consent. When this value equals to 0 or empty, then the maximum lifetime of Consent is infinity. |0 |days (0, 1, ...)
-|*redirect link to online-banking:* | | |
+|*redirectLinkToOnlineBanking:* | | |
 |aisRedirectUrlToAspsp |Link to online-banking to authorise consent with Redirect approach. Attribute is available to be configured with custom url pattern and redirectId parameter. |http://localhost:4200/ais/ |String
-|*transaction parameters:* | | |
+|*transactionParameters:* | | |
 |availableBookingStatuses |This field contains booking statuses supported by ASPSP.
 
 Parameter is mandatory in the request "Read Transaction List". |BOOKED, PENDING |BOOKED, PENDING, BOTH
@@ -64,14 +64,14 @@ Parameter is mandatory in the request "Read Transaction List". |BOOKED, PENDING 
 
 If not  (transactionsWithoutBalancesSupported = false) then ASPSP might add balance information into list. |FALSE |TRUE, FALSE
 |supportedTransactionApplicationTypes |This field contains transaction application types supported by ASPSP  |JSON |JSON, XML, TEXT
-|*delta report settings:* | | |
+|*deltaReportDettings:* | | |
 |entryReferenceFromSupported |This field indicates if an ASPSP supports Delta reports for transaction details with query parameter entryReferenceFrom.
 
 If parameter = FALSE then XS2A sends the response with HTTP code 400 PARAMETER_NOT_SUPPORTED |FALSE |TRUE, FALSE
 |deltaListSupported |This field indicates if an ASPSP supports Delta reports for transaction details with query parameter deltaList.
 
 If parameter = FALSE then XS2A sends the response with HTTP code 400 PARAMETER_NOT_SUPPORTED  |FALSE |TRUE, FALSE
-|*sca requirements for one-time consents:* | | |
+|*scaRequirementsForOneTimeConsents:* | | |
 |scaByOneTimeAvailableAccountsConsentRequired |This field indicates if ASPSP requires usage of SCA to validate a one-time available accounts consent.
 
 If parameter = FALSE  and sub-attribute within the "access" attribute with the value "allAccounts" then one-factor authorisation (PSU-ID and password) should be done to set consent status to Valid.
@@ -104,8 +104,8 @@ SINGLE:
 |notConfirmedPaymentExpirationTimeMs |This field contains the limit of an expiration time of not confirmed payment set in milliseconds.
 
  Not confirmed during this period of time payment will be considered obsolete. The default value is set to 24 hours.|86 400 000	 |milliseconds (1, 2,...)
-|paymentCancellationAuthorizationMandated |This field defines if an authorisation of the payment cancellation is mandated by the ASPSP. |FALSE |TRUE, FALSE
-|*redirect link to online-banking:* | | |
+|paymentCancellationAuthorisationMandated |This field defines if an authorisation of the payment cancellation is mandated by the ASPSP. |FALSE |TRUE, FALSE
+|*redirectLinkToOnlineBanking:* | | |
 |pisRedirectUrlToAspsp |Link to online-banking to authorise payment with Redirect approach. Attribute is available to be configured with custom url pattern and redirectId parameter. |http://localhost:4200/pis/ |String
 |pisPaymentCancellationRedirectUrlToAspsp |	Link to online-banking to authorise payment cancellation with Redirect approach. Attribute is available to be configured with custom url pattern and redirectId parameter. |http://localhost:4200/pis/cancellation/ |String
 |paymentCancellationRedirectUrlExpirationTimeMs |This field contains the limit of expiration time of Payment cancellation redirect URL set in milliseconds.

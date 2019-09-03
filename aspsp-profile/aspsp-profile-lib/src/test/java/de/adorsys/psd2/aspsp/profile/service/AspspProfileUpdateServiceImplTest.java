@@ -12,7 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 
 package de.adorsys.psd2.aspsp.profile.service;
 
@@ -123,7 +124,7 @@ public class AspspProfileUpdateServiceImplTest {
         Assertions.assertThat(setting.isAllPsd2Support()).isEqualTo(ALL_PSD_2_SUPPORT);
         Assertions.assertThat(setting.isTransactionsWithoutBalancesSupported()).isEqualTo(TRANSACTIONS_WITHOUT_BALANCES_SUPPORTED);
         Assertions.assertThat(setting.isSigningBasketSupported()).isEqualTo(SIGNING_BASKET_SUPPORTED);
-        Assertions.assertThat(setting.isPaymentCancellationAuthorizationMandated()).isEqualTo(PAYMENT_CANCELLATION_AUTHORIZATION_MANDATED);
+        Assertions.assertThat(setting.isPaymentCancellationAuthorisationMandated()).isEqualTo(PAYMENT_CANCELLATION_AUTHORIZATION_MANDATED);
         Assertions.assertThat(setting.isPiisConsentSupported()).isEqualTo(PIIS_CONSENT_SUPPORTED);
         Assertions.assertThat(setting.isDeltaListSupported()).isEqualTo(DELTA_LIST_SUPPORTED);
         Assertions.assertThat(setting.getRedirectUrlExpirationTimeMs()).isEqualTo(REDIRECT_URL_EXPIRATION_TIME_MS);
@@ -163,3 +164,4 @@ public class AspspProfileUpdateServiceImplTest {
         return matrix;
     }
 }
+*/

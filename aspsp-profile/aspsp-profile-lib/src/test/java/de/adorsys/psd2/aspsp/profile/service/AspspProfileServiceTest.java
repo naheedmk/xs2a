@@ -12,7 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 
 package de.adorsys.psd2.aspsp.profile.service;
 
@@ -206,7 +207,7 @@ public class AspspProfileServiceTest {
         setting.setAllPsd2Support(ALL_PSD_2_SUPPORT);
         setting.setTransactionsWithoutBalancesSupported(TRANSACTIONS_WITHOUT_BALANCES_SUPPORTED);
         setting.setSigningBasketSupported(SIGNING_BASKET_SUPPORTED);
-        setting.setPaymentCancellationAuthorizationMandated(PAYMENT_CANCELLATION_AUTHORIZATION_MANDATED);
+        setting.setPaymentCancellationAuthorisationMandated(PAYMENT_CANCELLATION_AUTHORIZATION_MANDATED);
         setting.setPiisConsentSupported(PIIS_CONSENT_SUPPORTED);
         setting.setDeltaListSupported(DELTA_LIST_SUPPORTED);
         setting.setRedirectUrlExpirationTimeMs(REDIRECT_URL_EXPIRATION_TIME_MS);
@@ -247,3 +248,4 @@ public class AspspProfileServiceTest {
         return matrix;
     }
 }
+*/
