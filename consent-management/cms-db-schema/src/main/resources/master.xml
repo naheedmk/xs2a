@@ -102,5 +102,5 @@
     <include relativeToChangelogFile="true" file="migration/0074-add-tpp-redirect-nok-redirect-columns-to-aispis-consent-authorization-tables.xml"/>
     <include relativeToChangelogFile="true" file="migration/0075-add-authorisation-template-table.xml"/>
     <include relativeToChangelogFile="true" file="migration/0076-add-unique-null-constraint-to-tpp-authorisation-number.xml"/>
-    <include relativeToChangelogFile="true" file="migration/0077-remove-column-tpp-info-id-from-authorisation-template-table.xml"/>
+    <include relativeToChangelogFile="true" file="migration/0077-remove-foreign-key-tpp-info-id-from-piis-consent.xml"/>
 </databaseChangeLog>

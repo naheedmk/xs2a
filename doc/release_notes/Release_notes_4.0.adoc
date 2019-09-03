@@ -2,9 +2,9 @@
 
 == Table of Contents
 
-* Remove column `tpp_info_id` from `authorisation_template` table
+* Remove deprecated TppInfo from PiisConsent
 
-== Remove column `tpp_info_id` from `authorisation_template` table
+== Remove deprecated TppInfo from PiisConsent
 
-From now on, `tpp_info_id` column has been removed from `authorisation_template` table.
-
+From now on, the deprecated field `tppInfo` is removed from `PiisConsentEntity`, `PiisConsent`, and
+`CreatePiisConsentRequest`. Also, all data has been migrated from `tppInfo` to `tppAuthorisationNumber`.
