@@ -158,9 +158,9 @@ public class AccountControllerTest {
     public void getAccounts_ResultTest() throws IOException {
         // Given
         boolean withBalance = true;
-        AccountList expectedResult = createAccountDetailsList(ACCOUNT_DETAILS_LIST_SOURCE).getBody();
+        AccountList expectedResult = createAccountDetailsList().getBody();
 
-        doReturn(new ResponseEntity<>(createAccountDetailsList(ACCOUNT_DETAILS_LIST_SOURCE).getBody(), HttpStatus.OK))
+        doReturn(new ResponseEntity<>(createAccountDetailsList().getBody(), HttpStatus.OK))
             .when(responseMapper).ok(any(), any());
 
         // When
@@ -236,7 +236,7 @@ public class AccountControllerTest {
         AccountReport expectedResult = jsonConverter.toObject(IOUtils.resourceToString(ACCOUNT_REPORT_SOURCE, UTF_8),
                                                               AccountReport.class).get();
 
-        doReturn(new ResponseEntity<>(createAccountReport(ACCOUNT_REPORT_SOURCE).getBody(), HttpStatus.OK))
+        doReturn(new ResponseEntity<>(createAccountReport().getBody(), HttpStatus.OK))
             .when(responseMapper).ok(any(), any());
 
         Xs2aTransactionsReport transactionsReport = new Xs2aTransactionsReport();
@@ -262,7 +262,7 @@ public class AccountControllerTest {
         AccountReport expectedResult = jsonConverter.toObject(IOUtils.resourceToString(ACCOUNT_REPORT_SOURCE, UTF_8),
                                                               AccountReport.class).get();
 
-        doReturn(new ResponseEntity<>(buildAccountReportWithError(ACCOUNT_REPORT_SOURCE).getBody(), HttpStatus.OK))
+        doReturn(new ResponseEntity<>(buildAccountReportWithError().getBody(), HttpStatus.OK))
             .when(responseErrorMapper).generateErrorResponse(MESSAGE_ERROR_AIS_404);
         Xs2aTransactionsReport transactionsReport = new Xs2aTransactionsReport();
         transactionsReport.setAccountReport(new Xs2aAccountReport(Collections.emptyList(), Collections.emptyList(), null));
@@ -286,7 +286,7 @@ public class AccountControllerTest {
         AccountReport expectedResult = jsonConverter.toObject(IOUtils.resourceToString(ACCOUNT_REPORT_SOURCE, UTF_8),
                                                               AccountReport.class).get();
 
-        doReturn(new ResponseEntity<>(createAccountReport(ACCOUNT_REPORT_SOURCE).getBody(), HttpStatus.OK))
+        doReturn(new ResponseEntity<>(createAccountReport().getBody(), HttpStatus.OK))
             .when(responseMapper).ok(any(), any());
         Xs2aTransactionsReport transactionsReport = new Xs2aTransactionsReport();
         transactionsReport.setAccountReport(new Xs2aAccountReport(Collections.emptyList(), Collections.emptyList(), null));
@@ -306,7 +306,7 @@ public class AccountControllerTest {
 
     @Test
     public void getTransactionDetails_success() throws IOException {
-        doReturn(new ResponseEntity<>(createAccountReport(ACCOUNT_REPORT_SOURCE).getBody(), HttpStatus.OK))
+        doReturn(new ResponseEntity<>(createAccountReport().getBody(), HttpStatus.OK))
             .when(responseMapper).ok(any(), any());
 
         // Given
@@ -326,7 +326,7 @@ public class AccountControllerTest {
     public void getTransactionDetails1_success() throws IOException {
         // Given
         when(transactionService.getTransactionDetails(eq(CONSENT_ID), eq(ACCOUNT_ID), any(), eq(REQUEST_URI))).thenReturn(buildTransactionWithError());
-        doReturn(new ResponseEntity<>(buildAccountReportWithError(ACCOUNT_REPORT_SOURCE).getBody(), HttpStatus.OK))
+        doReturn(new ResponseEntity<>(buildAccountReportWithError().getBody(), HttpStatus.OK))
             .when(responseErrorMapper).generateErrorResponse(MESSAGE_ERROR_AIS_404);
 
         AccountReport expectedResult = jsonConverter.toObject(IOUtils.resourceToString(ACCOUNT_REPORT_SOURCE, UTF_8),
@@ -379,8 +379,8 @@ public class AccountControllerTest {
                    .body(xs2aAccountListHolder).build();
     }
 
-    private ResponseObject<AccountList> createAccountDetailsList(String path) throws IOException {
-        AccountList details = jsonConverter.toObject(IOUtils.resourceToString(path, UTF_8), AccountList.class).get();
+    private ResponseObject<AccountList> createAccountDetailsList() throws IOException {
+        AccountList details = jsonConverter.toObject(IOUtils.resourceToString(AccountControllerTest.ACCOUNT_DETAILS_LIST_SOURCE, UTF_8), AccountList.class).get();
         return ResponseObject.<AccountList>builder()
                    .body(details).build();
     }
@@ -403,21 +403,21 @@ public class AccountControllerTest {
     }
 
     private ResponseObject<AccountDetails> getAccountDetails() throws IOException {
-        AccountDetails details = createAccountDetailsList(ACCOUNT_DETAILS_LIST_SOURCE).getBody().getAccounts().get(0);
+        AccountDetails details = createAccountDetailsList().getBody().getAccounts().get(0);
         return ResponseObject.<AccountDetails>builder()
                    .body(details).build();
     }
 
-    private ResponseObject<AccountReport> createAccountReport(String path) throws IOException {
-        AccountReport accountReport = jsonConverter.toObject(IOUtils.resourceToString(path, UTF_8),
+    private ResponseObject<AccountReport> createAccountReport() throws IOException {
+        AccountReport accountReport = jsonConverter.toObject(IOUtils.resourceToString(AccountControllerTest.ACCOUNT_REPORT_SOURCE, UTF_8),
                                                              AccountReport.class).get();
 
         return ResponseObject.<AccountReport>builder()
                    .body(accountReport).build();
     }
 
-    private ResponseObject<AccountReport> buildAccountReportWithError(String path) throws IOException {
-        AccountReport accountReport = jsonConverter.toObject(IOUtils.resourceToString(path, UTF_8),
+    private ResponseObject<AccountReport> buildAccountReportWithError() throws IOException {
+        AccountReport accountReport = jsonConverter.toObject(IOUtils.resourceToString(ACCOUNT_REPORT_SOURCE, UTF_8),
                                                              AccountReport.class).get();
 
         return ResponseObject.<AccountReport>builder()
