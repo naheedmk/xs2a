@@ -30,5 +30,6 @@ set to `true`: if old consents have `PARTIALLY_AUTHORISED` status - they obtain 
 From now on, `tpp_info_id` column has been removed from `authorisation_template` table.
 
 == Multilevel SCA for Establish Consent in Redirect approach
-From now on, online banking is able to authorised partially AIS Consent by invoking de.adorsys.psd2.consent.service.psu.CmsPsuAisServiceInternal.authorisePartiallyConsent method
-or sending request to `POST /psu-api/v1/ais/consent/{consent-id}/authorise-partially-consent` endpoint.
+
+New method `CmsPsuAisServiceInternal::authorisePartiallyConsent` was added to CMS-PSU-API to authorise AIS Consent partially (`POST /psu-api/v1/ais/consent/{consent-id}/authorise-partially-consent`).
+
