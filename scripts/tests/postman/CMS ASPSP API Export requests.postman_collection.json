@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e241d5c1-e398-4fea-84d2-ebfe8565e0d0",
+		"_postman_id": "d83d9483-4dc3-49f4-919b-1a3021c8801f",
 		"name": "CMS ASPSP API Export requests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1110,7 +1110,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"account\": \n    {\n      \"currency\": \"EUR\",\n      \"iban\": \"LU280019400644750000\",\n      \"aspspAccountId\": \"{{aspsp_account_id}}\"\n    }\n  ,\n  \"tppAuthorisationNumber\": \"PSDDE-FAKENCA-87B2AC\",\n  \"allowedFrequencyPerDay\": 4,\n  \"validUntil\": \"2021-10-10\"\n}"
+							"raw": "{\n  \"account\": \n    {\n      \"currency\": \"EUR\",\n      \"iban\": \"LU280019400644750000\",\n      \"aspspAccountId\": \"{{aspsp_account_id}}\"\n    },\n  \"tppAuthorisationNumber\": \"{{tpp_id}}\",\n  \"validUntil\": \"2021-10-10\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{url_cms}}/aspsp-api/v1/piis/consents/",
