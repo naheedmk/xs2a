@@ -66,13 +66,6 @@ public class AccountHelperService {
         return spiContextDataProvider.provideWithPsuIdData(psuIdData);
     }
 
-    ActionStatus createActionStatus(boolean withBalance, ResponseObject response) {
-        return response.hasError()
-                   ? consentMapper.mapActionStatusError(response.getError().getTppMessage().getMessageErrorCode(),
-                                                        withBalance, TypeAccess.TRANSACTION)
-                   : ActionStatus.SUCCESS;
-    }
-
     ActionStatus createActionStatus(boolean withBalance, TypeAccess access, ResponseObject response) {
         return response.hasError()
                    ? consentMapper.mapActionStatusError(response.getError().getTppMessage().getMessageErrorCode(),

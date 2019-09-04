@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.ais;
 
+import de.adorsys.psd2.consent.api.TypeAccess;
 import de.adorsys.psd2.event.core.model.EventType;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
@@ -394,7 +395,7 @@ public class TransactionService {
 
         aisConsentService.consentActionLog(tppService.getTppId(),
                                            request.getConsentId(),
-                                           accountHelperService.createActionStatus(request.isWithBalance(), response),
+                                           accountHelperService.createActionStatus(request.isWithBalance(), TypeAccess.TRANSACTION, response),
                                            request.getRequestUri(),
                                            accountHelperService.needsToUpdateUsage(accountConsent));
         return response;
@@ -438,7 +439,7 @@ public class TransactionService {
                                                     .build();
 
         aisConsentService.consentActionLog(tppService.getTppId(), consentId,
-                                           accountHelperService.createActionStatus(false, response),
+                                           accountHelperService.createActionStatus(false, TypeAccess.TRANSACTION, response),
                                            requestUri,
                                            accountHelperService.needsToUpdateUsage(accountConsent));
         return response;

@@ -146,29 +146,11 @@ public class AccountHelperServiceTest {
     }
 
     @Test
-    public void createActionStatus_WithTwoArguments() {
-        // When
-        ActionStatus actual = accountHelperService.createActionStatus(WITH_BALANCE, RESPONSE_OBJECT);
-        // Then
-        assertEquals(ACTION_STATUS_SUCCESS, actual);
-    }
-
-    @Test
     public void createActionStatus_WithThreeArguments() {
         // When
         ActionStatus actual = accountHelperService.createActionStatus(WITH_BALANCE, TYPE_ACCESS_ACCOUNT, RESPONSE_OBJECT);
         // Then
         assertEquals(ACTION_STATUS_SUCCESS, actual);
-    }
-
-    @Test
-    public void createActionStatus_WithTwoArgumentsAndError() {
-        // Given
-        when(consentMapper.mapActionStatusError(MESSAGE_ERROR_CODE_CONSENT_INVALID, WITH_BALANCE, TYPE_ACCESS_TRANSACTION)).thenReturn(ACTION_STATUS_CONSENT_INVALID_STATUS);
-        // When
-        ActionStatus actual = accountHelperService.createActionStatus(WITH_BALANCE, RESPONSE_OBJECT_WITH_ERROR);
-        // Then
-        assertEquals(ACTION_STATUS_CONSENT_INVALID_STATUS, actual);
     }
 
     @Test
