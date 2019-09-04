@@ -49,7 +49,6 @@ public class PiisConsentMapper {
                                piisConsentEntity.getConsentStatus(),
                                accountReferenceMapper.mapToAccountReferenceEntity(piisConsentEntity.getAccount()),
                                piisConsentEntity.getTppAccessType(),
-                               piisConsentEntity.getAllowedFrequencyPerDay(),
                                piisConsentEntity.getCreationTimestamp(),
                                piisConsentEntity.getInstanceId(),
                                piisConsentEntity.getCardNumber(),
@@ -75,7 +74,6 @@ public class PiisConsentMapper {
         consent.setPsuData(psuDataMapper.mapToPsuData(psuIdData));
         consent.setAccount(accountReferenceMapper.mapToAccountReferenceEntity(request.getAccount()));
         consent.setTppAccessType(getAccessType(request));
-        consent.setAllowedFrequencyPerDay(request.getAllowedFrequencyPerDay());
         consent.setCardNumber(request.getCardNumber());
         consent.setCardExpiryDate(request.getCardExpiryDate());
         consent.setCardInformation(request.getCardInformation());
