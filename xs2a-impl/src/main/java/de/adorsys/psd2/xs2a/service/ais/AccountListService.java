@@ -139,7 +139,6 @@ public class AccountListService {
         return getXs2aAccountListHolderResponseObject(consentId, withBalance, requestUri, accountConsentUpdated.get(), accountDetails);
     }
 
-    @NotNull
     private ValidationResult getValidationResultForGetAccountListConsent(boolean withBalance, String requestUri, AccountConsent accountConsent) {
         GetAccountListConsentObject validatorObject = new GetAccountListConsentObject(accountConsent, withBalance, requestUri);
         return getAccountListValidator.validate(validatorObject);

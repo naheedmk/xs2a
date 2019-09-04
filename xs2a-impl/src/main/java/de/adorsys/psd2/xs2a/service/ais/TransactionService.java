@@ -232,7 +232,6 @@ public class TransactionService {
         return getXs2aTransactionsDownloadResponseResponseObject(spiResponse.getPayload());
     }
 
-    @NotNull
     private ValidationResult getValidationResultForTransactionsReportByPeriod(Xs2aTransactionsReportByPeriodRequest request,
                                                                               AccountConsent accountConsent) {
         TransactionsReportByPeriodObject validatorObject = new TransactionsReportByPeriodObject(accountConsent,
@@ -246,7 +245,6 @@ public class TransactionService {
         return getTransactionsReportValidator.validate(validatorObject);
     }
 
-    @NotNull
     private ValidationResult getValidationResultForCommonAccountTransactions(String accountId, String requestUri,
                                                                              AccountConsent accountConsent) {
         CommonAccountTransactionsRequestObject validatorObject = new CommonAccountTransactionsRequestObject(accountConsent,
@@ -255,7 +253,6 @@ public class TransactionService {
         return getTransactionDetailsValidator.validate(validatorObject);
     }
 
-    @NotNull
     private ValidationResult getValidationResultForDownloadTransactionRequest(AccountConsent accountConsent) {
         DownloadTransactionListRequestObject validatorObject = new DownloadTransactionListRequestObject(accountConsent);
         return downloadTransactionsReportValidator.validate(validatorObject);

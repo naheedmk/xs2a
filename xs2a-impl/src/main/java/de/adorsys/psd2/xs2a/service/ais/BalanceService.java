@@ -120,7 +120,6 @@ public class BalanceService {
         return getXs2aBalancesReportResponseObject(accountConsent, accountId, consentId, requestUri, spiResponse.getPayload());
     }
 
-    @NotNull
     private ValidationResult getValidationResultForCommonAccountBalanceRequest(String accountId, String requestUri, AccountConsent accountConsent) {
         return getBalancesReportValidator.validate(
             new CommonAccountBalanceRequestObject(accountConsent, accountId, requestUri));

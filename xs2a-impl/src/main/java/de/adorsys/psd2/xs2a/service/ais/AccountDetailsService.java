@@ -123,7 +123,6 @@ public class AccountDetailsService {
         return getXs2aAccountDetailsHolderResponseObject(consentId, withBalance, requestUri, accountConsent, spiResponse.getPayload());
     }
 
-    @NotNull
     private ValidationResult getValidationResultForCommonAccountRequest(String accountId, boolean withBalance, String requestUri, AccountConsent accountConsent) {
         CommonAccountRequestObject validatorObject =  new CommonAccountRequestObject(accountConsent, accountId, withBalance, requestUri);
         return getAccountDetailsValidator.validate(validatorObject);
