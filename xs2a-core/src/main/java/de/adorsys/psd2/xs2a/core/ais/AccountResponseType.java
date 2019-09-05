@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.core.ais;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public enum AccountResponseType {
     JSON("application/json"),
@@ -36,6 +37,7 @@ public enum AccountResponseType {
     public static AccountResponseType fromValue(String value) {
         return Arrays.stream(values())
                    .filter(type -> type.name().equalsIgnoreCase(value))
-                   .findFirst().orElse(null);
+                   .findFirst()
+                   .orElse( JSON );
     }
 }
