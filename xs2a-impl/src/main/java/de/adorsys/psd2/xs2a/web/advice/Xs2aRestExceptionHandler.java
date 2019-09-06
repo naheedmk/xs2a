@@ -18,10 +18,12 @@ package de.adorsys.psd2.xs2a.web.advice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.discovery.ServiceTypeDiscoveryService;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorMapperContainer;
+import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceTypeToErrorTypeMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,19 +32,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.SERVICE_INVALID_405;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
 
 @Slf4j
 @ControllerAdvice
 @RequiredArgsConstructor
 public class Xs2aRestExceptionHandler extends ResponseEntityExceptionHandler {
-
     private final ErrorMapperContainer errorMapperContainer;
     private final ServiceTypeDiscoveryService serviceTypeDiscoveryService;
     private final ServiceTypeToErrorTypeMapper errorTypeMapper;
@@ -76,4 +78,9 @@ public class Xs2aRestExceptionHandler extends ResponseEntityExceptionHandler {
         return of(SERVICE_INVALID_405, String.format("HTTP method '%s' is not supported", methodName));
     }
 
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ErrorMapperContainer.ErrorBody errorBody = this.errorMapperContainer.getErrorBody(new MessageError(ErrorType.AIS_401, of(CONSENT_INVALID)));
+        return new ResponseEntity<>(errorBody.getBody(), errorBody.getStatus());
+    }
 }
