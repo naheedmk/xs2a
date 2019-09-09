@@ -16,11 +16,9 @@
 
 package de.adorsys.psd2.aspsp.profile.domain.pis;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
-@Data
-@AllArgsConstructor
+@Value
 public class PisRedirectLinkSetting {
     private String pisRedirectUrlToAspsp;
     private String pisPaymentCancellationRedirectUrlToAspsp;

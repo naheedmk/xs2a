@@ -17,14 +17,16 @@
 package de.adorsys.psd2.aspsp.profile.domain.ais;
 
 import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
 @AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class AisTransactionSetting {
     private List<BookingStatus> availableBookingStatuses = new ArrayList<>();
     private boolean transactionsWithoutBalancesSupported;

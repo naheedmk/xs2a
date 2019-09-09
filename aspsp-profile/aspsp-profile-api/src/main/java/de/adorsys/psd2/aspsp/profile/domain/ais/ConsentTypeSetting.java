@@ -16,11 +16,9 @@
 
 package de.adorsys.psd2.aspsp.profile.domain.ais;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
-@Data
-@AllArgsConstructor
+@Value
 public class ConsentTypeSetting {
     private boolean bankOfferedConsentSupported;
     private boolean globalConsentSupported;

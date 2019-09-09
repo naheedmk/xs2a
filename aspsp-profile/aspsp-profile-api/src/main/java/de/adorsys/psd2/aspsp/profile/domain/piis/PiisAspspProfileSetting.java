@@ -16,11 +16,9 @@
 
 package de.adorsys.psd2.aspsp.profile.domain.piis;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
-@Data
-@AllArgsConstructor
+@Value
 public class PiisAspspProfileSetting {
     private boolean piisConsentSupported;
 }

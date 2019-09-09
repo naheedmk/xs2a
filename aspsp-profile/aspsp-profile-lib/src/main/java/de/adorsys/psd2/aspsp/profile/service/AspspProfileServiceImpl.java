@@ -53,9 +53,9 @@ public class AspspProfileServiceImpl implements AspspProfileService {
                                                                         setting.getAis().getDeltaReportSettings().isDeltaListSupported());
         OneTimeConsentScaSetting scaRequirementsForOneTimeConsents = new OneTimeConsentScaSetting(setting.getAis().getScaRequirementsForOneTimeConsents().isScaByOneTimeAvailableAccountsConsentRequired());
         AisAspspProfileSetting ais = new AisAspspProfileSetting(consentTypes, aisRedirectLinkToOnlineBanking, transactionParameters, deltaReportSettings, scaRequirementsForOneTimeConsents);
-        PisRedirectLinkSetting pisRedirectLinkToOnlineBanking =  new PisRedirectLinkSetting(setting.getPis().getRedirectLinkToOnlineBanking().getPisRedirectUrlToAspsp(),
-                                                                                            setting.getPis().getRedirectLinkToOnlineBanking().getPisPaymentCancellationRedirectUrlToAspsp(),
-                                                                                            setting.getPis().getRedirectLinkToOnlineBanking().getPaymentCancellationRedirectUrlExpirationTimeMs());
+        PisRedirectLinkSetting pisRedirectLinkToOnlineBanking = new PisRedirectLinkSetting(setting.getPis().getRedirectLinkToOnlineBanking().getPisRedirectUrlToAspsp(),
+                                                                                           setting.getPis().getRedirectLinkToOnlineBanking().getPisPaymentCancellationRedirectUrlToAspsp(),
+                                                                                           setting.getPis().getRedirectLinkToOnlineBanking().getPaymentCancellationRedirectUrlExpirationTimeMs());
         PisAspspProfileSetting pis = new PisAspspProfileSetting(setting.getPis().getSupportedPaymentTypeAndProductMatrix(),
                                                                 setting.getPis().getMaxTransactionValidityDays(),
                                                                 setting.getPis().getNotConfirmedPaymentExpirationTimeMs(),

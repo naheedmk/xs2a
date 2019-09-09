@@ -64,7 +64,7 @@ Parameter is mandatory in the request "Read Transaction List". |BOOKED, PENDING 
 
 If not  (transactionsWithoutBalancesSupported = false) then ASPSP might add balance information into list. |FALSE |TRUE, FALSE
 |supportedTransactionApplicationTypes |This field contains transaction application types supported by ASPSP  |JSON |JSON, XML, TEXT
-|*deltaReportDettings:* | | |
+|*deltaReportSettings:* | | |
 |entryReferenceFromSupported |This field indicates if an ASPSP supports Delta reports for transaction details with query parameter entryReferenceFrom.
 
 If parameter = FALSE then XS2A sends the response with HTTP code 400 PARAMETER_NOT_SUPPORTED |FALSE |TRUE, FALSE
