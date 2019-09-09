@@ -40,7 +40,7 @@ setting:
     scaApproachesSupported:
       - REDIRECT
     scaRedirectFlow: REDIRECT
-    startAuthorisationMode: Auto
+    startAuthorisationMode: auto
     tppSignatureRequired: FALSE
     psuInInitialRequestMandated: FALSE
     redirectUrlExpirationTimeMs: 600000

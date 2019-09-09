@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.aspsp.profile.domain.ais;
+package de.adorsys.psd2.aspsp.profile.domain.pis;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class AisRedirectLinkSetting {
+@AllArgsConstructor
+public class PisRedirectLinkSetting {
 
     /**
-     * 	URL to online-banking to authorise consent with redirect approach
+     * URL to online-banking to authorise payment with redirect approach
      */
-    private String aisRedirectUrlToAspsp;
+    private String pisRedirectUrlToAspsp;
+
+    /**
+     * URL to online-banking to authorise payment cancellation with redirect approach
+     */
+    private String pisPaymentCancellationRedirectUrlToAspsp;
+
+    /**
+     * Contains the limit of an expiration time of redirect url for payment cancellation set in milliseconds
+     */
+    private long paymentCancellationRedirectUrlExpirationTimeMs;
 }

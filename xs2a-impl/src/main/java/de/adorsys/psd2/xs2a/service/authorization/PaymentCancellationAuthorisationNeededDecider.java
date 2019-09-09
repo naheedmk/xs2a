@@ -16,14 +16,14 @@
 
 package de.adorsys.psd2.xs2a.service.authorization;
 
-import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
+import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentCancellationAuthorisationNeededDecider {
-    private final AspspProfileService aspspProfileService;
+    private final AspspProfileServiceWrapper aspspProfileServiceWrapper;
 
     /**
      * Decides whether authorisation start is needed according to bank profile setting and spi response boolean field
@@ -45,6 +45,6 @@ public class PaymentCancellationAuthorisationNeededDecider {
      */
     public boolean isScaRequired(boolean authorisationByAspspRequired) {
         return authorisationByAspspRequired
-                   || aspspProfileService.getAspspSettings().isPaymentCancellationAuthorisationMandated();
+                   || aspspProfileServiceWrapper.isPaymentCancellationAuthorisationMandated();
     }
 }

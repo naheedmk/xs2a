@@ -20,13 +20,14 @@ import de.adorsys.psd2.aspsp.profile.domain.MulticurrencyAccountLevel;
 import de.adorsys.psd2.aspsp.profile.domain.SupportedAccountReferenceField;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.profile.ScaRedirectFlow;
+import de.adorsys.psd2.xs2a.core.profile.StartAuthorisationMode;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class CommonAspspProfileSetting {
+public class CommonAspspProfileBankSetting {
 
     /**
      * List of SCA Approach supported by ASPSP ordered by priority descending
@@ -41,7 +42,7 @@ public class CommonAspspProfileSetting {
     /**
      * Defines variant of forced mode of authorisation
      */
-    private String startAuthorisationMode;
+    private StartAuthorisationMode startAuthorisationMode;
 
     /**
      * Indicates whether TPP Signature is required for the request or not

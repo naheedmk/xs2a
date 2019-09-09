@@ -16,27 +16,37 @@
 
 package de.adorsys.psd2.aspsp.profile.domain.ais;
 
-import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
-public class AisTransactionSetting {
+public class AisAspspProfileBankSetting {
 
     /**
-     * Contains booking statuses supported by ASPSP
+     * 	URL to online-banking to authorise consent with redirect approach
      */
-    private List<BookingStatus> availableBookingStatuses = new ArrayList<>();
+    private ConsentTypeBankSetting consentTypes;
+
 
     /**
-     * If is set to "false", indicates that an ASPSP might add balance information to transactions list
+     * 	A group of settings to define URL link for redirect approach
      */
-    private boolean transactionsWithoutBalancesSupported;
+    private AisRedirectLinkBankSetting redirectLinkToOnlineBanking;
+
 
     /**
-     * Contains transaction application types supported by ASPSP (JSON, XML or TEXT)
+     * 	A group of settings for transactions support
      */
-    private List<String> supportedTransactionApplicationTypes = new ArrayList<>();
+    private AisTransactionBankSetting transactionParameters;
+
+
+    /**
+     * 	A group of settings for delta reports support
+     */
+    private DeltaReportBankSetting deltaReportBankSettings;
+
+
+    /**
+     * 	A group of settings to set up SCA for one-time consent
+     */
+    private OneTimeConsentScaBankSetting scaRequirementsForOneTimeConsents;
 }

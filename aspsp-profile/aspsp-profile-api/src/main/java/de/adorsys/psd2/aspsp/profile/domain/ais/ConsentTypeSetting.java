@@ -16,9 +16,11 @@
 
 package de.adorsys.psd2.aspsp.profile.domain.ais;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class ConsentTypeSetting {
 
     /**
@@ -51,4 +53,3 @@ public class ConsentTypeSetting {
      */
     private int maxConsentValidityDays;
 }
-

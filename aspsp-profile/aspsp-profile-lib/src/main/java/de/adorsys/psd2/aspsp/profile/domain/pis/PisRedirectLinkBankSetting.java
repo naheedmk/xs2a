@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.aspsp.profile.domain.piis;
+package de.adorsys.psd2.aspsp.profile.domain.pis;
 
 import lombok.Data;
 
 @Data
-public class PiisAspspProfileSetting {
+public class PisRedirectLinkBankSetting {
 
     /**
-     * Indicates whether ASPSP supports storing PIIS consent in CMS
+     * URL to online-banking to authorise payment with redirect approach
      */
-    private boolean piisConsentSupported;
+    private String pisRedirectUrlToAspsp;
+
+    /**
+     * URL to online-banking to authorise payment cancellation with redirect approach
+     */
+    private String pisPaymentCancellationRedirectUrlToAspsp;
+
+    /**
+     * Contains the limit of an expiration time of redirect url for payment cancellation set in milliseconds
+     */
+    private long paymentCancellationRedirectUrlExpirationTimeMs;
 }

@@ -22,6 +22,7 @@ import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuData
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.message.MessageService;
+import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.web.controller.PaymentController;
 import de.adorsys.psd2.xs2a.web.link.UpdatePisPsuDataLinks;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -33,8 +34,8 @@ import org.springframework.stereotype.Component;
 public class UpdatePisPsuDataAspect extends AbstractLinkAspect<PaymentController> {
     private ScaApproachResolver scaApproachResolver;
 
-    public UpdatePisPsuDataAspect(ScaApproachResolver scaApproachResolver, MessageService messageService, AspspProfileService aspspProfileService) {
-        super(messageService, aspspProfileService);
+    public UpdatePisPsuDataAspect(ScaApproachResolver scaApproachResolver, MessageService messageService, AspspProfileServiceWrapper aspspProfileServiceWrapper) {
+        super(messageService, aspspProfileServiceWrapper);
         this.scaApproachResolver = scaApproachResolver;
     }
 

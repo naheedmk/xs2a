@@ -16,51 +16,34 @@
 
 package de.adorsys.psd2.aspsp.profile.domain;
 
-import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
-import de.adorsys.psd2.xs2a.core.profile.PaymentType;
-import de.adorsys.psd2.xs2a.core.profile.ScaRedirectFlow;
-import de.adorsys.psd2.xs2a.core.profile.StartAuthorisationMode;
+import de.adorsys.psd2.aspsp.profile.domain.ais.AisAspspProfileSetting;
+import de.adorsys.psd2.aspsp.profile.domain.common.CommonAspspProfileSetting;
+import de.adorsys.psd2.aspsp.profile.domain.piis.PiisAspspProfileSetting;
+import de.adorsys.psd2.aspsp.profile.domain.pis.PisAspspProfileSetting;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
 public class AspspSettings {
-    private int accountAccessFrequencyPerDay;
-    private boolean aisPisSessionsSupported;
-    private String aisRedirectUrlToAspsp;
-    private long authorisationExpirationTimeMs;
-    private boolean availableAccountsConsentSupported;
-    private List<BookingStatus> availableBookingStatuses;
-    private boolean bankOfferedConsentSupported;
-    private boolean deltaListSupported;
-    private boolean entryReferenceFromSupported;
-    private boolean forceXs2aBaseLinksUrl;
-    private boolean globalConsentSupported;
-    private int maxConsentValidityDays;
-    private int maxTransactionValidityDays;
-    private MulticurrencyAccountLevel multicurrencyAccountLevelSupported;
-    private long notConfirmedConsentExpirationTimeMs;
-    private long notConfirmedPaymentExpirationTimeMs;
-    private boolean paymentCancellationAuthorisationMandated;
-    private long paymentCancellationRedirectUrlExpirationTimeMs;
-    private boolean piisConsentSupported;
-    private String pisPaymentCancellationRedirectUrlToAspsp;
-    private String pisRedirectUrlToAspsp;
-    private boolean psuInInitialRequestMandated;
-    private long redirectUrlExpirationTimeMs;
-    private boolean scaByOneTimeAvailableAccountsConsentRequired;
-    private ScaRedirectFlow scaRedirectFlow;
-    private boolean signingBasketSupported;
-    private StartAuthorisationMode startAuthorisationMode;
-    private List<SupportedAccountReferenceField> supportedAccountReferenceFields;
-    private Map<PaymentType, Set<String>> supportedPaymentTypeAndProductMatrix;
-    private String supportedTransactionApplicationTypes;
-    private boolean tppSignatureRequired;
-    private boolean transactionsWithoutBalancesSupported;
-    private String xs2aBaseLinksUrl;
+    /**
+     * Contains all settings regarding to AIS
+     */
+    private AisAspspProfileSetting ais;
+
+    /**
+     * Contains all settings regarding to PIS
+     */
+    private PisAspspProfileSetting pis;
+
+    /**
+     * Contains all settings regarding to PIIS
+     */
+    private PiisAspspProfileSetting piis;
+
+    /**
+     * Contains common for consents and payments settings
+     */
+    private CommonAspspProfileSetting common;
 }

@@ -58,7 +58,7 @@ public class ProfileConfiguration implements InitializingBean {
 
     private void setDefaultStartAuthorisationMode() {
         if (Objects.isNull(setting.getCommon().getStartAuthorisationMode())) {
-            setting.getCommon().setStartAuthorisationMode(StartAuthorisationMode.AUTO.getValue());
+            setting.getCommon().setStartAuthorisationMode(StartAuthorisationMode.AUTO);
         }
     }
 

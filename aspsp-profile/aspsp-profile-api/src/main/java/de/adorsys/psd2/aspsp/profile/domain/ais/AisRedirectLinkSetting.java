@@ -16,18 +16,15 @@
 
 package de.adorsys.psd2.aspsp.profile.domain.ais;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class DeltaReportSetting {
+@AllArgsConstructor
+public class AisRedirectLinkSetting {
 
     /**
-     * Indicates whether an ASPSP supports delta reports for transaction details with query parameter `entryReferenceFrom`
+     * 	URL to online-banking to authorise consent with redirect approach
      */
-    private boolean entryReferenceFromSupported;
-
-    /**
-     * Indicates whether an ASPSP supports delta reports for transaction details with query parameter `deltaList`
-     */
-    private boolean deltaListSupported;
+    private String aisRedirectUrlToAspsp;
 }

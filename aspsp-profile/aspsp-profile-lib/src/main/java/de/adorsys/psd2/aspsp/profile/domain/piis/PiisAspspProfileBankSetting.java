@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.aspsp.profile.domain.ais;
+package de.adorsys.psd2.aspsp.profile.domain.piis;
 
 import lombok.Data;
 
 @Data
-public class OneTimeConsentScaSetting {
+public class PiisAspspProfileBankSetting {
 
     /**
-     * Indicates whether an ASPSP requires usage of SCA to validate a one-time available accounts consent
+     * Indicates whether ASPSP supports storing PIIS consent in CMS
      */
-    private boolean scaByOneTimeAvailableAccountsConsentRequired;
+    private boolean piisConsentSupported;
 }

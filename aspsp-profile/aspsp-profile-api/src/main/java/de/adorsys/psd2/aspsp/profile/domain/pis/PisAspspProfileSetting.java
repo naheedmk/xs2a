@@ -17,12 +17,14 @@
 package de.adorsys.psd2.aspsp.profile.domain.pis;
 
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Map;
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
 public class PisAspspProfileSetting {
 
     /**
