@@ -34,7 +34,7 @@ import java.io.InputStream;
 @Slf4j
 @Configuration
 public class BankProfileReaderConfiguration implements ResourceLoaderAware {
-    private static final String DEFAULT_BANK_PROFILE = "classpath:bank_profile_new.yml";
+    private static final String DEFAULT_BANK_PROFILE = "classpath:bank_profile.yml";
     private static final String CLASSPATH_PREFIX = "classpath:";
     private static final String FILE_PREFIX = "file:";
 

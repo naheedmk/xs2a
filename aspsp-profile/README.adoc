@@ -123,17 +123,17 @@ If piisConsentSupported = FALSE then PIIS consent is not stored in CMS and reque
 |scaRedirectFlow |This field defines variant of the SCA redirect approach |REDIRECT |REDIRECT, OAUTH
 |startAuthorisationMode |This field defines variant of forced mode of Authorisation.
 
-ASPSP may have Explicit\Implicit\Auto start of authorisation in any case of all flows.
+ASPSP may have explicit\implicit\auto start of authorisation in any case of all flows.
 
 Attribute accepts 3 values (case-insensetive):
 
-- Explicit - always explicit
+- explicit - always explicit
 
-- Auto - current behaviour (and also default value if no option is set)
+- auto - current behaviour (and also default value if no option is set)
 
-- Implicit - always implicit
+- implicit - always implicit
 
-This force overrides multilevel SCA, signing baskets etc.|Auto |Explicit, Auto, Implicit
+This force overrides multilevel SCA, signing baskets etc.|auto |explicit, auto, implicit
 |tppSignatureRequired |This field defines whether TPP Signature is required for the request or not. |FALSE |TRUE, FALSE
 |psuInInitialRequestMandated |This field indicates if PSU-ID is mandatory in Initial request for Payment request or Establishing Consent. |FALSE |TRUE, FALSE
 |redirectUrlExpirationTimeMs |This field contains the limit of an expiration time of redirect url for payments and consents set in milliseconds.
@@ -147,7 +147,7 @@ If forceXs2aBaseLinksUrl = TRUE then links in responses (except "scaRedirect") s
 
 If forceXs2aBaseLinksUrl = FALSE then links in responses (except "scaRedirect") shall be generated with the base URL of controller. |FALSE |TRUE, FALSE
 |xs2aBaseLinksUrl |This field defines base URL for forceXs2aBaseLinksUrl. |http://myhost.com/ |String
-|supportedAccountReferenceFields |This field defines supported account identifier type. |MSISDN |IBAN, BBAN, PAN, MASKEDPAN, MSISDN
+|supportedAccountReferenceFields |This field defines supported account identifier type. |IBAN |IBAN, BBAN, PAN, MASKEDPAN, MSISDN
 |multicurrencyAccountLevelSupported |This field defines abstract level for multicurrency accounts on which the ASPSP offered services might be implemented. |SUBACCOUNT |SUBACCOUNT, AGGREGATION, AGGREGATION_AND_SUBACCOUNT
 |aisPisSessionsSupported |This field defines if ASPSP support Combined_session.
 
