@@ -17,8 +17,10 @@
 package de.adorsys.psd2.aspsp.profile.domain.ais;
 
 import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
