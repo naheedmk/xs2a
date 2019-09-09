@@ -47,7 +47,7 @@ setting:
     forceXs2aBaseLinksUrl: FALSE
     xs2aBaseLinksUrl: http://myhost.com/
     supportedAccountReferenceFields:
-    - MSISDN
+    - IBAN
     multicurrencyAccountLevelSupported: SUBACCOUNT
     aisPisSessionsSupported: FALSE
     signingBasketSupported: FALSE

@@ -26,23 +26,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class AspspSettings {
-    /**
-     * Contains all settings regarding to AIS
-     */
     private AisAspspProfileSetting ais;
-
-    /**
-     * Contains all settings regarding to PIS
-     */
     private PisAspspProfileSetting pis;
-
-    /**
-     * Contains all settings regarding to PIIS
-     */
     private PiisAspspProfileSetting piis;
-
-    /**
-     * Contains common for consents and payments settings
-     */
     private CommonAspspProfileSetting common;
 }
