@@ -73,4 +73,3 @@ request body, you'll get status `400 Bad request` and message `Http message is n
 From now on, the field `supportedTransactionApplicationTypes` is a String. Also, the endpoint
 `GET /v1/accounts/{account-id}/balances` now responds with `401 Unauthorized - CONSENT_INVALID`, if providing an empty
 `account-id`.
->>>>>>> Fixed PMD & added release notes & fixed postman tests
