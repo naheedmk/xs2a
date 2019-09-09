@@ -70,46 +70,30 @@ public class AspspSettingsBuilder {
     private static final StartAuthorisationMode START_AUTHORISATION_MODE = StartAuthorisationMode.AUTO;
 
     public static AspspSettings buildAspspSettings() {
-        ConsentTypeSetting consentTypes = new ConsentTypeSetting(BANK_OFFERED_CONSENT_SUPPORTED,
-                                                                 GLOBAL_CONSENT_SUPPORTED,
-                                                                 AVAILABLE_ACCOUNTS_CONSENT_SUPPORTED,
-                                                                 ACCOUNT_ACCESS_FREQUENCY_PER_DAY,
-                                                                 NOT_CONFIRMED_CONSENT_EXPIRATION_TIME_MS,
-                                                                 MAX_CONSENT_VALIDITY_DAYS);
-        AisRedirectLinkSetting aisRedirectLinkToOnlineBanking = new AisRedirectLinkSetting(AIS_REDIRECT_LINK);
-        AisTransactionSetting transactionParameters = new AisTransactionSetting(AVAILABLE_BOOKING_STATUSES,
-                                                                                TRANSACTIONS_WITHOUT_BALANCES_SUPPORTED,
-                                                                                SUPPORTED_TRANSACTION_APPLICATION_TYPES);
-        DeltaReportSetting deltaReportSettings = new DeltaReportSetting(ENTRY_REFERENCE_FROM_SUPPORTED,
-                                                                        DELTA_LIST_SUPPORTED);
-        OneTimeConsentScaSetting scaRequirementsForOneTimeConsents = new OneTimeConsentScaSetting(SCA_BY_ONE_TIME_AVAILABLE_ACCOUNTS_CONSENT_REQUIRED);
-        AisAspspProfileSetting ais = new AisAspspProfileSetting(consentTypes, aisRedirectLinkToOnlineBanking, transactionParameters, deltaReportSettings, scaRequirementsForOneTimeConsents);
-        PisRedirectLinkSetting pisRedirectLinkToOnlineBanking = new PisRedirectLinkSetting(PIS_REDIRECT_LINK,
-                                                                                           PIS_PAYMENT_CANCELLATION_REDIRECT_URL_TO_ASPSP,
-                                                                                           PAYMENT_CANCELLATION_REDIRECT_URL_EXPIRATION_TIME_MS);
-        PisAspspProfileSetting pis = new PisAspspProfileSetting(SUPPORTED_PAYMENT_TYPE_AND_PRODUCT_MATRIX,
-                                                                MAX_TRANSACTION_VALIDITY_DAYS,
-                                                                NOT_CONFIRMED_PAYMENT_EXPIRATION_TIME_MS,
-                                                                PAYMENT_CANCELLATION_AUTHORISATION_MANDATED,
-                                                                pisRedirectLinkToOnlineBanking);
-        PiisAspspProfileSetting piis = new PiisAspspProfileSetting(PIIS_CONSENT_SUPPORTED);
-        CommonAspspProfileSetting common = new CommonAspspProfileSetting(SCA_REDIRECT_FLOW,
-                                                                         START_AUTHORISATION_MODE,
-                                                                         TPP_SIGNATURE_REQUIRED,
-                                                                         PSU_IN_INITIAL_REQUEST_MANDATED,
-                                                                         REDIRECT_URL_EXPIRATION_TIME_MS,
-                                                                         AUTHORISATION_EXPIRATION_TIME_MS,
-                                                                         FORCE_XS2A_BASE_LINKS_URL,
-                                                                         XS2A_BASE_LINKS_URL,
-                                                                         SUPPORTED_ACCOUNT_REFERENCE_FIELDS,
-                                                                         MULTICURRENCY_ACCOUNT_LEVEL_SUPPORTED,
-                                                                         AIS_PIS_SESSION_SUPPORTED,
-                                                                         SIGNING_BASKET_SUPPORTED);
-
-        return new AspspSettings(ais, pis, piis, common);
+        return buildCustomAspspSettings(null, null, null, null);
     }
 
-    public static AspspSettings buildAspspSettingsWithForcedXs2aBaseUrl(String xs2aBaseUrl) {
+    public static AspspSettings buildAspspSettingsWithForcedXs2aBaseUrl(String xs2aBaseLinksUrl) {
+        return buildCustomAspspSettings(xs2aBaseLinksUrl, null, null, null);
+    }
+
+    public static AspspSettings buildAspspSettingsWithSigningBasketSupported(boolean signingBasketSupported) {
+        return buildCustomAspspSettings(null, signingBasketSupported, null, null);
+    }
+
+    public static AspspSettings buildAspspSettingsWithStartAuthorisationMode(StartAuthorisationMode startAuthorisationMode) {
+        return buildCustomAspspSettings(null, null, null, startAuthorisationMode);
+    }
+
+    public static AspspSettings buildAspspSettingsWithScaRedirectFlow(ScaRedirectFlow scaRedirectFlow) {
+        return buildCustomAspspSettings(null, null, scaRedirectFlow, null);
+    }
+
+    public static AspspSettings buildAspspSettingsWithStartAuthorisationModeAndSigningBasketSupported(StartAuthorisationMode startAuthorisationMode, boolean signingBasketSupported) {
+        return buildCustomAspspSettings(null, signingBasketSupported, null, startAuthorisationMode);
+    }
+
+    private static AspspSettings buildCustomAspspSettings(String xs2aBaseLinksUrl, Boolean signingBasketSupported, ScaRedirectFlow scaRedirectFlow, StartAuthorisationMode startAuthorisationMode) {
         ConsentTypeSetting consentTypes = new ConsentTypeSetting(BANK_OFFERED_CONSENT_SUPPORTED,
                                                                  GLOBAL_CONSENT_SUPPORTED,
                                                                  AVAILABLE_ACCOUNTS_CONSENT_SUPPORTED,
@@ -133,18 +117,18 @@ public class AspspSettingsBuilder {
                                                                 PAYMENT_CANCELLATION_AUTHORISATION_MANDATED,
                                                                 pisRedirectLinkToOnlineBanking);
         PiisAspspProfileSetting piis = new PiisAspspProfileSetting(PIIS_CONSENT_SUPPORTED);
-        CommonAspspProfileSetting common = new CommonAspspProfileSetting(SCA_REDIRECT_FLOW,
-                                                                         START_AUTHORISATION_MODE,
+        CommonAspspProfileSetting common = new CommonAspspProfileSetting(scaRedirectFlow == null ? SCA_REDIRECT_FLOW : scaRedirectFlow,
+                                                                         startAuthorisationMode == null ? START_AUTHORISATION_MODE : startAuthorisationMode,
                                                                          TPP_SIGNATURE_REQUIRED,
                                                                          PSU_IN_INITIAL_REQUEST_MANDATED,
                                                                          REDIRECT_URL_EXPIRATION_TIME_MS,
                                                                          AUTHORISATION_EXPIRATION_TIME_MS,
-                                                                         true,
-                                                                         xs2aBaseUrl,
+                                                                         xs2aBaseLinksUrl == null ? FORCE_XS2A_BASE_LINKS_URL : true,
+                                                                         xs2aBaseLinksUrl == null ? XS2A_BASE_LINKS_URL : xs2aBaseLinksUrl,
                                                                          SUPPORTED_ACCOUNT_REFERENCE_FIELDS,
                                                                          MULTICURRENCY_ACCOUNT_LEVEL_SUPPORTED,
                                                                          AIS_PIS_SESSION_SUPPORTED,
-                                                                         SIGNING_BASKET_SUPPORTED);
+                                                                         signingBasketSupported == null ? SIGNING_BASKET_SUPPORTED : signingBasketSupported);
 
         return new AspspSettings(ais, pis, piis, common);
     }

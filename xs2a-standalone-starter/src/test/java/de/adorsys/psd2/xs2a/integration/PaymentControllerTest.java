@@ -215,10 +215,9 @@ public class PaymentControllerTest {
     public void cancelPaymentAuthorisation_Redirect_OAuth_successful() throws Exception {
         // Given
         AspspSettings aspspSettings = AspspSettingsBuilder.buildAspspSettings();
-        aspspSettings.getCommon().setScaRedirectFlow(ScaRedirectFlow.OAUTH);
-        given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(SCA_APPROACH));
         given(aspspProfileService.getAspspSettings())
-            .willReturn(aspspSettings);
+            .willReturn(AspspSettingsBuilder.buildAspspSettingsWithScaRedirectFlow(ScaRedirectFlow.OAUTH));
+        given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(SCA_APPROACH));
         given(pisCommonPaymentServiceEncrypted.getAuthorisationScaStatus(ENCRYPT_PAYMENT_ID, AUTHORISATION_ID, PaymentAuthorisationType.CREATED))
             .willReturn(Optional.of(ScaStatus.RECEIVED));
         given(pisCommonPaymentServiceEncrypted.getCommonPaymentById(ENCRYPT_PAYMENT_ID))
