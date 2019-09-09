@@ -13,7 +13,7 @@ To deploy the XS2A service, one should use the following modules:
 - Consent Management System (basic entities CRUD services and underlying database to store them)
 - XS2A library itself (xs2a-impl, implementation of NextGenPSD2 Interface of Berlin Group)
 
-Each of the specified component is a separate jar file (or several files) that can be deployed on web-server or in a docker container. Each
+Each of the specified components is a separate jar file (or several files) that can be deployed on web-server or in a docker container. Each
 component can be started as a Spring Boot application and is written in Java 1.8 with Maven build system.
 
 All of these can be deployed separately (using the network for communication) or as monolith in one server.
