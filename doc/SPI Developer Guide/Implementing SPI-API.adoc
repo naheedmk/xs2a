@@ -35,7 +35,7 @@ pattern to create the response. Main fields of the class:
 - `List<TppMessage> errors`
 
 `payload` should be used to create successful response to XS2A. It should contain the entity which current SPI method deals with.
-`errors` should be used in case the response fails. The list can contain at least one error element inside the `TppMessage`
+`errors` should be used in case the response fails. The list should contain at least one error element inside the `TppMessage`
 container. It is possible to provide several errors, if necessary. Both `payload` and `errors` fields should use `build()`
 method after them while creating the response. Typical usage of builder pattern for happy-path response:
 
