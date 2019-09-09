@@ -16,9 +16,13 @@
 
 package de.adorsys.psd2.aspsp.profile.domain.ais;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AisAspspProfileBankSetting {
 
     /**
@@ -42,7 +46,7 @@ public class AisAspspProfileBankSetting {
     /**
      * 	A group of settings for delta reports support
      */
-    private DeltaReportBankSetting deltaReportBankSettings;
+    private DeltaReportBankSetting deltaReportSettings;
 
 
     /**

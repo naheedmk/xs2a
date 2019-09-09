@@ -22,9 +22,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class PiisAspspProfileSetting {
-
-    /**
-     * Indicates whether ASPSP supports storing PIIS consent in CMS
-     */
     private boolean piisConsentSupported;
 }

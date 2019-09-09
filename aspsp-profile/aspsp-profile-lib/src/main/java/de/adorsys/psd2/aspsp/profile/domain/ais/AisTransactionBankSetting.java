@@ -16,14 +16,17 @@
 
 package de.adorsys.psd2.aspsp.profile.domain.ais;
 
-import de.adorsys.psd2.xs2a.core.ais.AccountResponseType;
 import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AisTransactionBankSetting {
 
     /**
@@ -39,5 +42,5 @@ public class AisTransactionBankSetting {
     /**
      * Contains transaction application types supported by ASPSP (JSON, XML or TEXT)
      */
-    private List<AccountResponseType> supportedTransactionApplicationTypes = new ArrayList<>();
+    private List<String> supportedTransactionApplicationTypes = new ArrayList<>();
 }

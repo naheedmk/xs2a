@@ -20,7 +20,6 @@ import de.adorsys.psd2.aspsp.profile.config.BankProfileSetting;
 import de.adorsys.psd2.aspsp.profile.config.ProfileConfiguration;
 import de.adorsys.psd2.aspsp.profile.domain.AspspSettings;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
-import de.adorsys.psd2.xs2a.core.profile.StartAuthorisationMode;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -65,12 +64,12 @@ public class AspspProfileUpdateServiceImpl implements AspspProfileUpdateService 
         setting.getAis().getConsentTypes().setMaxConsentValidityDays(aspspSettings.getAis().getConsentTypes().getMaxConsentValidityDays());
         setting.getAis().getConsentTypes().setNotConfirmedConsentExpirationTimeMs(aspspSettings.getAis().getConsentTypes().getNotConfirmedConsentExpirationTimeMs());
         setting.getAis().getRedirectLinkToOnlineBanking().setAisRedirectUrlToAspsp(aspspSettings.getAis().getRedirectLinkToOnlineBanking().getAisRedirectUrlToAspsp());
-        setting.getAis().getDeltaReportBankSettings().setDeltaListSupported(aspspSettings.getAis().getDeltaReportSettings().isDeltaListSupported());
-        setting.getAis().getDeltaReportBankSettings().setEntryReferenceFromSupported(aspspSettings.getAis().getDeltaReportSettings().isEntryReferenceFromSupported());
-        setting.getAis().getScaRequirementsForOneTimeConsents().setScaByOneTimeAvailableAccountsConsentRequired(aspspSettings.getAis().getScaRequirementsForOneTimeConsents().isScaByOneTimeAvailableAccountsConsentRequired());
+        setting.getAis().getDeltaReportSettings().setDeltaListSupported(aspspSettings.getAis().getDeltaReportSettings().isDeltaListSupported());
+        setting.getAis().getDeltaReportSettings().setEntryReferenceFromSupported(aspspSettings.getAis().getDeltaReportSettings().isEntryReferenceFromSupported());
         setting.getAis().getTransactionParameters().setAvailableBookingStatuses(aspspSettings.getAis().getTransactionParameters().getAvailableBookingStatuses());
         setting.getAis().getTransactionParameters().setSupportedTransactionApplicationTypes(aspspSettings.getAis().getTransactionParameters().getSupportedTransactionApplicationTypes());
         setting.getAis().getTransactionParameters().setTransactionsWithoutBalancesSupported(aspspSettings.getAis().getTransactionParameters().isTransactionsWithoutBalancesSupported());
+        setting.getAis().getScaRequirementsForOneTimeConsents().setScaByOneTimeAvailableAccountsConsentRequired(aspspSettings.getAis().getScaRequirementsForOneTimeConsents().isScaByOneTimeAvailableAccountsConsentRequired());
         setting.getPis().setSupportedPaymentTypeAndProductMatrix(aspspSettings.getPis().getSupportedPaymentTypeAndProductMatrix());
         setting.getPis().setMaxTransactionValidityDays(aspspSettings.getPis().getMaxTransactionValidityDays());
         setting.getPis().setNotConfirmedPaymentExpirationTimeMs(aspspSettings.getPis().getNotConfirmedPaymentExpirationTimeMs());
@@ -88,7 +87,7 @@ public class AspspProfileUpdateServiceImpl implements AspspProfileUpdateService 
         setting.getCommon().setRedirectUrlExpirationTimeMs(aspspSettings.getCommon().getRedirectUrlExpirationTimeMs());
         setting.getCommon().setScaRedirectFlow(aspspSettings.getCommon().getScaRedirectFlow());
         setting.getCommon().setSigningBasketSupported(aspspSettings.getCommon().isSigningBasketSupported());
-        setting.getCommon().setStartAuthorisationMode(aspspSettings.getCommon().getStartAuthorisationMode() == null ? StartAuthorisationMode.AUTO : aspspSettings.getCommon().getStartAuthorisationMode());
+        setting.getCommon().setStartAuthorisationMode(aspspSettings.getCommon().getStartAuthorisationMode() == null ? "AUTO" : aspspSettings.getCommon().getStartAuthorisationMode().getValue());
         setting.getCommon().setSupportedAccountReferenceFields(aspspSettings.getCommon().getSupportedAccountReferenceFields());
         setting.getCommon().setXs2aBaseLinksUrl(aspspSettings.getCommon().getXs2aBaseLinksUrl());
     }

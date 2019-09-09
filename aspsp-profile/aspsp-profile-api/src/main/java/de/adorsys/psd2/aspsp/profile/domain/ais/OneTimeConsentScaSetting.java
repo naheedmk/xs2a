@@ -22,9 +22,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class OneTimeConsentScaSetting {
-
-    /**
-     * Indicates whether an ASPSP requires usage of SCA to validate a one-time available accounts consent
-     */
     private boolean scaByOneTimeAvailableAccountsConsentRequired;
 }

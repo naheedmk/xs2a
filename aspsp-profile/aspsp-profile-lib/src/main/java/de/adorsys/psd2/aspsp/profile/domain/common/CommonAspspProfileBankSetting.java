@@ -20,13 +20,16 @@ import de.adorsys.psd2.aspsp.profile.domain.MulticurrencyAccountLevel;
 import de.adorsys.psd2.aspsp.profile.domain.SupportedAccountReferenceField;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.profile.ScaRedirectFlow;
-import de.adorsys.psd2.xs2a.core.profile.StartAuthorisationMode;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CommonAspspProfileBankSetting {
 
     /**
@@ -42,7 +45,7 @@ public class CommonAspspProfileBankSetting {
     /**
      * Defines variant of forced mode of authorisation
      */
-    private StartAuthorisationMode startAuthorisationMode;
+    private String startAuthorisationMode;
 
     /**
      * Indicates whether TPP Signature is required for the request or not
@@ -94,5 +97,4 @@ public class CommonAspspProfileBankSetting {
      * Indicates whether ASPSP supports signing basket
      */
     private boolean signingBasketSupported;
-
 }

@@ -20,9 +20,13 @@ import de.adorsys.psd2.aspsp.profile.domain.ais.AisAspspProfileBankSetting;
 import de.adorsys.psd2.aspsp.profile.domain.common.CommonAspspProfileBankSetting;
 import de.adorsys.psd2.aspsp.profile.domain.piis.PiisAspspProfileBankSetting;
 import de.adorsys.psd2.aspsp.profile.domain.pis.PisAspspProfileBankSetting;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BankProfileSetting {
 
     /**

@@ -22,9 +22,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class AisRedirectLinkSetting {
-
-    /**
-     * 	URL to online-banking to authorise consent with redirect approach
-     */
     private String aisRedirectUrlToAspsp;
 }

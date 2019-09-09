@@ -18,7 +18,6 @@ package de.adorsys.psd2.xs2a.service.profile;
 
 import de.adorsys.psd2.aspsp.profile.domain.AspspSettings;
 import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
-import de.adorsys.psd2.xs2a.core.ais.AccountResponseType;
 import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
@@ -299,7 +298,7 @@ public class AspspProfileServiceWrapper {
      *
      * @return List of transaction application types supported by ASPSP.
      */
-    public List<AccountResponseType> getSupportedTransactionApplicationTypes() {
+    public List<String> getSupportedTransactionApplicationTypes() {
         return readAspspSettings().getAis().getTransactionParameters().getSupportedTransactionApplicationTypes();
     }
 

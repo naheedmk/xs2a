@@ -297,7 +297,7 @@ public class InitiatePayments_successfulTest {
     @Test
     public void initiateSinglePayment_implicit_redirect_oauth_successful() throws Exception {
         AspspSettings aspspSettings = AspspSettingsBuilder.buildAspspSettings();
-        aspspSettings.setScaRedirectFlow(ScaRedirectFlow.OAUTH);
+        aspspSettings.getCommon().setScaRedirectFlow(ScaRedirectFlow.OAUTH);
         given(aspspProfileService.getAspspSettings())
             .willReturn(aspspSettings);
         given(pisCommonPaymentServiceEncrypted.createAuthorization(ENCRYPT_PAYMENT_ID, getPisAuthorisationRequest(ScaApproach.REDIRECT)))
@@ -352,7 +352,7 @@ public class InitiatePayments_successfulTest {
 
     @Test
     public void initiateSinglePayment_explicit_embedded_multilevelSca_successful() throws Exception {
-        aspspProfileService.getAspspSettings().setSigningBasketSupported(false);
+        aspspProfileService.getAspspSettings().getCommon().setSigningBasketSupported(false);
         given(pisCommonPaymentServiceEncrypted.createAuthorization(ENCRYPT_PAYMENT_ID, getPisAuthorisationRequest(ScaApproach.EMBEDDED)))
             .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS)));
         initiateSinglePayment_successful(httpHeadersExplicit, ScaApproach.EMBEDDED, true, false);
@@ -368,7 +368,7 @@ public class InitiatePayments_successfulTest {
 
     @Test
     public void initiateSinglePayment_explicit_embedded_multilevelSca_psuIdDataIsEmpty_signingBasketActive_successful() throws Exception {
-        aspspProfileService.getAspspSettings().setSigningBasketSupported(true);
+        aspspProfileService.getAspspSettings().getCommon().setSigningBasketSupported(true);
         given(pisCommonPaymentServiceEncrypted.createAuthorization(ENCRYPT_PAYMENT_ID, getPisAuthorisationRequestWithEmptyPsuIdData(ScaApproach.EMBEDDED)))
             .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS)));
         initiateSinglePayment_successful(httpHeadersExplicitNoPsuData, ScaApproach.EMBEDDED, true, true);
@@ -376,7 +376,7 @@ public class InitiatePayments_successfulTest {
 
     @Test
     public void initiateSinglePayment_explicit_embedded_multilevelSca_signingBasketActive_successful() throws Exception {
-        aspspProfileService.getAspspSettings().setSigningBasketSupported(true);
+        aspspProfileService.getAspspSettings().getCommon().setSigningBasketSupported(true);
         given(pisCommonPaymentServiceEncrypted.createAuthorization(ENCRYPT_PAYMENT_ID, getPisAuthorisationRequest(ScaApproach.EMBEDDED)))
             .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS)));
         initiateSinglePayment_successful(httpHeadersExplicit, ScaApproach.EMBEDDED, true, false);
@@ -561,7 +561,7 @@ public class InitiatePayments_successfulTest {
     }
 
     public boolean isExplicitMethod(HttpHeaders headers, boolean multilevelScaRequired) {
-        StartAuthorisationMode startAuthorisationMode = aspspProfileService.getAspspSettings().getStartAuthorisationMode();
+        StartAuthorisationMode startAuthorisationMode = aspspProfileService.getAspspSettings().getCommon().getStartAuthorisationMode();
 
         if (StartAuthorisationMode.AUTO.equals(startAuthorisationMode)) {
             return multilevelScaRequired || isSigningBasketModeActive(headers);
@@ -571,6 +571,6 @@ public class InitiatePayments_successfulTest {
 
     public boolean isSigningBasketModeActive(HttpHeaders headers) {
         boolean tppExplicitAuthorisationPreferred = Boolean.valueOf(headers.toSingleValueMap().get("TPP-Explicit-Authorisation-Preferred"));
-        return tppExplicitAuthorisationPreferred && aspspProfileService.getAspspSettings().isSigningBasketSupported();
+        return tppExplicitAuthorisationPreferred && aspspProfileService.getAspspSettings().getCommon().isSigningBasketSupported();
     }
 }

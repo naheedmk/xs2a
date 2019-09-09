@@ -25,6 +25,7 @@ import de.adorsys.psd2.aspsp.profile.domain.piis.PiisAspspProfileSetting;
 import de.adorsys.psd2.aspsp.profile.domain.pis.PisAspspProfileSetting;
 import de.adorsys.psd2.aspsp.profile.domain.pis.PisRedirectLinkSetting;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
+import de.adorsys.psd2.xs2a.core.profile.StartAuthorisationMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -48,8 +49,8 @@ public class AspspProfileServiceImpl implements AspspProfileService {
         AisTransactionSetting transactionParameters = new AisTransactionSetting(setting.getAis().getTransactionParameters().getAvailableBookingStatuses(),
                                                                                 setting.getAis().getTransactionParameters().isTransactionsWithoutBalancesSupported(),
                                                                                 setting.getAis().getTransactionParameters().getSupportedTransactionApplicationTypes());
-        DeltaReportSetting deltaReportSettings = new DeltaReportSetting(setting.getAis().getDeltaReportBankSettings().isEntryReferenceFromSupported(),
-                                                                        setting.getAis().getDeltaReportBankSettings().isDeltaListSupported());
+        DeltaReportSetting deltaReportSettings = new DeltaReportSetting(setting.getAis().getDeltaReportSettings().isEntryReferenceFromSupported(),
+                                                                        setting.getAis().getDeltaReportSettings().isDeltaListSupported());
         OneTimeConsentScaSetting scaRequirementsForOneTimeConsents = new OneTimeConsentScaSetting(setting.getAis().getScaRequirementsForOneTimeConsents().isScaByOneTimeAvailableAccountsConsentRequired());
         AisAspspProfileSetting ais = new AisAspspProfileSetting(consentTypes, aisRedirectLinkToOnlineBanking, transactionParameters, deltaReportSettings, scaRequirementsForOneTimeConsents);
         PisRedirectLinkSetting pisRedirectLinkToOnlineBanking =  new PisRedirectLinkSetting(setting.getPis().getRedirectLinkToOnlineBanking().getPisRedirectUrlToAspsp(),
@@ -62,7 +63,9 @@ public class AspspProfileServiceImpl implements AspspProfileService {
                                                                 pisRedirectLinkToOnlineBanking);
         PiisAspspProfileSetting piis = new PiisAspspProfileSetting(setting.getPiis().isPiisConsentSupported());
         CommonAspspProfileSetting common = new CommonAspspProfileSetting(setting.getCommon().getScaRedirectFlow(),
-                                                                         setting.getCommon().getStartAuthorisationMode(),
+                                                                         setting.getCommon().getStartAuthorisationMode() == null
+                                                                             ? StartAuthorisationMode.AUTO
+                                                                             : StartAuthorisationMode.getByValue(setting.getCommon().getStartAuthorisationMode()),
                                                                          setting.getCommon().isTppSignatureRequired(),
                                                                          setting.getCommon().isPsuInInitialRequestMandated(),
                                                                          setting.getCommon().getRedirectUrlExpirationTimeMs(),

@@ -26,30 +26,9 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 public class PisAspspProfileSetting {
-
-    /**
-     * A matrix payment-product/payment-type which allows to choose needed types
-     */
     private Map<PaymentType, Set<String>> supportedPaymentTypeAndProductMatrix;
-
-    /**
-     * The limit of a maximum lifetime of payment transaction set in days. It is set to 0 or empty, then the maximum lifetime of transaction is infinity.
-     */
     private int maxTransactionValidityDays;
-
-    /**
-     * The limit of an expiration time of not confirmed payment url set in milliseconds
-     */
     private long notConfirmedPaymentExpirationTimeMs;
-
-    /**
-     * Indicates whether, the authorization of the payment cancellation is mandated by the ASPSP
-     */
     private boolean paymentCancellationAuthorisationMandated;
-
-
-    /**
-     * 	A group of settings to define URL links and their lifetime for redirect approach
-     */
     private PisRedirectLinkSetting redirectLinkToOnlineBanking;
 }

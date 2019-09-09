@@ -22,34 +22,10 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ConsentTypeSetting {
-
-    /**
-     * Indicates whether an ASPSP supports bank offered consent
-     */
     private boolean bankOfferedConsentSupported;
-
-    /**
-     * Indicates whether an ASPSP supports global consent
-     */
     private boolean globalConsentSupported;
-
-    /**
-     * Indicates whether an ASPSP supports consents for providing a list of available accounts of a PSU
-     */
     private boolean availableAccountsConsentSupported;
-
-    /**
-     * Defines the maximum allowed by bank accesses for consent's usage per unique resource for each endpoint
-     */
     private int accountAccessFrequencyPerDay;
-
-    /**
-     * The limit of an expiration time of not confirmed consent url set in milliseconds
-     */
     private long notConfirmedConsentExpirationTimeMs;
-
-    /**
-     * The limit of a maximum lifetime of consent set in days. When this value equals to 0 or empty, then the maximum lifetime of consent is infinity
-     */
     private int maxConsentValidityDays;
 }

@@ -22,14 +22,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DeltaReportSetting {
-
-    /**
-     * Indicates whether an ASPSP supports delta reports for transaction details with query parameter `entryReferenceFrom`
-     */
     private boolean entryReferenceFromSupported;
-
-    /**
-     * Indicates whether an ASPSP supports delta reports for transaction details with query parameter `deltaList`
-     */
     private boolean deltaListSupported;
 }

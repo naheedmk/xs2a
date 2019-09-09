@@ -22,33 +22,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class AisAspspProfileSetting {
-
-    /**
-     * 	URL to online-banking to authorise consent with redirect approach
-     */
     private ConsentTypeSetting consentTypes;
-
-
-    /**
-     * 	A group of settings to define URL link for redirect approach
-     */
     private AisRedirectLinkSetting redirectLinkToOnlineBanking;
-
-
-    /**
-     * 	A group of settings for transactions support
-     */
     private AisTransactionSetting transactionParameters;
-
-
-    /**
-     * 	A group of settings for delta reports support
-     */
     private DeltaReportSetting deltaReportSettings;
-
-
-    /**
-     * 	A group of settings to set up SCA for one-time consent
-     */
     private OneTimeConsentScaSetting scaRequirementsForOneTimeConsents;
 }
