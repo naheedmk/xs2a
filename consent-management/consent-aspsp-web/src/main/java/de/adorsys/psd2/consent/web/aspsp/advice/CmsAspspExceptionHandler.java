@@ -29,7 +29,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@ControllerAdvice
+@ControllerAdvice(basePackages = "de.adorsys.psd2.consent.web.aspsp.controller")
 public class CmsAspspExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String ERROR_MESSAGE = "Http message is not readable";
 
