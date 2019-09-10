@@ -18,6 +18,14 @@ package de.adorsys.psd2.aspsp.profile.mapper;
 
 import de.adorsys.psd2.aspsp.profile.config.BankProfileSetting;
 import de.adorsys.psd2.aspsp.profile.domain.AspspSettings;
+import de.adorsys.psd2.aspsp.profile.domain.ais.AisAspspProfileBankSetting;
+import de.adorsys.psd2.aspsp.profile.domain.ais.AisAspspProfileSetting;
+import de.adorsys.psd2.aspsp.profile.domain.common.CommonAspspProfileBankSetting;
+import de.adorsys.psd2.aspsp.profile.domain.common.CommonAspspProfileSetting;
+import de.adorsys.psd2.aspsp.profile.domain.piis.PiisAspspProfileBankSetting;
+import de.adorsys.psd2.aspsp.profile.domain.piis.PiisAspspProfileSetting;
+import de.adorsys.psd2.aspsp.profile.domain.pis.PisAspspProfileBankSetting;
+import de.adorsys.psd2.aspsp.profile.domain.pis.PisAspspProfileSetting;
 import de.adorsys.psd2.xs2a.core.profile.StartAuthorisationMode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -26,10 +34,18 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface AspspSettingsToBankProfileSettingMapper {
 
-    @Mapping(target = "common.startAuthorisationMode", source = "common.startAuthorisationMode", qualifiedByName = "mapStartAuthorisationMode")
     void updateBankProfileSetting(AspspSettings aspspSettings, @MappingTarget BankProfileSetting bankProfileSetting);
 
     default String mapStartAuthorisationMode(StartAuthorisationMode startAuthorisationMode) {
         return startAuthorisationMode == null ? "AUTO" : startAuthorisationMode.getValue();
     }
+
+    void updateAisAspspProfileBankSetting(AisAspspProfileSetting ais, @MappingTarget AisAspspProfileBankSetting aisAspspProfileBankSetting);
+
+    void updatePisAspspProfileBankSetting(PisAspspProfileSetting pis, @MappingTarget PisAspspProfileBankSetting pisAspspProfileBankSetting);
+
+    void updatePiisAspspProfileBankSetting(PiisAspspProfileSetting piis, @MappingTarget PiisAspspProfileBankSetting piisAspspProfileBankSetting);
+
+    @Mapping(target = "startAuthorisationMode", source = "startAuthorisationMode", qualifiedByName = "mapStartAuthorisationMode")
+    void updateCommonAspspProfileBankSetting(CommonAspspProfileSetting common, @MappingTarget CommonAspspProfileBankSetting commonAspspProfileBankSetting);
 }
