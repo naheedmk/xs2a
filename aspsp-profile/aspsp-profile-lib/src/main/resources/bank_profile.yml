@@ -9,7 +9,7 @@ setting:
       notConfirmedConsentExpirationTimeMs: 86400000
       maxConsentValidityDays: 0
     redirectLinkToOnlineBanking:
-      aisRedirectUrlToAspsp: http://localhost:4200/ais/
+      aisRedirectUrlToAspsp: http://localhost:4200/ais/{redirect-id}/{encrypted-consent-id}
     transactionParameters:
       availableBookingStatuses:
         - BOOKED
@@ -30,8 +30,8 @@ setting:
     notConfirmedPaymentExpirationTimeMs: 86400000
     paymentCancellationAuthorisationMandated: FALSE
     redirectLinkToOnlineBanking:
-      pisRedirectUrlToAspsp: http://localhost:4200/pis/
-      pisPaymentCancellationRedirectUrlToAspsp: http://localhost:4200/pis/cancellation/
+      pisRedirectUrlToAspsp: http://localhost:4200/pis/{redirect-id}/{encrypted-payment-id}
+      pisPaymentCancellationRedirectUrlToAspsp: http://localhost:4200/pis/cancellation/{redirect-id}/{encrypted-payment-id}
       paymentCancellationRedirectUrlExpirationTimeMs: 600000
   piis:
     piisConsentSupported: FALSE

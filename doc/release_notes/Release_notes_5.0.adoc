@@ -16,6 +16,7 @@
 * Extend XS2A with Austria requirements to payment products
 * Bugfix: Incorrect error code in response for ReadAccountList for consent which was revoked by PSU
 * Bugfix: Incorrect TransactionId in read transaction details leads to internal server error
+* ASPSP profile was refactored
 
 == Bugfix: TPP domain validator ignores non-domain `tppName` field
 
@@ -109,3 +110,23 @@ you will get response code `401 'CONSENT_INVALID'` with text `Consent was revoke
 == Incorrect TransactionId in read transaction details leads to internal server error
 
 From now on, if TPP provides incorrect transaction ID in read transaction details `GET /v1/accounts/{account-id}/transactions/{resourceId}` it will receive 403 response code with `RESOURCE_UNKNOWN` message.
+
+== ASPSP profile was refactored
+
+`bank_profile.yml` file was updated to a new format, according to new requirements (https://wiki.adorsys.de/display/PSD2/07+XS2A+features+descriptions).
+This includes the folowing changes:
+
+* all properties were grouped into `ais`, `pis`, `piis` and `common` categories
+* some properties were renamed to the more appropriate names
+* some default values were changed
+
+For the migration to the new profile purposes, a new controller POST `/api/v1/aspsp-profile/convert-profile/aspsp-settings`
+was created. In the HTTP body, it takes the content of the old `bank_profile.yml` and returns the new version of ASPSP profile.
+This response can be inserted in the `bank_profile.yml` file instead of old content. To enable this endpoint, the `debug_mode`
+ profile for `aspsp-profile-server` application should be enabled. The migration sequence of actions if the following:
+
+ - launch  application with `debug_mode` profile active
+ - select POST `/api/v1/aspsp-profile/convert-profile/aspsp-settings`  and copy the content of current `bank_profile.yml`
+ file to the its body
+ - replace the content of `bank_profile.yml` with the response of the endpoint call
+ - restart `aspsp-profile-server` (`debug_mode` profile  is not needed anymore)

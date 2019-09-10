@@ -26,12 +26,12 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Profile("convert_mode")
+@Profile("debug_mode")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/aspsp-profile/convert-profile", consumes = "application/x-yaml", produces = "application/x-yaml")
@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AspspProfileConvertController {
     private final AspspProfileConvertService convertService;
 
-    @PutMapping(path = "/aspsp-settings")
+    @PostMapping(path = "/aspsp-settings")
     @ApiOperation(value = "Converts old aspsp profile to the new format")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Ok"),
