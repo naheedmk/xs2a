@@ -42,5 +42,5 @@ public class AisTransactionBankSetting {
     /**
      * Contains transaction application type supported by ASPSP (JSON, XML or TEXT)
      */
-    private String supportedTransactionApplicationTypes;
+    private String supportedTransactionApplicationType;
 }

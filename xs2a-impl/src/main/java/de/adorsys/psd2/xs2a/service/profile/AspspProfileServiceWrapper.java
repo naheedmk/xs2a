@@ -298,8 +298,8 @@ public class AspspProfileServiceWrapper {
      *
      * @return List of transaction application type supported by ASPSP.
      */
-    public String getSupportedTransactionApplicationTypes() {
-        return readAspspSettings().getAis().getTransactionParameters().getSupportedTransactionApplicationTypes();
+    public String getSupportedTransactionApplicationType() {
+        return readAspspSettings().getAis().getTransactionParameters().getSupportedTransactionApplicationType();
     }
 
     private AspspSettings readAspspSettings() {

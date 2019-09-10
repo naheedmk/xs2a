@@ -188,7 +188,7 @@ public class AspspProfileServiceTest {
 
     @Test
     public void supportedTransactionApplicationTypes_success() {
-        Assertions.assertThat(actualResponse.getAis().getTransactionParameters().getSupportedTransactionApplicationTypes()).isEqualTo(SUPPORTED_TRANSACTION_APPLICATION_TYPES);
+        Assertions.assertThat(actualResponse.getAis().getTransactionParameters().getSupportedTransactionApplicationType()).isEqualTo(SUPPORTED_TRANSACTION_APPLICATION_TYPES);
     }
 
     @Test

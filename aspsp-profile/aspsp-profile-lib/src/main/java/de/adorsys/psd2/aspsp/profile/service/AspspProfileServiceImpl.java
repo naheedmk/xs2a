@@ -48,7 +48,7 @@ public class AspspProfileServiceImpl implements AspspProfileService {
         AisRedirectLinkSetting aisRedirectLinkToOnlineBanking = new AisRedirectLinkSetting(setting.getAis().getRedirectLinkToOnlineBanking().getAisRedirectUrlToAspsp());
         AisTransactionSetting transactionParameters = new AisTransactionSetting(setting.getAis().getTransactionParameters().getAvailableBookingStatuses(),
                                                                                 setting.getAis().getTransactionParameters().isTransactionsWithoutBalancesSupported(),
-                                                                                setting.getAis().getTransactionParameters().getSupportedTransactionApplicationTypes());
+                                                                                setting.getAis().getTransactionParameters().getSupportedTransactionApplicationType());
         DeltaReportSetting deltaReportSettings = new DeltaReportSetting(setting.getAis().getDeltaReportSettings().isEntryReferenceFromSupported(),
                                                                         setting.getAis().getDeltaReportSettings().isDeltaListSupported());
         OneTimeConsentScaSetting scaRequirementsForOneTimeConsents = new OneTimeConsentScaSetting(setting.getAis().getScaRequirementsForOneTimeConsents().isScaByOneTimeAvailableAccountsConsentRequired());

@@ -40,7 +40,7 @@ public class TransactionReportAcceptHeaderValidator {
 
     public ValidationResult validate(String acceptHeader) {
         if (StringUtils.isNotBlank(acceptHeader)) {
-            String supportedTransactionApplicationTypes = aspspProfileServiceWrapper.getSupportedTransactionApplicationTypes();
+            String supportedTransactionApplicationTypes = aspspProfileServiceWrapper.getSupportedTransactionApplicationType();
 
             if (!isAcceptHeaderSupported(supportedTransactionApplicationTypes, acceptHeader)) {
                 return ValidationResult.invalid(ErrorType.AIS_406, TppMessageInformation.of(REQUESTED_FORMATS_INVALID));

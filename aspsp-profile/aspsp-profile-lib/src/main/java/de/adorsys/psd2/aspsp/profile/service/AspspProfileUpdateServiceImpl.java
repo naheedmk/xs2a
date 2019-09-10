@@ -67,7 +67,7 @@ public class AspspProfileUpdateServiceImpl implements AspspProfileUpdateService 
         setting.getAis().getDeltaReportSettings().setDeltaListSupported(aspspSettings.getAis().getDeltaReportSettings().isDeltaListSupported());
         setting.getAis().getDeltaReportSettings().setEntryReferenceFromSupported(aspspSettings.getAis().getDeltaReportSettings().isEntryReferenceFromSupported());
         setting.getAis().getTransactionParameters().setAvailableBookingStatuses(aspspSettings.getAis().getTransactionParameters().getAvailableBookingStatuses());
-        setting.getAis().getTransactionParameters().setSupportedTransactionApplicationTypes(aspspSettings.getAis().getTransactionParameters().getSupportedTransactionApplicationTypes());
+        setting.getAis().getTransactionParameters().setSupportedTransactionApplicationType(aspspSettings.getAis().getTransactionParameters().getSupportedTransactionApplicationType());
         setting.getAis().getTransactionParameters().setTransactionsWithoutBalancesSupported(aspspSettings.getAis().getTransactionParameters().isTransactionsWithoutBalancesSupported());
         setting.getAis().getScaRequirementsForOneTimeConsents().setScaByOneTimeAvailableAccountsConsentRequired(aspspSettings.getAis().getScaRequirementsForOneTimeConsents().isScaByOneTimeAvailableAccountsConsentRequired());
         setting.getPis().setSupportedPaymentTypeAndProductMatrix(aspspSettings.getPis().getSupportedPaymentTypeAndProductMatrix());
