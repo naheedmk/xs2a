@@ -52,11 +52,11 @@ public class SpiTransactionListToXs2aAccountReportMapper {
         List<Transactions> pending = Collections.emptyList();
 
 
-        if( queryStatus != BookingStatus.PENDING ) {
+        if (queryStatus != BookingStatus.PENDING) {
             booked = filterTransaction(spiTransactions, BOOKED_PREDICATE);
         }
 
-        if( queryStatus != BookingStatus.BOOKED) {
+        if (queryStatus != BookingStatus.BOOKED) {
             pending = filterTransaction(spiTransactions, PENDING_PREDICATE);
         }
 
