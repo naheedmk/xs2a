@@ -18,15 +18,14 @@ package de.adorsys.psd2.aspsp.profile.mapper;
 
 import de.adorsys.psd2.aspsp.profile.config.BankProfileSetting;
 import de.adorsys.psd2.aspsp.profile.domain.AspspSettings;
-import de.adorsys.psd2.aspsp.profile.domain.ais.*;
+import de.adorsys.psd2.aspsp.profile.domain.ais.AisAspspProfileBankSetting;
+import de.adorsys.psd2.aspsp.profile.domain.ais.AisAspspProfileSetting;
 import de.adorsys.psd2.aspsp.profile.domain.common.CommonAspspProfileBankSetting;
 import de.adorsys.psd2.aspsp.profile.domain.common.CommonAspspProfileSetting;
 import de.adorsys.psd2.aspsp.profile.domain.piis.PiisAspspProfileBankSetting;
 import de.adorsys.psd2.aspsp.profile.domain.piis.PiisAspspProfileSetting;
 import de.adorsys.psd2.aspsp.profile.domain.pis.PisAspspProfileBankSetting;
 import de.adorsys.psd2.aspsp.profile.domain.pis.PisAspspProfileSetting;
-import de.adorsys.psd2.aspsp.profile.domain.pis.PisRedirectLinkBankSetting;
-import de.adorsys.psd2.aspsp.profile.domain.pis.PisRedirectLinkSetting;
 import de.adorsys.psd2.xs2a.core.profile.StartAuthorisationMode;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -49,16 +48,4 @@ public interface AspspSettingsToBankProfileSettingMapper {
 
     @Mapping(target = "startAuthorisationMode", source = "startAuthorisationMode", qualifiedByName = "mapStartAuthorisationMode")
     void updateCommonAspspProfileBankSetting(CommonAspspProfileSetting common, @MappingTarget CommonAspspProfileBankSetting commonAspspProfileBankSetting);
-
-    void updateConsentTypeBankSetting(ConsentTypeSetting consentTypes, @MappingTarget ConsentTypeBankSetting consentTypeBankSetting);
-
-    void updateAisRedirectLinkBankSetting(AisRedirectLinkSetting redirectLinkToOnlineBanking, @MappingTarget AisRedirectLinkBankSetting aisRedirectLinkBankSetting);
-
-    void updateAisTransactionBankSetting(AisTransactionSetting transactionParameters, @MappingTarget AisTransactionBankSetting aisTransactionBankSetting);
-
-    void updateDeltaReportBankSetting(DeltaReportSetting deltaReportSettings, @MappingTarget DeltaReportBankSetting deltaReportBankSetting);
-
-    void updateOneTimeConsentScaBankSetting(OneTimeConsentScaSetting scaRequirementsForOneTimeConsents, @MappingTarget OneTimeConsentScaBankSetting oneTimeConsentScaBankSetting);
-
-    void updatePisRedirectLinkBankSetting(PisRedirectLinkSetting redirectLinkToOnlineBanking, @MappingTarget PisRedirectLinkBankSetting pisRedirectLinkBankSetting);
 }
