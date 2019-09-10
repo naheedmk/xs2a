@@ -379,7 +379,8 @@ public class TransactionService {
                                                                            AccountConsent accountConsent,
                                                                            SpiTransactionReport spiTransactionReport) {
         Xs2aAccountReport report = transactionsToAccountReportMapper
-                                       .mapToXs2aAccountReport(spiTransactionReport.getTransactions(),
+                                       .mapToXs2aAccountReport(request.getBookingStatus(),
+                                                               spiTransactionReport.getTransactions(),
                                                                spiTransactionReport.getTransactionsRaw())
                                        .orElse(null);
 
