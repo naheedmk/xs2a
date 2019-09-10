@@ -19,6 +19,7 @@ package de.adorsys.psd2.aspsp.profile.service;
 import de.adorsys.psd2.aspsp.profile.config.BankProfileSetting;
 import de.adorsys.psd2.aspsp.profile.config.ProfileConfiguration;
 import de.adorsys.psd2.aspsp.profile.domain.AspspSettings;
+import de.adorsys.psd2.aspsp.profile.mapper.AspspSettingsToBankProfileSettingMapper;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,7 @@ import java.util.List;
 public class AspspProfileUpdateServiceImpl implements AspspProfileUpdateService {
 
     private final ProfileConfiguration profileConfiguration;
+    private final AspspSettingsToBankProfileSettingMapper profileSettingMapper;
 
     /**
      * Update sca approach
@@ -56,39 +58,6 @@ public class AspspProfileUpdateServiceImpl implements AspspProfileUpdateService 
     @Override
     public void updateAspspSettings(@NotNull AspspSettings aspspSettings) {
         BankProfileSetting setting = profileConfiguration.getSetting();
-
-        setting.getAis().getConsentTypes().setAccountAccessFrequencyPerDay(aspspSettings.getAis().getConsentTypes().getAccountAccessFrequencyPerDay());
-        setting.getAis().getConsentTypes().setAvailableAccountsConsentSupported(aspspSettings.getAis().getConsentTypes().isAvailableAccountsConsentSupported());
-        setting.getAis().getConsentTypes().setBankOfferedConsentSupported(aspspSettings.getAis().getConsentTypes().isBankOfferedConsentSupported());
-        setting.getAis().getConsentTypes().setGlobalConsentSupported(aspspSettings.getAis().getConsentTypes().isGlobalConsentSupported());
-        setting.getAis().getConsentTypes().setMaxConsentValidityDays(aspspSettings.getAis().getConsentTypes().getMaxConsentValidityDays());
-        setting.getAis().getConsentTypes().setNotConfirmedConsentExpirationTimeMs(aspspSettings.getAis().getConsentTypes().getNotConfirmedConsentExpirationTimeMs());
-        setting.getAis().getRedirectLinkToOnlineBanking().setAisRedirectUrlToAspsp(aspspSettings.getAis().getRedirectLinkToOnlineBanking().getAisRedirectUrlToAspsp());
-        setting.getAis().getDeltaReportSettings().setDeltaListSupported(aspspSettings.getAis().getDeltaReportSettings().isDeltaListSupported());
-        setting.getAis().getDeltaReportSettings().setEntryReferenceFromSupported(aspspSettings.getAis().getDeltaReportSettings().isEntryReferenceFromSupported());
-        setting.getAis().getTransactionParameters().setAvailableBookingStatuses(aspspSettings.getAis().getTransactionParameters().getAvailableBookingStatuses());
-        setting.getAis().getTransactionParameters().setSupportedTransactionApplicationType(aspspSettings.getAis().getTransactionParameters().getSupportedTransactionApplicationType());
-        setting.getAis().getTransactionParameters().setTransactionsWithoutBalancesSupported(aspspSettings.getAis().getTransactionParameters().isTransactionsWithoutBalancesSupported());
-        setting.getAis().getScaRequirementsForOneTimeConsents().setScaByOneTimeAvailableAccountsConsentRequired(aspspSettings.getAis().getScaRequirementsForOneTimeConsents().isScaByOneTimeAvailableAccountsConsentRequired());
-        setting.getPis().setSupportedPaymentTypeAndProductMatrix(aspspSettings.getPis().getSupportedPaymentTypeAndProductMatrix());
-        setting.getPis().setMaxTransactionValidityDays(aspspSettings.getPis().getMaxTransactionValidityDays());
-        setting.getPis().setNotConfirmedPaymentExpirationTimeMs(aspspSettings.getPis().getNotConfirmedPaymentExpirationTimeMs());
-        setting.getPis().setPaymentCancellationAuthorisationMandated(aspspSettings.getPis().isPaymentCancellationAuthorisationMandated());
-        setting.getPis().getRedirectLinkToOnlineBanking().setPaymentCancellationRedirectUrlExpirationTimeMs(aspspSettings.getPis().getRedirectLinkToOnlineBanking().getPaymentCancellationRedirectUrlExpirationTimeMs());
-        setting.getPis().getRedirectLinkToOnlineBanking().setPisPaymentCancellationRedirectUrlToAspsp(aspspSettings.getPis().getRedirectLinkToOnlineBanking().getPisPaymentCancellationRedirectUrlToAspsp());
-        setting.getPis().getRedirectLinkToOnlineBanking().setPisRedirectUrlToAspsp(aspspSettings.getPis().getRedirectLinkToOnlineBanking().getPisRedirectUrlToAspsp());
-        setting.getPiis().setPiisConsentSupported(aspspSettings.getPiis().isPiisConsentSupported());
-        setting.getCommon().setAisPisSessionsSupported(aspspSettings.getCommon().isAisPisSessionsSupported());
-        setting.getCommon().setTppSignatureRequired(aspspSettings.getCommon().isTppSignatureRequired());
-        setting.getCommon().setForceXs2aBaseLinksUrl(aspspSettings.getCommon().isForceXs2aBaseLinksUrl());
-        setting.getCommon().setAuthorisationExpirationTimeMs(aspspSettings.getCommon().getAuthorisationExpirationTimeMs());
-        setting.getCommon().setMulticurrencyAccountLevelSupported(aspspSettings.getCommon().getMulticurrencyAccountLevelSupported());
-        setting.getCommon().setPsuInInitialRequestMandated(aspspSettings.getCommon().isPsuInInitialRequestMandated());
-        setting.getCommon().setRedirectUrlExpirationTimeMs(aspspSettings.getCommon().getRedirectUrlExpirationTimeMs());
-        setting.getCommon().setScaRedirectFlow(aspspSettings.getCommon().getScaRedirectFlow());
-        setting.getCommon().setSigningBasketSupported(aspspSettings.getCommon().isSigningBasketSupported());
-        setting.getCommon().setStartAuthorisationMode(aspspSettings.getCommon().getStartAuthorisationMode() == null ? "AUTO" : aspspSettings.getCommon().getStartAuthorisationMode().getValue());
-        setting.getCommon().setSupportedAccountReferenceFields(aspspSettings.getCommon().getSupportedAccountReferenceFields());
-        setting.getCommon().setXs2aBaseLinksUrl(aspspSettings.getCommon().getXs2aBaseLinksUrl());
+        profileSettingMapper.updateBankProfileSetting(aspspSettings, setting);
     }
 }
