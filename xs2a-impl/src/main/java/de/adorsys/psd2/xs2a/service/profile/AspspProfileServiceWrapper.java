@@ -294,11 +294,11 @@ public class AspspProfileServiceWrapper {
     }
 
     /**
-     * Reads transaction application types supported by ASPSP (JSON, XML or TEXT).
+     * Reads transaction application type supported by ASPSP (JSON, XML or TEXT).
      *
-     * @return List of transaction application types supported by ASPSP.
+     * @return List of transaction application type supported by ASPSP.
      */
-    public List<String> getSupportedTransactionApplicationTypes() {
+    public String getSupportedTransactionApplicationTypes() {
         return readAspspSettings().getAis().getTransactionParameters().getSupportedTransactionApplicationTypes();
     }
 

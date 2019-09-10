@@ -15,8 +15,7 @@ setting:
       - BOOKED
       - PENDING
       transactionsWithoutBalancesSupported: FALSE
-      supportedTransactionApplicationTypes:
-      - JSON
+      supportedTransactionApplicationTypes: JSON
     deltaReportSettings:
       entryReferenceFromSupported: FALSE
       deltaListSupported: FALSE

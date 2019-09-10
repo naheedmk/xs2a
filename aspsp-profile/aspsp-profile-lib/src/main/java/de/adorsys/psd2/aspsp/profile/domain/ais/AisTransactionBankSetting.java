@@ -40,7 +40,7 @@ public class AisTransactionBankSetting {
     private boolean transactionsWithoutBalancesSupported;
 
     /**
-     * Contains transaction application types supported by ASPSP (JSON, XML or TEXT)
+     * Contains transaction application type supported by ASPSP (JSON, XML or TEXT)
      */
-    private List<String> supportedTransactionApplicationTypes = new ArrayList<>();
+    private String supportedTransactionApplicationTypes;
 }
