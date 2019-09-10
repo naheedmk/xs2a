@@ -98,4 +98,4 @@ you will get response code `401 'CONSENT_INVALID'` with text `Consent was revoke
 
 == Incorrect TransactionId in read transaction details leads to internal server error
 
-From now on, if TPP provides incorrect transaction ID in read transaction details it will receive 403 response code with `RESOURCE_UNKNOWN` message.
+From now on, if TPP provides incorrect transaction ID in read transaction details `GET /v1/accounts/{account-id}/transactions/{resourceId}` it will receive 403 response code with `RESOURCE_UNKNOWN` message.
