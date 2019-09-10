@@ -733,6 +733,7 @@ Use it manually to generate javadocs. Don't commit it
                     <excludeRoots>
                         <excludeRoot>../xs2a-impl/target/generated-sources/annotations/</excludeRoot>
                         <excludeRoot>../consent-management/consent-management-lib/target/generated-sources/annotations/</excludeRoot>
+                        <excludeRoot>../aspsp-profile/aspsp-profile-lib/target/generated-sources/annotations/</excludeRoot>
                     </excludeRoots>
                 </configuration>
             </plugin>
