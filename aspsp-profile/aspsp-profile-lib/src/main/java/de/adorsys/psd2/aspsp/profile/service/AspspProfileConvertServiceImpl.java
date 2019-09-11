@@ -30,8 +30,6 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.util.Set;
-
 @Service
 @AllArgsConstructor
 public class AspspProfileConvertServiceImpl implements AspspProfileConvertService {
@@ -50,7 +48,6 @@ public class AspspProfileConvertServiceImpl implements AspspProfileConvertServic
         representer.addClassTag(BookingStatus.class, Tag.STR);
         representer.addClassTag(ScaApproach.class, Tag.STR);
         representer.addClassTag(SupportedAccountReferenceField.class, Tag.STR);
-        representer.addClassTag(Set.class, Tag.SEQ);
         return representer;
     }
 
