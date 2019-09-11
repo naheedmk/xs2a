@@ -16,68 +16,50 @@
 
 package de.adorsys.psd2.aspsp.profile.service;
 
-import de.adorsys.psd2.aspsp.profile.config.BankProfileSetting;
-import de.adorsys.psd2.aspsp.profile.config.ProfileConfiguration;
-import de.adorsys.psd2.aspsp.profile.domain.OldBankProfileSetting;
-import de.adorsys.psd2.aspsp.profile.domain.OldProfileConfiguration;
-import de.adorsys.psd2.aspsp.profile.domain.ais.*;
-import de.adorsys.psd2.aspsp.profile.domain.common.CommonAspspProfileBankSetting;
-import de.adorsys.psd2.aspsp.profile.domain.piis.PiisAspspProfileBankSetting;
-import de.adorsys.psd2.aspsp.profile.domain.pis.PisAspspProfileBankSetting;
-import de.adorsys.psd2.aspsp.profile.domain.pis.PisRedirectLinkBankSetting;
-import de.adorsys.psd2.xs2a.core.profile.PaymentType;
+import de.adorsys.psd2.aspsp.profile.domain.SupportedAccountReferenceField;
+import de.adorsys.psd2.aspsp.profile.domain.migration.NewProfileConfiguration;
+import de.adorsys.psd2.aspsp.profile.domain.migration.OldProfileConfiguration;
+import de.adorsys.psd2.aspsp.profile.mapper.NewProfileConfigurationMapper;
+import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
+import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
+import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Service
+@AllArgsConstructor
 public class AspspProfileConvertServiceImpl implements AspspProfileConvertService {
+    private NewProfileConfigurationMapper newProfileConfigurationMapper;
 
     @Override
-    public ProfileConfiguration convertProfile(OldProfileConfiguration profile) {
-        OldBankProfileSetting setting = profile.getSetting();
-        ConsentTypeBankSetting consentTypes = new ConsentTypeBankSetting(setting.isBankOfferedConsentSupport(),
-                                                                         setting.isAllPsd2Support(),
-                                                                         setting.isAvailableAccountsConsentSupported(),
-                                                                         setting.getFrequencyPerDay(),
-                                                                         setting.getNotConfirmedConsentExpirationPeriodMs(),
-                                                                         setting.getConsentLifetime());
-        AisRedirectLinkBankSetting aisRedirectLinkToOnlineBanking = new AisRedirectLinkBankSetting(setting.getAisRedirectUrlToAspsp());
-        AisTransactionBankSetting transactionParameters = new AisTransactionBankSetting(setting.getAvailableBookingStatuses(),
-                                                                                        setting.isTransactionsWithoutBalancesSupported(),
-                                                                                        setting.getSupportedTransactionApplicationTypes().get(0));
-        DeltaReportBankSetting deltaReportSettings = new DeltaReportBankSetting(setting.isEntryReferenceFromSupported(),
-                                                                                setting.isDeltaListSupported());
-        OneTimeConsentScaBankSetting scaRequirementsForOneTimeConsents = new OneTimeConsentScaBankSetting(setting.isScaByOneTimeAvailableAccountsConsentRequired());
-        AisAspspProfileBankSetting ais = new AisAspspProfileBankSetting(consentTypes, aisRedirectLinkToOnlineBanking, transactionParameters, deltaReportSettings, scaRequirementsForOneTimeConsents);
-        PisRedirectLinkBankSetting pisRedirectLinkToOnlineBanking = new PisRedirectLinkBankSetting(setting.getPisRedirectUrlToAspsp(),
-                                                                                                   setting.getPisPaymentCancellationRedirectUrlToAspsp(),
-                                                                                                   setting.getPaymentCancellationRedirectUrlExpirationTimeMs());
-        PisAspspProfileBankSetting pis = new PisAspspProfileBankSetting(setting.getSupportedPaymentTypeAndProductMatrix()
-                                                                            .entrySet().stream()
-                                                                            .collect(Collectors.toMap(e -> PaymentType.valueOf(e.getKey()),
-                                                                                                      Map.Entry::getValue)),
-                                                                        setting.getTransactionLifetime(),
-                                                                        setting.getNotConfirmedPaymentExpirationPeriodMs(),
-                                                                        setting.isPaymentCancellationAuthorizationMandated(),
-                                                                        pisRedirectLinkToOnlineBanking);
-        PiisAspspProfileBankSetting piis = new PiisAspspProfileBankSetting(setting.isPiisConsentSupported());
-        CommonAspspProfileBankSetting common = new CommonAspspProfileBankSetting(setting.getScaApproaches(),
-                                                                                 setting.getScaRedirectFlow(),
-                                                                                 setting.getStartAuthorisationMode(),
-                                                                                 setting.isTppSignatureRequired(),
-                                                                                 setting.isPsuInInitialRequestMandated(),
-                                                                                 setting.getRedirectUrlExpirationTimeMs(),
-                                                                                 setting.getAuthorisationExpirationTimeMs(),
-                                                                                 setting.isForceXs2aBaseUrl(),
-                                                                                 setting.getXs2aBaseUrl(),
-                                                                                 setting.getSupportedAccountReferenceFields(),
-                                                                                 setting.getMulticurrencyAccountLevel(),
-                                                                                 setting.isCombinedServiceIndicator(),
-                                                                                 setting.isSigningBasketSupported());
-        ProfileConfiguration result = new ProfileConfiguration();
-        result.setSetting(new BankProfileSetting(ais, pis, piis, common));
-        return result;
+    public String convertProfile(OldProfileConfiguration profile) {
+        NewProfileConfiguration newProfileConfiguration = newProfileConfigurationMapper.mapToNewProfileConfiguration(profile);
+        Yaml yaml = new Yaml(getYamlRepresenter(), getYamlDumperOptions());
+        return yaml.dumpAsMap(newProfileConfiguration);
+    }
+
+    @NotNull
+    private Representer getYamlRepresenter() {
+        Representer representer = new Representer();
+        representer.addClassTag(BookingStatus.class, Tag.STR);
+        representer.addClassTag(ScaApproach.class, Tag.STR);
+        representer.addClassTag(SupportedAccountReferenceField.class, Tag.STR);
+        representer.addClassTag(Set.class, Tag.SEQ);
+        return representer;
+    }
+
+    @NotNull
+    private DumperOptions getYamlDumperOptions() {
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setPrettyFlow(true);
+        options.setExplicitStart(true);
+        return options;
     }
 }

@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.aspsp.profile.service;
+package de.adorsys.psd2.aspsp.profile.domain.migration;
 
-import de.adorsys.psd2.aspsp.profile.domain.migration.OldProfileConfiguration;
+import lombok.Data;
 
-public interface AspspProfileConvertService {
-
-    /**
-     * Converts old profile configuration into new one in yaml format
-     *
-     * @param profile old profile configuration
-     * @return converted profile configuration in yaml format
-     */
-    String convertProfile(OldProfileConfiguration profile);
+@Data
+public class NewProfileConfiguration {
+    private NewBankProfileSetting setting;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.aspsp.profile.domain;
+package de.adorsys.psd2.aspsp.profile.domain.migration;
 
 import lombok.Value;
 

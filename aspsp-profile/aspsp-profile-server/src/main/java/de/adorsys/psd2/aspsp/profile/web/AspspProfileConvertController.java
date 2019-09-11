@@ -16,8 +16,7 @@
 
 package de.adorsys.psd2.aspsp.profile.web;
 
-import de.adorsys.psd2.aspsp.profile.config.ProfileConfiguration;
-import de.adorsys.psd2.aspsp.profile.domain.OldProfileConfiguration;
+import de.adorsys.psd2.aspsp.profile.domain.migration.OldProfileConfiguration;
 import de.adorsys.psd2.aspsp.profile.service.AspspProfileConvertService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,8 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/aspsp-profile/convert-profile", consumes = "application/x-yaml", produces = "application/x-yaml")
-@Api(value = "Convert old aspsp profile", tags = "Convert old aspsp profile to the new",
-    description = "Converts old aspsp profile to the new format")
+@Api(value = "Convert old aspsp profile", tags = "Convert old aspsp profile to the new")
 public class AspspProfileConvertController {
     private final AspspProfileConvertService convertService;
 
@@ -45,7 +43,7 @@ public class AspspProfileConvertController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Ok"),
         @ApiResponse(code = 400, message = "Bad request")})
-    public ResponseEntity<ProfileConfiguration> convertAspspSetting(@RequestBody OldProfileConfiguration oldConfiguration) {
+    public ResponseEntity<String> convertAspspSetting(@RequestBody OldProfileConfiguration oldConfiguration) {
         return ResponseEntity.ok(convertService.convertProfile(oldConfiguration));
     }
 }
