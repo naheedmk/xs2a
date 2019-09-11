@@ -17,8 +17,8 @@ setting:
       scaByOneTimeAvailableAccountsConsentRequired: true
     transactionParameters:
       availableBookingStatuses:
-        - BOOKED
-        - PENDING
+      - BOOKED
+      - PENDING
       supportedTransactionApplicationType: JSON
       transactionsWithoutBalancesSupported: true
   common:
@@ -29,15 +29,15 @@ setting:
     psuInInitialRequestMandated: false
     redirectUrlExpirationTimeMs: 600000
     scaApproachesSupported:
-      - REDIRECT
-      - EMBEDDED
-      - DECOUPLED
+    - REDIRECT
+    - EMBEDDED
+    - DECOUPLED
     scaRedirectFlow: REDIRECT
     signingBasketSupported: false
     startAuthorisationMode: auto
     supportedAccountReferenceFields:
-      - MSISDN
-      - IBAN
+    - MSISDN
+    - IBAN
     tppSignatureRequired: false
     xs2aBaseLinksUrl: http://myhost.com/
   piis:
@@ -52,11 +52,11 @@ setting:
       pisRedirectUrlToAspsp: http://localhost:4200/pis/{redirect-id}/{encrypted-payment-id}
     supportedPaymentTypeAndProductMatrix:
       BULK:
-        - sepa-credit-transfers
-        - instant-sepa-credit-transfers
+      - sepa-credit-transfers
+      - instant-sepa-credit-transfers
       PERIODIC:
-        - sepa-credit-transfers
-        - instant-sepa-credit-transfers
+      - sepa-credit-transfers
+      - instant-sepa-credit-transfers
       SINGLE:
-        - sepa-credit-transfers
-        - instant-sepa-credit-transfers
+      - sepa-credit-transfers
+      - instant-sepa-credit-transfers
