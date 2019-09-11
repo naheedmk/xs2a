@@ -45,7 +45,7 @@ This version will be supported till 01.03.2020.
 
 ==== Mainline 2.x (till 01.09.2019)
 
-Mainline 2.x is released on 01.03.2019. The main goal was to support mandatory requirements of Berlin Group specification 1.3.
+Mainline 2.x was released on 01.03.2019. The main goal was to support mandatory requirements of Berlin Group specification 1.3.
 This version was supported till 01.09.2019.
 
 === Development versions
