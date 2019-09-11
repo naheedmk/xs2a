@@ -46,7 +46,7 @@ For upcoming versions see our xref:roadmap.adoc[Roadmap].
 * xref:release_notes/Release_notes_2.0.1.adoc[Version 2.0.1 (release date: 06.03.2019)]
 * xref:release_notes/Release_notes_2.0.adoc[Version 2.0   (release date: 01.03.2019)]
 
-=== Mainline 1.x (Development. Releaseed 01.03.2019 as 2.0)
+=== Mainline 1.x (Development. Released 01.03.2019 as 2.0)
 
 * xref:release_notes/Release_notes_1.17.adoc[Version 1.17 (release date: 15.02.2019)]
 * xref:release_notes/Release_notes_1.16.adoc[Version 1.16 (release date: 01.02.2019)]
