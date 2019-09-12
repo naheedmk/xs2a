@@ -81,6 +81,22 @@ variables:
     - docker push "${DOCKERHUB_REGISTRY}/${DOCKERHUB_NAMESPACE}/${DOCKER_IMAGE_NAME_XS2A}:${DOCKER_TAG}"
     - docker logout
 
+#Build docker images aon push to openshift registry for specific branch
+.build_image_from_branch_deploy_to_openshift
+  script:
+    - docker build -t "${DOCKER_IMAGE_NAME_CNT_MGMNT}:latest" consent-management/cms-standalone-service
+    - docker build -t "${DOCKER_IMAGE_NAME_ASPSP_PROFILE}:latest" aspsp-profile/aspsp-profile-server
+    - >-
+      skopeo copy
+      --dest-creds=openshift:${OPENSHIFT_TOKEN}
+      "${DOCKER_IMAGE_NAME_CNT_MGMNT}:${DOCKER_TAG}"
+      "docker://${OPENSHIFT_REGISTRY}/${OPENSHIFT_NAMESPACE}/${DOCKER_IMAGE_NAME_CNT_MGMNT}:latest"
+    - >-
+      skopeo copy
+      --dest-creds=openshift:${OPENSHIFT_TOKEN}
+      "${DOCKER_IMAGE_NAME_ASPSP_PROFILE}:${DOCKER_TAG}"
+      "docker://${OPENSHIFT_REGISTRY}/${OPENSHIFT_NAMESPACE}/${DOCKER_IMAGE_NAME_ASPSP_PROFILE}:latest"
+
 # Copy Dockerhub images to Openshift (depending on ${DOCKER_TAG} and ${OPENSHIFT_NAMESPACE})
 .deploy_openshift: &deploy_openshift
   script:
@@ -103,7 +119,8 @@ Compile Java8:
   stage: "Compile"
   variables:
     JAVA_VERSION: "system@1.8"
-  <<: *build_java
+  <<: *build_java   - >-
+      skopeo copy
   artifacts:
     paths:
       - "xs2a-impl/target/aspsp-xs2a.jar"
@@ -248,6 +265,15 @@ Push to DockerHub (develop):
   variables:
     DOCKER_TAG: develop
   <<: *build_dockerhub_image
+
+Build and Deploy to Openshift from branch:
+  stage: "Deploy"
+  cache: {}
+  only:
+    - feature/5.x/SSH_cms_calls_optimization
+  variables:
+    OPENSHIFT_NAMESPACE: ${OPENSHIFT_NAMESPACE_INTEG} # Openshift target namespace
+  <<: *build_image_from_branch_deploy_to_openshift
 
 Deploy to Openshift (develop):
   stage: "Deploy"
