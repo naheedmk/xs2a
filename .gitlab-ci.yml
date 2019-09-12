@@ -119,8 +119,7 @@ Compile Java8:
   stage: "Compile"
   variables:
     JAVA_VERSION: "system@1.8"
-  <<: *build_java   - >-
-      skopeo copy
+  <<: *build_java
   artifacts:
     paths:
       - "xs2a-impl/target/aspsp-xs2a.jar"
