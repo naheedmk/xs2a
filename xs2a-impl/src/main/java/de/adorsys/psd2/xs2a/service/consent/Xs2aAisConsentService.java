@@ -26,6 +26,7 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
+import de.adorsys.psd2.xs2a.domain.account.Xs2aCreateAisConsentResponse;
 import de.adorsys.psd2.xs2a.domain.consent.*;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
@@ -61,15 +62,19 @@ public class Xs2aAisConsentService {
      * @param tppInfo Information about particular TPP from TPP Certificate
      * @return String representation of identifier of stored consent
      */
-    public String createConsent(CreateConsentReq request, PsuIdData psuData, TppInfo tppInfo) {
+    public Xs2aCreateAisConsentResponse createConsent(CreateConsentReq request, PsuIdData psuData, TppInfo tppInfo) {
         int allowedFrequencyPerDay = frequencyPerDateCalculationService.getMinFrequencyPerDay(request.getFrequencyPerDay());
         CreateAisConsentRequest createAisConsentRequest = aisConsentMapper.mapToCreateAisConsentRequest(request, psuData, tppInfo, allowedFrequencyPerDay);
-        Optional<String> consent = aisConsentService.createConsent(createAisConsentRequest);
-        return consent.orElseGet(() -> {
+        Optional<CreateAisConsentResponse> response = aisConsentService.createConsent(createAisConsentRequest);
+
+        if (!response.isPresent()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}]. Consent cannot be created, because can't save to cms DB",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId());
             return null;
-        });
+        }
+
+        AccountConsent accountConsent = aisConsentMapper.mapToAccountConsent(response.get().getAisAccountConsent());
+        return new Xs2aCreateAisConsentResponse(response.get().getConsentId(), accountConsent);
     }
 
     /**

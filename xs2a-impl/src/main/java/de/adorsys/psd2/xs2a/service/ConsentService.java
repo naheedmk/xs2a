@@ -23,6 +23,7 @@ import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
+import de.adorsys.psd2.xs2a.domain.account.Xs2aCreateAisConsentResponse;
 import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.*;
 import de.adorsys.psd2.xs2a.exception.MessageError;
@@ -124,29 +125,20 @@ public class ConsentService {
         }
 
         TppInfo tppInfo = tppService.getTppInfo();
-        String consentId = aisConsentService.createConsent(request, psuData, tppInfo);
+        Xs2aCreateAisConsentResponse response = aisConsentService.createConsent(request, psuData, tppInfo);
 
-        if (StringUtils.isBlank(consentId)) {
+        if (StringUtils.isBlank(response.getConsentId())) {
             return ResponseObject.<CreateConsentResponse>builder()
                        .fail(AIS_400, of(RESOURCE_UNKNOWN_400))
                        .build();
         }
 
-        Optional<AccountConsent> accountConsentOptional = aisConsentService.getInitialAccountConsentById(consentId);
-        // TODO we need to refactor this method and class. https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/749
-        if (!accountConsentOptional.isPresent()) {
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Consent-ID: [{}]. Create account consent  with response failed: Actual consent not found by id",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), consentId);
-            return ResponseObject.<CreateConsentResponse>builder()
-                       .fail(AIS_400, of(CONSENT_UNKNOWN_400))
-                       .build();
-        }
-
         SpiContextData contextData = spiContextDataProvider.provide(psuData, tppInfo);
         InitialSpiAspspConsentDataProvider aspspConsentDataProvider = aspspConsentDataProviderFactory.getInitialAspspConsentDataProvider();
-        aspspConsentDataProvider.saveWith(consentId);
 
-        SpiResponse<SpiInitiateAisConsentResponse> initiateAisConsentSpiResponse = aisConsentSpi.initiateAisConsent(contextData, aisConsentMapper.mapToSpiAccountConsent(accountConsentOptional.get()), aspspConsentDataProvider);
+        String consentId = response.getConsentId();
+        SpiResponse<SpiInitiateAisConsentResponse> initiateAisConsentSpiResponse = aisConsentSpi.initiateAisConsent(contextData, aisConsentMapper.mapToSpiAccountConsent(response.getAccountConsent()), aspspConsentDataProvider);
+        aspspConsentDataProvider.saveWith(consentId);
 
         if (initiateAisConsentSpiResponse.hasError()) {
             aisConsentService.updateConsentStatus(consentId, ConsentStatus.REJECTED);

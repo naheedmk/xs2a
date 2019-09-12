@@ -24,6 +24,7 @@ import de.adorsys.psd2.consent.api.AspspDataService;
 import de.adorsys.psd2.consent.api.ais.AisConsentAuthorizationRequest;
 import de.adorsys.psd2.consent.api.ais.CreateAisConsentAuthorizationResponse;
 import de.adorsys.psd2.consent.api.ais.CreateAisConsentRequest;
+import de.adorsys.psd2.consent.api.ais.CreateAisConsentResponse;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
@@ -309,7 +310,7 @@ public class ConsentCreation_successfulIT {
         given(aisConsentAuthorisationServiceEncrypted.createAuthorizationWithResponse(any(String.class), any(AisConsentAuthorizationRequest.class)))
             .willReturn(Optional.of(buildCreateAisConsentAuthorizationResponse()));
         given(aisConsentServiceEncrypted.createConsent(any(CreateAisConsentRequest.class)))
-            .willReturn(Optional.of(ENCRYPT_CONSENT_ID));
+            .willReturn(Optional.of(new CreateAisConsentResponse(ENCRYPT_CONSENT_ID, AisConsentBuilder.buildAisAccountConsent(requestJsonPath, scaApproach, ENCRYPT_CONSENT_ID, mapper))));
 
         given(aisConsentServiceEncrypted.getInitialAisAccountConsentById(any(String.class)))
             .willReturn(Optional.of(AisConsentBuilder.buildAisAccountConsent(requestJsonPath, scaApproach, ENCRYPT_CONSENT_ID, mapper)));

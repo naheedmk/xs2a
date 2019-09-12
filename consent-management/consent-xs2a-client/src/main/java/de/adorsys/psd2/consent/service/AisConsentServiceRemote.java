@@ -44,9 +44,9 @@ public class AisConsentServiceRemote implements AisConsentServiceEncrypted {
     private final AisConsentRemoteUrls remoteAisConsentUrls;
 
     @Override
-    public Optional<String> createConsent(CreateAisConsentRequest request) {
+    public Optional<CreateAisConsentResponse> createConsent(CreateAisConsentRequest request) {
         CreateAisConsentResponse createAisConsentResponse = consentRestTemplate.postForEntity(remoteAisConsentUrls.createAisConsent(), request, CreateAisConsentResponse.class).getBody();
-        return Optional.ofNullable(createAisConsentResponse.getConsentId());
+        return Optional.ofNullable(createAisConsentResponse);
     }
 
     @Override

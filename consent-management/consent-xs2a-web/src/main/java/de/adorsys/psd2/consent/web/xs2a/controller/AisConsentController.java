@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2018 adorsys GmbH & Co KG
+ * Copyright 2018-2019 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class AisConsentController {
         @ApiResponse(code = 204, message = "No Content")})
     public ResponseEntity<CreateAisConsentResponse> createConsent(@RequestBody CreateAisConsentRequest request) {
         return aisConsentService.createConsent(request)
-                   .map(consentId -> new ResponseEntity<>(new CreateAisConsentResponse(consentId), HttpStatus.CREATED))
+                   .map(response -> new ResponseEntity<>(response, HttpStatus.CREATED))
                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
