@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.validator.ais.consent.dto;
+package de.adorsys.psd2.xs2a.service.validator;
 
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsentAuthorization;
-import de.adorsys.psd2.xs2a.service.validator.TppInfoProvider;
-import lombok.Value;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Component;
 
-@Value
-public class UpdateConsentPsuDataRequestObject implements TppInfoProvider {
-    @NotNull
-    private AccountConsent accountConsent;
-    @NotNull
-    private AccountConsentAuthorization authorisation;
-    @NotNull
-    private PsuIdData psuIdData;
+@Component
+public class PsuDataUpdateAuthorisationChecker {
 
-    @Override
-    public TppInfo getTppInfo() {
-        return accountConsent.getTppInfo();
+    public boolean canPsuUpdateAuthorisation(@NotNull PsuIdData psuIdDataRequest, @Nullable PsuIdData psuIdDataAuthorisation) {
+        boolean isPsuInAuthorisationPresent = psuIdDataAuthorisation != null && psuIdDataAuthorisation.isNotEmpty();
+
+        return isPsuInAuthorisationPresent
+                   ? psuIdDataRequest.isEmpty() || psuIdDataAuthorisation.contentEquals(psuIdDataRequest)
+                   : psuIdDataRequest.isNotEmpty();
     }
 }
