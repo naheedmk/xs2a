@@ -81,6 +81,24 @@ public class UrlBuilder {
                    .toUriString();
     }
 
+    public static String buildUpdatePsuDataForPaymentUrl(String paymentType, String paymentProduct, String encrPaymentId, String authorisationId) {
+        return UriComponentsBuilder.fromPath(UrlHolder.PIS_AUTHORISATION_LINK_URL)
+                   .buildAndExpand(paymentType, paymentProduct, encrPaymentId, authorisationId)
+                   .toUriString();
+    }
+
+    public static String buildUpdatePsuDataForPaymentCancellationUrl(String paymentType, String paymentProduct, String encrPaymentId, String authorisationId) {
+        return UriComponentsBuilder.fromPath(UrlHolder.PIS_CANCELLATION_AUTH_LINK_URL)
+                   .buildAndExpand(paymentType, paymentProduct, encrPaymentId, authorisationId)
+                   .toUriString();
+    }
+
+    public static String buildUpdatePsuDataForConsentUrl(String encrConsentId, String authorisationId) {
+        return UriComponentsBuilder.fromPath(UrlHolder.AIS_AUTHORISATION_URL)
+                   .buildAndExpand(encrConsentId, authorisationId)
+                   .toUriString();
+    }
+
     public static String buildPaymentUpdateAuthorisationUrl(String paymentType, String paymentProduct, String encrPaymentId, String authorisationId) {
         return UriComponentsBuilder.fromPath(UrlHolder.PIS_AUTHORISATION_LINK_URL)
                    .buildAndExpand(paymentType, paymentProduct, encrPaymentId, authorisationId)
