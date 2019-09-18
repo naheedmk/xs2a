@@ -26,7 +26,7 @@ import org.mapstruct.NullValueMappingStrategy;
 import javax.validation.constraints.NotNull;
 
 @Mapper(componentModel = "spring", imports = {Xs2aCountryCode.class},
-    nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+    nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL)
 public interface SpiToXs2aAddressMapper {
 
     @Mapping(target = "country", source = "address", qualifiedByName = "mapToXs2aCountryCode")
