@@ -83,6 +83,46 @@ public class PsuDataUpdateAuthorisationCheckerTest {
         assertFalse(canPsuUpdateAuthorisation);
     }
 
+    @Test
+    public void areBothPsusAbsent_PsuAuthorisationNull() {
+        //When
+        boolean areBothPsusAbsent = psuDataUpdateAuthorisationChecker.areBothPsusAbsent(buildPSU(null), null);
+        //Then
+        assertTrue(areBothPsusAbsent);
+    }
+
+    @Test
+    public void areBothPsusAbsent_PsuAuthorisationEmpty() {
+        //When
+        boolean areBothPsusAbsent = psuDataUpdateAuthorisationChecker.areBothPsusAbsent(buildPSU(null), buildPSU(null));
+        //Then
+        assertTrue(areBothPsusAbsent);
+    }
+
+    @Test
+    public void areBothPsusAbsent_PsuAuthorisationPresent() {
+        //When
+        boolean areBothPsusAbsent = psuDataUpdateAuthorisationChecker.areBothPsusAbsent(buildPSU(null), buildPSU(PSU_ID_1));
+        //Then
+        assertFalse(areBothPsusAbsent);
+    }
+
+    @Test
+    public void areBothPsusAbsent_PsuRequestPresent() {
+        //When
+        boolean areBothPsusAbsent = psuDataUpdateAuthorisationChecker.areBothPsusAbsent(buildPSU(PSU_ID_1), buildPSU(null));
+        //Then
+        assertFalse(areBothPsusAbsent);
+    }
+
+    @Test
+    public void areBothPsusAbsent_BothPsusPresent() {
+        //When
+        boolean areBothPsusAbsent = psuDataUpdateAuthorisationChecker.areBothPsusAbsent(buildPSU(PSU_ID_1), buildPSU(PSU_ID_2));
+        //Then
+        assertFalse(areBothPsusAbsent);
+    }
+
     private PsuIdData buildPSU(String id) {
         return new PsuIdData(id, null, null, null);
     }

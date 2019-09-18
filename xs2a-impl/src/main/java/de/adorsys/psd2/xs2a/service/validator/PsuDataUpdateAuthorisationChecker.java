@@ -25,10 +25,20 @@ import org.springframework.stereotype.Component;
 public class PsuDataUpdateAuthorisationChecker {
 
     public boolean canPsuUpdateAuthorisation(@NotNull PsuIdData psuIdDataRequest, @Nullable PsuIdData psuIdDataAuthorisation) {
-        boolean isPsuInAuthorisationPresent = psuIdDataAuthorisation != null && psuIdDataAuthorisation.isNotEmpty();
-
-        return isPsuInAuthorisationPresent
+        return isPsuPresent(psuIdDataAuthorisation)
                    ? psuIdDataRequest.isEmpty() || psuIdDataAuthorisation.contentEquals(psuIdDataRequest)
                    : psuIdDataRequest.isNotEmpty();
+    }
+
+    public boolean areBothPsusAbsent(@NotNull PsuIdData psuIdDataRequest, @Nullable PsuIdData psuIdDataAuthorisation) {
+        return isPsuAbsent(psuIdDataAuthorisation) && isPsuAbsent(psuIdDataRequest);
+    }
+
+    private boolean isPsuPresent(PsuIdData psu) {
+        return psu != null && psu.isNotEmpty();
+    }
+
+    private boolean isPsuAbsent(PsuIdData psu) {
+        return !isPsuPresent(psu);
     }
 }

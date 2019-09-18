@@ -56,7 +56,7 @@ public class PaymentCancellationUpdateAuthorisationIT extends PaymentUpdateAutho
 
     @Test
     public void updatePaymentPsuData_failed_no_psu_authorisation_no_psu_request() throws Exception {
-        updatePaymentPsuData_checkForPsuCredentialsInvalidResponse(null, null);
+        updatePaymentPsuData_checkForFormatErrorResponse(null, null);
     }
 
     @Override

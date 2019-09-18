@@ -40,6 +40,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +51,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 public abstract class PaymentUpdateAuthorisationBase {
-    private static final Charset UTF_8 = Charset.forName("utf-8");
+    private static final Charset UTF_8 = StandardCharsets.UTF_8;
     protected static final String SEPA_PAYMENT_PRODUCT = "sepa-credit-transfers";
     protected static final PaymentType SINGLE_PAYMENT_TYPE = PaymentType.SINGLE;
     protected static final String PAYMENT_ID = "DfLtDOgo1tTK6WQlHlb-TMPL2pkxRlhZ4feMa5F4tOWwNN45XLNAVfWwoZUKlQwb_=_bS6p6XvTWI";
@@ -60,6 +61,7 @@ public abstract class PaymentUpdateAuthorisationBase {
     protected static final String AUTHORISATION_ID = "e8356ea7-8e3e-474f-b5ea-2b89346cb2dc";
     private static final String AUTH_REQ = "/json/payment/req/auth_request.json";
     private static final String PSU_CREDENTIALS_INVALID_RESP = "/json/payment/res/explicit/psu_credentials_invalid_response.json";
+    private static final String FORMAT_ERROR_RESP = "/json/payment/res/explicit/format_error_response.json";
 
     @Autowired protected MockMvc mockMvc;
 
@@ -76,6 +78,26 @@ public abstract class PaymentUpdateAuthorisationBase {
     }
 
     protected void updatePaymentPsuData_checkForPsuCredentialsInvalidResponse(String psuIdAuthorisation, String psuIdHeader) throws Exception {
+        //When
+        ResultActions resultActions = updatePaymentPsuDataAndGetResultActions(psuIdAuthorisation, psuIdHeader);
+
+        //Then
+        resultActions
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(content().json(IOUtils.resourceToString(PSU_CREDENTIALS_INVALID_RESP, UTF_8)));
+    }
+
+    protected void updatePaymentPsuData_checkForFormatErrorResponse(String psuIdAuthorisation, String psuIdHeader) throws Exception {
+        //When
+        ResultActions resultActions = updatePaymentPsuDataAndGetResultActions(psuIdAuthorisation, psuIdHeader);
+
+        //Then
+        resultActions
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(content().json(IOUtils.resourceToString(FORMAT_ERROR_RESP, UTF_8)));
+    }
+
+    private ResultActions updatePaymentPsuDataAndGetResultActions(String psuIdAuthorisation, String psuIdHeader) throws Exception {
         //Given
         String request = IOUtils.resourceToString(AUTH_REQ, UTF_8);
         PsuIdData psuIdDataAuthorisation = buildPsuIdDataAuthorisation(psuIdAuthorisation);
@@ -90,13 +112,7 @@ public abstract class PaymentUpdateAuthorisationBase {
         requestBuilder.headers(httpHeaders);
         requestBuilder.content(request);
 
-        //When
-        ResultActions resultActions = mockMvc.perform(requestBuilder);
-
-        //Then
-        resultActions
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(content().json(IOUtils.resourceToString(PSU_CREDENTIALS_INVALID_RESP, UTF_8)));
+        return mockMvc.perform(requestBuilder);
     }
 
     abstract String buildRequestUrl();

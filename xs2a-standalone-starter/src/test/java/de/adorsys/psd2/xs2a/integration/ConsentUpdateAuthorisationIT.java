@@ -50,6 +50,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -71,7 +72,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         Xs2aInterfaceConfig.class
     })
 public class ConsentUpdateAuthorisationIT {
-    private static final Charset UTF_8 = Charset.forName("utf-8");
+    private static final Charset UTF_8 = StandardCharsets.UTF_8;
     private static final String CONSENT_ID = "DfLtDOgo1tTK6WQlHlb-TMPL2pkxRlhZ4feMa5F4tOWwNN45XLNAVfWwoZUKlQwb_=_bS6p6XvTWI";
     private static final TppInfo TPP_INFO = TppInfoBuilder.buildTppInfo();
     private static final String PSU_ID_1 = "PSU-1";
@@ -79,6 +80,7 @@ public class ConsentUpdateAuthorisationIT {
     private static final String AUTHORISATION_ID = "e8356ea7-8e3e-474f-b5ea-2b89346cb2dc";
     private static final String AUTH_REQ = "/json/payment/req/auth_request.json";
     private static final String PSU_CREDENTIALS_INVALID_RESP = "/json/payment/res/explicit/psu_credentials_invalid_response.json";
+    private static final String FORMAT_ERROR_RESP = "/json/payment/res/explicit/format_error_response.json";
     private static final String CONSENT_PATH = "/json/consent/req/AisAccountConsent.json";
 
     @Autowired private MockMvc mockMvc;
@@ -99,16 +101,28 @@ public class ConsentUpdateAuthorisationIT {
     }
 
     @Test
-    public void updatePaymentPsuData_failed_psu_authorisation_psu_request_are_different() throws Exception {
-        updatePaymentPsuData_checkForPsuCredentialsInvalidResponse(PSU_ID_1, PSU_ID_2);
+    public void updateConsentPsuData_failed_psu_authorisation_psu_request_are_different() throws Exception {
+        //When
+        ResultActions resultActions = updateConsentPsuDataAndGetResultActions(PSU_ID_1, PSU_ID_2);
+
+        //Then
+        resultActions
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(content().json(IOUtils.resourceToString(PSU_CREDENTIALS_INVALID_RESP, UTF_8)));
     }
 
     @Test
-    public void updatePaymentPsuData_failed_no_psu_authorisation_no_psu_request() throws Exception {
-        updatePaymentPsuData_checkForPsuCredentialsInvalidResponse(null, null);
+    public void updateConsentPsuData_failed_no_psu_authorisation_no_psu_request() throws Exception {
+        //When
+        ResultActions resultActions = updateConsentPsuDataAndGetResultActions(null, null);
+
+        //Then
+        resultActions
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(content().json(IOUtils.resourceToString(FORMAT_ERROR_RESP, UTF_8)));
     }
 
-    private void updatePaymentPsuData_checkForPsuCredentialsInvalidResponse(String psuIdAuthorisation, String psuIdHeader) throws Exception {
+    private ResultActions updateConsentPsuDataAndGetResultActions(String psuIdAuthorisation, String psuIdHeader) throws Exception {
         //Given
         String request = IOUtils.resourceToString(AUTH_REQ, UTF_8);
         ScaApproach scaApproach = ScaApproach.EMBEDDED;
@@ -129,13 +143,7 @@ public class ConsentUpdateAuthorisationIT {
         requestBuilder.headers(httpHeaders);
         requestBuilder.content(request);
 
-        //When
-        ResultActions resultActions = mockMvc.perform(requestBuilder);
-
-        //Then
-        resultActions
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(content().json(IOUtils.resourceToString(PSU_CREDENTIALS_INVALID_RESP, UTF_8)));
+        return mockMvc.perform(requestBuilder);
     }
 
     private HttpHeadersIT buildHttpHeaders(String psuIdHeader) {
