@@ -42,7 +42,9 @@ public class UpdatePisCancellationPsuDataAspect extends AbstractLinkAspect<Payme
     public ResponseObject<Xs2aUpdatePisCommonPaymentPsuDataResponse> updatePisCancellationAuthorizationAspect(ResponseObject<Xs2aUpdatePisCommonPaymentPsuDataResponse> result, Xs2aUpdatePisCommonPaymentPsuDataRequest request) {
         if (!result.hasError()) {
             Xs2aUpdatePisCommonPaymentPsuDataResponse body = result.getBody();
-            body.setLinks(new UpdatePisCancellationPsuDataLinks(getHttpUrl(), scaApproachResolver, request,
+            boolean isForceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
+            String httpUrl = getHttpUrl(isForceXs2aBaseLinksUrl);
+            body.setLinks(new UpdatePisCancellationPsuDataLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), scaApproachResolver, request,
                                                                 body.getScaStatus(), body.getChosenScaMethod()));
             return result;
         }

@@ -27,10 +27,10 @@ import static de.adorsys.psd2.xs2a.core.profile.ScaApproach.EMBEDDED;
 
 public class UpdatePisAuthorisationLinks extends AbstractLinks {
 
-    public UpdatePisAuthorisationLinks(String httpUrl, ScaApproachResolver scaApproachResolver,
+    public UpdatePisAuthorisationLinks(String httpUrl, boolean relativeLinks, ScaApproachResolver scaApproachResolver,
                                        Xs2aUpdatePisCommonPaymentPsuDataResponse response,
                                        Xs2aCreatePisAuthorisationRequest createRequest) {
-        super(httpUrl);
+        super(httpUrl, relativeLinks);
 
         ScaStatus scaStatus = response.getScaStatus();
 

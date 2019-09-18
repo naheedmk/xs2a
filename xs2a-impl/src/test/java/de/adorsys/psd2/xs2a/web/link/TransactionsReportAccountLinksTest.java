@@ -38,7 +38,7 @@ public class TransactionsReportAccountLinksTest {
     public void success_noBalance() {
         boolean withOutBalance = false;
 
-        TransactionsReportAccountLinks links = new TransactionsReportAccountLinks(HTTP_URL, ACCOUNT_ID, withOutBalance);
+        TransactionsReportAccountLinks links = new TransactionsReportAccountLinks(HTTP_URL, false, ACCOUNT_ID, withOutBalance);
 
         expectedLinks.setAccount(new HrefType("http://url/v1/accounts/33333-999999999"));
         assertEquals(expectedLinks, links);
@@ -48,7 +48,7 @@ public class TransactionsReportAccountLinksTest {
     public void success_with_balance() {
         boolean withBalance = true;
 
-        TransactionsReportAccountLinks links = new TransactionsReportAccountLinks(HTTP_URL, ACCOUNT_ID, withBalance);
+        TransactionsReportAccountLinks links = new TransactionsReportAccountLinks(HTTP_URL, false, ACCOUNT_ID, withBalance);
 
         expectedLinks.setAccount(new HrefType("http://url/v1/accounts/33333-999999999"));
         expectedLinks.setBalances(new HrefType("http://url/v1/accounts/33333-999999999/balances"));

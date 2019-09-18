@@ -34,11 +34,11 @@ public class PisAuthorisationCancellationLinks extends AbstractLinks {
     private ScaRedirectFlow scaRedirectFlow;
     private RedirectIdService redirectIdService;
 
-    public PisAuthorisationCancellationLinks(String httpUrl, ScaApproachResolver scaApproachResolver, RedirectLinkBuilder redirectLinkBuilder,
-                                             RedirectIdService redirectIdService,
+    public PisAuthorisationCancellationLinks(String httpUrl, boolean relativeLinks, ScaApproachResolver scaApproachResolver,
+                                             RedirectLinkBuilder redirectLinkBuilder, RedirectIdService redirectIdService,
                                              String paymentService, String paymentProduct, String paymentId,
                                              String authorisationId, ScaRedirectFlow scaRedirectFlow) {
-        super(httpUrl);
+        super(httpUrl, relativeLinks);
         this.redirectLinkBuilder = redirectLinkBuilder;
         this.scaRedirectFlow = scaRedirectFlow;
         this.redirectIdService = redirectIdService;

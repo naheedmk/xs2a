@@ -35,10 +35,10 @@ public class PaymentCancellationLinks extends AbstractLinks {
     private RedirectIdService redirectIdService;
     private boolean isExplicitMethod;
 
-    public PaymentCancellationLinks(String httpUrl, ScaApproachResolver scaApproachResolver, RedirectLinkBuilder redirectLinkBuilder,
+    public PaymentCancellationLinks(String httpUrl, boolean relativeLinks, ScaApproachResolver scaApproachResolver, RedirectLinkBuilder redirectLinkBuilder,
                                     RedirectIdService redirectIdService, CancelPaymentResponse response,
                                     boolean isExplicitMethod) {
-        super(httpUrl);
+        super(httpUrl, relativeLinks);
         this.scaApproachResolver = scaApproachResolver;
         this.redirectLinkBuilder = redirectLinkBuilder;
         this.redirectIdService = redirectIdService;

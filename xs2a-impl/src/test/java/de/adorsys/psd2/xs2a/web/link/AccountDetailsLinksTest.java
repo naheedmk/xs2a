@@ -44,7 +44,7 @@ public class AccountDetailsLinksTest {
 
     @Test
     public void create_success() {
-        AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, ACCOUNT_ID, xs2aAccountAccess);
+        AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, false,  ACCOUNT_ID, xs2aAccountAccess);
 
         expectedLinks.setBalances(new HrefType("http://url/v1/accounts/33333-999999999/balances"));
         expectedLinks.setTransactions(new HrefType("http://url/v1/accounts/33333-999999999/transactions"));
@@ -53,7 +53,7 @@ public class AccountDetailsLinksTest {
 
     @Test
     public void create_globalConsent_success() {
-        AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, ACCOUNT_ID, xs2aAccountAccessGlobal);
+        AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, false, ACCOUNT_ID, xs2aAccountAccessGlobal);
 
         expectedLinks.setBalances(new HrefType("http://url/v1/accounts/33333-999999999/balances"));
         expectedLinks.setTransactions(new HrefType("http://url/v1/accounts/33333-999999999/transactions"));
@@ -63,7 +63,7 @@ public class AccountDetailsLinksTest {
     @Test
     public void create_balancesDoNotMatchByAccountId() {
         xs2aAccountAccess.getBalances().get(0).setResourceId(WRONG_ACCOUNT_ID);
-        AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, ACCOUNT_ID, xs2aAccountAccess);
+        AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, false, ACCOUNT_ID, xs2aAccountAccess);
 
         expectedLinks.setTransactions(new HrefType("http://url/v1/accounts/33333-999999999/transactions"));
         assertEquals(expectedLinks, links);
@@ -72,7 +72,7 @@ public class AccountDetailsLinksTest {
     @Test
     public void create_transactionsDoNotMatchByAccountId() {
         xs2aAccountAccess.getTransactions().get(0).setResourceId(WRONG_ACCOUNT_ID);
-        AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, ACCOUNT_ID, xs2aAccountAccess);
+        AccountDetailsLinks links = new AccountDetailsLinks(HTTP_URL, false, ACCOUNT_ID, xs2aAccountAccess);
 
         expectedLinks.setBalances(new HrefType("http://url/v1/accounts/33333-999999999/balances"));
         assertEquals(expectedLinks, links);

@@ -62,7 +62,7 @@ public class PisAuthorisationCancellationLinksTest {
     public void scaApproachEmbeddedAndPsuDataIsEmpty() {
         when(scaApproachResolver.getCancellationScaApproach(eq(AUTHORISATION_ID))).thenReturn(ScaApproach.EMBEDDED);
 
-        links = new PisAuthorisationCancellationLinks(HTTP_URL, scaApproachResolver, redirectLinkBuilder, redirectIdService,
+        links = new PisAuthorisationCancellationLinks(HTTP_URL, false, scaApproachResolver, redirectLinkBuilder, redirectIdService,
                                                       PAYMENT_SERVICE, PAYMENT_PRODUCT, PAYMENT_ID, AUTHORISATION_ID,
                                                       null);
 
@@ -75,7 +75,7 @@ public class PisAuthorisationCancellationLinksTest {
     public void scaApproachEmbeddedAndPsuDataIsNotEmpty() {
         when(scaApproachResolver.getCancellationScaApproach(eq(AUTHORISATION_ID))).thenReturn(ScaApproach.EMBEDDED);
 
-        links = new PisAuthorisationCancellationLinks(HTTP_URL, scaApproachResolver, redirectLinkBuilder, redirectIdService,
+        links = new PisAuthorisationCancellationLinks(HTTP_URL, false, scaApproachResolver, redirectLinkBuilder, redirectIdService,
                                                       PAYMENT_SERVICE, PAYMENT_PRODUCT, PAYMENT_ID, AUTHORISATION_ID,
                                                       null);
 
@@ -88,7 +88,7 @@ public class PisAuthorisationCancellationLinksTest {
     public void scaApproachDecoupledAndPsuDataIsEmpty() {
         when(scaApproachResolver.getCancellationScaApproach(eq(AUTHORISATION_ID))).thenReturn(ScaApproach.DECOUPLED);
 
-        links = new PisAuthorisationCancellationLinks(HTTP_URL, scaApproachResolver, redirectLinkBuilder, redirectIdService,
+        links = new PisAuthorisationCancellationLinks(HTTP_URL, false, scaApproachResolver, redirectLinkBuilder, redirectIdService,
                                                       PAYMENT_SERVICE, PAYMENT_PRODUCT, PAYMENT_ID, AUTHORISATION_ID,
                                                       null);
 
@@ -101,7 +101,7 @@ public class PisAuthorisationCancellationLinksTest {
     public void scaApproachDecoupledAndPsuDataIsNotEmpty() {
         when(scaApproachResolver.getCancellationScaApproach(eq(AUTHORISATION_ID))).thenReturn(ScaApproach.DECOUPLED);
 
-        links = new PisAuthorisationCancellationLinks(HTTP_URL, scaApproachResolver, redirectLinkBuilder, redirectIdService,
+        links = new PisAuthorisationCancellationLinks(HTTP_URL, false, scaApproachResolver, redirectLinkBuilder, redirectIdService,
                                                       PAYMENT_SERVICE, PAYMENT_PRODUCT, PAYMENT_ID, AUTHORISATION_ID,
                                                       null);
 
@@ -116,7 +116,7 @@ public class PisAuthorisationCancellationLinksTest {
         when(redirectIdService.generateRedirectId(eq(AUTHORISATION_ID))).thenReturn(AUTHORISATION_ID);
         when(redirectLinkBuilder.buildPaymentCancellationScaRedirectLink(eq(PAYMENT_ID), eq(AUTHORISATION_ID))).thenReturn(REDIRECT_LINK);
 
-        links = new PisAuthorisationCancellationLinks(HTTP_URL, scaApproachResolver, redirectLinkBuilder, redirectIdService,
+        links = new PisAuthorisationCancellationLinks(HTTP_URL, false, scaApproachResolver, redirectLinkBuilder, redirectIdService,
                                                       PAYMENT_SERVICE, PAYMENT_PRODUCT, PAYMENT_ID, AUTHORISATION_ID,
                                                       ScaRedirectFlow.REDIRECT);
 
@@ -129,7 +129,7 @@ public class PisAuthorisationCancellationLinksTest {
     public void scaApproachOAuth() {
         when(scaApproachResolver.getCancellationScaApproach(eq(AUTHORISATION_ID))).thenReturn(ScaApproach.OAUTH);
 
-        links = new PisAuthorisationCancellationLinks(HTTP_URL, scaApproachResolver, redirectLinkBuilder, redirectIdService,
+        links = new PisAuthorisationCancellationLinks(HTTP_URL, false, scaApproachResolver, redirectLinkBuilder, redirectIdService,
                                                       PAYMENT_SERVICE, PAYMENT_PRODUCT, PAYMENT_ID, AUTHORISATION_ID,
                                                       null);
 

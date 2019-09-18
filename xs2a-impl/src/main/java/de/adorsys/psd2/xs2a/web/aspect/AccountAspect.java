@@ -47,7 +47,9 @@ public class AccountAspect extends AbstractLinkAspect<AccountController> {
         if (!result.hasError()) {
             Xs2aAccountDetailsHolder body = result.getBody();
             Xs2aAccountDetails accountDetails = body.getAccountDetails();
-            accountDetails.setLinks(new AccountDetailsLinks(getHttpUrl(), accountDetails.getResourceId(),
+            boolean isForceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
+            String httpUrl = getHttpUrl(isForceXs2aBaseLinksUrl);
+            accountDetails.setLinks(new AccountDetailsLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), accountDetails.getResourceId(),
                                                             body.getAccountConsent().getAccess()));
             return result;
         }
@@ -63,7 +65,9 @@ public class AccountAspect extends AbstractLinkAspect<AccountController> {
             if (body.getAccountConsent().getAisConsentRequestType() == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS) {
                 accountDetails.forEach(acc -> acc.setLinks(null));
             } else {
-                accountDetails.forEach(acc -> acc.setLinks(new AccountDetailsLinks(getHttpUrl(), acc.getResourceId(),
+                boolean isForceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
+                String httpUrl = getHttpUrl(isForceXs2aBaseLinksUrl);
+                accountDetails.forEach(acc -> acc.setLinks(new AccountDetailsLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), acc.getResourceId(),
                                                                                    xs2aAccountAccess)));
             }
             return result;

@@ -28,12 +28,12 @@ import java.util.EnumSet;
 
 public class CreateConsentLinks extends AbstractLinks {
 
-    public CreateConsentLinks(String httpUrl, ScaApproachResolver scaApproachResolver,
+    public CreateConsentLinks(String httpUrl, boolean relativeLinks,ScaApproachResolver scaApproachResolver,
                               CreateConsentResponse response, RedirectLinkBuilder redirectLinkBuilder,
                               RedirectIdService redirectIdService,
                               boolean explicitMethod, boolean signingBasketModeActive,
                               ScaRedirectFlow scaRedirectFlow) {
-        super(httpUrl);
+        super(httpUrl, relativeLinks);
 
         String consentId = response.getConsentId();
         String authorisationId = response.getAuthorizationId();

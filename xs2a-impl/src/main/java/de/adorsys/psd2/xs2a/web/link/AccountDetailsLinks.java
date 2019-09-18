@@ -25,8 +25,8 @@ import java.util.List;
 
 public class AccountDetailsLinks extends AbstractLinks {
 
-    public AccountDetailsLinks(String httpUrl, String accountId, Xs2aAccountAccess xs2aAccountAccess) {
-        super(httpUrl);
+    public AccountDetailsLinks(String httpUrl, boolean relativeLinks, String accountId, Xs2aAccountAccess xs2aAccountAccess) {
+        super(httpUrl, relativeLinks);
 
         boolean isConsentGlobal = xs2aAccountAccess.getAllPsd2() != null;
         if (isValidAccountByAccess(accountId, xs2aAccountAccess.getBalances(), isConsentGlobal)) {

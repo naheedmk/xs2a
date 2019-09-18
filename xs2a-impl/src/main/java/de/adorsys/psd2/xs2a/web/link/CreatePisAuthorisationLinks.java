@@ -30,10 +30,10 @@ import static de.adorsys.psd2.xs2a.core.profile.ScaApproach.*;
 
 public class CreatePisAuthorisationLinks extends AbstractLinks {
 
-    public CreatePisAuthorisationLinks(String httpUrl, ScaApproachResolver scaApproachResolver, RedirectLinkBuilder redirectLinkBuilder,
-                                       RedirectIdService redirectIdService,
+    public CreatePisAuthorisationLinks(String httpUrl, boolean relativeLinks, ScaApproachResolver scaApproachResolver,
+                                       RedirectLinkBuilder redirectLinkBuilder, RedirectIdService redirectIdService,
                                        Xs2aCreatePisAuthorisationRequest createRequest, String authorisationId, ScaRedirectFlow scaRedirectFlow) {
-        super(httpUrl);
+        super(httpUrl, relativeLinks);
 
         String paymentId = createRequest.getPaymentId();
         String paymentService = createRequest.getPaymentService();

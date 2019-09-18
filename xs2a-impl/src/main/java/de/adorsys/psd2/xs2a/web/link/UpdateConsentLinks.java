@@ -25,8 +25,8 @@ import de.adorsys.psd2.xs2a.web.aspect.UrlHolder;
 
 public class UpdateConsentLinks extends AbstractLinks {
 
-    public UpdateConsentLinks(String httpUrl, ScaApproachResolver scaApproachResolver, UpdateConsentPsuDataResponse response) {
-        super(httpUrl);
+    public UpdateConsentLinks(String httpUrl, boolean relativeLinks, ScaApproachResolver scaApproachResolver, UpdateConsentPsuDataResponse response) {
+        super(httpUrl, relativeLinks);
 
         String consentId = response.getConsentId();
         String authorisationId = response.getAuthorisationId();

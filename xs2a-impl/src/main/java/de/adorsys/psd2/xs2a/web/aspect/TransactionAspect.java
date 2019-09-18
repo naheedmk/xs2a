@@ -45,11 +45,13 @@ public class TransactionAspect extends AbstractLinkAspect<AccountController> {
     public ResponseObject<Xs2aTransactionsReport> getTransactionsReportByPeriod(ResponseObject<Xs2aTransactionsReport> result, Xs2aTransactionsReportByPeriodRequest request) {
         if (!result.hasError()) {
             Xs2aTransactionsReport transactionsReport = result.getBody();
-            transactionsReport.setLinks(new TransactionsReportDownloadLinks(getHttpUrl(), request.getAccountId(), request.isWithBalance(), transactionsReport.getDownloadId()));
+            boolean isForceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
+            String httpUrl = getHttpUrl(isForceXs2aBaseLinksUrl);
+            transactionsReport.setLinks(new TransactionsReportDownloadLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), request.getAccountId(), request.isWithBalance(), transactionsReport.getDownloadId()));
             Xs2aAccountReport accountReport = transactionsReport.getAccountReport();
 
             if (transactionsReport.getAccountReport() != null) {
-                accountReport.setLinks(new TransactionsReportAccountLinks(getHttpUrl(), request.getAccountId(), request.isWithBalance()));
+                accountReport.setLinks(new TransactionsReportAccountLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), request.getAccountId(), request.isWithBalance()));
             }
 
             return result;

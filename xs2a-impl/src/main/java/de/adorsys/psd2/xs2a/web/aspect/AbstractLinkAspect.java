@@ -39,7 +39,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RequiredArgsConstructor
 public abstract class AbstractLinkAspect<T> {
     private final MessageService messageService;
-    private final AspspProfileServiceWrapper aspspProfileServiceWrapper;
+    protected final AspspProfileServiceWrapper aspspProfileServiceWrapper;
 
     protected <B> boolean hasError(ResponseEntity<B> target) {
         Optional<B> body = Optional.ofNullable(target.getBody());
@@ -63,10 +63,14 @@ public abstract class AbstractLinkAspect<T> {
                    .build();
     }
 
-    String getHttpUrl() {
-        return aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl()
+    String getHttpUrl(boolean isForceXs2aBaseLinksUrl) {
+        return isForceXs2aBaseLinksUrl
                    ? aspspProfileServiceWrapper.getXs2aBaseLinksUrl()
                    : linkTo(getControllerClass()).toString();
+    }
+
+    boolean isRelativeLinks(boolean isForceXs2aBaseLinksUrl, String httpUrl) {
+        return isForceXs2aBaseLinksUrl && StringUtils.startsWith(httpUrl, "/");
     }
 
     @SuppressWarnings("unchecked")

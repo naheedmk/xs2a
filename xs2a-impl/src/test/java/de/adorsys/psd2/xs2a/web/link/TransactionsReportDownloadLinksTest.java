@@ -39,7 +39,7 @@ public class TransactionsReportDownloadLinksTest {
     public void success_noBalance() {
         boolean withBalance = false;
 
-        TransactionsReportDownloadLinks links = new TransactionsReportDownloadLinks(HTTP_URL, ACCOUNT_ID, withBalance, "encoded-string");
+        TransactionsReportDownloadLinks links = new TransactionsReportDownloadLinks(HTTP_URL, false, ACCOUNT_ID, withBalance, "encoded-string");
 
         assertEquals(expectedLinks, links);
     }
@@ -48,7 +48,7 @@ public class TransactionsReportDownloadLinksTest {
     public void success_with_balance() {
         boolean withBalance = true;
 
-        TransactionsReportDownloadLinks links = new TransactionsReportDownloadLinks(HTTP_URL, ACCOUNT_ID, withBalance, "encoded-string");
+        TransactionsReportDownloadLinks links = new TransactionsReportDownloadLinks(HTTP_URL, false, ACCOUNT_ID, withBalance, "encoded-string");
 
         expectedLinks.setBalances(new HrefType("http://url/v1/accounts/33333-999999999/balances"));
         assertEquals(expectedLinks, links);

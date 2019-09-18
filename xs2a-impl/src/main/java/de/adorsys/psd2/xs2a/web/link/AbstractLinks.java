@@ -23,17 +23,20 @@ import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
+import static org.springframework.web.util.UriComponentsBuilder.fromPath;
 
 class AbstractLinks extends Links {
 
     private String httpUrl;
+    private boolean relativeLinks;
 
-    AbstractLinks(String httpUrl) {
+    AbstractLinks(String httpUrl, boolean relativeLinks) {
         this.httpUrl = httpUrl;
+        this.relativeLinks = relativeLinks;
     }
 
     HrefType buildPath(String path, Object... params) {
-        UriComponentsBuilder uriComponentsBuilder = fromHttpUrl(httpUrl);
+        UriComponentsBuilder uriComponentsBuilder = relativeLinks ? fromPath(httpUrl) : fromHttpUrl(httpUrl);
         return new HrefType(uriComponentsBuilder
                                 .path(path)
                                 .buildAndExpand(params)

@@ -39,12 +39,12 @@ public class PaymentInitiationLinks extends AbstractLinks {
     private boolean explicitMethod;
     private ScaRedirectFlow scaRedirectFlow;
 
-    public PaymentInitiationLinks(String httpUrl, ScaApproachResolver scaApproachResolver, RedirectLinkBuilder redirectLinkBuilder,
+    public PaymentInitiationLinks(String httpUrl, boolean relativeLinks, ScaApproachResolver scaApproachResolver, RedirectLinkBuilder redirectLinkBuilder,
                                   RedirectIdService redirectIdService,
                                   PaymentInitiationParameters paymentRequestParameters, PaymentInitiationResponse body,
                                   boolean explicitMethod, boolean signingBasketModeActive,
                                   ScaRedirectFlow scaRedirectFlow) {
-        super(httpUrl);
+        super(httpUrl, relativeLinks);
         this.scaApproachResolver = scaApproachResolver;
         this.redirectLinkBuilder = redirectLinkBuilder;
         this.redirectIdService = redirectIdService;

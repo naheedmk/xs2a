@@ -27,10 +27,10 @@ import static de.adorsys.psd2.xs2a.core.profile.ScaApproach.REDIRECT;
 
 public class CreateAisAuthorisationLinks extends AbstractLinks {
 
-    public CreateAisAuthorisationLinks(String httpUrl, CreateConsentAuthorizationResponse response,
+    public CreateAisAuthorisationLinks(String httpUrl, boolean relativeLinks, CreateConsentAuthorizationResponse response,
                                        ScaApproachResolver scaApproachResolver, RedirectLinkBuilder redirectLinkBuilder,
                                        RedirectIdService redirectIdService) {
-        super(httpUrl);
+        super(httpUrl, relativeLinks);
 
         String consentId = response.getConsentId();
         String authorisationId = response.getAuthorisationId();

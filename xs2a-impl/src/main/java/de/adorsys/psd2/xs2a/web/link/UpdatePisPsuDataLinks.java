@@ -28,10 +28,10 @@ public class UpdatePisPsuDataLinks extends AbstractLinks {
 
     private ScaApproachResolver scaApproachResolver;
 
-    public UpdatePisPsuDataLinks(String httpUrl, ScaApproachResolver scaApproachResolver,
+    public UpdatePisPsuDataLinks(String httpUrl, boolean relativeLinks, ScaApproachResolver scaApproachResolver,
                                  Xs2aUpdatePisCommonPaymentPsuDataRequest request, ScaStatus scaStatus,
                                  Xs2aAuthenticationObject chosenScaMethod) {
-        super(httpUrl);
+        super(httpUrl, relativeLinks);
         this.scaApproachResolver = scaApproachResolver;
 
         HrefType authorisationLink = buildAuthorisationLink(request);
