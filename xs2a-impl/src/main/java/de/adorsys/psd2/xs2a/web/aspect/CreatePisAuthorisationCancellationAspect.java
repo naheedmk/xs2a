@@ -62,12 +62,12 @@ public class CreatePisAuthorisationCancellationAspect extends AbstractLinkAspect
 
         CancellationAuthorisationResponse body = result.getBody();
         AuthorisationResponseType authorisationResponseType = body.getAuthorisationResponseType();
-        boolean isForceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
-        String httpUrl = getHttpUrl(isForceXs2aBaseLinksUrl);
+        readProfileBaseLinksUrlData();
+        String httpUrl = getHttpUrl();
 
         if (authorisationResponseType == AuthorisationResponseType.START) {
             Xs2aCreatePisCancellationAuthorisationResponse response = (Xs2aCreatePisCancellationAuthorisationResponse) result.getBody();
-            response.setLinks(new PisAuthorisationCancellationLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), scaApproachResolver, redirectLinkBuilder,
+            response.setLinks(new PisAuthorisationCancellationLinks(httpUrl, isRelativeLinks(httpUrl), scaApproachResolver, redirectLinkBuilder,
                                                                     redirectIdService,
                                                                     request.getPaymentService(), request.getPaymentProduct(), request.getPaymentId(), body.getCancellationId(), getScaRedirectFlow()));
         } else if (authorisationResponseType == AuthorisationResponseType.UPDATE) {
@@ -78,7 +78,7 @@ public class CreatePisAuthorisationCancellationAspect extends AbstractLinkAspect
                                                                                                                    request.getPaymentProduct(),
                                                                                                                    request.getPaymentService(),
                                                                                                                    request.getPassword());
-            response.setLinks(new UpdatePisCancellationPsuDataLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), scaApproachResolver, updateRequest,
+            response.setLinks(new UpdatePisCancellationPsuDataLinks(httpUrl, isRelativeLinks(httpUrl), scaApproachResolver, updateRequest,
                                                                     body.getScaStatus(), response.getChosenScaMethod()));
         } else {
             throw new IllegalArgumentException("Unknown authorisation response type: " + authorisationResponseType);

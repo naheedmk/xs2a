@@ -67,10 +67,10 @@ public class ConsentAspect extends AbstractLinkAspect<ConsentController> {
             CreateConsentResponse body = result.getBody();
             boolean explicitMethod = authorisationMethodDecider.isExplicitMethod(explicitPreferred, body.isMultilevelScaRequired());
             boolean signingBasketModeActive = authorisationMethodDecider.isSigningBasketModeActive(explicitPreferred);
-            boolean isForceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
-            String httpUrl = getHttpUrl(isForceXs2aBaseLinksUrl);
+            readProfileBaseLinksUrlData();
+            String httpUrl = getHttpUrl();
 
-            body.setLinks(new CreateConsentLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), scaApproachResolver, body, redirectLinkBuilder,
+            body.setLinks(new CreateConsentLinks(httpUrl, isRelativeLinks(httpUrl), scaApproachResolver, body, redirectLinkBuilder,
                                                  redirectIdService,
                                                  explicitMethod, signingBasketModeActive,
                                                  getScaRedirectFlow()));
@@ -87,9 +87,9 @@ public class ConsentAspect extends AbstractLinkAspect<ConsentController> {
                 body.setLinks(buildLinksForUpdateConsentResponse(body));
             } else if (result.getBody() instanceof CreateConsentAuthorizationResponse) {
                 CreateConsentAuthorizationResponse body = (CreateConsentAuthorizationResponse) result.getBody();
-                boolean isForceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
-                String httpUrl = getHttpUrl(isForceXs2aBaseLinksUrl);
-                body.setLinks(new CreateAisAuthorisationLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), body, scaApproachResolver, redirectLinkBuilder, redirectIdService));
+                readProfileBaseLinksUrlData();
+                String httpUrl = getHttpUrl();
+                body.setLinks(new CreateAisAuthorisationLinks(httpUrl, isRelativeLinks(httpUrl), body, scaApproachResolver, redirectLinkBuilder, redirectIdService));
             }
             return result;
         }
@@ -107,10 +107,10 @@ public class ConsentAspect extends AbstractLinkAspect<ConsentController> {
     }
 
     private Links buildLinksForUpdateConsentResponse(UpdateConsentPsuDataResponse response) {
-        boolean isForceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
-        String httpUrl = getHttpUrl(isForceXs2aBaseLinksUrl);
+        readProfileBaseLinksUrlData();
+        String httpUrl = getHttpUrl();
         return Optional.ofNullable(response.getScaStatus())
-                   .map(status -> new UpdateConsentLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), scaApproachResolver, response))
+                   .map(status -> new UpdateConsentLinks(httpUrl, isRelativeLinks(httpUrl), scaApproachResolver, response))
                    .orElse(null);
     }
 }

@@ -56,10 +56,10 @@ public class PaymentInitiationAspect extends AbstractLinkAspect<PaymentControlle
             boolean explicitPreferred = requestParameters.isTppExplicitAuthorisationPreferred();
             boolean explicitMethod = authorisationMethodDecider.isExplicitMethod(explicitPreferred, body.isMultilevelScaRequired());
             boolean signingBasketModeActive = authorisationMethodDecider.isSigningBasketModeActive(explicitPreferred);
-            boolean isForceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
-            String httpUrl = getHttpUrl(isForceXs2aBaseLinksUrl);
+            readProfileBaseLinksUrlData();
+            String httpUrl = getHttpUrl();
 
-            body.setLinks(new PaymentInitiationLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), scaApproachResolver, redirectLinkBuilder,
+            body.setLinks(new PaymentInitiationLinks(httpUrl, isRelativeLinks(httpUrl), scaApproachResolver, redirectLinkBuilder,
                                                      redirectIdService,
                                                      requestParameters, body, explicitMethod, signingBasketModeActive, getScaRedirectFlow()));
             return result;

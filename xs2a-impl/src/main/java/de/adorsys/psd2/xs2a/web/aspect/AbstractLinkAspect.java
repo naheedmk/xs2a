@@ -39,7 +39,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 @RequiredArgsConstructor
 public abstract class AbstractLinkAspect<T> {
     private final MessageService messageService;
-    protected final AspspProfileServiceWrapper aspspProfileServiceWrapper;
+    private final AspspProfileServiceWrapper aspspProfileServiceWrapper;
+    private boolean forceXs2aBaseLinksUrl;
+    private String xs2aBaseLinksUrl;
 
     protected <B> boolean hasError(ResponseEntity<B> target) {
         Optional<B> body = Optional.ofNullable(target.getBody());
@@ -63,14 +65,19 @@ public abstract class AbstractLinkAspect<T> {
                    .build();
     }
 
-    String getHttpUrl(boolean isForceXs2aBaseLinksUrl) {
-        return isForceXs2aBaseLinksUrl
-                   ? aspspProfileServiceWrapper.getXs2aBaseLinksUrl()
+    void readProfileBaseLinksUrlData() {
+        forceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
+        xs2aBaseLinksUrl = aspspProfileServiceWrapper.getXs2aBaseLinksUrl();
+    }
+
+    String getHttpUrl() {
+        return forceXs2aBaseLinksUrl
+                   ? xs2aBaseLinksUrl
                    : linkTo(getControllerClass()).toString();
     }
 
-    boolean isRelativeLinks(boolean isForceXs2aBaseLinksUrl, String httpUrl) {
-        return isForceXs2aBaseLinksUrl && StringUtils.startsWith(httpUrl, "/");
+    boolean isRelativeLinks(String httpUrl) {
+        return forceXs2aBaseLinksUrl && StringUtils.startsWith(httpUrl, "/");
     }
 
     @SuppressWarnings("unchecked")

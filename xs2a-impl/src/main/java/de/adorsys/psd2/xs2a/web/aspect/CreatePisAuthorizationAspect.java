@@ -54,15 +54,15 @@ public class CreatePisAuthorizationAspect extends AbstractLinkAspect<PaymentCont
     @AfterReturning(pointcut = "execution(* de.adorsys.psd2.xs2a.service.PaymentAuthorisationService.createPisAuthorisation(..)) && args(createRequest)", returning = "result", argNames = "result,createRequest")
     public ResponseObject<AuthorisationResponse> createPisAuthorizationAspect(ResponseObject<AuthorisationResponse> result, Xs2aCreatePisAuthorisationRequest createRequest) {
         if (!result.hasError()) {
-            boolean isForceXs2aBaseLinksUrl = aspspProfileServiceWrapper.isForceXs2aBaseLinksUrl();
-            String httpUrl = getHttpUrl(isForceXs2aBaseLinksUrl);
+            readProfileBaseLinksUrlData();
+            String httpUrl = getHttpUrl();
             if (result.getBody() instanceof Xs2aCreatePisAuthorisationResponse) {
                 Xs2aCreatePisAuthorisationResponse response = (Xs2aCreatePisAuthorisationResponse) result.getBody();
 
-                response.setLinks(new CreatePisAuthorisationLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), scaApproachResolver, redirectLinkBuilder, redirectIdService, createRequest, response.getAuthorisationId(), getScaRedirectFlow()));
+                response.setLinks(new CreatePisAuthorisationLinks(httpUrl, isRelativeLinks(httpUrl), scaApproachResolver, redirectLinkBuilder, redirectIdService, createRequest, response.getAuthorisationId(), getScaRedirectFlow()));
             } else if (result.getBody() instanceof Xs2aUpdatePisCommonPaymentPsuDataResponse) {
                 Xs2aUpdatePisCommonPaymentPsuDataResponse response = (Xs2aUpdatePisCommonPaymentPsuDataResponse) result.getBody();
-                response.setLinks(new UpdatePisAuthorisationLinks(httpUrl, isRelativeLinks(isForceXs2aBaseLinksUrl, httpUrl), scaApproachResolver, response, createRequest));
+                response.setLinks(new UpdatePisAuthorisationLinks(httpUrl, isRelativeLinks(httpUrl), scaApproachResolver, response, createRequest));
             }
 
             return result;
