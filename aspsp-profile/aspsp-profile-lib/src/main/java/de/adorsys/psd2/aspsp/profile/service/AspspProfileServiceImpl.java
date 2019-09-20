@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2018 adorsys GmbH & Co KG
+ * Copyright 2018-2019 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,10 @@ public class AspspProfileServiceImpl implements AspspProfileService {
                                                                                 setting.getAis().getTransactionParameters().getSupportedTransactionApplicationType());
         DeltaReportSetting deltaReportSettings = new DeltaReportSetting(setting.getAis().getDeltaReportSettings().isEntryReferenceFromSupported(),
                                                                         setting.getAis().getDeltaReportSettings().isDeltaListSupported());
-        OneTimeConsentScaSetting scaRequirementsForOneTimeConsents = new OneTimeConsentScaSetting(setting.getAis().getScaRequirementsForOneTimeConsents().isScaByOneTimeAvailableAccountsConsentRequired());
+
+        OneTimeConsentScaBankSetting scaRequirementsForOneTimeConsentsBankSetting = setting.getAis().getScaRequirementsForOneTimeConsents();
+        OneTimeConsentScaSetting scaRequirementsForOneTimeConsents = new OneTimeConsentScaSetting(scaRequirementsForOneTimeConsentsBankSetting.isScaByOneTimeAvailableAccountsConsentRequired(), scaRequirementsForOneTimeConsentsBankSetting.isScaByOneTimeGlobalConsentRequired());
+
         AisAspspProfileSetting ais = new AisAspspProfileSetting(consentTypes, aisRedirectLinkToOnlineBanking, transactionParameters, deltaReportSettings, scaRequirementsForOneTimeConsents);
         PisRedirectLinkSetting pisRedirectLinkToOnlineBanking = new PisRedirectLinkSetting(setting.getPis().getRedirectLinkToOnlineBanking().getPisRedirectUrlToAspsp(),
                                                                                            setting.getPis().getRedirectLinkToOnlineBanking().getPisPaymentCancellationRedirectUrlToAspsp(),
