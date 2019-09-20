@@ -27,7 +27,7 @@ public class AisScaAuthorisationService {
     private final AspspProfileServiceWrapper aspspProfileServiceWrapper;
 
     /**
-     * Checks whether authorisation resource of this consent can be authenticated via single-factor authentication
+     * Checks whether authorisation resource of this consent can be authenticated using only single factor
      *
      * @param accountConsent consent which is being authorised
      * @return whether single-factor authentication is enough for this consent

@@ -183,31 +183,31 @@ public class AisScaAuthorisationServiceTest {
         assertFalse(oneFactorAuthorisation);
     }
 
-    private AccountConsent buildAvailableAccountConsent(boolean onceTimeAccess) {
+    private AccountConsent buildAvailableAccountConsent(boolean oneAccessType) {
         Xs2aAccountAccess accountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), AccountAccessType.ALL_ACCOUNTS, null, null);
-        return buildConsent(accountAccess, onceTimeAccess, AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS);
+        return buildConsent(accountAccess, oneAccessType, AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS);
     }
 
-    private AccountConsent buildGlobalConsent(boolean onceTimeAccess) {
+    private AccountConsent buildGlobalConsent(boolean oneAccessType) {
         Xs2aAccountAccess accountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null, AccountAccessType.ALL_ACCOUNTS, null);
-        return buildConsent(accountAccess, onceTimeAccess, AisConsentRequestType.GLOBAL);
+        return buildConsent(accountAccess, oneAccessType, AisConsentRequestType.GLOBAL);
     }
 
-    private AccountConsent buildBankOfferedConsent(boolean onceTimeAccess) {
+    private AccountConsent buildBankOfferedConsent(boolean oneAccessType) {
         Xs2aAccountAccess accountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null, null, null);
-        return buildConsent(accountAccess, onceTimeAccess, AisConsentRequestType.BANK_OFFERED);
+        return buildConsent(accountAccess, oneAccessType, AisConsentRequestType.BANK_OFFERED);
     }
 
-    private AccountConsent buildDedicatedConsent(boolean onceTimeAccess) {
+    private AccountConsent buildDedicatedConsent(boolean oneAccessType) {
         Xs2aAccountAccess accountAccess = new Xs2aAccountAccess(Collections.singletonList(new AccountReference(AccountReferenceType.IBAN, "DE86500105176716126648", Currency.getInstance("EUR"))), Collections.emptyList(), Collections.emptyList(), null, null, null);
-        return buildConsent(accountAccess, onceTimeAccess, AisConsentRequestType.DEDICATED_ACCOUNTS);
+        return buildConsent(accountAccess, oneAccessType, AisConsentRequestType.DEDICATED_ACCOUNTS);
     }
 
-    private AccountConsent buildConsent(Xs2aAccountAccess accountAccess, boolean onceTimeAccess, AisConsentRequestType consentRequestType) {
+    private AccountConsent buildConsent(Xs2aAccountAccess accountAccess, boolean oneAccessType, AisConsentRequestType consentRequestType) {
         LocalDate date = LocalDate.of(2019, 9, 19);
-        int frequencyPerDay = onceTimeAccess ? 1 : 2;
+        int frequencyPerDay = oneAccessType ? 1 : 2;
         OffsetDateTime offsetDateTime = OffsetDateTime.of(2019, 9, 19, 12, 0, 0, 0, ZoneOffset.UTC);
 
-        return new AccountConsent("some id", accountAccess, !onceTimeAccess, date, frequencyPerDay, date, ConsentStatus.RECEIVED, false, false, Collections.emptyList(), new TppInfo(), consentRequestType, false, Collections.emptyList(), offsetDateTime, Collections.emptyMap());
+        return new AccountConsent("some id", accountAccess, !oneAccessType, date, frequencyPerDay, date, ConsentStatus.RECEIVED, false, false, Collections.emptyList(), new TppInfo(), consentRequestType, false, Collections.emptyList(), offsetDateTime, Collections.emptyMap());
     }
 }

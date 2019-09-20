@@ -136,7 +136,7 @@ public class AisDecoupledScaStartAuthorisationStageTest {
     }
 
     @Test
-    public void apply_withOneFactorAuthorisation_Success() {
+    public void apply_WithOneFactorAuthorisation_Success() {
         //Given
         when(aisScaAuthorisationService.isOneFactorAuthorisation(accountConsent)).thenReturn(true);
         ArgumentCaptor<ConsentStatus> argumentCaptor = ArgumentCaptor.forClass(ConsentStatus.class);
@@ -152,7 +152,7 @@ public class AisDecoupledScaStartAuthorisationStageTest {
     }
 
     @Test
-    public void apply_withMultiFactorAuthorisation_Success() {
+    public void apply_WithMultiFactorAuthorisation_Success() {
         //Given
         when(aisConsentSpi.authorisePsu(SPI_CONTEXT_DATA, SPI_PSU_DATA, PASSWORD, spiAccountConsent, spiAspspConsentDataProvider))
             .thenReturn(buildSuccessSpiResponse(new SpiPsuAuthorisationResponse(SpiAuthorisationStatus.SUCCESS, false)));
