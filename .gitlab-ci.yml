@@ -142,8 +142,8 @@ PMD Report:
     expire_in: "10 day"
 
 
-Integration tests Java8:
-  stage "Test"
+IT Java8:
+  stage: "Test"
   script:
     - jabba use ${JAVA_VERSION}
     - cat /sys/fs/cgroup/memory/memory.limit_in_bytes
