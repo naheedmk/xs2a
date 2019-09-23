@@ -59,14 +59,14 @@ variables:
     - jabba use ${JAVA_VERSION}
     - cat /sys/fs/cgroup/memory/memory.limit_in_bytes
     - java -XX:+PrintFlagsFinal -version | grep -Ei "maxheapsize|maxram"
-    - mvn -DskipTests clean install
+    - mvn -ntp -DskipTests clean install
 
 .java_tests: &java_tests
   script:
     - jabba use $JAVA_VERSION
     - cat /sys/fs/cgroup/memory/memory.limit_in_bytes
     - java -XX:+PrintFlagsFinal -version | grep -Ei "maxheapsize|maxram"
-    - mvn --fail-at-end clean install
+    - mvn -ntp --fail-at-end clean install
 
 # Build docker images and push them to Dockerhub (depending on ${DOCKER_TAG})
 .build_dockerhub_image: &build_dockerhub_image
@@ -107,7 +107,7 @@ Compile Java8:
   artifacts:
     paths:
       - "xs2a-impl/target/aspsp-xs2a.jar"
-      - "**/**/target/*.jar"
+      - "**/"
     name: "${CI_PROJECT_NAME}-${CI_BUILD_REF_NAME#*v}"
     expire_in: "1 day"
 
@@ -151,7 +151,7 @@ IT Java8:
     - jabba use ${JAVA_VERSION}
     - cat /sys/fs/cgroup/memory/memory.limit_in_bytes
     - java -XX:+PrintFlagsFinal -version | grep -Ei "maxheapsize|maxram"
-    - mvn failsafe:integration-test
+    - mvn -ntp -X failsafe:integration-test
   variables: 
     JAVA_VERSION: "system@1.8"
 
