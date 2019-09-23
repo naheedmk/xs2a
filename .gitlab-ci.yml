@@ -107,6 +107,7 @@ Compile Java8:
   artifacts:
     paths:
       - "xs2a-impl/target/aspsp-xs2a.jar"
+      - target/
     name: "${CI_PROJECT_NAME}-${CI_BUILD_REF_NAME#*v}"
     expire_in: "10 day"
 
@@ -144,6 +145,8 @@ PMD Report:
 
 IT Java8:
   stage: "Test"
+  dependencies:
+    - "Compile Java8"
   script:
     - jabba use ${JAVA_VERSION}
     - cat /sys/fs/cgroup/memory/memory.limit_in_bytes
