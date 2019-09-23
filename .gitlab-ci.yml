@@ -107,7 +107,7 @@ Compile Java8:
   artifacts:
     paths:
       - "xs2a-impl/target/aspsp-xs2a.jar"
-      - target/*.jar
+      - "**/**/target/*.jar"
     name: "${CI_PROJECT_NAME}-${CI_BUILD_REF_NAME#*v}"
     expire_in: "1 day"
 
