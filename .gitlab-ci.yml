@@ -107,7 +107,7 @@ Compile Java8:
   artifacts:
     paths:
       - "xs2a-impl/target/aspsp-xs2a.jar"
-      - "**/**/target/*jar"
+      - "**/target/*"
       - "**/**/target/*"
     name: "${CI_PROJECT_NAME}-${CI_BUILD_REF_NAME#*v}"
     expire_in: "1 day"
@@ -152,7 +152,7 @@ IT Java8:
     - jabba use ${JAVA_VERSION}
     - cat /sys/fs/cgroup/memory/memory.limit_in_bytes
     - java -XX:+PrintFlagsFinal -version | grep -Ei "maxheapsize|maxram"
-    - mvn -ntp -X failsafe:integration-test
+    - mvn -ntp failsafe:integration-test
   variables: 
     JAVA_VERSION: "system@1.8"
 
