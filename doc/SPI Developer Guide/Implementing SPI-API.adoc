@@ -72,7 +72,7 @@ In this example the *SpiAuthorisationStatus* enumerator value is returned.
 
 ASPSP consent data is a container that allows to handle any information about the consent or payment in scope of SPI level calls.
 More detailed clarification about this object can be found
-xref:..architecture/09_design_decisions.adoc[here].
+xref:../architecture/09_design_decisions.adoc[here].
 XS2A provides a special interface for working with the ASPSP consent data - *de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider*.
 This interface has 3 methods:
 
