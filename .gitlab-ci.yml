@@ -109,6 +109,7 @@ Compile Java8:
       - "xs2a-impl/target/aspsp-xs2a.jar"
  #     - "**/target/*"
  #     - "**/**/target/*"
+      - "**/*IT.java"
       - ".m2/repository/de/adorsys/psd2/*"
     name: "${CI_PROJECT_NAME}-${CI_BUILD_REF_NAME#*v}"
     expire_in: "1 day"
