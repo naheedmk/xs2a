@@ -148,7 +148,7 @@ IT Java8:
     - jabba use ${JAVA_VERSION}
     - cat /sys/fs/cgroup/memory/memory.limit_in_bytes
     - java -XX:+PrintFlagsFinal -version | grep -Ei "maxheapsize|maxram"
-    - mvn failsafe:integration-test.
+    - mvn failsafe:integration-test
   variables: 
     JAVA_VERSION: "system@1.8"
 
