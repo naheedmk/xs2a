@@ -46,11 +46,6 @@ Another parameter in *SpiContextData* is the *tppInfo*. It contains information 
 ** "Registration number": example = "1234_registrationNumber";
 ** "TPP name": example = "Tpp company";
 ** "National competent authority": example = "Bafin";
-** "Redirect URI": URI of TPP, where the transaction flow shall be redirected to after a Redirect. Mandated for the *Redirect
-SCA Approach* (including OAuth2 SCA approach), specially when TPP-Redirect-preferred equals "true". It is recommended to
-always use this header field;
-** "Nok redirect URI": if this URI is contained, the TPP is asking to redirect the transaction flow to this address instead
-of the TPP-Redirect-URI in case of a negative result of the redirect ScaMethod. This might be ignored by the ASPSP.
 
 The response from the connector to XS2A and the ASPSP consent data provider are described in the next chapters.
 
@@ -64,8 +59,8 @@ pattern to create the response. Main fields of the class:
 
 *payload* should be used to create successful response to XS2A. It should contain the object which current SPI method deals with.
 *errors* should be used in case the response fails. The list should contain at least one error element inside the *TppMessage*
-container. It is possible to provide several errors, if necessary. Both *payload* and *errors* fields should use *build()*
-method after them while creating the response. Typical usage of builder pattern for happy-path response:
+container. It is possible to provide several errors, if necessary. *build()* method should be used to create SpiResponse
+after setting payload or errors. Typical usage of builder pattern for happy-path response:
 
 *return SpiResponse.<SpiAuthorisationStatus>builder()
                    .payload(SpiAuthorisationStatus.SUCCESS)
@@ -73,11 +68,11 @@ method after them while creating the response. Typical usage of builder pattern 
 
 In this example the *SpiAuthorisationStatus* enumerator value is returned.
 
-=== Work with ASPSP-Consent-Data object
+=== Working with ASPSP-Consent-Data object
 
 ASPSP consent data is a container that allows to handle any information about the consent or payment in scope of SPI level calls.
 More detailed clarification about this object can be found
-xref:architecture/09_design_decisions.adoc[here].
+xref:..architecture/09_design_decisions.adoc[here].
 XS2A provides a special interface for working with the ASPSP consent data - *de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider*.
 This interface has 3 methods:
 
@@ -85,8 +80,7 @@ This interface has 3 methods:
 * *updateAspspConsentData* to update this data;
 * *clearAspspConsentData* to erase the ASPSP consent data.
 
-This interface has 2 implementations: *InitialSpiAspspConsentDataProvider* and *SpiAspspConsentDataProviderImpl*.
-First should be used while creating the AIS consent or payment when no ID is present yet. Second should be used while working with
+This interface has the implementation: *SpiAspspConsentDataProviderImpl*. It should be used while working with
 the existing entity of AIS consent or payment (by providing its ID) in the connector.
 One should understand that it is SPI developer responsibility to update (or not) the ASPSP consent data on the connector side.
 XS2A just provides a possibility to make these changes by passing the *SpiAspspConsentDataProvider* object to every SPI method.
