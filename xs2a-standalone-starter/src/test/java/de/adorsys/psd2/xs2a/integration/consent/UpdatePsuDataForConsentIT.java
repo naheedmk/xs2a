@@ -156,7 +156,7 @@ public class UpdatePsuDataForConsentIT {
         given(aisConsentAuthorisationServiceEncrypted.updateConsentAuthorization(eq(AUTHORISATION_ID), any(AisConsentAuthorizationRequest.class)))
             .willReturn(true);
 
-        MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.buildUpdatePsuDataForConsentUrl(ENCRYPTED_CONSENT_ID, AUTHORISATION_ID));
+        MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.buildConsentUpdateAuthorisationUrl(ENCRYPTED_CONSENT_ID, AUTHORISATION_ID));
         requestBuilder.content(jsonReader.getStringFromFile("json/auth/req/update_password.json"));
         requestBuilder.headers(httpHeaders);
 
@@ -175,7 +175,7 @@ public class UpdatePsuDataForConsentIT {
         given(aisConsentServiceEncrypted.getAisAccountConsentById(ENCRYPTED_CONSENT_ID))
             .willReturn(Optional.of(buildAisAccountConsent()));
 
-        MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.buildUpdatePsuDataForConsentUrl(ENCRYPTED_CONSENT_ID, WRONG_AUTHORISATION_ID));
+        MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.buildConsentUpdateAuthorisationUrl(ENCRYPTED_CONSENT_ID, WRONG_AUTHORISATION_ID));
         requestBuilder.content(jsonReader.getStringFromFile("json/auth/req/update_password.json"));
         requestBuilder.headers(httpHeaders);
 

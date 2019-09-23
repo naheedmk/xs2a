@@ -33,6 +33,7 @@ import de.adorsys.psd2.xs2a.core.authorisation.Authorisation;
 import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
+import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
@@ -159,7 +160,7 @@ public class UpdatePsuDataForPaymentInitiationIT {
         given(pisCommonPaymentServiceEncrypted.updatePisAuthorisation(eq(AUTHORISATION_ID), any(UpdatePisCommonPaymentPsuDataRequest.class)))
             .willReturn(Optional.of(new UpdatePisCommonPaymentPsuDataResponse(ScaStatus.PSUAUTHENTICATED)));
 
-        MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.buildUpdatePsuDataForPaymentUrl(PaymentType.SINGLE.getValue(), SEPA_PAYMENT_PRODUCT, ENCRYPT_PAYMENT_ID, AUTHORISATION_ID));
+        MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.buildPaymentUpdateAuthorisationUrl(PaymentType.SINGLE.getValue(), SEPA_PAYMENT_PRODUCT, ENCRYPT_PAYMENT_ID, AUTHORISATION_ID));
         requestBuilder.content(jsonReader.getStringFromFile("json/auth/req/update_password.json"));
         requestBuilder.headers(httpHeaders);
 
@@ -176,7 +177,7 @@ public class UpdatePsuDataForPaymentInitiationIT {
 
         given(pisCommonPaymentServiceEncrypted.getCommonPaymentById(ENCRYPT_PAYMENT_ID)).willReturn(Optional.of(buildPisCommonPaymentResponse(AUTHORISATION_ID)));
 
-        MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.buildUpdatePsuDataForPaymentUrl(PaymentType.SINGLE.getValue(), SEPA_PAYMENT_PRODUCT, ENCRYPT_PAYMENT_ID, WRONG_AUTHORISATION_ID));
+        MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.buildPaymentUpdateAuthorisationUrl(PaymentType.SINGLE.getValue(), SEPA_PAYMENT_PRODUCT, ENCRYPT_PAYMENT_ID, WRONG_AUTHORISATION_ID));
         requestBuilder.content(jsonReader.getStringFromFile("json/auth/req/update_password.json"));
         requestBuilder.headers(httpHeaders);
 
@@ -194,7 +195,9 @@ public class UpdatePsuDataForPaymentInitiationIT {
         pisCommonPaymentResponse.setPaymentType(PaymentType.SINGLE);
         pisCommonPaymentResponse.setPaymentProduct(SEPA_PAYMENT_PRODUCT);
         pisCommonPaymentResponse.setTppInfo(TPP_INFO);
-        pisCommonPaymentResponse.setAuthorisations(Collections.singletonList(new Authorisation(authorisationId, ScaStatus.PSUIDENTIFIED)));
+        pisCommonPaymentResponse.setAuthorisations(Collections.singletonList(new Authorisation(authorisationId,
+                                                                                               ScaStatus.PSUIDENTIFIED,
+                                                                                               new PsuIdData(PSU_ID, null , null, null))));
         return pisCommonPaymentResponse;
     }
 
