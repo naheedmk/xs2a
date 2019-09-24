@@ -43,5 +43,5 @@ From now on, array "account" in read balances `GET /v1/accounts/{account-id}/bal
 == Refactor: Aggregate all messages sent to TPP to message bundle
 
 From now on all text messages for TPP are aggregated in `error_message.properties` file. These messages are executed by
-`Psd2ErrorMapper`. Also from now on class `TppMessageInformation` has new field: `Object[]` array `textParameters` for keeping
+`Psd2ErrorMapper`. Also from now on class `TppMessageInformation` has new array field `textParameters` for keeping
 values, which should be inserted into message text placeholders for TPP from `error_message.properties`.
