@@ -405,6 +405,13 @@ public enum MessageErrorCode {
             return "PAYMENT_FAILED";
         }
     },
+    //
+    PAYMENT_FAILED_INCORRECT_ID(400) {
+        @Override
+        public String getName() {
+            return "PAYMENT_FAILED";
+        }
+    },
 
     REQUIRED_KID_MISSING(401),  // The payment initiation has failed due to a missing KID
     EXECUTION_DATE_INVALID(400), // The requested execution date is not a valid execution date for the ASPSP

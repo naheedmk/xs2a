@@ -42,7 +42,6 @@ public class BookingStatusQueryParameterValidatorImplTest {
         new MessageError(ErrorType.AIS_400, TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR_ABSENT_PARAMETER, BOOKING_STATUS_PARAMETER_NAME));
     private static final MessageError BLANK_VALUE_ERROR =
         new MessageError(ErrorType.AIS_400, TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR_BLANK_PARAMETER, BOOKING_STATUS_PARAMETER_NAME));
-//    private static final String INVALID_VALUE_ERROR_TEXT = "Query parameter 'bookingStatus' has invalid value";
     private static final TppMessageInformation TPP_MESSAGE_INFORMATION =
     TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR_INVALID_PARAMETER_VALUE, BOOKING_STATUS_PARAMETER_NAME);
     private static final MessageError INVALID_VALUE_ERROR =
