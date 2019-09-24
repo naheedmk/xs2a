@@ -61,7 +61,7 @@ public class SupportedAccountReferenceValidator implements BusinessValidator<Col
         if (accountWithSeveralUsedTypes.isPresent()) {
             ErrorType errorType = errorTypeMapper.mapToErrorType(serviceTypeDiscoveryService.getServiceType(),
                                                                  FORMAT_ERROR.getCode());
-            return ValidationResult.invalid(errorType, TppMessageInformation.of(FORMAT_ERROR_MULTIPLE_ACCOUNT_REFERENCES));
+            return ValidationResult.invalid(errorType, FORMAT_ERROR_MULTIPLE_ACCOUNT_REFERENCES);
         }
 
         return validateAccountReference(accountReferences);

@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.web.validator.header;
 
-import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ public class PsuIPAddressHeaderValidatorImpl extends AbstractHeaderValidatorImpl
         String header = headers.get(getHeaderName());
         if (isNonValid(header)) {
             return ValidationResult.invalid(
-                errorBuildingService.buildErrorType(), TppMessageInformation.of(FORMAT_ERROR_WRONG_IP_ADDRESS));
+                errorBuildingService.buildErrorType(), FORMAT_ERROR_WRONG_IP_ADDRESS);
         }
 
         return super.checkHeaderContent(headers);

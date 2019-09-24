@@ -17,7 +17,6 @@
 package de.adorsys.psd2.xs2a.service.validator;
 
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.discovery.ServiceTypeDiscoveryService;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
@@ -59,12 +58,12 @@ public class PsuDataInInitialRequestValidator implements BusinessValidator<PsuId
             if (psuId == null) {
                 log.info("InR-ID: [{}], X-Request-ID: [{}]. PSU Data validation has failed: mandated PSU ID is null",
                          requestProviderService.getInternalRequestId(), requestProviderService.getRequestId());
-                return ValidationResult.invalid(errorType, TppMessageInformation.of(FORMAT_ERROR_NO_PSU_ID));
+                return ValidationResult.invalid(errorType, FORMAT_ERROR_NO_PSU_ID);
             }
 
             log.info("InR-ID: [{}], X-Request-ID: [{}]. PSU Data validation has failed: mandated PSU ID is blank",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId());
-            return ValidationResult.invalid(errorType, TppMessageInformation.of(FORMAT_ERROR_PSU_ID_BLANK));
+            return ValidationResult.invalid(errorType, FORMAT_ERROR_PSU_ID_BLANK);
         }
 
         return ValidationResult.valid();

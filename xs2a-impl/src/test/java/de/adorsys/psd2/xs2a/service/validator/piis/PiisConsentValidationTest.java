@@ -65,7 +65,7 @@ public class PiisConsentValidationTest {
     @Before
     public void setUp() {
         when(piisTppInfoValidator.validateTpp(DIFFERENT_AUTHORISATION_NUMBER))
-            .thenReturn(ValidationResult.invalid(PIIS_400, TppMessageInformation.of(CONSENT_UNKNOWN_400_INCORRECT_CERTIFICATE)));
+            .thenReturn(ValidationResult.invalid(PIIS_400, CONSENT_UNKNOWN_400_INCORRECT_CERTIFICATE));
 
         when(piisTppInfoValidator.validateTpp(AUTHORISATION_NUMBER)).thenReturn(ValidationResult.valid());
         when(requestProviderService.getRequestId()).thenReturn(X_REQUEST_ID);

@@ -63,7 +63,7 @@ public class PiisConsentValidation {
 
         ValidationResult validationResult = filteredPiisConsent
                                                 .map(this::isTppValid)
-                                                .orElseGet(() -> ValidationResult.invalid(PIIS_400, TppMessageInformation.of(CONSENT_UNKNOWN_400)));
+                                                .orElseGet(() -> ValidationResult.invalid(PIIS_400, CONSENT_UNKNOWN_400));
 
         if (validationResult.isNotValid()) {
             return new PiisConsentValidationResult(buildErrorHolderFromMessageError(validationResult.getMessageError()));
@@ -82,7 +82,7 @@ public class PiisConsentValidation {
 
             log.error("InR-ID: [{}], X-Request-ID: [{}]. Unknown TPP access type: {}",
                       requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), accessType);
-            return accessType == null ? ValidationResult.invalid(PIIS_400, TppMessageInformation.of(CONSENT_UNKNOWN_400_NULL_ACCESS_TYPE)):
+            return accessType == null ? ValidationResult.invalid(PIIS_400, CONSENT_UNKNOWN_400_NULL_ACCESS_TYPE):
                        ValidationResult.invalid(PIIS_400, TppMessageInformation.of(CONSENT_UNKNOWN_400_UNKNOWN_ACCESS_TYPE, accessType));
         }
     }

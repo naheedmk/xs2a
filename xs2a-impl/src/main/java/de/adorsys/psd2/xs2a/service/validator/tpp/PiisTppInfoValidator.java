@@ -17,7 +17,6 @@
 package de.adorsys.psd2.xs2a.service.validator.tpp;
 
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
@@ -41,7 +40,7 @@ public class PiisTppInfoValidator {
         if (differsFromTppInRequest(authorisationNumber)) {
             log.info("InR-ID: [{}], X-Request-ID: [{}]. TPP validation has failed: TPP in consent/payment doesn't match the TPP in request",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId());
-            return ValidationResult.invalid(PIIS_400, TppMessageInformation.of(CONSENT_UNKNOWN_400_INCORRECT_CERTIFICATE));
+            return ValidationResult.invalid(PIIS_400, CONSENT_UNKNOWN_400_INCORRECT_CERTIFICATE);
         }
 
         return ValidationResult.valid();

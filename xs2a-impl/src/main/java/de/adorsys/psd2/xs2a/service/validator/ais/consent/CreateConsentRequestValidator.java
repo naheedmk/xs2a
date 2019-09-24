@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.consent;
 
-import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.consent.CreateConsentReq;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
@@ -82,7 +81,7 @@ public class CreateConsentRequestValidator implements BusinessValidator<CreateCo
         }
 
         if (isNotSupportedGlobalConsentForAllPsd2(request)) {
-            return ValidationResult.invalid(ErrorType.AIS_405, TppMessageInformation.of(SERVICE_INVALID_400_FOR_GLOBAL_CONSENT));
+            return ValidationResult.invalid(ErrorType.AIS_405, SERVICE_INVALID_400_FOR_GLOBAL_CONSENT);
         }
         if (isNotSupportedBankOfferedConsent(request)) {
             return ValidationResult.invalid(ErrorType.AIS_405, SERVICE_INVALID_400);

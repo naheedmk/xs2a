@@ -19,7 +19,6 @@ package de.adorsys.psd2.xs2a.web.validator.header;
 import com.google.common.net.InternetDomainName;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.TppService;
@@ -120,7 +119,7 @@ public class TppDomainValidator {
 
     private ValidationResult buildInvalidResult() {
         return ValidationResult.invalid(
-            errorBuildingService.buildErrorType(), TppMessageInformation.of(FORMAT_ERROR_INVALID_DOMAIN));
+            errorBuildingService.buildErrorType(), FORMAT_ERROR_INVALID_DOMAIN);
     }
 
     private String getTopDomain(String host) {

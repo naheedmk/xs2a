@@ -446,7 +446,7 @@ public class TransactionServiceTest {
     public void downloadTransactions_Failure_validation_fails_shouldReturn_400() {
         // Given
         when(downloadTransactionsReportValidator.validate(any(DownloadTransactionListRequestObject.class)))
-            .thenReturn(ValidationResult.invalid(AIS_401, of(CONSENT_EXPIRED)));
+            .thenReturn(ValidationResult.invalid(AIS_401, CONSENT_EXPIRED));
 
         // When
         ResponseObject<Xs2aTransactionsDownloadResponse> actualResponse = transactionService.downloadTransactions(CONSENT_ID, ACCOUNT_ID, BASE64_STRING_EXAMPLE);
