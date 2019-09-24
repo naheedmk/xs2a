@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@SuppressWarnings("PMD.ExcessivePublicCount")
 public enum MessageErrorCode {
     SERVICE_NOT_SUPPORTED(406), // Requested service or it's part is not supported by ASPSP
     CERTIFICATE_INVALID(401),  // The contents of the signature/corporate seal certificate are not matching PSD2 general PSD2 or attribute requirements
