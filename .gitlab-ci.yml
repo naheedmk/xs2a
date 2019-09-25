@@ -106,7 +106,9 @@ Compile Java8:
   <<: *build_java
   artifacts:
     paths:
-      - "xs2a-impl/target/aspsp-xs2a.jar"
+      - "**/target/*"
+      - "**/**/target/*"
+      - ".m2/repository/de/adorsys/psd2/*/*"
     name: "${CI_PROJECT_NAME}-${CI_BUILD_REF_NAME#*v}"
     expire_in: "10 day"
 
@@ -121,6 +123,9 @@ Compile Java11:
       - "xs2a-standalone-starter/target/xs2a-standalone-starter-exec.jar"
       - "consent-management/cms-standalone-service/target/consent-management*jar"
       - "aspsp-profile/aspsp-profile-server/target/aspsp-profile*jar"
+      - "**/target/*"
+      - "**/**/target/*"
+      - ".m2/repository/de/adorsys/psd2/*/*"
     name: "${CI_PROJECT_NAME}-${CI_BUILD_REF_NAME#*v}"
     expire_in: "1 day"
 
