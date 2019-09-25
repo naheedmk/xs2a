@@ -623,7 +623,7 @@ public enum MessageErrorCode {
     UNSUPPORTED_MEDIA_TYPE(415), // Unsupported Media Type
     CANCELLATION_INVALID(405), // Payment initiation cannot be cancelled due to legal or other operational reasons
     SERVICE_UNAVAILABLE(503), // Service is unavailable
-    STATUS_INVALID(409), // The addressed resource does not allow addtitional authorisation
+    STATUS_INVALID(409), // The addressed resource does not allow additional authorisation
     FUNDS_CONFIRMATION_FAILED(400); // The funds confirmation request failed
 
     private static final String CERTIFICATE_INVALID_NAME = "CERTIFICATE_INVALID";
