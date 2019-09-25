@@ -222,6 +222,14 @@ public class PisScaReceivedAuthorisationStage extends PisScaStage<Xs2aUpdatePisC
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
         }
 
+        SpiAuthorizationCodeResult authorizationCodeResult = authCodeResponse.getPayload();
+
+        if (authorizationCodeResult.isFinalisedWithoutSca()) {
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_EMBEDDED_RECEIVED stage. SCA is omitted after requesting authorisation code",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId());
+            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, paymentId, authorisationId, psuData);
+        }
+
         Xs2aUpdatePisCommonPaymentPsuDataResponse response = new Xs2aUpdatePisCommonPaymentPsuDataResponse(SCAMETHODSELECTED, paymentId, authorisationId, psuData);
         response.setChosenScaMethod(spiToXs2aAuthenticationObjectMapper.mapToXs2aAuthenticationObject(chosenMethod));
         response.setChallengeData(mapToChallengeData(authCodeResponse.getPayload()));

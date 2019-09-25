@@ -99,7 +99,7 @@ public class PisScaAuthenticatedStage extends PisScaStage<Xs2aUpdatePisCommonPay
         String psuId = psuData.getPsuId();
 
         SpiContextData contextData = spiContextDataProvider.provideWithPsuIdData(psuData);
-        SpiAspspConsentDataProvider aspspConsentDataProvider = aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getPaymentId());
+        SpiAspspConsentDataProvider aspspConsentDataProvider = aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(paymentId);
 
         SpiResponse<SpiAuthorizationCodeResult> spiResponse = paymentAuthorisationSpi.requestAuthorisationCode(contextData, authenticationMethodId, payment, aspspConsentDataProvider);
 
@@ -111,6 +111,12 @@ public class PisScaAuthenticatedStage extends PisScaStage<Xs2aUpdatePisCommonPay
         }
 
         SpiAuthorizationCodeResult authorizationCodeResult = spiResponse.getPayload();
+
+        if (authorizationCodeResult.isFinalisedWithoutSca()) {
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_EMBEDDED_PSUAUTHENTICATED stage. SCA is omitted after requesting authorisation code",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId());
+            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(ScaStatus.FINALISED, paymentId, authorisationId, psuData);
+        }
 
         if (authorizationCodeResult.isEmpty()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], Authentication-Method-ID [{}], PSU-ID [{}]. PIS_EMBEDDED_PSUAUTHENTICATED stage. Proceed embedded approach when performs authorisation depending on selected SCA method has failed. SCA_METHOD_UNKNOWN",

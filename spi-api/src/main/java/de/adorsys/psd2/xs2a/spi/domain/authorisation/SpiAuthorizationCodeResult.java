@@ -23,6 +23,7 @@ import lombok.Data;
 public class SpiAuthorizationCodeResult {
     private ChallengeData challengeData;
     private SpiAuthenticationObject selectedScaMethod;
+    private boolean finalisedWithoutSca;
 
     public boolean isEmpty() {
         return (challengeData == null || challengeData.isEmpty())
