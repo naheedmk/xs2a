@@ -11,8 +11,6 @@ import org.jetbrains.annotations.Nullable;
 @Slf4j
 @RequiredArgsConstructor
 public abstract class PsuDataUpdateAuthorisationCheckerValidator {
-    protected static final String MESSAGE_ERROR_NO_PSU = "Please provide the PSU identification data";
-
     private final RequestProviderService requestProviderService;
     private final PsuDataUpdateAuthorisationChecker psuDataUpdateAuthorisationChecker;
 

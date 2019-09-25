@@ -13,7 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.UUID;
 
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.FORMAT_ERROR;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.FORMAT_ERROR_NO_PSU;
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.PSU_CREDENTIALS_INVALID;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
 import static org.junit.Assert.*;
@@ -21,8 +21,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AisPsuDataUpdateAuthorisationCheckerValidatorTest {
-    private static final String MESSAGE_ERROR_NO_PSU = "Please provide the PSU identification data";
-
     @Mock
     private PsuDataUpdateAuthorisationChecker psuDataUpdateAuthorisationChecker;
     @Mock
@@ -34,7 +32,7 @@ public class AisPsuDataUpdateAuthorisationCheckerValidatorTest {
     private static final PsuIdData PSU_ID_DATA_1 = new PsuIdData("psu-id", null, null, null);
     private static final PsuIdData PSU_ID_DATA_2 = new PsuIdData("psu-id-2", null, null, null);
 
-    private static final MessageError FORMAT_BOTH_PSUS_ABSENT_ERROR = new MessageError(ErrorType.AIS_400, of(FORMAT_ERROR, MESSAGE_ERROR_NO_PSU));
+    private static final MessageError FORMAT_BOTH_PSUS_ABSENT_ERROR = new MessageError(ErrorType.AIS_400, of(FORMAT_ERROR_NO_PSU));
     private static final MessageError CREDENTIALS_INVALID_ERROR = new MessageError(ErrorType.AIS_401, of(PSU_CREDENTIALS_INVALID));
 
     @Before

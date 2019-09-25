@@ -65,11 +65,7 @@ public class UpdatePisCommonPaymentPsuDataValidator extends AbstractPisTppValida
         if (!pisEndpointAccessCheckerService.isEndpointAccessible(authorisationId, PaymentAuthorisationType.CREATED)) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Authorisation ID: [{}]. Updating PIS initiation authorisation PSU Data  has failed: endpoint is not accessible for authorisation",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), authorisationId);
-<<<<<<< HEAD
-            return ValidationResult.invalid(PIS_403, SERVICE_BLOCKED);
-=======
             return ValidationResult.invalid(ErrorType.PIS_403, SERVICE_BLOCKED);
->>>>>>> Rebased onto newest version of support-4.x
         }
 
         PisCommonPaymentResponse pisCommonPaymentResponse = paymentObject.getPisCommonPaymentResponse();
@@ -77,11 +73,8 @@ public class UpdatePisCommonPaymentPsuDataValidator extends AbstractPisTppValida
         if (pisCommonPaymentResponse.getTransactionStatus() == TransactionStatus.RJCT) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Authorisation ID: [{}]. Updating PIS initiation authorisation PSU Data has failed: payment has been rejected",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), authorisationId);
-<<<<<<< HEAD
-            return ValidationResult.invalid(PIS_403, RESOURCE_EXPIRED_403);
-=======
+
             return ValidationResult.invalid(ErrorType.PIS_403, RESOURCE_EXPIRED_403);
->>>>>>> Rebased onto newest version of support-4.x
         }
 
         ValidationResult authorisationValidationResult = pisAuthorisationValidator.validate(authorisationId, pisCommonPaymentResponse);

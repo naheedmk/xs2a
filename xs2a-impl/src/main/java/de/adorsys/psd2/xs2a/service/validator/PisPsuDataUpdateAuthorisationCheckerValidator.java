@@ -5,7 +5,7 @@ import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import org.springframework.stereotype.Component;
 
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.FORMAT_ERROR;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.FORMAT_ERROR_NO_PSU;
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.PSU_CREDENTIALS_INVALID;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
 
@@ -17,7 +17,7 @@ public class PisPsuDataUpdateAuthorisationCheckerValidator extends PsuDataUpdate
 
     @Override
     public MessageError getMessageErrorAreBothPsusAbsent() {
-        return new MessageError(ErrorType.PIS_400, of(FORMAT_ERROR, MESSAGE_ERROR_NO_PSU));
+        return new MessageError(ErrorType.PIS_400, of(FORMAT_ERROR_NO_PSU));
     }
 
     @Override
