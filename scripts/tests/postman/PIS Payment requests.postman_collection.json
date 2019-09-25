@@ -10622,7 +10622,7 @@
 													"       ",
 													"    pm.expect(error.category).to.eql('ERROR');",
 													"    pm.expect(error.code).to.eql('STATUS_INVALID');",
-													"    pm.expect(error.text).to.eql('The addressed resource does not allow addtitional authorisation');",
+													"    pm.expect(error.text).to.eql('The addressed resource does not allow additional authorisation');",
 													"});"
 												],
 												"type": "text/javascript"
@@ -11309,7 +11309,7 @@
 													"       ",
 													"    pm.expect(error.category).to.eql('ERROR');",
 													"    pm.expect(error.code).to.eql('STATUS_INVALID');",
-													"    pm.expect(error.text).to.eql('The addressed resource does not allow addtitional authorisation');",
+													"    pm.expect(error.text).to.eql('The addressed resource does not allow additional authorisation');",
 													"});"
 												],
 												"type": "text/javascript"
