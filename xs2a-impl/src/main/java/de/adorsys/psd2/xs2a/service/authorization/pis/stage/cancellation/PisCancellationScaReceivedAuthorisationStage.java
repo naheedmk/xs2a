@@ -24,6 +24,7 @@ import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ChallengeData;
+import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
@@ -42,6 +43,8 @@ import de.adorsys.psd2.xs2a.service.payment.Xs2aUpdatePaymentAfterSpiService;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.*;
+import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentExecutionResponse;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthenticationObject;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthorisationStatus;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthorizationCodeResult;
@@ -49,6 +52,7 @@ import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiPsuAuthorisationResponse
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.PaymentCancellationSpi;
+import de.adorsys.psd2.xs2a.spi.service.PaymentSpi;
 import de.adorsys.psd2.xs2a.spi.service.SpiPayment;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -61,6 +65,7 @@ import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.*;
 
 @Slf4j
 @Service("PIS_CANCELLATION_EMBEDDED_RECEIVED")
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity"})
 public class PisCancellationScaReceivedAuthorisationStage extends PisScaStage<Xs2aUpdatePisCommonPaymentPsuDataRequest, GetPisAuthorisationResponse, Xs2aUpdatePisCommonPaymentPsuDataResponse> {
     private final PaymentCancellationSpi paymentCancellationSpi;
     private final Xs2aPisCommonPaymentService xs2aPisCommonPaymentService;
@@ -149,7 +154,15 @@ public class PisCancellationScaReceivedAuthorisationStage extends PisScaStage<Xs
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, request.getPaymentId(), request.getAuthorisationId(), psuData);
         }
 
-        SpiResponse<List<SpiAuthenticationObject>> availableScaMethodsResponse = paymentCancellationSpi.requestAvailableScaMethods(spiContextData, payment, spiAspspConsentDataProvider);
+        SpiPsuAuthorisationResponse psuAuthorisationResponse = authPsuResponse.getPayload();
+
+        if (psuAuthorisationResponse.getSpiAuthorisationStatus() == SpiAuthorisationStatus.SUCCESS && psuAuthorisationResponse.isScaExempted() && paymentType != PaymentType.PERIODIC) {
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_CANCELLATION_EMBEDDED_RECEIVED stage. SCA was exempted for the payment after AuthorisationSpi#authorisePsu.",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId());
+            return executePaymentWithoutSca(request, pisAuthorisationResponse, psuData, paymentType, payment, spiContextData, EXEMPTED);
+        }
+
+        SpiResponse<SpiAvailableScaMethodsResponse> availableScaMethodsResponse = paymentCancellationSpi.requestAvailableScaMethods(spiContextData, payment, spiAspspConsentDataProvider);
 
         if (availableScaMethodsResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(availableScaMethodsResponse, ServiceType.PIS);
@@ -158,7 +171,15 @@ public class PisCancellationScaReceivedAuthorisationStage extends PisScaStage<Xs
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, request.getPaymentId(), request.getAuthorisationId(), psuData);
         }
 
-        List<SpiAuthenticationObject> spiScaMethods = availableScaMethodsResponse.getPayload();
+        SpiAvailableScaMethodsResponse availableScaMethods = availableScaMethodsResponse.getPayload();
+
+        if (availableScaMethods.isScaExempted() && paymentType != PaymentType.PERIODIC) {
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_CANCELLATION_EMBEDDED_RECEIVED stage. SCA was exempted for the payment after AuthorisationSpi#requestAvailableScaMethods.",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId());
+            return executePaymentWithoutSca(request, pisAuthorisationResponse, psuData, paymentType, payment, spiContextData, EXEMPTED);
+        }
+
+        List<SpiAuthenticationObject> spiScaMethods = availableScaMethods.getAvailableScaMethods();
 
         if (CollectionUtils.isEmpty(spiScaMethods)) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_CANCELLATION_EMBEDDED_RECEIVED stage. Available SCA methods is empty.",
@@ -186,7 +207,7 @@ public class PisCancellationScaReceivedAuthorisationStage extends PisScaStage<Xs
                 return pisCommonDecoupledService.proceedDecoupledCancellation(request, payment, chosenMethod.getAuthenticationMethodId());
             }
 
-            return proceedSingleScaEmbeddedApproach(payment, chosenMethod, spiContextData, spiAspspConsentDataProvider, request, psuData);
+            return proceedSingleScaEmbeddedApproach(payment, chosenMethod, spiContextData, spiAspspConsentDataProvider, request, psuData, pisAuthorisationResponse);
 
         } else if (isMultipleScaMethods(spiScaMethods)) {
             xs2aPisCommonPaymentService.saveAuthenticationMethods(request.getAuthorisationId(), spiToXs2aAuthenticationObjectMapper.mapToXs2aListAuthenticationObject(spiScaMethods));
@@ -205,7 +226,8 @@ public class PisCancellationScaReceivedAuthorisationStage extends PisScaStage<Xs
                                                                                        SpiContextData contextData,
                                                                                        SpiAspspConsentDataProvider spiAspspConsentDataProvider,
                                                                                        Xs2aUpdatePisCommonPaymentPsuDataRequest request,
-                                                                                       PsuIdData psuData) {
+                                                                                       PsuIdData psuData,
+                                                                                       GetPisAuthorisationResponse pisAuthorisationResponse) {
         String authorisationId = request.getAuthorisationId();
         String paymentId = request.getPaymentId();
 
@@ -216,6 +238,14 @@ public class PisCancellationScaReceivedAuthorisationStage extends PisScaStage<Xs
             log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_CANCELLATION_EMBEDDED_RECEIVED stage. Proceed single SCA embedded approach when performs authorisation has failed. Error msg: [{}]",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId(), errorHolder);
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, request.getPaymentId(), request.getAuthorisationId(), psuData);
+        }
+
+        SpiAuthorizationCodeResult authorizationCodeResult = authCodeResponse.getPayload();
+
+        if (authorizationCodeResult.isScaExempted() && payment.getPaymentType() != PaymentType.PERIODIC) {
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_CANCELLATION_EMBEDDED_RECEIVED stage. SCA was exempted for the payment after AuthorisationSpi#requestAuthorisationCode.",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId());
+            return executePaymentWithoutSca(request, pisAuthorisationResponse, psuData, payment.getPaymentType(), payment, contextData, EXEMPTED);
         }
 
         ChallengeData challengeData = mapToChallengeData(authCodeResponse.getPayload());
@@ -246,5 +276,27 @@ public class PisCancellationScaReceivedAuthorisationStage extends PisScaStage<Xs
 
         return psuIdDataList.stream()
                    .anyMatch(psu -> psu.contentEquals(psuData));
+    }
+
+    private Xs2aUpdatePisCommonPaymentPsuDataResponse executePaymentWithoutSca(Xs2aUpdatePisCommonPaymentPsuDataRequest request, GetPisAuthorisationResponse pisAuthorisationResponse, PsuIdData psuData, PaymentType paymentType, SpiPayment payment, SpiContextData contextData, ScaStatus resultScaStatus) {
+        String authorisationId = request.getAuthorisationId();
+        String paymentId = request.getPaymentId();
+
+        final SpiAspspConsentDataProvider aspspConsentDataProvider =
+            aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getPaymentId());
+
+        PaymentSpi paymentSpi = getPaymentService(pisAuthorisationResponse, paymentType);
+        SpiResponse<SpiPaymentExecutionResponse> spiResponse = paymentSpi.executePaymentWithoutSca(contextData, payment, aspspConsentDataProvider);
+
+        if (spiResponse.hasError()) {
+            ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
+            log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_CANCELLATION_EMBEDDED_RECEIVED stage. Execute payment without SCA has failed. Error msg: [{}]",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId(), errorHolder);
+            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
+        }
+
+        TransactionStatus paymentStatus = spiResponse.getPayload().getTransactionStatus();
+        updatePaymentAfterSpiService.updatePaymentStatus(request.getPaymentId(), paymentStatus);
+        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(resultScaStatus, paymentId, authorisationId, psuData);
     }
 }

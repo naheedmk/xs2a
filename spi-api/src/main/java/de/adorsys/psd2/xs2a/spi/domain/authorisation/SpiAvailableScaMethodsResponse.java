@@ -16,14 +16,22 @@
 
 package de.adorsys.psd2.xs2a.spi.domain.authorisation;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Value
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class SpiAvailableScaMethodsResponse extends SpiWithExemptionResponse {
 
-    private List<SpiAuthenticationObject> scaMethods;
+    private List<SpiAuthenticationObject> availableScaMethods;
+
+    public SpiAvailableScaMethodsResponse(boolean scaExempted, List<SpiAuthenticationObject> availableScaMethods) {
+        super(scaExempted);
+        this.availableScaMethods = new ArrayList<>(availableScaMethods);
+    }
 }

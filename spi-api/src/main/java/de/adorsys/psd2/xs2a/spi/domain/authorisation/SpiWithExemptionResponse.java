@@ -16,9 +16,13 @@
 
 package de.adorsys.psd2.xs2a.spi.domain.authorisation;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class SpiWithExemptionResponse {
 
     /**

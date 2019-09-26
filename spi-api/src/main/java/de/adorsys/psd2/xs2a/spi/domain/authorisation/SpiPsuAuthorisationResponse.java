@@ -21,10 +21,15 @@ import lombok.Value;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class SpiPsuAuthorisationResponse extends SpiWithExemptionResponse{
+public class SpiPsuAuthorisationResponse extends SpiWithExemptionResponse {
 
     /**
      * Indicates whether the PSU was authorised (SUCCESS, FAILURE)
      */
     private final SpiAuthorisationStatus spiAuthorisationStatus;
+
+    public SpiPsuAuthorisationResponse(boolean scaExempted, SpiAuthorisationStatus spiAuthorisationStatus) {
+        super(scaExempted);
+        this.spiAuthorisationStatus = spiAuthorisationStatus;
+    }
 }
