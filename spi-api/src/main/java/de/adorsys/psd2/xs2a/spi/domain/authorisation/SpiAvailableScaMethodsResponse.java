@@ -19,12 +19,11 @@ package de.adorsys.psd2.xs2a.spi.domain.authorisation;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import java.util.List;
+
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class SpiPsuAuthorisationResponse extends SpiWithExemptionResponse{
+public class SpiAvailableScaMethodsResponse extends SpiWithExemptionResponse {
 
-    /**
-     * Indicates whether the PSU was authorised (SUCCESS, FAILURE)
-     */
-    private final SpiAuthorisationStatus spiAuthorisationStatus;
+    private List<SpiAuthenticationObject> scaMethods;
 }

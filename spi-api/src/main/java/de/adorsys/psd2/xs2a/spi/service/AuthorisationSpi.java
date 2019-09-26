@@ -56,7 +56,7 @@ interface AuthorisationSpi<T> {
      * @param aspspConsentDataProvider Provides access to read/write encrypted data to be stored in the consent management system.
      * @return a list of SCA methods applicable for specified PSU
      */
-    SpiResponse<List<SpiAuthenticationObject>> requestAvailableScaMethods(@NotNull SpiContextData contextData, T businessObject, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider);
+    SpiResponse<SpiAvailableScaMethodsResponse> requestAvailableScaMethods(@NotNull SpiContextData contextData, T businessObject, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider);
 
     /**
      * Performs strong customer authorisation depending on selected SCA method. Used only with embedded SCA Approach.

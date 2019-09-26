@@ -18,9 +18,11 @@ package de.adorsys.psd2.xs2a.spi.domain.authorisation;
 
 import de.adorsys.psd2.xs2a.core.sca.ChallengeData;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class SpiAuthorizationCodeResult {
+@EqualsAndHashCode(callSuper = true)
+public class SpiAuthorizationCodeResult extends SpiWithExemptionResponse{
     private ChallengeData challengeData;
     private SpiAuthenticationObject selectedScaMethod;
 
