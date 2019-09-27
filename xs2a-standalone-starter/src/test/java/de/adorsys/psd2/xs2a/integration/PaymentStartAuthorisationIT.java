@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
+ */
 
 
 package de.adorsys.psd2.xs2a.integration;
@@ -47,9 +47,7 @@ import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthenticationObject;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthorisationStatus;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiPsuAuthorisationResponse;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.*;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPaymentInfo;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentExecutionResponse;
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
@@ -83,7 +81,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -116,6 +113,7 @@ public class PaymentStartAuthorisationIT {
     private static final TppInfo TPP_INFO = TppInfoBuilder.buildTppInfo();
     private static final String PSU_ID = "PSU-123";
     private static final String AUTHORISATION_ID = "e8356ea7-8e3e-474f-b5ea-2b89346cb2dc";
+    private static final String AUTHORISATION_METHOD_ID = "3r356ea7-8e3e-474f-b5ea-2b89346cbd56";
     private static final String PSU_PASS = "09876";
     private static final String AUTH_REQ = "/json/payment/req/auth_request.json";
     private static final String AUTH_RESP = "/json/payment/res/explicit/auth_response.json";
@@ -183,11 +181,17 @@ public class PaymentStartAuthorisationIT {
             .willReturn(Optional.of(new AuthorisationScaApproachResponse(ScaApproach.EMBEDDED)));
         given(paymentAuthorisationSpi.authorisePsu(any(SpiContextData.class), any(SpiPsuData.class), eq(PSU_PASS), any(SpiPayment.class), any(SpiAspspConsentDataProvider.class)))
             .willReturn(SpiResponse.<SpiPsuAuthorisationResponse>builder()
-                            .payload(new SpiPsuAuthorisationResponse(SpiAuthorisationStatus.SUCCESS, false))
+                            .payload(new SpiPsuAuthorisationResponse(false, SpiAuthorisationStatus.SUCCESS))
                             .build());
+        SpiAuthenticationObject authenticationObject = new SpiAuthenticationObject();
+        authenticationObject.setAuthenticationMethodId(AUTHORISATION_METHOD_ID);
         given(paymentAuthorisationSpi.requestAvailableScaMethods(any(SpiContextData.class), any(SpiPayment.class), any(SpiAspspConsentDataProvider.class)))
-            .willReturn(SpiResponse.<List<SpiAuthenticationObject>>builder()
-                            .payload(Collections.emptyList())
+            .willReturn(SpiResponse.<SpiAvailableScaMethodsResponse>builder()
+                            .payload(new SpiAvailableScaMethodsResponse(Collections.singletonList(authenticationObject)))
+                            .build());
+        given(paymentAuthorisationSpi.requestAuthorisationCode(any(SpiContextData.class), eq(AUTHORISATION_METHOD_ID), any(SpiPayment.class), any(SpiAspspConsentDataProvider.class)))
+            .willReturn(SpiResponse.<SpiAuthorizationCodeResult>builder()
+                            .payload(new SpiAuthorizationCodeResult())
                             .build());
         given(aspspDataService.updateAspspConsentData(any(AspspConsentData.class))).willReturn(true);
 
@@ -243,4 +247,3 @@ public class PaymentStartAuthorisationIT {
         return new Authorisation(AUTHORISATION_ID, ScaStatus.RECEIVED, null);
     }
 }
-*/
