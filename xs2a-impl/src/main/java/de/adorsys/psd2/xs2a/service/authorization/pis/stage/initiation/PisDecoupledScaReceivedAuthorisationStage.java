@@ -100,28 +100,28 @@ public class PisDecoupledScaReceivedAuthorisationStage extends PisScaStage<Xs2aU
 
         SpiResponse<SpiPsuAuthorisationResponse> authPsuResponse = paymentAuthorisationSpi.authorisePsu(contextData, spiPsuData, request.getPassword(), payment, aspspConsentDataProvider);
 
-        String authenticationId = request.getAuthorisationId();
+        String authorisationId = request.getAuthorisationId();
         if (authPsuResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(authPsuResponse, ServiceType.PIS);
             log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_DECOUPLED_RECEIVED stage. Authorise PSU when apply payment authorisation has failed. Error msg: [{}].",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authenticationId, psuData.getPsuId(), errorHolder);
-            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authenticationId, psuData);
-        }
-
-        if (authPsuResponse.getPayload().getSpiAuthorisationStatus() == SpiAuthorisationStatus.FAILURE) {
-            ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_401)
-                                          .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
-                                          .build();
-            log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_DECOUPLED_RECEIVED stage. PSU authorisation failed due to incorrect credentials. Error msg: [{}].",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authenticationId, psuData.getPsuId(), errorHolder);
-            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authenticationId, psuData);
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId(), errorHolder);
+            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
         }
 
         SpiPsuAuthorisationResponse psuAuthorisationResponse = authPsuResponse.getPayload();
 
-        if (psuAuthorisationResponse.getSpiAuthorisationStatus() == SpiAuthorisationStatus.SUCCESS && psuAuthorisationResponse.isScaExempted() && paymentType != PaymentType.PERIODIC) {
+        if (psuAuthorisationResponse.getSpiAuthorisationStatus() == SpiAuthorisationStatus.FAILURE) {
+            ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_401)
+                                          .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
+                                          .build();
+            log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_DECOUPLED_RECEIVED stage. PSU authorisation failed due to incorrect credentials. Error msg: [{}].",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId(), errorHolder);
+            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
+        }
+
+        if (psuAuthorisationResponse.isScaExempted() && paymentType != PaymentType.PERIODIC) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_DECOUPLED_RECEIVED stage. SCA was exempted for the payment after AuthorisationSpi#authorisePsu.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authenticationId, psuData.getPsuId());
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId());
             return executePaymentWithoutSca(request, pisAuthorisationResponse, psuData, paymentType, payment, contextData, EXEMPTED);
         }
 

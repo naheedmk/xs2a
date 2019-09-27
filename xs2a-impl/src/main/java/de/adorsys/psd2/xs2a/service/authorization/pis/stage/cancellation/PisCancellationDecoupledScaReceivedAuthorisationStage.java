@@ -18,8 +18,8 @@ package de.adorsys.psd2.xs2a.service.authorization.pis.stage.cancellation;
 
 import de.adorsys.psd2.consent.api.pis.authorisation.GetPisAuthorisationResponse;
 import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
-import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
+import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
@@ -103,20 +103,21 @@ public class PisCancellationDecoupledScaReceivedAuthorisationStage extends PisSc
 
         SpiPsuAuthorisationResponse psuAuthorisationResponse = authPsuResponse.getPayload();
 
-        if (psuAuthorisationResponse.getSpiAuthorisationStatus() == SpiAuthorisationStatus.SUCCESS && psuAuthorisationResponse.isScaExempted() && paymentType != PaymentType.PERIODIC) {
+        if (psuAuthorisationResponse.getSpiAuthorisationStatus() == SpiAuthorisationStatus.FAILURE) {
+            ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_401)
+                                          .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
+                                          .build();
+            log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_CANCELLATION_DECOUPLED_RECEIVED stage. PSU authorisation failed due to incorrect credentials. Error msg: [{}].",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId(), errorHolder);
+            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
+        }
+
+        if (psuAuthorisationResponse.isScaExempted() && paymentType != PaymentType.PERIODIC) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_CANCELLATION_DECOUPLED_RECEIVED stage. SCA was exempted for the payment after AuthorisationSpi#authorisePsu.",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId());
             return executePaymentWithoutSca(request, pisAuthorisationResponse, psuData, paymentType, payment, contextData, EXEMPTED);
         }
 
-        if (authPsuResponse.getPayload().getSpiAuthorisationStatus() == SpiAuthorisationStatus.FAILURE) {
-            ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_401)
-                                          .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
-                                          .build();
-            log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_CANCELLATION_DECOUPLED_RECEIVED stage. PSU authorisation failed due to incorrect credentials. Error msg: [{}].",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authenticationId, psuData.getPsuId(), errorHolder);
-            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authenticationId, psuData);
-        }
 
         return pisCommonDecoupledService.proceedDecoupledCancellation(request, payment);
     }

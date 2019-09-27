@@ -45,10 +45,6 @@ import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.*;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentExecutionResponse;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthenticationObject;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthorisationStatus;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthorizationCodeResult;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiPsuAuthorisationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.PaymentCancellationSpi;
@@ -145,7 +141,9 @@ public class PisCancellationScaReceivedAuthorisationStage extends PisScaStage<Xs
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, request.getPaymentId(), request.getAuthorisationId(), psuData);
         }
 
-        if (authPsuResponse.getPayload().getSpiAuthorisationStatus() == SpiAuthorisationStatus.FAILURE) {
+        SpiPsuAuthorisationResponse psuAuthorisationResponse = authPsuResponse.getPayload();
+
+        if (psuAuthorisationResponse.getSpiAuthorisationStatus() == SpiAuthorisationStatus.FAILURE) {
             ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_401)
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
                                           .build();
@@ -154,9 +152,7 @@ public class PisCancellationScaReceivedAuthorisationStage extends PisScaStage<Xs
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, request.getPaymentId(), request.getAuthorisationId(), psuData);
         }
 
-        SpiPsuAuthorisationResponse psuAuthorisationResponse = authPsuResponse.getPayload();
-
-        if (psuAuthorisationResponse.getSpiAuthorisationStatus() == SpiAuthorisationStatus.SUCCESS && psuAuthorisationResponse.isScaExempted() && paymentType != PaymentType.PERIODIC) {
+        if (psuAuthorisationResponse.isScaExempted() && paymentType != PaymentType.PERIODIC) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_CANCELLATION_EMBEDDED_RECEIVED stage. SCA was exempted for the payment after AuthorisationSpi#authorisePsu.",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, psuData.getPsuId());
             return executePaymentWithoutSca(request, pisAuthorisationResponse, psuData, paymentType, payment, spiContextData, EXEMPTED);

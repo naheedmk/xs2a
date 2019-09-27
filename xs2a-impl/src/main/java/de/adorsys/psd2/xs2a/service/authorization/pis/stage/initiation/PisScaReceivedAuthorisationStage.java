@@ -62,7 +62,7 @@ import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.*;
 
 @Slf4j
 @Service("PIS_EMBEDDED_RECEIVED")
-@SuppressWarnings("PMD.CyclomaticComplexity")
+@SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity"})
 public class PisScaReceivedAuthorisationStage extends PisScaStage<Xs2aUpdatePisCommonPaymentPsuDataRequest, GetPisAuthorisationResponse, Xs2aUpdatePisCommonPaymentPsuDataResponse> {
     private final PaymentAuthorisationSpi paymentAuthorisationSpi;
     private final Xs2aUpdatePaymentAfterSpiService updatePaymentAfterSpiService;
@@ -118,7 +118,9 @@ public class PisScaReceivedAuthorisationStage extends PisScaStage<Xs2aUpdatePisC
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authenticationId, psuData);
         }
 
-        if (authPsuResponse.getPayload().getSpiAuthorisationStatus() == SpiAuthorisationStatus.FAILURE) {
+        SpiPsuAuthorisationResponse psuAuthorisationResponse = authPsuResponse.getPayload();
+
+        if (psuAuthorisationResponse.getSpiAuthorisationStatus() == SpiAuthorisationStatus.FAILURE) {
             ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_401)
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
                                           .build();
@@ -127,9 +129,7 @@ public class PisScaReceivedAuthorisationStage extends PisScaStage<Xs2aUpdatePisC
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authenticationId, psuData);
         }
 
-        SpiPsuAuthorisationResponse psuAuthorisationResponse = authPsuResponse.getPayload();
-
-        if (psuAuthorisationResponse.getSpiAuthorisationStatus() == SpiAuthorisationStatus.SUCCESS && psuAuthorisationResponse.isScaExempted() && paymentType != PaymentType.PERIODIC) {
+        if (psuAuthorisationResponse.isScaExempted() && paymentType != PaymentType.PERIODIC) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}], PSU-ID [{}]. PIS_EMBEDDED_RECEIVED stage. SCA was exempted for the payment after AuthorisationSpi#authorisePsu.",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authenticationId, psuData.getPsuId());
             return executePaymentWithoutSca(request, pisAuthorisationResponse, psuData, paymentType, payment, contextData, EXEMPTED);
