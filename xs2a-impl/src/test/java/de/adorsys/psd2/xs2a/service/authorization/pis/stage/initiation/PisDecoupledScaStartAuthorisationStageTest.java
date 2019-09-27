@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
+ */
 
 
 package de.adorsys.psd2.xs2a.service.authorization.pis.stage.initiation;
@@ -241,7 +241,7 @@ public class PisDecoupledScaStartAuthorisationStageTest {
     // Needed because SpiResponse is final, so it's impossible to mock it
     private SpiResponse<SpiPsuAuthorisationResponse> buildSuccessSpiResponse() {
         return SpiResponse.<SpiPsuAuthorisationResponse>builder()
-                   .payload(new SpiPsuAuthorisationResponse(SpiAuthorisationStatus.SUCCESS, false))
+                   .payload(new SpiPsuAuthorisationResponse(false, SpiAuthorisationStatus.SUCCESS))
                    .build();
     }
 
@@ -252,4 +252,3 @@ public class PisDecoupledScaStartAuthorisationStageTest {
                    .build();
     }
 }
-*/
