@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2018 adorsys GmbH & Co KG
+ * Copyright 2018-2019 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.consent.api;
+package de.adorsys.psd2.xs2a.spi.domain.account;
 
-public enum TypeAccess {
-    ACCOUNT,
-    BALANCE,
-    TRANSACTION,
-    OWNER_NAME,
-    OWNER_ADDRESS
+import lombok.Value;
+
+import java.util.List;
+
+@Value
+public class SpiAdditionalInformationAccess {
+    private List<SpiAccountReference> ownerName;
+    private List<SpiAccountReference> ownerAddress;
 }

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.aspsp.profile.domain.ais;
+package de.adorsys.psd2.consent.api.ais;
 
-import lombok.Value;
+import java.util.List;
+import java.util.Optional;
 
-@Value
-public class ConsentTypeSetting {
-    private boolean bankOfferedConsentSupported;
-    private boolean globalConsentSupported;
-    private boolean availableAccountsConsentSupported;
-    private int accountAccessFrequencyPerDay;
-    private long notConfirmedConsentExpirationTimeMs;
-    private int maxConsentValidityDays;
-    private boolean accountOwnerInformationSupported;
+public enum AdditionalAccountInformationType {
+    DEDICATED_ACCOUNTS, ALL_AVAILABLE_ACCOUNTS, NONE;
+
+    public static AdditionalAccountInformationType findTypeByList(List list) {
+        return Optional.ofNullable(list)
+                   .map(l -> l.isEmpty()
+                                 ? AdditionalAccountInformationType.ALL_AVAILABLE_ACCOUNTS
+                                 : AdditionalAccountInformationType.DEDICATED_ACCOUNTS)
+                   .orElse(AdditionalAccountInformationType.NONE);
+    }
 }
