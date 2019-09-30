@@ -143,7 +143,7 @@ public class ConsentModelMapper {
                                 )
                             );
 
-                            mappedAccountAccess.setAdditionalAccountInformation((mapToAdditionalInformationAccess(accountAccess.getAdditionalInformationAccess())));
+                            mappedAccountAccess.setAdditionalAccountInformation(mapToAdditionalInformationAccess(access.getAdditionalInformationAccess()));
 
                             return mappedAccountAccess;
                         }
