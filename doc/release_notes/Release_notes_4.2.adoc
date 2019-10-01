@@ -2,8 +2,8 @@
 
 == Table of Contents
 
-* Add integration test for embedded modes for XS2A
+* Add integration test for embedded mode for XS2A
 
-== Add integration test for embedded modes for XS2A
+== Add integration test for embedded mode for XS2A
 
 Integration test has been added for XS2A to ensure that application correctly starts with embedded CMS and ASPSP Profile.
