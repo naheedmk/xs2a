@@ -21,6 +21,7 @@ import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationServiceType;
 import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
@@ -35,10 +36,10 @@ import static de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationServiceType
 @Component
 public class AuthorisationStageCheckValidator {
 
-    public ValidationResult validate(UpdateAuthorisationRequest object, ScaStatus scaStatus, AuthorisationServiceType authType) {
+    public ValidationResult validate(@NotNull UpdateAuthorisationRequest object, @NotNull ScaStatus scaStatus, @NotNull AuthorisationServiceType authType) {
         ErrorType errorType = authType == AIS ? ErrorType.AIS_400 : ErrorType.PIS_400;
 
-        if (object.getPassword() == null && EnumSet.of(PSUIDENTIFIED, STARTED).contains(scaStatus)) {
+        if (object.getPassword() == null && EnumSet.of(PSUIDENTIFIED, RECEIVED).contains(scaStatus)) {
             return ValidationResult.invalid(errorType, FORMAT_ERROR);
         }
 

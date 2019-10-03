@@ -17,7 +17,7 @@
 package de.adorsys.psd2.xs2a.domain.authorisation;
 
 /**
- * Common update authorisation request to be used in AIS and PIS on updating the authorisation
+ * Common interface for AIS and PIS update authorisation requests
  */
 public interface UpdateAuthorisationRequest {
     String getAuthenticationMethodId();

@@ -16,6 +16,7 @@
 * Bugfix: Incorrect error code in response for ReadAccountList for consent which was revoked by PSU
 * Bugfix: Incorrect TransactionId in read transaction details leads to internal server error
 * Only Pending transactions should be available in getTransactionList response when query param set to "pending"
+* Check incoming requests to have required information
 
 == Bugfix: TPP domain validator ignores non-domain `tppName` field
 
@@ -106,3 +107,7 @@ From now on, if TPP provides incorrect transaction ID in read transaction detail
 From now on, the query parameter `bookingStatus` in `GET /v1/accounts/{account-id}/transactions`
 is capable of filtering. The endpoint returns only those types of transactions, whose `bookingStatus` equals
 the parameters value.
+
+== Check incoming requests to have required information
+From now on, added validation for update AIS, PIS and payment cancellation authorisation requests, that checks whether
+the provided authorisation data matches current authorisation stage. In negative case, `FORMAT_ERROR` 400 is returned.
