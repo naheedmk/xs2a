@@ -85,7 +85,7 @@ public class UpdatePisCommonPaymentPsuDataValidatorTest {
     private static final MessageError INVALID_AUTHORISATION_ERROR = new MessageError(PIS_403, of(RESOURCE_UNKNOWN_403));
     private static final MessageError FORMAT_BOTH_PSUS_ABSENT_ERROR = new MessageError(ErrorType.PIS_400, of(FORMAT_ERROR, MESSAGE_ERROR_NO_PSU));
     private static final MessageError CREDENTIALS_INVALID_ERROR = new MessageError(PIS_401, of(PSU_CREDENTIALS_INVALID));
-    private static final MessageError PIS_FORMAT_ERROR = new MessageError(PIS_400, of(FORMAT_ERROR));
+    private static final MessageError PIS_SERVICE_INVALID = new MessageError(PIS_400, of(SERVICE_INVALID_400));
 
     private static final PsuIdData PSU_ID_DATA_1 = new PsuIdData("psu-id", null, null, null);
     private static final PsuIdData PSU_ID_DATA_2 = new PsuIdData("psu-id-2", null, null, null);
@@ -334,7 +334,7 @@ public class UpdatePisCommonPaymentPsuDataValidatorTest {
         when(pisAuthorisationStatusValidator.validate(ScaStatus.RECEIVED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(buildUpdateRequest(AUTHORISATION_ID, PSU_ID_DATA_1), ScaStatus.RECEIVED, PIS))
-            .thenReturn(ValidationResult.invalid(PIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(PIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updatePisCommonPaymentPsuDataValidator.validate(buildUpdatePisCommonPaymentPsuDataPO(commonPaymentResponse, AUTHORISATION_ID));
@@ -344,7 +344,7 @@ public class UpdatePisCommonPaymentPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(PIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(PIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     @Test
@@ -356,7 +356,7 @@ public class UpdatePisCommonPaymentPsuDataValidatorTest {
         when(pisAuthorisationStatusValidator.validate(ScaStatus.PSUIDENTIFIED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(buildUpdateRequest(AUTHORISATION_ID, PSU_ID_DATA_1), ScaStatus.PSUIDENTIFIED, PIS))
-            .thenReturn(ValidationResult.invalid(PIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(PIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updatePisCommonPaymentPsuDataValidator.validate(buildUpdatePisCommonPaymentPsuDataPO(commonPaymentResponse, AUTHORISATION_ID));
@@ -366,7 +366,7 @@ public class UpdatePisCommonPaymentPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(PIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(PIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     @Test
@@ -378,7 +378,7 @@ public class UpdatePisCommonPaymentPsuDataValidatorTest {
         when(pisAuthorisationStatusValidator.validate(ScaStatus.PSUAUTHENTICATED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(buildUpdateRequest(AUTHORISATION_ID, PSU_ID_DATA_1), ScaStatus.PSUAUTHENTICATED, PIS))
-            .thenReturn(ValidationResult.invalid(PIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(PIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updatePisCommonPaymentPsuDataValidator.validate(buildUpdatePisCommonPaymentPsuDataPO(commonPaymentResponse, AUTHORISATION_ID));
@@ -388,7 +388,7 @@ public class UpdatePisCommonPaymentPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(PIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(PIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     @Test
@@ -400,7 +400,7 @@ public class UpdatePisCommonPaymentPsuDataValidatorTest {
         when(pisAuthorisationStatusValidator.validate(ScaStatus.SCAMETHODSELECTED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(buildUpdateRequest(AUTHORISATION_ID, PSU_ID_DATA_1), ScaStatus.SCAMETHODSELECTED, PIS))
-            .thenReturn(ValidationResult.invalid(PIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(PIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updatePisCommonPaymentPsuDataValidator.validate(buildUpdatePisCommonPaymentPsuDataPO(commonPaymentResponse, AUTHORISATION_ID));
@@ -410,7 +410,7 @@ public class UpdatePisCommonPaymentPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(PIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(PIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
 

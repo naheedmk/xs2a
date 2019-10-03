@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
 
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.FORMAT_ERROR;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.SERVICE_INVALID_400;
 import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.*;
 import static de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationServiceType.AIS;
 
@@ -36,21 +36,23 @@ import static de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationServiceType
 @Component
 public class AuthorisationStageCheckValidator {
 
-    public ValidationResult validate(@NotNull UpdateAuthorisationRequest object, @NotNull ScaStatus scaStatus, @NotNull AuthorisationServiceType authType) {
-        ErrorType errorType = authType == AIS ? ErrorType.AIS_400 : ErrorType.PIS_400;
-
-        if (object.getPassword() == null && EnumSet.of(PSUIDENTIFIED, RECEIVED).contains(scaStatus)) {
-            return ValidationResult.invalid(errorType, FORMAT_ERROR);
+    public ValidationResult validate(@NotNull UpdateAuthorisationRequest updateRequest, @NotNull ScaStatus scaStatus, @NotNull AuthorisationServiceType authType) {
+        if (EnumSet.of(PSUIDENTIFIED, RECEIVED).contains(scaStatus) && updateRequest.getPassword() == null) {
+            return ValidationResult.invalid(resolveErrorType(authType), SERVICE_INVALID_400);
         }
 
-        if (object.getAuthenticationMethodId() == null && scaStatus == PSUAUTHENTICATED) {
-            return ValidationResult.invalid(errorType, FORMAT_ERROR);
+        if (scaStatus == PSUAUTHENTICATED && updateRequest.getAuthenticationMethodId() == null) {
+            return ValidationResult.invalid(resolveErrorType(authType), SERVICE_INVALID_400);
         }
 
-        if (object.getScaAuthenticationData() == null && scaStatus == SCAMETHODSELECTED) {
-            return ValidationResult.invalid(errorType, FORMAT_ERROR);
+        if (scaStatus == SCAMETHODSELECTED && updateRequest.getScaAuthenticationData() == null) {
+            return ValidationResult.invalid(resolveErrorType(authType), SERVICE_INVALID_400);
         }
 
         return ValidationResult.valid();
+    }
+
+    private ErrorType resolveErrorType(AuthorisationServiceType authType) {
+        return authType == AIS ? ErrorType.AIS_400 : ErrorType.PIS_400;
     }
 }

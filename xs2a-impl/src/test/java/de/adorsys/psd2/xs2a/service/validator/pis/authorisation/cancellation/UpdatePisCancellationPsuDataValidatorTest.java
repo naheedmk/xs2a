@@ -74,7 +74,7 @@ public class UpdatePisCancellationPsuDataValidatorTest {
     private static final MessageError STATUS_VALIDATION_ERROR = new MessageError(PIS_409, of(STATUS_INVALID));
     private static final MessageError FORMAT_BOTH_PSUS_ABSENT_ERROR = new MessageError(ErrorType.PIS_400, of(FORMAT_ERROR, MESSAGE_ERROR_NO_PSU));
     private static final MessageError CREDENTIALS_INVALID_ERROR = new MessageError(PIS_401, of(PSU_CREDENTIALS_INVALID));
-    private static final MessageError PIS_FORMAT_ERROR = new MessageError(PIS_400, of(FORMAT_ERROR));
+    private static final MessageError PIS_SERVICE_INVALID = new MessageError(PIS_400, of(SERVICE_INVALID_400));
 
     private static final MessageError PAYMENT_PRODUCT_VALIDATION_ERROR =
         new MessageError(ErrorType.PIS_404, TppMessageInformation.of(PRODUCT_UNKNOWN));
@@ -313,7 +313,7 @@ public class UpdatePisCancellationPsuDataValidatorTest {
         when(pisAuthorisationStatusValidator.validate(ScaStatus.RECEIVED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(updateRequest, ScaStatus.RECEIVED, PIS_CANCELLATION))
-            .thenReturn(ValidationResult.invalid(PIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(PIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updatePisCancellationPsuDataValidator.validate(new UpdatePisCancellationPsuDataPO(commonPaymentResponse, updateRequest));
@@ -323,7 +323,7 @@ public class UpdatePisCancellationPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(PIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(PIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     @Test
@@ -336,7 +336,7 @@ public class UpdatePisCancellationPsuDataValidatorTest {
         when(pisAuthorisationStatusValidator.validate(ScaStatus.PSUIDENTIFIED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(updateRequest, ScaStatus.PSUIDENTIFIED, PIS_CANCELLATION))
-            .thenReturn(ValidationResult.invalid(PIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(PIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updatePisCancellationPsuDataValidator.validate(new UpdatePisCancellationPsuDataPO(commonPaymentResponse, updateRequest));
@@ -346,7 +346,7 @@ public class UpdatePisCancellationPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(PIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(PIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     @Test
@@ -359,7 +359,7 @@ public class UpdatePisCancellationPsuDataValidatorTest {
         when(pisAuthorisationStatusValidator.validate(ScaStatus.PSUAUTHENTICATED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(updateRequest, ScaStatus.PSUAUTHENTICATED, PIS_CANCELLATION))
-            .thenReturn(ValidationResult.invalid(PIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(PIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updatePisCancellationPsuDataValidator.validate(new UpdatePisCancellationPsuDataPO(commonPaymentResponse, updateRequest));
@@ -369,7 +369,7 @@ public class UpdatePisCancellationPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(PIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(PIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     @Test
@@ -382,7 +382,7 @@ public class UpdatePisCancellationPsuDataValidatorTest {
         when(pisAuthorisationStatusValidator.validate(ScaStatus.SCAMETHODSELECTED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(updateRequest, ScaStatus.SCAMETHODSELECTED, PIS_CANCELLATION))
-            .thenReturn(ValidationResult.invalid(PIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(PIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updatePisCancellationPsuDataValidator.validate(new UpdatePisCancellationPsuDataPO(commonPaymentResponse, updateRequest));
@@ -392,7 +392,7 @@ public class UpdatePisCancellationPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(PIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(PIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     private static TppInfo buildTppInfo(String authorisationNumber) {

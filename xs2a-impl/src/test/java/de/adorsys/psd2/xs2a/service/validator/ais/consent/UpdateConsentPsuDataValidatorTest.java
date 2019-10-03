@@ -79,8 +79,8 @@ public class UpdateConsentPsuDataValidatorTest {
     private static final MessageError CREDENTIALS_INVALID_ERROR =
         new MessageError(AIS_401, of(PSU_CREDENTIALS_INVALID));
 
-    private static final MessageError AIS_FORMAT_ERROR =
-        new MessageError(AIS_400, of(FORMAT_ERROR));
+    private static final MessageError AIS_SERVICE_INVALID =
+        new MessageError(AIS_400, of(SERVICE_INVALID_400));
 
     @Mock
     private AisConsentTppInfoValidator aisConsentTppInfoValidator;
@@ -247,7 +247,7 @@ public class UpdateConsentPsuDataValidatorTest {
         when(aisAuthorisationStatusValidator.validate(ScaStatus.RECEIVED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(updateRequest, ScaStatus.RECEIVED, AIS))
-            .thenReturn(ValidationResult.invalid(AIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(AIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, updateRequest));
@@ -257,7 +257,7 @@ public class UpdateConsentPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(AIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(AIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     @Test
@@ -271,7 +271,7 @@ public class UpdateConsentPsuDataValidatorTest {
         when(aisAuthorisationStatusValidator.validate(ScaStatus.PSUIDENTIFIED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(updateRequest, ScaStatus.PSUIDENTIFIED, AIS))
-            .thenReturn(ValidationResult.invalid(AIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(AIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, updateRequest));
@@ -281,7 +281,7 @@ public class UpdateConsentPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(AIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(AIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     @Test
@@ -295,7 +295,7 @@ public class UpdateConsentPsuDataValidatorTest {
         when(aisAuthorisationStatusValidator.validate(ScaStatus.PSUAUTHENTICATED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(updateRequest, ScaStatus.PSUAUTHENTICATED, AIS))
-            .thenReturn(ValidationResult.invalid(AIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(AIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, updateRequest));
@@ -305,7 +305,7 @@ public class UpdateConsentPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(AIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(AIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     @Test
@@ -319,7 +319,7 @@ public class UpdateConsentPsuDataValidatorTest {
         when(aisAuthorisationStatusValidator.validate(ScaStatus.SCAMETHODSELECTED))
             .thenReturn(ValidationResult.valid());
         when(authorisationStageCheckValidator.validate(updateRequest, ScaStatus.SCAMETHODSELECTED, AIS))
-            .thenReturn(ValidationResult.invalid(AIS_400, FORMAT_ERROR));
+            .thenReturn(ValidationResult.invalid(AIS_400, SERVICE_INVALID_400));
 
         // When
         ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, updateRequest));
@@ -329,7 +329,7 @@ public class UpdateConsentPsuDataValidatorTest {
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
-        assertEquals(AIS_FORMAT_ERROR, validationResult.getMessageError());
+        assertEquals(AIS_SERVICE_INVALID, validationResult.getMessageError());
     }
 
     private static TppInfo buildTppInfo(String authorisationNumber) {
