@@ -22,11 +22,13 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
 import de.adorsys.psd2.xs2a.domain.consent.AccountConsentAuthorization;
+import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataReq;
 import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.validator.AisPsuDataUpdateAuthorisationCheckerValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.ais.consent.dto.UpdateConsentPsuDataRequestObject;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationStageCheckValidator;
 import de.adorsys.psd2.xs2a.service.validator.tpp.AisConsentTppInfoValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +42,11 @@ import java.util.List;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
+import static de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationServiceType.AIS;
 import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.AIS_401;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -81,6 +86,8 @@ public class UpdateConsentPsuDataValidatorTest {
     private AisAuthorisationStatusValidator aisAuthorisationStatusValidator;
     @Mock
     private AisPsuDataUpdateAuthorisationCheckerValidator psuDataUpdateAuthorisationCheckerValidator;
+    @Mock
+    private AuthorisationStageCheckValidator authorisationStageCheckValidator;
 
     @InjectMocks
     private UpdateConsentPsuDataValidator updateConsentPsuDataValidator;
@@ -96,6 +103,8 @@ public class UpdateConsentPsuDataValidatorTest {
             .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
         when(psuDataUpdateAuthorisationCheckerValidator.validate(PSU_ID_DATA_1, null))
             .thenReturn(ValidationResult.valid());
+        when(authorisationStageCheckValidator.validate(any(), any(), eq(AIS)))
+            .thenReturn(ValidationResult.valid());
     }
 
     @Test
@@ -109,7 +118,7 @@ public class UpdateConsentPsuDataValidatorTest {
             .thenReturn(ValidationResult.valid());
         // When
 
-        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, AUTHORISATION_ID, PSU_ID_DATA_1));
+        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, buildUpdateRequest(AUTHORISATION_ID, PSU_ID_DATA_1)));
 
         // Then
         verify(aisConsentTppInfoValidator).validateTpp(accountConsent.getTppInfo());
@@ -125,7 +134,7 @@ public class UpdateConsentPsuDataValidatorTest {
         when(aisAuthorisationValidator.validate(INVALID_AUTHORISATION_ID, accountConsent))
             .thenReturn(ValidationResult.invalid(AUTHORISATION_VALIDATION_ERROR));
 
-        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, INVALID_AUTHORISATION_ID, PSU_ID_DATA_1));
+        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, buildUpdateRequest(INVALID_AUTHORISATION_ID, PSU_ID_DATA_1)));
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
@@ -142,7 +151,7 @@ public class UpdateConsentPsuDataValidatorTest {
         when(aisAuthorisationStatusValidator.validate(ScaStatus.FAILED))
             .thenReturn(ValidationResult.invalid(STATUS_VALIDATION_ERROR));
         // When
-        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, AUTHORISATION_ID, PSU_ID_DATA_1));
+        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, buildUpdateRequest(AUTHORISATION_ID, PSU_ID_DATA_1)));
 
         // Then
         verify(aisConsentTppInfoValidator).validateTpp(accountConsent.getTppInfo());
@@ -156,7 +165,7 @@ public class UpdateConsentPsuDataValidatorTest {
         // Given
         AccountConsent accountConsent = buildAccountConsent(INVALID_TPP_INFO, ScaStatus.RECEIVED);
         // When
-        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, AUTHORISATION_ID, PSU_ID_DATA_1));
+        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(accountConsent, buildUpdateRequest(AUTHORISATION_ID, PSU_ID_DATA_1)));
 
         // Then
         verify(aisConsentTppInfoValidator).validateTpp(accountConsent.getTppInfo());
@@ -174,7 +183,7 @@ public class UpdateConsentPsuDataValidatorTest {
             .thenReturn(ValidationResult.valid());
 
         //When
-        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(consent, AUTHORISATION_ID, PSU_ID_DATA_1));
+        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(consent, buildUpdateRequest(AUTHORISATION_ID, PSU_ID_DATA_1)));
 
         //Then
         assertNotNull(validationResult);
@@ -193,7 +202,7 @@ public class UpdateConsentPsuDataValidatorTest {
         when(psuDataUpdateAuthorisationCheckerValidator.validate(psuIdData, null))
             .thenReturn(ValidationResult.invalid(FORMAT_BOTH_PSUS_ABSENT_ERROR));
 
-        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(consent, AUTHORISATION_ID, psuIdData));
+        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(consent, buildUpdateRequest(AUTHORISATION_ID, psuIdData)));
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
@@ -214,7 +223,7 @@ public class UpdateConsentPsuDataValidatorTest {
         when(psuDataUpdateAuthorisationCheckerValidator.validate(PSU_ID_DATA_1, PSU_ID_DATA_2))
             .thenReturn(ValidationResult.invalid(CREDENTIALS_INVALID_ERROR));
 
-        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(consent, AUTHORISATION_ID, PSU_ID_DATA_1));
+        ValidationResult validationResult = updateConsentPsuDataValidator.validate(new UpdateConsentPsuDataRequestObject(consent, buildUpdateRequest(AUTHORISATION_ID, PSU_ID_DATA_1)));
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
@@ -243,5 +252,12 @@ public class UpdateConsentPsuDataValidatorTest {
         authorization.setId(authorisationId);
         authorization.setScaStatus(scaStatus);
         return Collections.singletonList(authorization);
+    }
+
+    private UpdateConsentPsuDataReq buildUpdateRequest(String authoridsationId, PsuIdData psuIdData) {
+        UpdateConsentPsuDataReq result = new UpdateConsentPsuDataReq();
+        result.setAuthorizationId(authoridsationId);
+        result.setPsuData(psuIdData);
+        return result;
     }
 }
