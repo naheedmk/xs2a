@@ -17,11 +17,12 @@
 package de.adorsys.psd2.xs2a.spi.domain.account;
 
 import lombok.Value;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 @Value
 public class SpiAdditionalInformationAccess {
-    private List<SpiAccountReference> ownerName;
-    private List<SpiAccountReference> ownerAddress;
+    @Nullable private List<SpiAccountReference> ownerName;
+    @Nullable private List<SpiAccountReference> ownerAddress;
 }

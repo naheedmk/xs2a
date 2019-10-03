@@ -22,7 +22,7 @@ import java.util.Optional;
 public enum AdditionalAccountInformationType {
     DEDICATED_ACCOUNTS, ALL_AVAILABLE_ACCOUNTS, NONE;
 
-    public static AdditionalAccountInformationType findTypeByList(List list) {
+    public static AdditionalAccountInformationType findTypeByList(List<?> list) {
         return Optional.ofNullable(list)
                    .map(l -> l.isEmpty()
                                  ? AdditionalAccountInformationType.ALL_AVAILABLE_ACCOUNTS

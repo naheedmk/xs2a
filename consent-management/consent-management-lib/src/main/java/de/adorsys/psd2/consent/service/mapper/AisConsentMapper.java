@@ -176,7 +176,7 @@ public class AisConsentMapper {
     }
 
     private AdditionalInformationAccess mapToInitialAdditionalInformationAccess(List<TppAccountAccess> accesses, AisConsent consent) {
-        return consent.noAdditionaAccountInformation()
+        return consent.checkNoneAdditionalAccountInformation()
                    ? null
                    : new AdditionalInformationAccess(mapToAdditionalInformationInitialAccountReferences(consent.getOwnerNameType(), TypeAccess.OWNER_NAME, accesses),
                                                      mapToAdditionalInformationInitialAccountReferences(consent.getOwnerAddressType(), TypeAccess.OWNER_ADDRESS, accesses));
@@ -189,7 +189,7 @@ public class AisConsentMapper {
     }
 
     private AdditionalInformationAccess mapToAspspAdditionalInformationAccess(List<AspspAccountAccess> accesses, AisConsent consent) {
-        return consent.noAdditionaAccountInformation()
+        return consent.checkNoneAdditionalAccountInformation()
                    ? null
                    : new AdditionalInformationAccess(mapToAdditionalInformationAspspAccountReferences(consent.getOwnerNameType(), TypeAccess.OWNER_NAME, accesses),
                                                      mapToAdditionalInformationAspspAccountReferences(consent.getOwnerAddressType(), TypeAccess.OWNER_ADDRESS, accesses));

@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.core.profile;
 
 import lombok.Value;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,8 +25,8 @@ import java.util.stream.Stream;
 
 @Value
 public class AdditionalInformationAccess {
-    private List<AccountReference> ownerName;
-    private List<AccountReference> ownerAddress;
+    @Nullable private List<AccountReference> ownerName;
+    @Nullable private List<AccountReference> ownerAddress;
 
     public boolean noAdditionalInformationAccess() {
         return Stream.of(getOwnerName(), getOwnerAddress()).allMatch(Objects::isNull);

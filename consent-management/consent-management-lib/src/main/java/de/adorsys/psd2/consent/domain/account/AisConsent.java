@@ -251,7 +251,7 @@ public class AisConsent extends InstanceDependableEntity {
                                           .anyMatch(u -> u.getUsageDate().isBefore(LocalDate.now()));
     }
 
-    public boolean noAdditionaAccountInformation() {
+    public boolean checkNoneAdditionalAccountInformation() {
         return Stream.of(getOwnerNameType(), getOwnerAddressType()).allMatch(type -> type.equals(AdditionalAccountInformationType.NONE));
     }
 }
