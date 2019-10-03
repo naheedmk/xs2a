@@ -34,7 +34,7 @@ import static junit.framework.TestCase.assertEquals;
 public class LogbackPatternLayoutTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private final LogbackPatternLayout layout = new LogbackPatternLayout();
-    private final String mask = LogbackPatternLayout.mask;
+    private final String mask = LogbackPatternLayout.MASK;
 
     @Test
     public void testFieldsAndObjectsMask() throws IOException {

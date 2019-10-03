@@ -21,29 +21,31 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
 public class LogbackPatternLayout extends PatternLayout {
-    private final Map<String, String> mapForReplacement = new HashMap<>();
-    static final String mask = "*****";
+    private final Map<Pattern, String> mapForReplacement = new HashMap<>();
+    static final String MASK = "*****";
 
     public LogbackPatternLayout() {
-        String replaceField = "$1\"" + mask + "\"";
-        String replaceHeader = "$1" + mask;
-        UnaryOperator<String> replace = name -> "\"" + name + "\":\"" + mask + "\"";
+        String replaceField = "$1\"" + MASK + "\"";
+        String replaceHeader = "$1" + MASK;
+        UnaryOperator<String> replace = name -> "\"" + name + "\":\"" + MASK + "\"";
 
         UnaryOperator<String> fieldRegex = name -> "(\"" + name + "\"\\s*:\\s*)\"[^\"]+\"";
         UnaryOperator<String> headerRegex = name -> "(" + name + "\\s*:\\s*)[^,]+";
         UnaryOperator<String> objectRegex = name -> "(\"" + name + "\"\\s*:\\s*\\{)[^}]+}";
 
-        mapForReplacement.put(fieldRegex.apply("ownerName"), replaceField);
-        mapForReplacement.put(fieldRegex.apply("\\w*[Pp]assword"), replaceField);
-        mapForReplacement.put(fieldRegex.apply("access_token"), replaceField);
-        mapForReplacement.put(fieldRegex.apply("refresh_token"), replaceField);
-        mapForReplacement.put(headerRegex.apply("Authorization"), replaceHeader);
-        mapForReplacement.put(objectRegex.apply("ownerAddress"), replace.apply("ownerAddress"));
+        Function<String, Pattern> buildPattern = regex ->  Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+
+        mapForReplacement.put(buildPattern.apply(fieldRegex.apply("ownerName")), replaceField);
+        mapForReplacement.put(buildPattern.apply(fieldRegex.apply("\\w*[Pp]assword")), replaceField);
+        mapForReplacement.put(buildPattern.apply(fieldRegex.apply("access_token")), replaceField);
+        mapForReplacement.put(buildPattern.apply(fieldRegex.apply("refresh_token")), replaceField);
+        mapForReplacement.put(buildPattern.apply(headerRegex.apply("Authorization")), replaceHeader);
+        mapForReplacement.put(buildPattern.apply(objectRegex.apply("ownerAddress")), replace.apply("ownerAddress"));
     }
 
     @Override
@@ -52,11 +54,11 @@ public class LogbackPatternLayout extends PatternLayout {
     }
 
     String modifyMessage(String message) {
-        AtomicReference<String> logMessage = new AtomicReference<>(message);
-        mapForReplacement.forEach((key, value) -> logMessage.set(Pattern.compile(key, Pattern.CASE_INSENSITIVE)
-                                                                     .matcher(logMessage.get())
-                                                                     .replaceAll(value)));
-        return logMessage.get();
+        String logMessage = message;
+        for (Map.Entry<Pattern, String> next : mapForReplacement.entrySet()) {
+            logMessage = next.getKey().matcher(logMessage).replaceAll(next.getValue());
+        }
+        return logMessage;
     }
 }
 
