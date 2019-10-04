@@ -16,15 +16,18 @@
 
 package de.adorsys.psd2.xs2a.service.validator.authorisation;
 
+import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationServiceType;
-import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
+import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.SERVICE_INVALID_400;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AuthorisationStageCheckValidatorTest {
     private static final String TEST_PASSWORD = "123";
@@ -35,7 +38,12 @@ public class AuthorisationStageCheckValidatorTest {
     private static final ScaStatus PSUAUTHENTICATED_STATUS = ScaStatus.PSUAUTHENTICATED;
     private static final ScaStatus SCAMETHODSELECTED_STATUS = ScaStatus.SCAMETHODSELECTED;
     private static final ScaStatus FINALISED_STATUS = ScaStatus.FINALISED;
+    private static final AuthorisationServiceType AIS_AUTHORISATION = AuthorisationServiceType.AIS;
     private static final AuthorisationServiceType PIS_AUTHORISATION = AuthorisationServiceType.PIS;
+    private static final AuthorisationServiceType PIS_CANCELLATION_AUTHORISATION = AuthorisationServiceType.PIS_CANCELLATION;
+    private static final MessageErrorCode SERVICE_INVALID = SERVICE_INVALID_400;
+    private static final ErrorType AIS_400_ERROR = ErrorType.AIS_400;
+    private static final ErrorType PIS_400_ERROR = ErrorType.PIS_400;
 
     private AuthorisationStageCheckValidator checkValidator;
 
@@ -51,22 +59,52 @@ public class AuthorisationStageCheckValidatorTest {
         updateRequest.setPassword(TEST_PASSWORD);
 
         //When
-        ValidationResult actualResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_AUTHORISATION);
+        ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_AUTHORISATION);
 
         //Then
-        assertTrue(actualResult.isValid());
+        assertTrue(validationResult.isValid());
     }
 
     @Test
-    public void test_received_failure_noPassword() {
+    public void test_received_failure_noPassword_ais() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
 
         //When
-        ValidationResult actualResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_AUTHORISATION);
+        ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, AIS_AUTHORISATION);
 
         //Then
-        assertTrue(actualResult.isNotValid());
+        assertTrue(validationResult.isNotValid());
+        assertEquals(AIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
+    }
+
+    @Test
+    public void test_received_failure_noPassword_pis() {
+        //Given
+        Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+
+        //When
+        ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_AUTHORISATION);
+
+        //Then
+        assertTrue(validationResult.isNotValid());
+        assertEquals(PIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
+    }
+
+    @Test
+    public void test_received_failure_noPassword_pis_cancellation() {
+        //Given
+        Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+
+        //When
+        ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_CANCELLATION_AUTHORISATION);
+
+        //Then
+        assertTrue(validationResult.isNotValid());
+        assertEquals(PIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
     }
 
     @Test
@@ -76,22 +114,52 @@ public class AuthorisationStageCheckValidatorTest {
         updateRequest.setPassword(TEST_PASSWORD);
 
         //When
-        ValidationResult actualResult = checkValidator.validate(updateRequest, PSUIDENTIFIED_STATUS, PIS_AUTHORISATION);
+        ValidationResult validationResult = checkValidator.validate(updateRequest, PSUIDENTIFIED_STATUS, PIS_AUTHORISATION);
 
         //Then
-        assertTrue(actualResult.isValid());
+        assertTrue(validationResult.isValid());
     }
 
     @Test
-    public void test_psuIdentified_failure_noPassword() {
+    public void test_psuIdentified_failure_noPassword_ais() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
 
         //When
-        ValidationResult actualResult = checkValidator.validate(updateRequest, PSUIDENTIFIED_STATUS, PIS_AUTHORISATION);
+        ValidationResult validationResult = checkValidator.validate(updateRequest, PSUIDENTIFIED_STATUS, AIS_AUTHORISATION);
 
         //Then
-        assertTrue(actualResult.isNotValid());
+        assertTrue(validationResult.isNotValid());
+        assertEquals(AIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
+    }
+
+    @Test
+    public void test_psuIdentified_failure_noPassword_pis() {
+        //Given
+        Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+
+        //When
+        ValidationResult validationResult = checkValidator.validate(updateRequest, PSUIDENTIFIED_STATUS, PIS_AUTHORISATION);
+
+        //Then
+        assertTrue(validationResult.isNotValid());
+        assertEquals(PIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
+    }
+
+    @Test
+    public void test_psuIdentified_failure_noPassword_pis_cancellation() {
+        //Given
+        Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+
+        //When
+        ValidationResult validationResult = checkValidator.validate(updateRequest, PSUIDENTIFIED_STATUS, PIS_CANCELLATION_AUTHORISATION);
+
+        //Then
+        assertTrue(validationResult.isNotValid());
+        assertEquals(PIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
     }
 
     @Test
@@ -101,22 +169,52 @@ public class AuthorisationStageCheckValidatorTest {
         updateRequest.setAuthenticationMethodId(TEST_AUTH_METHOD_ID);
 
         //When
-        ValidationResult actualResult = checkValidator.validate(updateRequest, PSUAUTHENTICATED_STATUS, PIS_AUTHORISATION);
+        ValidationResult validationResult = checkValidator.validate(updateRequest, PSUAUTHENTICATED_STATUS, PIS_AUTHORISATION);
 
         //Then
-        assertTrue(actualResult.isValid());
+        assertTrue(validationResult.isValid());
     }
 
     @Test
-    public void test_psuAuthenticated_failure_noAuthenticationMethodId() {
+    public void test_psuAuthenticated_failure_noAuthenticationMethodId_ais() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
 
         //When
-        ValidationResult actualResult = checkValidator.validate(updateRequest, PSUAUTHENTICATED_STATUS, PIS_AUTHORISATION);
+        ValidationResult validationResult = checkValidator.validate(updateRequest, PSUAUTHENTICATED_STATUS, AIS_AUTHORISATION);
 
         //Then
-        assertTrue(actualResult.isNotValid());
+        assertTrue(validationResult.isNotValid());
+        assertEquals(AIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
+    }
+
+    @Test
+    public void test_psuAuthenticated_failure_noAuthenticationMethodId_pis() {
+        //Given
+        Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+
+        //When
+        ValidationResult validationResult = checkValidator.validate(updateRequest, PSUAUTHENTICATED_STATUS, PIS_AUTHORISATION);
+
+        //Then
+        assertTrue(validationResult.isNotValid());
+        assertEquals(PIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
+    }
+
+    @Test
+    public void test_psuAuthenticated_failure_noAuthenticationMethodId_pis_cancellation() {
+        //Given
+        Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+
+        //When
+        ValidationResult validationResult = checkValidator.validate(updateRequest, PSUAUTHENTICATED_STATUS, PIS_CANCELLATION_AUTHORISATION);
+
+        //Then
+        assertTrue(validationResult.isNotValid());
+        assertEquals(PIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
     }
 
     @Test
@@ -126,22 +224,52 @@ public class AuthorisationStageCheckValidatorTest {
         updateRequest.setScaAuthenticationData(TEST_AUTH_DATA);
 
         //When
-        ValidationResult actualResult = checkValidator.validate(updateRequest, SCAMETHODSELECTED_STATUS, PIS_AUTHORISATION);
+        ValidationResult validationResult = checkValidator.validate(updateRequest, SCAMETHODSELECTED_STATUS, PIS_AUTHORISATION);
 
         //Then
-        assertTrue(actualResult.isValid());
+        assertTrue(validationResult.isValid());
     }
 
     @Test
-    public void test_scaMethodSelected_failure_noScaAuthenticationData() {
+    public void test_scaMethodSelected_failure_noScaAuthenticationData_ais() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
 
         //When
-        ValidationResult actualResult = checkValidator.validate(updateRequest, SCAMETHODSELECTED_STATUS, PIS_AUTHORISATION);
+        ValidationResult validationResult = checkValidator.validate(updateRequest, SCAMETHODSELECTED_STATUS, AIS_AUTHORISATION);
 
         //Then
-        assertTrue(actualResult.isNotValid());
+        assertTrue(validationResult.isNotValid());
+        assertEquals(AIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
+    }
+
+    @Test
+    public void test_scaMethodSelected_failure_noScaAuthenticationData_pis() {
+        //Given
+        Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+
+        //When
+        ValidationResult validationResult = checkValidator.validate(updateRequest, SCAMETHODSELECTED_STATUS, PIS_AUTHORISATION);
+
+        //Then
+        assertTrue(validationResult.isNotValid());
+        assertEquals(PIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
+    }
+
+    @Test
+    public void test_scaMethodSelected_failure_noScaAuthenticationData_pis_cancellation() {
+        //Given
+        Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+
+        //When
+        ValidationResult validationResult = checkValidator.validate(updateRequest, SCAMETHODSELECTED_STATUS, PIS_CANCELLATION_AUTHORISATION);
+
+        //Then
+        assertTrue(validationResult.isNotValid());
+        assertEquals(PIS_400_ERROR, validationResult.getMessageError().getErrorType());
+        assertEquals(SERVICE_INVALID, validationResult.getMessageError().getTppMessage().getMessageErrorCode());
     }
 
     @Test
@@ -150,10 +278,10 @@ public class AuthorisationStageCheckValidatorTest {
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
 
         //When
-        ValidationResult actualResult = checkValidator.validate(updateRequest, FINALISED_STATUS, PIS_AUTHORISATION);
+        ValidationResult validationResult = checkValidator.validate(updateRequest, FINALISED_STATUS, PIS_AUTHORISATION);
 
         //Then
-        assertTrue(actualResult.isValid());
+        assertTrue(validationResult.isValid());
     }
 
     private Xs2aUpdatePisCommonPaymentPsuDataRequest buildPisUpdateRequest() {
