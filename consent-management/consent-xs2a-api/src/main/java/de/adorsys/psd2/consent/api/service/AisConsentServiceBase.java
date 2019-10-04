@@ -36,7 +36,7 @@ interface AisConsentServiceBase {
      * Create AIS consent
      *
      * @param request needed parameters for creating AIS consent
-     * @return String consent id
+     * @return create consent response, containing consent and its encrypted ID
      */
     Optional<CreateAisConsentResponse> createConsent(CreateAisConsentRequest request);
 

@@ -60,7 +60,7 @@ public class Xs2aAisConsentService {
      * @param request Request body storing main consent details
      * @param psuData PsuIdData container of authorisation data about PSU
      * @param tppInfo Information about particular TPP from TPP Certificate
-     * @return String representation of identifier of stored consent
+     * @return create consent response, containing consent and its encrypted ID
      */
     public Optional<Xs2aCreateAisConsentResponse> createConsent(CreateConsentReq request, PsuIdData psuData, TppInfo tppInfo) {
         int allowedFrequencyPerDay = frequencyPerDateCalculationService.getMinFrequencyPerDay(request.getFrequencyPerDay());

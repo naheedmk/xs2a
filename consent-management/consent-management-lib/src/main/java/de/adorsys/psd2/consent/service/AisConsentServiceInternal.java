@@ -71,7 +71,7 @@ public class AisConsentServiceInternal implements AisConsentService {
      * Creates AIS consent.
      *
      * @param request needed parameters for creating AIS consent
-     * @return String consent id
+     * @return create consent response, containing consent and its encrypted ID
      */
     @Override
     @Transactional
