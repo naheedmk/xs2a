@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.service.validator.authorisation;
 
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
+import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationServiceType;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
@@ -56,7 +57,7 @@ public class AuthorisationStageCheckValidatorTest {
     public void test_received_success() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
-        updateRequest.setPassword(TEST_PASSWORD);
+        updateRequest.setPsuData(new PsuIdData("Test", null, null, null));
 
         //When
         ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_AUTHORISATION);
@@ -66,9 +67,10 @@ public class AuthorisationStageCheckValidatorTest {
     }
 
     @Test
-    public void test_received_failure_noPassword_ais() {
+    public void test_received_failure_emptyPsuData_ais() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+        updateRequest.setPsuData(new PsuIdData(null, null, null, null));
 
         //When
         ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, AIS_AUTHORISATION);
@@ -80,9 +82,10 @@ public class AuthorisationStageCheckValidatorTest {
     }
 
     @Test
-    public void test_received_failure_noPassword_pis() {
+    public void test_received_failure_emptyPsuData_pis() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+        updateRequest.setPsuData(new PsuIdData(null, null, null, null));
 
         //When
         ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_AUTHORISATION);
@@ -94,9 +97,10 @@ public class AuthorisationStageCheckValidatorTest {
     }
 
     @Test
-    public void test_received_failure_noPassword_pis_cancellation() {
+    public void test_received_failure_emptyPsuData_pis_cancellation() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+        updateRequest.setPsuData(new PsuIdData(null, null, null, null));
 
         //When
         ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_CANCELLATION_AUTHORISATION);
