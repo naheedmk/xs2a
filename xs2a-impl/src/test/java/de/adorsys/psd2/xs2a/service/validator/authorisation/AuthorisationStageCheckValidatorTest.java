@@ -39,12 +39,15 @@ public class AuthorisationStageCheckValidatorTest {
     private static final ScaStatus PSUAUTHENTICATED_STATUS = ScaStatus.PSUAUTHENTICATED;
     private static final ScaStatus SCAMETHODSELECTED_STATUS = ScaStatus.SCAMETHODSELECTED;
     private static final ScaStatus FINALISED_STATUS = ScaStatus.FINALISED;
+    private static final ScaStatus EXEMPTED_STATUS = ScaStatus.EXEMPTED;
     private static final AuthorisationServiceType AIS_AUTHORISATION = AuthorisationServiceType.AIS;
     private static final AuthorisationServiceType PIS_AUTHORISATION = AuthorisationServiceType.PIS;
     private static final AuthorisationServiceType PIS_CANCELLATION_AUTHORISATION = AuthorisationServiceType.PIS_CANCELLATION;
     private static final MessageErrorCode SERVICE_INVALID = SERVICE_INVALID_400;
     private static final ErrorType AIS_400_ERROR = ErrorType.AIS_400;
     private static final ErrorType PIS_400_ERROR = ErrorType.PIS_400;
+    private static final PsuIdData EMPTY_PSU_DATA = new PsuIdData(null, null, null, null);
+    private static final PsuIdData NON_EMPTY_PSU_DATA = new PsuIdData("Test", null, null, null);
 
     private AuthorisationStageCheckValidator checkValidator;
 
@@ -57,7 +60,7 @@ public class AuthorisationStageCheckValidatorTest {
     public void test_received_success() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
-        updateRequest.setPsuData(new PsuIdData("Test", null, null, null));
+        updateRequest.setPsuData(NON_EMPTY_PSU_DATA);
 
         //When
         ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_AUTHORISATION);
@@ -70,7 +73,7 @@ public class AuthorisationStageCheckValidatorTest {
     public void test_received_failure_emptyPsuData_ais() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
-        updateRequest.setPsuData(new PsuIdData(null, null, null, null));
+        updateRequest.setPsuData(EMPTY_PSU_DATA);
 
         //When
         ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, AIS_AUTHORISATION);
@@ -85,7 +88,7 @@ public class AuthorisationStageCheckValidatorTest {
     public void test_received_failure_emptyPsuData_pis() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
-        updateRequest.setPsuData(new PsuIdData(null, null, null, null));
+        updateRequest.setPsuData(EMPTY_PSU_DATA);
 
         //When
         ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_AUTHORISATION);
@@ -100,7 +103,7 @@ public class AuthorisationStageCheckValidatorTest {
     public void test_received_failure_emptyPsuData_pis_cancellation() {
         //Given
         Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
-        updateRequest.setPsuData(new PsuIdData(null, null, null, null));
+        updateRequest.setPsuData(EMPTY_PSU_DATA);
 
         //When
         ValidationResult validationResult = checkValidator.validate(updateRequest, RECEIVED_STATUS, PIS_CANCELLATION_AUTHORISATION);
@@ -283,6 +286,18 @@ public class AuthorisationStageCheckValidatorTest {
 
         //When
         ValidationResult validationResult = checkValidator.validate(updateRequest, FINALISED_STATUS, PIS_AUTHORISATION);
+
+        //Then
+        assertTrue(validationResult.isValid());
+    }
+
+    @Test
+    public void test_exempted_success() {
+        //Given
+        Xs2aUpdatePisCommonPaymentPsuDataRequest updateRequest = buildPisUpdateRequest();
+
+        //When
+        ValidationResult validationResult = checkValidator.validate(updateRequest, EXEMPTED_STATUS, PIS_AUTHORISATION);
 
         //Then
         assertTrue(validationResult.isValid());
