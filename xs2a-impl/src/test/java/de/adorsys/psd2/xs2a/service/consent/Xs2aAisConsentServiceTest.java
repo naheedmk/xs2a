@@ -81,6 +81,7 @@ public class Xs2aAisConsentServiceTest {
     private static final List<String> STRING_LIST = Collections.singletonList(AUTHORISATION_ID);
     private static final List<Xs2aAuthenticationObject> AUTHENTICATION_OBJECT_LIST = Collections.singletonList(new Xs2aAuthenticationObject());
     private static final List<CmsScaMethod> CMS_SCA_METHOD_LIST = Collections.singletonList(new CmsScaMethod(AUTHORISATION_ID, true));
+    private static final String INTERNAL_REQUEST_ID = "5c2d5564-367f-4e03-a621-6bef76fa4208";
 
     @InjectMocks
     private Xs2aAisConsentService xs2aAisConsentService;
@@ -104,6 +105,7 @@ public class Xs2aAisConsentServiceTest {
     @Before
     public void setUp() {
         when(requestProviderService.getRequestId()).thenReturn(UUID.randomUUID());
+        when(requestProviderService.getInternalRequestId()).thenReturn(UUID.fromString(INTERNAL_REQUEST_ID));
     }
 
     @Test
@@ -444,6 +446,6 @@ public class Xs2aAisConsentServiceTest {
     }
 
     private static CreateAisConsentAuthorizationResponse buildCreateAisConsentAuthorizationResponse() {
-        return new CreateAisConsentAuthorizationResponse(AUTHORISATION_ID, ScaStatus.RECEIVED);
+        return new CreateAisConsentAuthorizationResponse(AUTHORISATION_ID, ScaStatus.RECEIVED, "");
     }
 }
