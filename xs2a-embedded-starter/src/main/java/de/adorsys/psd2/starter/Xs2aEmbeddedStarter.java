@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EntityScan({"de.adorsys.psd2.consent.domain", "de.adorsys.psd2.event.persist.entity"})
 @EnableJpaRepositories(basePackages = {"de.adorsys.psd2.consent.repository", "de.adorsys.psd2.event"})
-@ComponentScan(basePackages = {"de.adorsys.psd2.stub", "de.adorsys.psd2.starter.config", "de.adorsys.psd2.report", "de.adorsys.psd2.mapper"})
+@ComponentScan(basePackages = {"de.adorsys.psd2.stub", "de.adorsys.psd2.starter.config", "de.adorsys.psd2.report"})
 public class Xs2aEmbeddedStarter {
     public static void main(String[] args) {
         SpringApplication.run(Xs2aEmbeddedStarter.class, args);
