@@ -16,7 +16,8 @@
 
 package de.adorsys.psd2.xs2a.web.validator.body.payment;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.exception.MessageError;
@@ -104,9 +105,9 @@ public class PaymentBodyValidatorImplTest {
     @Mock
     private StandardPaymentProductsResolver standardPaymentProductsResolver;
     @Mock
-    private ObjectMapper objectMapper;
-    @Mock
     private PaymentTypeValidator paymentTypeValidator;
+    @Mock
+    private Xs2aObjectMapper xs2aObjectMapper;
     @Mock
     private TppRedirectUriBodyValidatorImpl tppRedirectUriBodyValidator;
     @Mock
@@ -124,7 +125,7 @@ public class PaymentBodyValidatorImplTest {
         ErrorBuildingService errorService = new ErrorBuildingServiceMock(ErrorType.PIS_400);
         CurrencyValidator currencyValidator = new CurrencyValidator(errorService);
         DateFieldValidator dateFieldValidator = new DateFieldValidator(errorService, new LocalDateConverter(), fieldExtractor);
-        validator = new PaymentBodyValidatorImpl(errorService, objectMapper, paymentTypeValidatorContext,
+        validator = new PaymentBodyValidatorImpl(errorService, xs2aObjectMapper, paymentTypeValidatorContext,
                                                  standardPaymentProductsResolver, tppRedirectUriBodyValidator,
                                                  dateFieldValidator, fieldExtractor, currencyValidator,
                                                  new CountryPaymentValidatorResolver(aspspProfileServiceWrapper));
@@ -143,7 +144,7 @@ public class PaymentBodyValidatorImplTest {
 
         doNothing().when(tppRedirectUriBodyValidator).validate(mockRequest, messageError);
         Object paymentBody = new Object();
-        when(objectMapper.readValue(mockRequest.getInputStream(), Object.class))
+        when(xs2aObjectMapper.readValue(mockRequest.getInputStream(), Object.class))
             .thenReturn(paymentBody);
 
         when(paymentTypeValidatorContext.getValidator(PAYMENT_SERVICE))
@@ -164,7 +165,7 @@ public class PaymentBodyValidatorImplTest {
         mockRequest.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, templates);
 
         doNothing().when(tppRedirectUriBodyValidator).validate(mockRequest, messageError);
-        when(objectMapper.readValue(mockRequest.getInputStream(), Object.class))
+        when(xs2aObjectMapper.readValue(mockRequest.getInputStream(), Object.class))
             .thenThrow(new IOException());
 
         // When
@@ -182,7 +183,7 @@ public class PaymentBodyValidatorImplTest {
         Map<String, String> templates = buildTemplateVariables(JSON_PAYMENT_PRODUCT, PAYMENT_SERVICE);
         mockRequest.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, templates);
 
-        when(fieldExtractor.extractField(mockRequest, DAY_OF_EXECUTION_FIELD_NAME, messageError)).thenReturn(Optional.of(WRONG_DAY_OF_MONTH));
+        when(xs2aObjectMapper.toJsonField(any(InputStream.class), eq(DAY_OF_EXECUTION_FIELD_NAME), any(TypeReference.class))).thenReturn(Optional.of(WRONG_DAY_OF_MONTH));
 
         // When
         validator.validate(mockRequest, messageError);
@@ -198,8 +199,8 @@ public class PaymentBodyValidatorImplTest {
         Map<String, String> templates = buildTemplateVariables(JSON_PAYMENT_PRODUCT, PAYMENT_SERVICE);
         mockRequest.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, templates);
 
-        when(fieldExtractor.extractField(mockRequest, DAY_OF_EXECUTION_FIELD_NAME, messageError)).thenReturn(Optional.of(CORRECT_DAY_OF_MONTH));
-        when(fieldExtractor.extractField(mockRequest, REQUESTED_EXECUTION_DATE_FIELD_NAME, messageError)).thenReturn(Optional.of(WRONG_FORMAT_DATE));
+        when(xs2aObjectMapper.toJsonField(any(InputStream.class), eq(DAY_OF_EXECUTION_FIELD_NAME), any(TypeReference.class))).thenReturn(Optional.of(CORRECT_DAY_OF_MONTH));
+        when(xs2aObjectMapper.toJsonField(any(InputStream.class), eq(REQUESTED_EXECUTION_DATE_FIELD_NAME), any(TypeReference.class))).thenReturn(Optional.of(WRONG_FORMAT_DATE));
 
         // When
         validator.validate(mockRequest, messageError);
@@ -216,11 +217,11 @@ public class PaymentBodyValidatorImplTest {
 
         doNothing().when(tppRedirectUriBodyValidator).validate(mockRequest, messageError);
         Object paymentBody = new Object();
-        when(objectMapper.readValue(mockRequest.getInputStream(), Object.class))
+        when(xs2aObjectMapper.readValue(mockRequest.getInputStream(), Object.class))
             .thenReturn(paymentBody);
 
-        when(fieldExtractor.extractField(mockRequest, DAY_OF_EXECUTION_FIELD_NAME, messageError)).thenReturn(Optional.of(CORRECT_DAY_OF_MONTH));
-        when(fieldExtractor.extractField(mockRequest, REQUESTED_EXECUTION_DATE_FIELD_NAME, messageError)).thenReturn(Optional.of(CORRECT_FORMAT_DATE));
+        when(xs2aObjectMapper.toJsonField(any(InputStream.class), eq(DAY_OF_EXECUTION_FIELD_NAME), any(TypeReference.class))).thenReturn(Optional.of(CORRECT_DAY_OF_MONTH));
+        when(xs2aObjectMapper.toJsonField(any(InputStream.class), eq(REQUESTED_EXECUTION_DATE_FIELD_NAME), any(TypeReference.class))).thenReturn(Optional.of(CORRECT_FORMAT_DATE));
 
         when(paymentTypeValidatorContext.getValidator(PAYMENT_SERVICE))
             .thenReturn(Optional.of(paymentTypeValidator));
@@ -240,8 +241,8 @@ public class PaymentBodyValidatorImplTest {
         Map<String, String> templates = buildTemplateVariables(JSON_PAYMENT_PRODUCT, PAYMENT_SERVICE);
         mockRequest.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, templates);
 
-        when(fieldExtractor.extractField(mockRequest, DAY_OF_EXECUTION_FIELD_NAME, messageError)).thenReturn(Optional.of(CORRECT_DAY_OF_MONTH));
-        when(fieldExtractor.extractField(mockRequest, REQUESTED_EXECUTION_TIME_FIELD_NAME, messageError)).thenReturn(Optional.of(WRONG_FORMAT_TIME));
+        when(xs2aObjectMapper.toJsonField(any(InputStream.class), eq(DAY_OF_EXECUTION_FIELD_NAME), any(TypeReference.class))).thenReturn(Optional.of(CORRECT_DAY_OF_MONTH));
+        when(xs2aObjectMapper.toJsonField(any(InputStream.class), eq(REQUESTED_EXECUTION_TIME_FIELD_NAME), any(TypeReference.class))).thenReturn(Optional.of(WRONG_FORMAT_TIME));
 
         // When
         validator.validate(mockRequest, messageError);
@@ -258,11 +259,13 @@ public class PaymentBodyValidatorImplTest {
         mockRequest.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, templates);
 
         Object paymentBody = new Object();
-        when(objectMapper.readValue(mockRequest.getInputStream(), Object.class))
+        when(xs2aObjectMapper.readValue(mockRequest.getInputStream(), Object.class))
             .thenReturn(paymentBody);
 
-        when(fieldExtractor.extractField(mockRequest, DAY_OF_EXECUTION_FIELD_NAME, messageError)).thenReturn(Optional.of(CORRECT_DAY_OF_MONTH));
-        when(fieldExtractor.extractField(mockRequest, REQUESTED_EXECUTION_TIME_FIELD_NAME, messageError)).thenReturn(Optional.of(CORRECT_FORMAT_TIME));
+        when(xs2aObjectMapper.toJsonField(any(InputStream.class), eq(DAY_OF_EXECUTION_FIELD_NAME), any(TypeReference.class))).thenReturn(Optional.of(CORRECT_DAY_OF_MONTH));
+        when(xs2aObjectMapper.toJsonField(any(InputStream.class), eq(REQUESTED_EXECUTION_TIME_FIELD_NAME), any(TypeReference.class))).thenReturn(Optional.of(CORRECT_FORMAT_TIME));
+//        when(fieldExtractor.extractField(mockRequest, DAY_OF_EXECUTION_FIELD_NAME, messageError)).thenReturn(Optional.of(CORRECT_DAY_OF_MONTH));
+//        when(fieldExtractor.extractField(mockRequest, REQUESTED_EXECUTION_TIME_FIELD_NAME, messageError)).thenReturn(Optional.of(CORRECT_FORMAT_TIME));
 
         when(paymentTypeValidatorContext.getValidator(PAYMENT_SERVICE))
             .thenReturn(Optional.of(paymentTypeValidator));
@@ -282,7 +285,7 @@ public class PaymentBodyValidatorImplTest {
         mockRequest.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, templates);
 
         Object paymentBody = new Object();
-        when(objectMapper.readValue(mockRequest.getInputStream(), Object.class))
+        when(xs2aObjectMapper.readValue(mockRequest.getInputStream(), Object.class))
             .thenReturn(paymentBody);
 
         when(fieldExtractor.extractField(mockRequest, DAY_OF_EXECUTION_FIELD_NAME, messageError)).thenReturn(Optional.of(CORRECT_DAY_OF_MONTH));
@@ -331,7 +334,7 @@ public class PaymentBodyValidatorImplTest {
         // Then
         assertTrue(messageError.getTppMessages().isEmpty());
         // noinspection unchecked
-        verify(objectMapper, never()).readValue(any(InputStream.class), any(Class.class));
+        verify(xs2aObjectMapper, never()).readValue(any(InputStream.class), any(Class.class));
         verify(tppRedirectUriBodyValidator, never()).validate(mockRequest, messageError);
     }
 
@@ -343,7 +346,7 @@ public class PaymentBodyValidatorImplTest {
 
         doNothing().when(tppRedirectUriBodyValidator).validate(mockRequest, messageError);
         Object paymentBody = new Object();
-        when(objectMapper.readValue(mockRequest.getInputStream(), Object.class))
+        when(xs2aObjectMapper.readValue(mockRequest.getInputStream(), Object.class))
             .thenReturn(paymentBody);
 
         when(paymentTypeValidatorContext.getValidator(any()))
@@ -362,7 +365,8 @@ public class PaymentBodyValidatorImplTest {
         Map<String, String> templates = buildTemplateVariables(JSON_PAYMENT_PRODUCT, PAYMENT_SERVICE);
         mockRequest.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, templates);
 
-        when(fieldExtractor.extractList(mockRequest, PURPOSE_CODE_FIELD_NAME, messageError)).thenReturn(Collections.singletonList(purposeCode));
+        when(xs2aObjectMapper.toJsonGetValuesForField(any(InputStream.class), anyString()))
+            .thenReturn(Collections.singletonList(purposeCode));
 
         // When
         validator.validate(mockRequest, messageError);
