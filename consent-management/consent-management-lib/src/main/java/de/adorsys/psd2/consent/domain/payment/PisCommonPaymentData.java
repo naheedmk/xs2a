@@ -97,7 +97,7 @@ public class PisCommonPaymentData extends InstanceDependableEntity {
     private String internalRequestId;
 
     @Column(name = "canc_int_req_id")
-    private String cancelledInternalRequestId;
+    private String cancellationInternalRequestId;
 
     @Transient
     private TransactionStatus previousTransactionStatus;

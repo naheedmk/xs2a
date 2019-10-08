@@ -63,7 +63,7 @@ public class CommonPaymentDataService {
 
     @Transactional
     public boolean updatePaymentCancellationInternalRequestId(PisCommonPaymentData paymentData, @NotNull String internalRequestId) {
-        paymentData.setCancelledInternalRequestId(internalRequestId);
+        paymentData.setCancellationInternalRequestId(internalRequestId);
         PisCommonPaymentData saved = pisCommonPaymentDataRepository.save(paymentData);
         return saved.getPaymentId() != null;
     }

@@ -171,7 +171,7 @@ public class CancelPaymentService {
         updatePaymentStatusAfterSpiService.updatePaymentStatus(encryptedPaymentId, TransactionStatus.CANC);
         CancelPaymentResponse cancelPaymentResponse = new CancelPaymentResponse();
         cancelPaymentResponse.setTransactionStatus(TransactionStatus.CANC);
-        cancelPaymentResponse.setInternalRequestId(requestProviderService.getInternalRequestId().toString());
+        cancelPaymentResponse.setInternalRequestId(requestProviderService.getInternalRequestIdString());
 
         return ResponseObject.<CancelPaymentResponse>builder()
                    .body(cancelPaymentResponse)

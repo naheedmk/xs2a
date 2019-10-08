@@ -41,7 +41,7 @@ public class Xs2aPisCommonPaymentMapper {
 
     public Optional<Xs2aCreatePisCancellationAuthorisationResponse> mapToXs2aCreatePisCancellationAuthorisationResponse(CreatePisAuthorisationResponse response, PaymentType paymentType) {
         if (response != null) {
-            return Optional.of(new Xs2aCreatePisCancellationAuthorisationResponse(response.getAuthorizationId(), response.getScaStatus(), paymentType, response.getCancelledInternalRequestId()));
+            return Optional.of(new Xs2aCreatePisCancellationAuthorisationResponse(response.getAuthorizationId(), response.getScaStatus(), paymentType, response.getCancellationInternalRequestId()));
         }
 
         return Optional.empty();

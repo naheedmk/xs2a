@@ -113,7 +113,7 @@ public class CreateSinglePaymentServiceTest {
             .thenReturn(PAYMENT_INFO);
         when(singlePaymentInitiationService.initiatePayment(buildSinglePayment(), "sepa-credit-transfers", WRONG_PSU_DATA))
             .thenReturn(buildSpiErrorForSinglePayment());
-        when(requestProviderService.getInternalRequestId()).thenReturn(UUID.fromString(INTERNAL_REQUEST_ID));
+        when(requestProviderService.getInternalRequestIdString()).thenReturn(INTERNAL_REQUEST_ID);
     }
 
     @Test

@@ -115,7 +115,7 @@ public class CreatePeriodicPaymentTest {
             .thenReturn(PAYMENT_INFO);
         when(periodicPaymentInitiationService.initiatePayment(buildPeriodicPayment(), "sepa-credit-transfers", WRONG_PSU_DATA))
             .thenReturn(buildSpiErrorForPeriodicPayment());
-        when(requestProviderService.getInternalRequestId()).thenReturn(UUID.fromString(INTERNAL_REQUEST_ID));
+        when(requestProviderService.getInternalRequestIdString()).thenReturn(INTERNAL_REQUEST_ID);
     }
 
     @Test
