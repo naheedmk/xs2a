@@ -38,8 +38,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 import static de.adorsys.psd2.xs2a.web.validator.constants.Xs2aRequestBodyDateFields.PAYMENT_DATE_FIELDS;
@@ -54,7 +56,7 @@ public class PaymentBodyValidatorImpl extends AbstractBodyValidatorImpl implemen
     static final String PURPOSE_CODE_FIELD_NAME = "purposeCode";
     static final String FREQUENCY_FIELD_NAME = "frequency";
     static final String BATCH_BOOKING_PREFERRED_FIELD_NAME = "batchBookingPreferred";
-    static final String CURRENCY_STRING =  "currency";
+    static final String CURRENCY_STRING = "currency";
 
     private PaymentTypeValidatorContext paymentTypeValidatorContext;
     private DateFieldValidator dateFieldValidator;
@@ -178,22 +180,12 @@ public class PaymentBodyValidatorImpl extends AbstractBodyValidatorImpl implemen
     private void validatePurposeCodes(HttpServletRequest request, MessageError messageError) {
         List<String> purposeCodes = fieldExtractor.extractList(request, PURPOSE_CODE_FIELD_NAME, messageError);
         boolean isPurposeCodeInvalid = purposeCodes.stream()
-                                             .map(PurposeCode::fromValue)
-                                             .anyMatch(Objects::isNull);
+                                           .map(PurposeCode::fromValue)
+                                           .anyMatch(Objects::isNull);
 
         if (isPurposeCodeInvalid) {
             errorBuildingService.enrichMessageError(messageError, TppMessageInformation.of(FORMAT_ERROR_WRONG_FORMAT_VALUE, PURPOSE_CODE_FIELD_NAME));
         }
-    }
-
-    private List<String> extractPurposeCodes(HttpServletRequest request, MessageError messageError) {
-        List<String> purposeCodes = new ArrayList<>();
-        try {
-            purposeCodes.addAll(xs2aObjectMapper.toJsonGetValuesForField(request.getInputStream(), PURPOSE_CODE_FIELD_NAME));
-        } catch (IOException e) {
-            errorBuildingService.enrichMessageError(messageError, TppMessageInformation.of(FORMAT_ERROR_DESERIALIZATION_FAIL));
-        }
-        return purposeCodes;
     }
 
     private Map<String, String> getPathParameters(HttpServletRequest request) {
