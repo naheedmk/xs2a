@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.web.interceptor.logging;
 
+import de.adorsys.psd2.xs2a.component.MultiReadHttpServletResponse;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.service.RedirectIdService;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
@@ -25,7 +26,6 @@ import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.servlet.HandlerMapping;
@@ -48,14 +48,13 @@ public class PaymentLoggingInterceptorTest {
     private static final String REDIRECT_ID = "redirect-id";
     private static final UUID INTERNAL_REQUEST_ID = UUID.fromString("b571c834-4eb1-468f-91b0-f5e83589bc22");
 
-    @InjectMocks
     private PaymentLoggingInterceptor interceptor;
     @Mock
     private TppService tppService;
     @Mock
     private HttpServletRequest request;
     @Mock
-    private HttpServletResponse response;
+    private MultiReadHttpServletResponse response;
     @Mock
     private RedirectIdService redirectIdService;
     @Mock
@@ -70,6 +69,7 @@ public class PaymentLoggingInterceptorTest {
         when(tppService.getTppInfo()).thenReturn(jsonReader.getObjectFromFile(TPP_INFO_JSON, TppInfo.class));
         when(request.getHeader(X_REQUEST_ID)).thenReturn(X_REQUEST_ID_HEADER_VALUE);
         when(requestProviderService.getInternalRequestId()).thenReturn(INTERNAL_REQUEST_ID);
+        interceptor = new PaymentLoggingInterceptor(tppService, redirectIdService, requestProviderService, loggingContextService);
     }
 
     @Test
