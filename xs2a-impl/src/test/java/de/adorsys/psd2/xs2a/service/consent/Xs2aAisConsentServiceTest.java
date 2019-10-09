@@ -106,6 +106,7 @@ public class Xs2aAisConsentServiceTest {
     public void setUp() {
         when(requestProviderService.getRequestId()).thenReturn(UUID.randomUUID());
         when(requestProviderService.getInternalRequestId()).thenReturn(UUID.fromString(INTERNAL_REQUEST_ID));
+        when(requestProviderService.getInternalRequestIdString()).thenReturn(INTERNAL_REQUEST_ID);
     }
 
     @Test
@@ -113,7 +114,7 @@ public class Xs2aAisConsentServiceTest {
         //Given
         when(frequencyPerDateCalculationService.getMinFrequencyPerDay(CREATE_CONSENT_REQ.getFrequencyPerDay()))
             .thenReturn(1);
-        when(aisConsentMapper.mapToCreateAisConsentRequest(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO, 1))
+        when(aisConsentMapper.mapToCreateAisConsentRequest(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO, 1, INTERNAL_REQUEST_ID))
             .thenReturn(CREATE_AIS_CONSENT_REQUEST);
         when(aisConsentServiceEncrypted.createConsent(CREATE_AIS_CONSENT_REQUEST))
             .thenReturn(Optional.of(CONSENT_ID));
@@ -130,7 +131,7 @@ public class Xs2aAisConsentServiceTest {
         //Given
         when(frequencyPerDateCalculationService.getMinFrequencyPerDay(CREATE_CONSENT_REQ.getFrequencyPerDay()))
             .thenReturn(1);
-        when(aisConsentMapper.mapToCreateAisConsentRequest(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO, 1))
+        when(aisConsentMapper.mapToCreateAisConsentRequest(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO, 1, INTERNAL_REQUEST_ID))
             .thenReturn(CREATE_AIS_CONSENT_REQUEST);
         when(aisConsentServiceEncrypted.createConsent(CREATE_AIS_CONSENT_REQUEST))
             .thenReturn(Optional.empty());
@@ -416,6 +417,25 @@ public class Xs2aAisConsentServiceTest {
         assertThat(aisConsentActionRequest.getActionStatus()).isEqualTo(actionStatus);
         assertThat(aisConsentActionRequest.getRequestUri()).isEqualTo(REQUEST_URI);
         assertThat(aisConsentActionRequest.isUpdateUsage()).isTrue();
+    }
+
+    @Test
+    public void createConsentCheckInternalRequestId() {
+        //Given
+        ArgumentCaptor<CreateAisConsentRequest> argumentCaptor = ArgumentCaptor.forClass(CreateAisConsentRequest.class);
+        when(frequencyPerDateCalculationService.getMinFrequencyPerDay(CREATE_CONSENT_REQ.getFrequencyPerDay()))
+            .thenReturn(1);
+        CreateAisConsentRequest createAisConsentRequesWithInternalRequestId = new CreateAisConsentRequest();
+        createAisConsentRequesWithInternalRequestId.setInternalRequestId(INTERNAL_REQUEST_ID);
+        when(aisConsentMapper.mapToCreateAisConsentRequest(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO, 1, INTERNAL_REQUEST_ID))
+            .thenReturn(createAisConsentRequesWithInternalRequestId);
+        //When
+        xs2aAisConsentService.createConsent(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO);
+        verify(aisConsentServiceEncrypted).createConsent(argumentCaptor.capture());
+        //Then
+        CreateAisConsentRequest createAisConsentRequest = argumentCaptor.getValue();
+        assertThat(createAisConsentRequest.getInternalRequestId()).isEqualTo(INTERNAL_REQUEST_ID);
+
     }
 
     private static TppInfo buildTppInfo() {

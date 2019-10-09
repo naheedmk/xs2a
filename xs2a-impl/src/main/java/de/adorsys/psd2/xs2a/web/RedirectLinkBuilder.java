@@ -26,7 +26,7 @@ public class RedirectLinkBuilder {
     private static final String REDIRECT_URL = "{redirect-id}";
     private static final String ENCRYPTED_CONSENT_ID = "{encrypted-consent-id}";
     private static final String ENCRYPTED_PAYMENT_ID = "{encrypted-payment-id}";
-    private static final String INTERNAL_REQUEST_ID = "{InR-Id}";
+    private static final String INTERNAL_REQUEST_ID = "{inr-id}";
 
     private final AspspProfileServiceWrapper aspspProfileService;
 

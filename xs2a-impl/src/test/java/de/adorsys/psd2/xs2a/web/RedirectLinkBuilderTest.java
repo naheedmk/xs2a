@@ -66,7 +66,7 @@ public class RedirectLinkBuilderTest {
 
     @Test
     public void buildConsentScaRedirectLinkWithInternalRequestId() {
-        doReturn("something/{redirect-id}/{encrypted-consent-id}/{encrypted-payment-id}/{encrypted-consent-id}/{redirect-id}/{encrypted-payment-id}/something-else/{InR-Id}").when(aspspProfileService).getAisRedirectUrlToAspsp();
+        doReturn("something/{redirect-id}/{encrypted-consent-id}/{encrypted-payment-id}/{encrypted-consent-id}/{redirect-id}/{encrypted-payment-id}/something-else/{inr-id}").when(aspspProfileService).getAisRedirectUrlToAspsp();
 
         String redirectLink = redirectLinkBuilder.buildConsentScaRedirectLink("Consent123", "Authorisation123", INTERNAL_REQUEST_ID);
 
@@ -75,7 +75,7 @@ public class RedirectLinkBuilderTest {
 
     @Test
     public void buildPaymentScaRedirectLinkWithInternalRequestId() {
-        doReturn("something/{redirect-id}/{encrypted-consent-id}/{encrypted-payment-id}/{encrypted-consent-id}/{redirect-id}/{encrypted-payment-id}/something-else/{InR-Id}").when(aspspProfileService).getPisRedirectUrlToAspsp();
+        doReturn("something/{redirect-id}/{encrypted-consent-id}/{encrypted-payment-id}/{encrypted-consent-id}/{redirect-id}/{encrypted-payment-id}/something-else/{inr-id}").when(aspspProfileService).getPisRedirectUrlToAspsp();
 
         String redirectLink = redirectLinkBuilder.buildPaymentScaRedirectLink("Payment123", "Authorisation123", INTERNAL_REQUEST_ID);
 
@@ -84,7 +84,7 @@ public class RedirectLinkBuilderTest {
 
     @Test
     public void buildPaymentCancellationScaRedirectLinkWithInternalRequestId() {
-        doReturn("cancellation/{redirect-id}/{encrypted-consent-id}/{encrypted-payment-id}/{encrypted-consent-id}/{redirect-id}/{encrypted-payment-id}/something-else/{InR-Id}").when(aspspProfileService).getPisPaymentCancellationRedirectUrlToAspsp();
+        doReturn("cancellation/{redirect-id}/{encrypted-consent-id}/{encrypted-payment-id}/{encrypted-consent-id}/{redirect-id}/{encrypted-payment-id}/something-else/{inr-id}").when(aspspProfileService).getPisPaymentCancellationRedirectUrlToAspsp();
 
         String redirectLink = redirectLinkBuilder.buildPaymentCancellationScaRedirectLink("Payment123", "Authorisation123", INTERNAL_REQUEST_ID);
 
