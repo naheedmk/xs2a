@@ -102,7 +102,7 @@ public class DecoupledAisAuthorizationServiceTest {
         // Given
         when(scaStageAuthorisationFactory.getService(SERVICE_PREFIX + SEPARATOR + SCA_APPROACH.name() + SEPARATOR + ACCOUNT_CONSENT_AUTHORIZATION.getScaStatus().name()))
             .thenReturn(aisScaAuthenticatedStage);
-        when(aisScaAuthenticatedStage.apply(UPDATE_CONSENT_PSU_DATA_REQ))
+        when(aisScaAuthenticatedStage.apply(UPDATE_CONSENT_PSU_DATA_REQ, ACCOUNT_CONSENT_AUTHORIZATION))
             .thenReturn(UPDATE_CONSENT_PSU_DATA_RESPONSE);
 
         // When

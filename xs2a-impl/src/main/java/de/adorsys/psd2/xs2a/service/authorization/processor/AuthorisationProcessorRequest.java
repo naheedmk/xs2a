@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2018 adorsys GmbH & Co KG
+ * Copyright 2018-2019 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.domain.consent;
+package de.adorsys.psd2.xs2a.service.authorization.processor;
 
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.psd2.model.ScaStatus;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
-import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
-import lombok.Data;
+import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
+import lombok.AllArgsConstructor;
+import lombok.Value;
 
-@Data
-public class AccountConsentAuthorization {
-    private String id;
+@Value
+@AllArgsConstructor
+public class AuthorisationProcessorRequest {
 
-    private String consentId;
-
-    private PsuIdData psuIdData;
+    private ScaApproach scaApproach;
     private ScaStatus scaStatus;
-    private String password;
-    private String authenticationMethodId;
-    private String scaAuthenticationData;
-    private ScaApproach chosenScaApproach;
+    private UpdateAuthorisationRequest updateAuthorisationRequest;
 }

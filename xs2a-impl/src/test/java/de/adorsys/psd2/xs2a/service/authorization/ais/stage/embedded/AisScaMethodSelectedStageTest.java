@@ -25,10 +25,7 @@ import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataReq;
-import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataResponse;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
+import de.adorsys.psd2.xs2a.domain.consent.*;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.authorization.ais.CommonDecoupledAisService;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aAisConsentService;
@@ -144,7 +141,7 @@ public class AisScaMethodSelectedStageTest {
         when(aisConsentSpi.requestAuthorisationCode(SPI_CONTEXT_DATA, TEST_AUTHENTICATION_METHOD_ID, spiAccountConsent, spiAspspConsentDataProvider))
             .thenReturn(buildSuccessSpiResponse(buildSpiAuthorizationCodeResult()));
 
-        UpdateConsentPsuDataResponse actualResponse = scaMethodSelectedStage.apply(request);
+        UpdateConsentPsuDataResponse actualResponse = scaMethodSelectedStage.apply(request, new AccountConsentAuthorization());
 
         assertThat(actualResponse).isNotNull();
         assertThat(actualResponse.getChosenScaMethod()).isEqualTo(buildXs2aAuthenticationObject());
@@ -158,7 +155,7 @@ public class AisScaMethodSelectedStageTest {
         when(commonDecoupledAisService.proceedDecoupledApproach(any(), any(), eq(AUTHENTICATION_METHOD_ID), any()))
             .thenReturn(buildUpdateConsentPsuDataResponse());
 
-        UpdateConsentPsuDataResponse actualResponse = scaMethodSelectedStage.apply(request);
+        UpdateConsentPsuDataResponse actualResponse = scaMethodSelectedStage.apply(request, new AccountConsentAuthorization());
 
         assertThat(actualResponse).isNotNull();
         assertThat(actualResponse.getPsuMessage()).isEqualTo(PSU_SUCCESS_MESSAGE);
@@ -170,7 +167,7 @@ public class AisScaMethodSelectedStageTest {
     public void apply_DecoupledApproach_ShouldChangeScaApproach() {
         when(aisConsentService.isAuthenticationMethodDecoupled(anyString(), anyString())).thenReturn(true);
 
-        scaMethodSelectedStage.apply(request);
+        scaMethodSelectedStage.apply(request, new AccountConsentAuthorization());
     }
 
     @Test
@@ -184,7 +181,7 @@ public class AisScaMethodSelectedStageTest {
                             .tppMessages(TppMessageInformation.of(FORMAT_ERROR))
                             .build());
 
-        UpdateConsentPsuDataResponse actualResponse = scaMethodSelectedStage.apply(request);
+        UpdateConsentPsuDataResponse actualResponse = scaMethodSelectedStage.apply(request, new AccountConsentAuthorization());
 
         assertThat(actualResponse).isNotNull();
         assertThat(actualResponse.getScaStatus()).isEqualTo(FAILED_SCA_STATUS);
@@ -197,7 +194,7 @@ public class AisScaMethodSelectedStageTest {
         when(request.getConsentId()).thenReturn(WRONG_CONSENT_ID);
 
         //When
-        UpdateConsentPsuDataResponse actualResponse = scaMethodSelectedStage.apply(request);
+        UpdateConsentPsuDataResponse actualResponse = scaMethodSelectedStage.apply(request, new AccountConsentAuthorization());
 
         //Then
         assertThat(actualResponse.getScaStatus()).isEqualTo(ScaStatus.FAILED);

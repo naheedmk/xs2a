@@ -14,29 +14,12 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.domain.authorisation;
+package de.adorsys.psd2.xs2a.service.authorization.processor;
 
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
+public abstract class AuthorisationProcessor {
 
-/**
- * Common interface for AIS and PIS update authorisation requests
- */
-public interface UpdateAuthorisationRequest {
+    public abstract void setNext(AuthorisationProcessor nextProcessor);
 
-    PsuIdData getPsuData();
+    public abstract AuthorisationProcessorResponse process(AuthorisationProcessorRequest request);
 
-    String getBusynessObjectId();
-
-    String getAuthorisationId();
-
-    ScaStatus getScaStatus();
-
-    boolean isUpdatePsuIdentification();
-
-    String getAuthenticationMethodId();
-
-    String getScaAuthenticationData();
-
-    String getPassword();
 }
