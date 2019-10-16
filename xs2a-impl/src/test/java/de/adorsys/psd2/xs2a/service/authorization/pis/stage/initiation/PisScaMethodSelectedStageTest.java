@@ -53,7 +53,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationContext;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -70,7 +69,7 @@ public class PisScaMethodSelectedStageTest {
     private static final String PSU_ID = "id";
     private static final SpiContextData CONTEXT_DATA = new SpiContextData(new SpiPsuData(null, null, null, null, null), new TppInfo(), UUID.randomUUID(), UUID.randomUUID());
     private static final String PAYMENT_PRODUCT = "sepa-credit-transfers";
-    private static final TransactionStatus ACCP_TRANSACTION_STATUS = TransactionStatus.ACCP;
+    private static final TransactionStatus ACCP_TRANSACTION_STATUS = TransactionStatus.PATC;
     private static final SpiPaymentExecutionResponse SPI_PAYMENT_EXECUTION_RESPONSE = new SpiPaymentExecutionResponse(ACCP_TRANSACTION_STATUS);
 
     @InjectMocks

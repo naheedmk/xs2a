@@ -98,6 +98,11 @@ public class PisScaMethodSelectedStage extends PisScaStage<Xs2aUpdatePisCommonPa
         }
 
         TransactionStatus paymentStatus = spiResponse.getPayload().getTransactionStatus();
+
+        if (paymentStatus == TransactionStatus.PATC) {
+            pisAspspDataService.updateMultilevelScaByPaymentId(paymentId, true);
+        }
+
         updatePaymentAfterSpiService.updatePaymentStatus(request.getPaymentId(), paymentStatus);
         // TODO check the paymentSpi result first https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/338
         return new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, paymentId, request.getAuthorisationId(), psuData);
