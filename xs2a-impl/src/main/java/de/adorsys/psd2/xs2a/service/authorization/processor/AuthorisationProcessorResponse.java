@@ -18,47 +18,33 @@ package de.adorsys.psd2.xs2a.service.authorization.processor;
 
 import de.adorsys.psd2.xs2a.core.sca.ChallengeData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
+import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.Links;
 import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponse;
-import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponseType;
-import de.adorsys.psd2.xs2a.domain.authorisation.CancellationAuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
-import de.adorsys.psd2.xs2a.exception.MessageError;
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-public class AuthorisationProcessorResponse implements AuthorisationResponse, CancellationAuthorisationResponse {
+@NoArgsConstructor
+public class AuthorisationProcessorResponse implements AuthorisationResponse {
 
-    private String consentId;
-    private String paymentId;
-    private String authorisationId;
+    protected String consentId;
+    protected String paymentId;
+    protected String authorisationId;
 
-    private ScaStatus scaStatus;
-    private List<Xs2aAuthenticationObject> availableScaMethods;
-    private Xs2aAuthenticationObject chosenScaMethod;
-    private ChallengeData challengeData;
-    private Links links;
-    private String psuMessage;
+    protected ScaStatus scaStatus;
+    protected List<Xs2aAuthenticationObject> availableScaMethods;
+    protected Xs2aAuthenticationObject chosenScaMethod;
+    protected ChallengeData challengeData;
+    protected Links links;
+    protected String psuMessage;
 
-    private MessageError messageError;
+    protected ErrorHolder errorHolder;
 
     public boolean hasError() {
-        return messageError != null;
-    }
-
-    @NotNull
-    @Override
-    public String getCancellationId() {
-        return authorisationId;
-    }
-
-    // TODO: 2019-10-15 remove it
-    @NotNull
-    @Override
-    public AuthorisationResponseType getAuthorisationResponseType() {
-        return AuthorisationResponseType.UPDATE;
+        return errorHolder != null;
     }
 }

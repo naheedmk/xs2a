@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.authorization.processor;
+package de.adorsys.psd2.xs2a.service.authorization.processor.model;
 
 import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
+import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcessorRequest;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
-@Data
-@AllArgsConstructor
-public class AuthorisationProcessorRequest {
+@Value
+public class PisAuthorisationProcessorRequest extends AuthorisationProcessorRequest {
 
-    private ServiceType serviceType;
-    private PaymentAuthorisationType paymentAuthorisationType;
-    private ScaApproach scaApproach;
-    private ScaStatus scaStatus;
-    private UpdateAuthorisationRequest updateAuthorisationRequest;
+    public PisAuthorisationProcessorRequest(ScaApproach scaApproach, ScaStatus scaStatus,
+                                            UpdateAuthorisationRequest updateAuthorisationRequest) {
+        super(ServiceType.PIS, PaymentAuthorisationType.CREATED, scaApproach, scaStatus, updateAuthorisationRequest);
+    }
 }

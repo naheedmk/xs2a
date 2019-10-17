@@ -16,15 +16,55 @@
 
 package de.adorsys.psd2.xs2a.service.authorization;
 
-import de.adorsys.psd2.model.ScaStatus;
-import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
+import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.service.authorization.processor.*;
+import de.adorsys.psd2.xs2a.service.authorization.processor.service.AisAuthorisationProcessorServiceImpl;
+import de.adorsys.psd2.xs2a.service.authorization.processor.service.AuthorisationProcessorService;
+import de.adorsys.psd2.xs2a.service.authorization.processor.service.PisAuthorisationProcessorServiceImpl;
+import de.adorsys.psd2.xs2a.service.authorization.processor.service.PisCancellationAuthorisationProcessorServiceImpl;
+import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
+@Slf4j
+@Service
 public class AuthorisationChainResponsibilityService {
 
-    private final AuthorisationProcessor receivedAuthorisationProcessor;
+    private ApplicationContext applicationContext;
 
-    public AuthorisationChainResponsibilityService() {
+    private AuthorisationProcessor receivedAuthorisationProcessor;
+
+    @Autowired
+    public AuthorisationChainResponsibilityService(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+
+        initAuthorisationChains();
+    }
+
+    public AuthorisationProcessorResponse process(AuthorisationProcessorRequest request) {
+        AuthorisationProcessorResponse processorResponse = receivedAuthorisationProcessor.process(request);
+
+        //update authorisation
+        getProcessorService(request).updateAuthorisation(request, processorResponse);
+        return processorResponse;
+    }
+
+    private AuthorisationProcessorService getProcessorService(AuthorisationProcessorRequest request) {
+        if (request.getServiceType() == ServiceType.AIS) {
+            return applicationContext.getBean(AisAuthorisationProcessorServiceImpl.class);
+        } else if (request.getServiceType() == ServiceType.PIS &&
+                       request.getPaymentAuthorisationType() == PaymentAuthorisationType.CREATED) {
+            return applicationContext.getBean(PisAuthorisationProcessorServiceImpl.class);
+        } else if (request.getServiceType() == ServiceType.PIS &&
+                       request.getPaymentAuthorisationType() == PaymentAuthorisationType.CANCELLED) {
+            return applicationContext.getBean(PisCancellationAuthorisationProcessorServiceImpl.class);
+        }
+        throw new IllegalArgumentException("Authorisation processor service is unknown: " + request);
+    }
+
+    private void initAuthorisationChains() {
         receivedAuthorisationProcessor = new ReceivedAuthorisationProcessor();
         AuthorisationProcessor psuIdentifiedAuthorisationProcessor = new PsuIdentifiedAuthorisationProcessor();
         AuthorisationProcessor psuAuthenticatedAuthorisationProcessor = new PsuAuthenticatedAuthorisationProcessor();
@@ -41,14 +81,5 @@ public class AuthorisationChainResponsibilityService {
         startedAuthorisationProcessor.setNext(finalisedAuthorisationProcessor);
         finalisedAuthorisationProcessor.setNext(failedAuthorisationProcessor);
         failedAuthorisationProcessor.setNext(exemptedAuthorisationProcessor);
-    }
-
-    public void process(AuthorisationProcessorRequest request) {
-        receivedAuthorisationProcessor.process(request);
-    }
-
-    public static void main(String[] args) {
-        AuthorisationChainResponsibilityService chainResponsibility = new AuthorisationChainResponsibilityService();
-        chainResponsibility.process(new AuthorisationProcessorRequest(ScaApproach.EMBEDDED, ScaStatus.SCAMETHODSELECTED, null));
     }
 }

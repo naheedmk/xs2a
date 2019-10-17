@@ -17,36 +17,20 @@
 package de.adorsys.psd2.xs2a.domain.consent.pis;
 
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.sca.ChallengeData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
-import de.adorsys.psd2.xs2a.domain.Links;
-import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponseType;
 import de.adorsys.psd2.xs2a.domain.authorisation.CancellationAuthorisationResponse;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
+import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcessorResponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
-public class Xs2aUpdatePisCommonPaymentPsuDataResponse implements AuthorisationResponse, CancellationAuthorisationResponse {
+public class Xs2aUpdatePisCommonPaymentPsuDataResponse extends AuthorisationProcessorResponse implements CancellationAuthorisationResponse {
 
-    private String paymentId;
-    private String authorisationId;
-
-    private ScaStatus scaStatus;
-    private List<Xs2aAuthenticationObject> availableScaMethods;
-    private Xs2aAuthenticationObject chosenScaMethod;
-    private ChallengeData challengeData;
-    private Links links = new Links();
-    private String psuMessage;
     private PsuIdData psuData;
-
-    private ErrorHolder errorHolder;
 
     public Xs2aUpdatePisCommonPaymentPsuDataResponse(ScaStatus scaStatus, String paymentId, String authorisationId, PsuIdData psuData) {
         this.scaStatus = scaStatus;
@@ -58,10 +42,6 @@ public class Xs2aUpdatePisCommonPaymentPsuDataResponse implements AuthorisationR
     public Xs2aUpdatePisCommonPaymentPsuDataResponse(ErrorHolder errorHolder, String paymentId, String authorisationId, PsuIdData psuData) {
         this(ScaStatus.FAILED, paymentId, authorisationId, psuData);
         this.errorHolder = errorHolder;
-    }
-
-    public boolean hasError() {
-        return errorHolder != null;
     }
 
     @NotNull

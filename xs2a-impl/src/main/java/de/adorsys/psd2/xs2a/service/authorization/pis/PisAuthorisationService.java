@@ -31,11 +31,15 @@ import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
+import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
-import de.adorsys.psd2.xs2a.service.authorization.pis.stage.PisScaStage;
+import de.adorsys.psd2.xs2a.service.authorization.AuthorisationChainResponsibilityService;
+import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcessorResponse;
+import de.adorsys.psd2.xs2a.service.authorization.processor.model.PisAuthorisationProcessorRequest;
+import de.adorsys.psd2.xs2a.service.authorization.processor.model.PisCancellationAuthorisationProcessorRequest;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.web.mapper.TppRedirectUriMapper;
@@ -57,6 +61,7 @@ public class PisAuthorisationService {
     private final ScaApproachResolver scaApproachResolver;
     private final RequestProviderService requestProviderService;
     private final TppRedirectUriMapper tppRedirectUriMapper;
+    private final AuthorisationChainResponsibilityService authorisationChainResponsibilityService;
 
     /**
      * Sends a POST request to CMS to store created pis authorisation
@@ -68,7 +73,7 @@ public class PisAuthorisationService {
     public CreatePisAuthorisationResponse createPisAuthorisation(String paymentId, PsuIdData psuData) {
         TppRedirectUri redirectURIs = tppRedirectUriMapper.mapToTppRedirectUri(requestProviderService.getTppRedirectURI(), requestProviderService.getTppNokRedirectURI());
 
-        CreatePisAuthorisationRequest request = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, psuData, scaApproachResolver.resolveScaApproach(), redirectURIs );
+        CreatePisAuthorisationRequest request = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, psuData, scaApproachResolver.resolveScaApproach(), redirectURIs);
         return pisCommonPaymentServiceEncrypted.createAuthorization(paymentId, request)
                    .orElseGet(() -> {
                        log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Create PIS authorisation has failed: can't save authorisation to cms DB",
@@ -99,18 +104,10 @@ public class PisAuthorisationService {
 
         GetPisAuthorisationResponse response = pisAuthorisationOptional.get();
 
-        PisScaStage<Xs2aUpdatePisCommonPaymentPsuDataRequest, GetPisAuthorisationResponse, Xs2aUpdatePisCommonPaymentPsuDataResponse> service =
-            pisScaStageAuthorisationFactory.getService(PisScaStageAuthorisationFactory.getServiceName(scaApproach, response.getScaStatus()));
-        Xs2aUpdatePisCommonPaymentPsuDataResponse stageResponse = service.apply(request, response);
-
-        if (stageResponse.hasError()) {
-            log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}]. Updating PIS authorisation PSU Data has failed. Error msg: [{}]",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getPaymentId(), request.getAuthorisationId(), stageResponse.getErrorHolder());
-        } else {
-            doUpdatePisAuthorisation(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(stageResponse));
-        }
-
-        return stageResponse;
+        return (Xs2aUpdatePisCommonPaymentPsuDataResponse) authorisationChainResponsibilityService.process(
+            new PisAuthorisationProcessorRequest(scaApproach,
+                                                 response.getScaStatus(),
+                                                 request));
     }
 
     /**
@@ -135,18 +132,10 @@ public class PisAuthorisationService {
 
         GetPisAuthorisationResponse response = pisCancellationAuthorisationOptional.get();
 
-        PisScaStage<Xs2aUpdatePisCommonPaymentPsuDataRequest, GetPisAuthorisationResponse, Xs2aUpdatePisCommonPaymentPsuDataResponse> service =
-            pisScaStageAuthorisationFactory.getService(PisScaStageAuthorisationFactory.getCancellationServiceName(scaApproach, response.getScaStatus()));
-        Xs2aUpdatePisCommonPaymentPsuDataResponse stageResponse = service.apply(request, response);
-
-        if (stageResponse.hasError()) {
-            log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}]. Updating PIS Payment Cancellation authorisation PSU Data has failed:. Error msg: [{}]",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getPaymentId(), request.getAuthorisationId(), stageResponse.getErrorHolder());
-        } else {
-            doUpdatePisCancellationAuthorisation(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(stageResponse));
-        }
-
-        return stageResponse;
+        return (Xs2aUpdatePisCommonPaymentPsuDataResponse) authorisationChainResponsibilityService.process(
+            new PisCancellationAuthorisationProcessorRequest(scaApproach,
+                                                             response.getScaStatus(),
+                                                             request));
     }
 
     public void doUpdatePisAuthorisation(UpdatePisCommonPaymentPsuDataRequest request) {
@@ -167,7 +156,7 @@ public class PisAuthorisationService {
     public CreatePisAuthorisationResponse createPisAuthorisationCancellation(String paymentId, PsuIdData psuData) {
         TppRedirectUri redirectURIs = tppRedirectUriMapper.mapToTppRedirectUri(requestProviderService.getTppRedirectURI(), requestProviderService.getTppNokRedirectURI());
 
-        CreatePisAuthorisationRequest request = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CANCELLED, psuData, scaApproachResolver.resolveScaApproach(), redirectURIs );
+        CreatePisAuthorisationRequest request = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CANCELLED, psuData, scaApproachResolver.resolveScaApproach(), redirectURIs);
         return pisCommonPaymentServiceEncrypted.createAuthorizationCancellation(paymentId, request)
                    .orElseGet(() -> {
                        log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Create PIS Payment Cancellation Authorisation has failed. Can't find Payment Data by id or Payment is Finalised.",
@@ -227,5 +216,25 @@ public class PisAuthorisationService {
      */
     public Optional<AuthorisationScaApproachResponse> getAuthorisationScaApproach(String authorisationId, PaymentAuthorisationType authorisationType) {
         return pisCommonPaymentServiceEncrypted.getAuthorisationScaApproach(authorisationId, authorisationType);
+    }
+
+    public void updateAuthorisation(UpdateAuthorisationRequest request,
+                                    AuthorisationProcessorResponse response) {
+        if (response.hasError()) {
+            log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}]. Updating PIS authorisation PSU Data has failed. Error msg: [{}]",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getBusynessObjectId(), request.getAuthorisationId(), response.getErrorHolder());
+        } else {
+            doUpdatePisAuthorisation(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(request, response));
+        }
+    }
+
+    public void updateCancellationAuthorisation(UpdateAuthorisationRequest request,
+                                                AuthorisationProcessorResponse response) {
+        if (response.hasError()) {
+            log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}]. Updating PIS Payment Cancellation authorisation PSU Data has failed:. Error msg: [{}]",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getBusynessObjectId(), request.getAuthorisationId(), response.getErrorHolder());
+        } else {
+            doUpdatePisCancellationAuthorisation(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(request, response));
+        }
     }
 }
