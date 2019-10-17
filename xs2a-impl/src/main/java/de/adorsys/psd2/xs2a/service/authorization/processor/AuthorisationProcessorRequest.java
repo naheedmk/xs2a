@@ -33,4 +33,5 @@ public class AuthorisationProcessorRequest {
     private ScaApproach scaApproach;
     private ScaStatus scaStatus;
     private UpdateAuthorisationRequest updateAuthorisationRequest;
+    private Object authorisation;
 }

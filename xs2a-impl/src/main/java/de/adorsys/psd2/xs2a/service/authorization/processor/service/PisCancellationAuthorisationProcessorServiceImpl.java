@@ -16,20 +16,55 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.processor.service;
 
+import de.adorsys.psd2.consent.api.pis.authorisation.GetPisAuthorisationResponse;
+import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
+import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
+import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.psd2.xs2a.domain.ErrorHolder;
+import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
+import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
+import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
+import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationService;
 import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcessorRequest;
 import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcessorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import de.adorsys.psd2.xs2a.service.consent.PisAspspDataService;
+import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
+import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
+import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
+import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
+import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.Xs2aToSpiPaymentMapper;
+import de.adorsys.psd2.xs2a.service.payment.Xs2aUpdatePaymentAfterSpiService;
+import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
+import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiScaConfirmation;
+import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
+import de.adorsys.psd2.xs2a.spi.service.PaymentCancellationSpi;
+import de.adorsys.psd2.xs2a.spi.service.SpiPayment;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.FINALISED;
+
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class PisCancellationAuthorisationProcessorServiceImpl extends BaseAuthorisationProcessorService {
 
-    @Autowired
-    private List<PisScaAuthorisationService> services;
+    private final List<PisScaAuthorisationService> services;
+    private final Xs2aToSpiPaymentMapper xs2aToSpiPaymentMapper;
+    private final PaymentCancellationSpi paymentCancellationSpi;
+    private final PisAspspDataService pisAspspDataService;
+    private final Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper;
+    private final SpiContextDataProvider spiContextDataProvider;
+    private final SpiErrorMapper spiErrorMapper;
+    private final SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
+    private final RequestProviderService requestProviderService;
+    private final Xs2aUpdatePaymentAfterSpiService updatePaymentAfterSpiService;
 
     @Override
     public void updateAuthorisation(AuthorisationProcessorRequest request, AuthorisationProcessorResponse response) {
@@ -37,7 +72,44 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends BaseAuthor
         authorizationService.updateCancellationAuthorisation(request.getUpdateAuthorisationRequest(), response);
     }
 
+    @Override
+    public AuthorisationProcessorResponse doScaMethodSelected(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        Xs2aUpdatePisCommonPaymentPsuDataRequest request = (Xs2aUpdatePisCommonPaymentPsuDataRequest) authorisationProcessorRequest.getUpdateAuthorisationRequest();
+        GetPisAuthorisationResponse pisAuthorisationResponse = (GetPisAuthorisationResponse) authorisationProcessorRequest.getAuthorisation();
+
+        PaymentType paymentType = pisAuthorisationResponse.getPaymentType();
+        String paymentProduct = pisAuthorisationResponse.getPaymentProduct();
+        SpiPayment payment = xs2aToSpiPaymentMapper.mapToSpiPayment(pisAuthorisationResponse, paymentType, paymentProduct);
+        PsuIdData psuData = extractPsuIdData(request, pisAuthorisationResponse);
+        String authorisationId = request.getAuthorisationId();
+        String paymentId = request.getPaymentId();
+
+        SpiAspspConsentDataProvider spiAspspConsentDataProvider = aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getPaymentId());
+
+        String internalId = pisAspspDataService.getInternalPaymentIdByEncryptedString(request.getPaymentId());
+        SpiScaConfirmation spiScaConfirmation = xs2aPisCommonPaymentMapper.buildSpiScaConfirmation(request, pisAuthorisationResponse.getPaymentId(), internalId, psuData);
+
+        SpiResponse<SpiResponse.VoidResponse> spiResponse = paymentCancellationSpi.verifyScaAuthorisationAndCancelPayment(spiContextDataProvider.provideWithPsuIdData(psuData), spiScaConfirmation, payment, spiAspspConsentDataProvider);
+
+        if (spiResponse.hasError()) {
+            ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
+            log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}]. PIS_CANCELLATION_EMBEDDED_SCAMETHODSELECTED stage. Verify SCA authorisation and cancel payment has failed. Error msg: [{}]",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId, errorHolder);
+            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS), request.getPaymentId(), request.getAuthorisationId(), psuData);
+        }
+
+        updatePaymentAfterSpiService.updatePaymentStatus(request.getPaymentId(), TransactionStatus.CANC);
+
+        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, request.getPaymentId(), request.getAuthorisationId(), psuData);
+    }
+
     private PisScaAuthorisationService getService(ScaApproach scaApproach) {
         return services.stream().filter(s -> s.getScaApproachServiceType() == scaApproach).findFirst().orElseThrow(() -> new IllegalArgumentException(""));
+    }
+
+    private PsuIdData extractPsuIdData(UpdateAuthorisationRequest request,
+                                       GetPisAuthorisationResponse authorisationResponse) {
+        PsuIdData psuDataInRequest = request.getPsuData();
+        return isPsuExist(psuDataInRequest) ? psuDataInRequest : authorisationResponse.getPsuIdData();
     }
 }

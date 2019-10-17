@@ -33,10 +33,10 @@ public class GetPisAuthorisationResponse {
     private PsuIdData psuIdData;
     private ScaStatus scaStatus;
     private String password;
+    private ScaApproach chosenScaApproach;
 
     private PaymentType paymentType;
     private List<PisPayment> payments;
     private String paymentProduct;
     private PisPaymentInfo paymentInfo;
-    private ScaApproach chosenScaApproach;
 }

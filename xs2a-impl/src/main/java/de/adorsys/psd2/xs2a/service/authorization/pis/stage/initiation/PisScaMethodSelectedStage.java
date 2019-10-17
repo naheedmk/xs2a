@@ -97,7 +97,10 @@ public class PisScaMethodSelectedStage extends PisScaStage<Xs2aUpdatePisCommonPa
         SpiAspspConsentDataProvider aspspConsentDataProvider =
             aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getPaymentId());
 
-        SpiResponse<SpiPaymentExecutionResponse> spiResponse = paymentSpi.verifyScaAuthorisationAndExecutePayment(contextData, spiScaConfirmation, payment, aspspConsentDataProvider);
+        SpiResponse<SpiPaymentExecutionResponse> spiResponse = paymentSpi.verifyScaAuthorisationAndExecutePayment(contextData,
+                                                                                                                  spiScaConfirmation,
+                                                                                                                  payment,
+                                                                                                                  aspspConsentDataProvider);
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
@@ -113,7 +116,7 @@ public class PisScaMethodSelectedStage extends PisScaStage<Xs2aUpdatePisCommonPa
         }
 
         updatePaymentAfterSpiService.updatePaymentStatus(request.getPaymentId(), paymentStatus);
-        // TODO check the paymentSpi result first https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/338
+
         return new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, paymentId, request.getAuthorisationId(), psuData);
     }
 }

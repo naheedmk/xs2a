@@ -16,10 +16,42 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.processor;
 
+import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
+import de.adorsys.psd2.xs2a.service.authorization.processor.service.AisAuthorisationProcessorServiceImpl;
+import de.adorsys.psd2.xs2a.service.authorization.processor.service.AuthorisationProcessorService;
+import de.adorsys.psd2.xs2a.service.authorization.processor.service.PisAuthorisationProcessorServiceImpl;
+import de.adorsys.psd2.xs2a.service.authorization.processor.service.PisCancellationAuthorisationProcessorServiceImpl;
+import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
+import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationContext;
+
+@AllArgsConstructor
 public abstract class AuthorisationProcessor {
+    private ApplicationContext applicationContext;
 
     public abstract void setNext(AuthorisationProcessor nextProcessor);
 
     public abstract AuthorisationProcessorResponse process(AuthorisationProcessorRequest request);
+
+    public AuthorisationProcessorResponse apply(AuthorisationProcessorRequest request) {
+        AuthorisationProcessorResponse processorResponse = process(request);
+
+        //update authorisation
+        getProcessorService(request).updateAuthorisation(request, processorResponse);
+        return processorResponse;
+    }
+
+    AuthorisationProcessorService getProcessorService(AuthorisationProcessorRequest request) {
+        if (request.getServiceType() == ServiceType.AIS) {
+            return applicationContext.getBean(AisAuthorisationProcessorServiceImpl.class);
+        } else if (request.getServiceType() == ServiceType.PIS &&
+                       request.getPaymentAuthorisationType() == PaymentAuthorisationType.CREATED) {
+            return applicationContext.getBean(PisAuthorisationProcessorServiceImpl.class);
+        } else if (request.getServiceType() == ServiceType.PIS &&
+                       request.getPaymentAuthorisationType() == PaymentAuthorisationType.CANCELLED) {
+            return applicationContext.getBean(PisCancellationAuthorisationProcessorServiceImpl.class);
+        }
+        throw new IllegalArgumentException("Authorisation processor service is unknown: " + request);
+    }
 
 }

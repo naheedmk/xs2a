@@ -92,7 +92,10 @@ public class AisScaAuthenticatedStage extends AisScaStage<UpdateConsentPsuDataRe
 
         PsuIdData psuData = extractPsuIdData(request, authorisationResponse);
 
-        SpiResponse<SpiVerifyScaAuthorisationResponse> spiResponse = aisConsentSpi.verifyScaAuthorisation(spiContextDataProvider.provideWithPsuIdData(psuData), aisConsentMapper.mapToSpiScaConfirmation(request, psuData), aisConsentMapper.mapToSpiAccountConsent(accountConsent), aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId));
+        SpiResponse<SpiVerifyScaAuthorisationResponse> spiResponse = aisConsentSpi.verifyScaAuthorisation(spiContextDataProvider.provideWithPsuIdData(psuData),
+                                                                                                          aisConsentMapper.mapToSpiScaConfirmation(request, psuData),
+                                                                                                          aisConsentMapper.mapToSpiAccountConsent(accountConsent),
+                                                                                                          aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId));
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);

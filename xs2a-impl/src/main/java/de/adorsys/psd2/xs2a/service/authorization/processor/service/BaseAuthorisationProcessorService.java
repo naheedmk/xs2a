@@ -16,5 +16,15 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.processor.service;
 
+import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+
+import java.util.Optional;
+
 abstract class BaseAuthorisationProcessorService implements AuthorisationProcessorService {
+
+    boolean isPsuExist(PsuIdData psuIdData) {
+        return Optional.ofNullable(psuIdData)
+                   .map(PsuIdData::isNotEmpty)
+                   .orElse(false);
+    }
 }

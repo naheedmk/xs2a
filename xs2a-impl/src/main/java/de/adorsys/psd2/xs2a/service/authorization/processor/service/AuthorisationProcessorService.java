@@ -22,4 +22,6 @@ import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcess
 public interface AuthorisationProcessorService {
 
     void updateAuthorisation(AuthorisationProcessorRequest request, AuthorisationProcessorResponse response);
+
+    AuthorisationProcessorResponse doScaMethodSelected(AuthorisationProcessorRequest request);
 }

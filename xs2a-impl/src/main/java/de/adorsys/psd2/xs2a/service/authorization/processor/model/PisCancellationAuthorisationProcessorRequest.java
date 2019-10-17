@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.processor.model;
 
+import de.adorsys.psd2.consent.api.pis.authorisation.GetPisAuthorisationResponse;
 import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
@@ -28,7 +29,8 @@ import lombok.Value;
 public class PisCancellationAuthorisationProcessorRequest extends AuthorisationProcessorRequest {
 
     public PisCancellationAuthorisationProcessorRequest(ScaApproach scaApproach, ScaStatus scaStatus,
-                                                        UpdateAuthorisationRequest updateAuthorisationRequest) {
-        super(ServiceType.PIS, PaymentAuthorisationType.CANCELLED, scaApproach, scaStatus, updateAuthorisationRequest);
+                                                        UpdateAuthorisationRequest updateAuthorisationRequest,
+                                                        GetPisAuthorisationResponse authorisation) {
+        super(ServiceType.PIS, PaymentAuthorisationType.CANCELLED, scaApproach, scaStatus, updateAuthorisationRequest, authorisation);
     }
 }
