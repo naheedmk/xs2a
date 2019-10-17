@@ -110,7 +110,7 @@ public class EmbeddedAisAuthorizationService implements AisAuthorizationService 
 
         if (response.hasError()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Consent-ID [{}], Authorisation-ID [{}]. Update consent authorisation failed. Error msg: {}.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getConsentId(), request.getAuthorizationId(), response.getMessageError());
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getConsentId(), request.getAuthorizationId(), response.getErrorHolder());
         } else {
             aisConsentService.updateConsentAuthorization(aisConsentMapper.mapToSpiUpdateConsentPsuDataReq(response, request));
         }
@@ -122,7 +122,7 @@ public class EmbeddedAisAuthorizationService implements AisAuthorizationService 
     public AuthorisationProcessorResponse updateConsentPsuData(UpdateAuthorisationRequest request, AuthorisationProcessorResponse response) {
         if (response.hasError()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Consent-ID [{}], Authorisation-ID [{}]. Update consent authorisation failed. Error msg: {}.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getBusynessObjectId(), request.getAuthorisationId(), response.getMessageError());
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getBusynessObjectId(), request.getAuthorisationId(), response.getErrorHolder());
         } else {
             aisConsentService.updateConsentAuthorization(aisConsentMapper.mapToSpiUpdateConsentPsuDataReq(request, response));
         }

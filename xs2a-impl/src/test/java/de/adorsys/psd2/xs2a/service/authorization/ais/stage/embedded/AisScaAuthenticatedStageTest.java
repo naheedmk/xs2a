@@ -161,7 +161,7 @@ public class AisScaAuthenticatedStageTest {
 
         assertThat(actualResponse).isNotNull();
         assertThat(actualResponse.getScaStatus()).isEqualTo(FAILED_SCA_STATUS);
-        assertThat(actualResponse.getMessageError().getErrorType()).isEqualTo(ErrorType.AIS_400);
+        assertThat(actualResponse.getErrorHolder().getErrorType()).isEqualTo(ErrorType.AIS_400);
     }
 
     @Test
@@ -174,8 +174,8 @@ public class AisScaAuthenticatedStageTest {
 
         //Then
         assertThat(actualResponse.getScaStatus()).isEqualTo(ScaStatus.FAILED);
-        assertThat(actualResponse.getMessageError().getErrorType()).isEqualTo(ErrorType.AIS_400);
-        assertThat(actualResponse.getMessageError().getTppMessage().getMessageErrorCode()).isEqualTo(MessageErrorCode.CONSENT_UNKNOWN_400);
+        assertThat(actualResponse.getErrorHolder().getErrorType()).isEqualTo(ErrorType.AIS_400);
+        assertThat(actualResponse.getErrorHolder().getTppMessageInformationList().get(0).getMessageErrorCode()).isEqualTo(MessageErrorCode.CONSENT_UNKNOWN_400);
     }
 
     @Test

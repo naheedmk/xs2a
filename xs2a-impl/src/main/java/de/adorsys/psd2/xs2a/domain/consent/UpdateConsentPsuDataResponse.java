@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.domain.consent;
 
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
+import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcessorResponse;
 import lombok.Data;
 
@@ -28,5 +29,10 @@ public class UpdateConsentPsuDataResponse extends AuthorisationProcessorResponse
         this.scaStatus = scaStatus;
         this.consentId = consentId;
         this.authorisationId = authorisationId;
+    }
+
+    public UpdateConsentPsuDataResponse(ErrorHolder errorHolder, String consentId, String authorisationId) {
+        this(ScaStatus.FAILED, consentId, authorisationId);
+        this.errorHolder = errorHolder;
     }
 }

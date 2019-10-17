@@ -94,7 +94,7 @@ public class DecoupledAisAuthorizationService implements AisAuthorizationService
 
         if (response.hasError()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Consent-ID [{}], Authentication-ID [{}], PSU-ID [{}]. Update consent authorisation has failed. Error msg: {}.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), updatePsuData.getConsentId(), updatePsuData.getAuthorizationId(), updatePsuData.getPsuData().getPsuId(), response.getMessageError());
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), updatePsuData.getConsentId(), updatePsuData.getAuthorizationId(), updatePsuData.getPsuData().getPsuId(), response.getErrorHolder());
         } else {
             aisConsentService.updateConsentAuthorization(aisConsentMapper.mapToSpiUpdateConsentPsuDataReq(response, updatePsuData));
         }
@@ -106,7 +106,7 @@ public class DecoupledAisAuthorizationService implements AisAuthorizationService
     public AuthorisationProcessorResponse updateConsentPsuData(UpdateAuthorisationRequest request, AuthorisationProcessorResponse response) {
         if (response.hasError()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Consent-ID [{}], Authentication-ID [{}], PSU-ID [{}]. Update consent authorisation has failed. Error msg: {}.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getBusynessObjectId(), request.getAuthorisationId(), request.getPsuData().getPsuId(), response.getMessageError());
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getBusynessObjectId(), request.getAuthorisationId(), request.getPsuData().getPsuId(), response.getErrorHolder());
         } else {
             aisConsentService.updateConsentAuthorization(aisConsentMapper.mapToSpiUpdateConsentPsuDataReq(request, response));
         }

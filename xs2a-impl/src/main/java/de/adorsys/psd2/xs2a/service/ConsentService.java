@@ -517,17 +517,17 @@ public class ConsentService {
         UpdateConsentPsuDataResponse response = service.updateConsentPsuData(updatePsuData, authorization.get());
         loggingContextService.storeScaStatus(response.getScaStatus());
 
-        UpdateConsentPsuDataResponse processorResponse = (UpdateConsentPsuDataResponse) authorisationChainResponsibilityService.process(
+        UpdateConsentPsuDataResponse response = (UpdateConsentPsuDataResponse) authorisationChainResponsibilityService.process(
             new AisAuthorisationProcessorRequest(consentAuthorization.getChosenScaApproach(),
                                                  consentAuthorization.getScaStatus(),
                                                  updatePsuData));
 
-        return Optional.ofNullable(processorResponse)
+        return Optional.ofNullable(response)
                    .map(s -> Optional.ofNullable(s.getErrorHolder())
                                  .map(e -> ResponseObject.<UpdateConsentPsuDataResponse>builder()
                                                .fail(e)
                                                .build())
-                                 .orElseGet(ResponseObject.<UpdateConsentPsuDataResponse>builder().body(processorResponse)::build))
+                                 .orElseGet(ResponseObject.<UpdateConsentPsuDataResponse>builder().body(response)::build))
                    .orElseGet(ResponseObject.<UpdateConsentPsuDataResponse>builder()
                                   .fail(AIS_400, of(FORMAT_ERROR))
                                   ::build);

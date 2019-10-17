@@ -16,13 +16,9 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.ais.stage;
 
-import de.adorsys.psd2.xs2a.core.error.TppMessage;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.consent.AccountConsentAuthorization;
 import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataReq;
-import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataResponse;
-import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aAisConsentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aAisConsentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
@@ -32,11 +28,8 @@ import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.service.AisConsentSpi;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Abstract class to be extended by each stage of updating consent PSU data workflow
@@ -50,24 +43,6 @@ public abstract class AisScaStage<T, U, R> implements BiFunction<T, U, R> {
     protected final Xs2aToSpiPsuDataMapper psuDataMapper;
     protected final SpiToXs2aAuthenticationObjectMapper spiToXs2aAuthenticationObjectMapper;
     protected final SpiErrorMapper spiErrorMapper;
-
-    protected UpdateConsentPsuDataResponse createFailedResponse(MessageError messageError,
-                                                                List<TppMessage> messages,
-                                                                UpdateConsentPsuDataReq updateConsentPsuDataReq) {
-        UpdateConsentPsuDataResponse response = new UpdateConsentPsuDataResponse(ScaStatus.FAILED,
-                                                                                 updateConsentPsuDataReq.getConsentId(),
-                                                                                 updateConsentPsuDataReq.getAuthorizationId());
-        response.setMessageError(messageError);
-        response.setPsuMessage(buildPsuMessage(messages));
-        return response;
-    }
-
-    private String buildPsuMessage(List<TppMessage> messages) {
-        List<String> textMessages = new ArrayList<>();
-        messages.forEach(tppMessage -> textMessages.add(tppMessage.getMessageText()));
-
-        return String.join(", ", textMessages);
-    }
 
     protected PsuIdData extractPsuIdData(UpdateConsentPsuDataReq request, AccountConsentAuthorization authorisationResponse) {
         PsuIdData psuDataInRequest = request.getPsuData();

@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.processor;
 
-import de.adorsys.psd2.model.ScaStatus;
+import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 
 public class FinalisedAuthorisationProcessor extends AuthorisationProcessor {
     private AuthorisationProcessor nextProcessor;
