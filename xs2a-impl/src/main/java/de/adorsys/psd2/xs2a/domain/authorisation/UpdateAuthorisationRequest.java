@@ -26,7 +26,7 @@ public interface UpdateAuthorisationRequest {
 
     PsuIdData getPsuData();
 
-    String getBusynessObjectId();
+    String getBusinessObjectId();
 
     String getAuthorisationId();
 

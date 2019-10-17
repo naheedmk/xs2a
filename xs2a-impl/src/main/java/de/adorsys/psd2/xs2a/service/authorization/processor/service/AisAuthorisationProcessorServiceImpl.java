@@ -71,7 +71,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
     @Override
     public AuthorisationProcessorResponse doScaMethodSelected(AuthorisationProcessorRequest authorisationProcessorRequest) {
         UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
-        String consentId = request.getBusynessObjectId();
+        String consentId = request.getBusinessObjectId();
         String authorisationId = request.getAuthorisationId();
         Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
 

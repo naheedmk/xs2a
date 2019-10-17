@@ -222,7 +222,7 @@ public class PisAuthorisationService {
                                     AuthorisationProcessorResponse response) {
         if (response.hasError()) {
             log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}]. Updating PIS authorisation PSU Data has failed. Error msg: [{}]",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getBusynessObjectId(), request.getAuthorisationId(), response.getErrorHolder());
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getBusinessObjectId(), request.getAuthorisationId(), response.getErrorHolder());
         } else {
             doUpdatePisAuthorisation(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(request, response));
         }
@@ -232,7 +232,7 @@ public class PisAuthorisationService {
                                                 AuthorisationProcessorResponse response) {
         if (response.hasError()) {
             log.warn("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}]. Updating PIS Payment Cancellation authorisation PSU Data has failed:. Error msg: [{}]",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getBusynessObjectId(), request.getAuthorisationId(), response.getErrorHolder());
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getBusinessObjectId(), request.getAuthorisationId(), response.getErrorHolder());
         } else {
             doUpdatePisCancellationAuthorisation(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(request, response));
         }

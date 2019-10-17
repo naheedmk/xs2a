@@ -114,7 +114,7 @@ public class Xs2aAisConsentMapper {
                        PsuIdData psuIdDataFromRequest = request.getPsuData();
                        UpdateConsentPsuDataReq req = new UpdateConsentPsuDataReq();
                        req.setPsuData(new PsuIdData(psuIdDataFromRequest.getPsuId(), psuIdDataFromRequest.getPsuIdType(), psuIdDataFromRequest.getPsuCorporateId(), psuIdDataFromRequest.getPsuCorporateIdType()));
-                       req.setConsentId(request.getBusynessObjectId());
+                       req.setConsentId(request.getBusinessObjectId());
                        req.setAuthorizationId(request.getAuthorisationId());
                        req.setAuthenticationMethodId(Optional.ofNullable(data.getChosenScaMethod())
                                                          .map(Xs2aAuthenticationObject::getAuthenticationMethodId)
@@ -142,7 +142,7 @@ public class Xs2aAisConsentMapper {
 
     public SpiScaConfirmation mapToSpiScaConfirmation(UpdateAuthorisationRequest request, PsuIdData psuData) {
         SpiScaConfirmation accountConfirmation = new SpiScaConfirmation();
-        accountConfirmation.setConsentId(request.getBusynessObjectId());
+        accountConfirmation.setConsentId(request.getBusinessObjectId());
         accountConfirmation.setPsuId(Optional.ofNullable(psuData).map(PsuIdData::getPsuId).orElse(null));
         accountConfirmation.setTanNumber(request.getScaAuthenticationData());
         return accountConfirmation;

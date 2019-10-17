@@ -35,7 +35,7 @@ public class UpdateConsentPsuDataReq implements UpdateAuthorisationRequest {
     private String password;
 
     @Override
-    public String getBusynessObjectId() {
+    public String getBusinessObjectId() {
         return consentId;
     }
 

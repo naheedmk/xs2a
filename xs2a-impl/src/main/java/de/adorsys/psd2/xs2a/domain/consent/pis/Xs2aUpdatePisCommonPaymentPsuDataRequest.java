@@ -49,7 +49,7 @@ public class Xs2aUpdatePisCommonPaymentPsuDataRequest implements UpdateAuthorisa
     }
 
     @Override
-    public String getBusynessObjectId() {
+    public String getBusinessObjectId() {
         return paymentId;
     }
 }
