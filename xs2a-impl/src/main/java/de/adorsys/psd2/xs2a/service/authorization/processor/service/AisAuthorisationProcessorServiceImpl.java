@@ -69,6 +69,21 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
     }
 
     @Override
+    public AuthorisationProcessorResponse doScaReceived(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        return null;
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaPsuIdentified(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        return null;
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaPsuAuthenticated(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        return null;
+    }
+
+    @Override
     public AuthorisationProcessorResponse doScaMethodSelected(AuthorisationProcessorRequest authorisationProcessorRequest) {
         UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
         String consentId = request.getBusinessObjectId();
@@ -111,6 +126,33 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
         aisConsentService.findAndTerminateOldConsentsByNewConsentId(consentId);
 
         return new UpdateConsentPsuDataResponse(ScaStatus.FINALISED, consentId, request.getAuthorisationId());
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaStarted(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        //TODO or throw exeception
+        UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
+        return new UpdateConsentPsuDataResponse(ScaStatus.STARTED, request.getBusinessObjectId(), request.getAuthorisationId());
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaFinalised(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
+        return new UpdateConsentPsuDataResponse(ScaStatus.FINALISED, request.getBusinessObjectId(), request.getAuthorisationId());
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaFailed(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        //TODO or throw exeception
+        UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
+        return new UpdateConsentPsuDataResponse(ScaStatus.FAILED, request.getBusinessObjectId(), request.getAuthorisationId());
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaExempted(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        //TODO or throw exeception
+        UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
+        return new UpdateConsentPsuDataResponse(ScaStatus.EXEMPTED, request.getBusinessObjectId(), request.getAuthorisationId());
     }
 
     private AisAuthorizationService getService(ScaApproach scaApproach) {

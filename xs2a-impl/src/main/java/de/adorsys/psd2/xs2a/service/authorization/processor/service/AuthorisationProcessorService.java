@@ -23,5 +23,19 @@ public interface AuthorisationProcessorService {
 
     void updateAuthorisation(AuthorisationProcessorRequest request, AuthorisationProcessorResponse response);
 
+    AuthorisationProcessorResponse doScaReceived(AuthorisationProcessorRequest request);
+
+    AuthorisationProcessorResponse doScaPsuIdentified(AuthorisationProcessorRequest request);
+
+    AuthorisationProcessorResponse doScaPsuAuthenticated(AuthorisationProcessorRequest request);
+
     AuthorisationProcessorResponse doScaMethodSelected(AuthorisationProcessorRequest request);
+
+    AuthorisationProcessorResponse doScaStarted(AuthorisationProcessorRequest request);
+
+    AuthorisationProcessorResponse doScaFinalised(AuthorisationProcessorRequest request);
+
+    AuthorisationProcessorResponse doScaFailed(AuthorisationProcessorRequest request);
+
+    AuthorisationProcessorResponse doScaExempted(AuthorisationProcessorRequest request);
 }

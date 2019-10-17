@@ -21,8 +21,10 @@ import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
+import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataResponse;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
@@ -51,7 +53,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.FINALISED;
+import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.*;
 
 @Slf4j
 @Service
@@ -73,6 +75,21 @@ public class PisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
     public void updateAuthorisation(AuthorisationProcessorRequest request, AuthorisationProcessorResponse response) {
         PisScaAuthorisationService authorizationService = getService(request.getScaApproach());
         authorizationService.updateAuthorisation(request.getUpdateAuthorisationRequest(), response);
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaReceived(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        return null;
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaPsuIdentified(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        return null;
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaPsuAuthenticated(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        return null;
     }
 
     @Override
@@ -112,6 +129,32 @@ public class PisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
         updatePaymentAfterSpiService.updatePaymentStatus(request.getPaymentId(), paymentStatus);
 
         return new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, paymentId, request.getAuthorisationId(), psuData);
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaStarted(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        //TODO or throw exeception
+        UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
+        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(STARTED, request.getBusinessObjectId(), request.getAuthorisationId(), request.getPsuData());
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaFinalised(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
+        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, request.getBusinessObjectId(), request.getAuthorisationId(), request.getPsuData());
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaFailed(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        //TODO or throw exeception
+        UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
+        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(FAILED, request.getBusinessObjectId(), request.getAuthorisationId(), request.getPsuData());
+    }
+
+    @Override
+    public AuthorisationProcessorResponse doScaExempted(AuthorisationProcessorRequest authorisationProcessorRequest) {
+        UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
+        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(EXEMPTED, request.getBusinessObjectId(), request.getAuthorisationId(), request.getPsuData());
     }
 
     private PisScaAuthorisationService getService(ScaApproach scaApproach) {

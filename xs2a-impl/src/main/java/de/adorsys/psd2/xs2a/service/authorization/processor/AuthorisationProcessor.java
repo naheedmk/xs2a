@@ -23,8 +23,10 @@ import de.adorsys.psd2.xs2a.service.authorization.processor.service.PisAuthorisa
 import de.adorsys.psd2.xs2a.service.authorization.processor.service.PisCancellationAuthorisationProcessorServiceImpl;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.context.ApplicationContext;
 
+@NoArgsConstructor
 @AllArgsConstructor
 public abstract class AuthorisationProcessor {
     private ApplicationContext applicationContext;

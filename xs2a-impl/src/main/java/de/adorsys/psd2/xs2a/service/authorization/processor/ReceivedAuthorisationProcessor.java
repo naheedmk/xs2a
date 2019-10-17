@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.service.authorization.processor;
 
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
+import de.adorsys.psd2.xs2a.service.authorization.processor.service.AuthorisationProcessorService;
 
 public class ReceivedAuthorisationProcessor extends AuthorisationProcessor {
     private AuthorisationProcessor nextProcessor;
@@ -29,7 +30,8 @@ public class ReceivedAuthorisationProcessor extends AuthorisationProcessor {
     @Override
     public AuthorisationProcessorResponse process(AuthorisationProcessorRequest request) {
         if (ScaStatus.RECEIVED == request.getScaStatus()) {
-            System.out.println("scaStatus = " + request.getScaStatus());
+            AuthorisationProcessorService processorService = getProcessorService(request);
+            return processorService.doScaReceived(request);
         } else {
             nextProcessor.process(request);
         }
