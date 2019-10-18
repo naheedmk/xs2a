@@ -100,10 +100,9 @@ public class AisDecoupledScaReceivedAuthorisationStage extends AisScaStage<Updat
         }
         AccountConsent accountConsent = accountConsentOptional.get();
 
-        SpiAccountConsent spiAccountConsent = aisConsentMapper.mapToSpiAccountConsent(accountConsent);
         PsuIdData psuData = extractPsuIdData(request, authorisationResponse);
 
-
+        SpiAccountConsent spiAccountConsent = aisConsentMapper.mapToSpiAccountConsent(accountConsent);
         SpiContextData spiContextData = spiContextDataProvider.provideWithPsuIdData(psuData);
         SpiPsuData spiPsuData = psuDataMapper.mapToSpiPsuData(psuData);
         SpiResponse<SpiPsuAuthorisationResponse> authorisationStatusSpiResponse = aisConsentSpi.authorisePsu(spiContextData,
@@ -134,7 +133,7 @@ public class AisDecoupledScaReceivedAuthorisationStage extends AisScaStage<Updat
             return new UpdateConsentPsuDataResponse(ScaStatus.FINALISED, consentId, request.getAuthorizationId());
         }
 
-        return commonDecoupledAisService.proceedDecoupledApproach(request, spiAccountConsent, psuData);
+        return commonDecoupledAisService.proceedDecoupledApproach(request.getConsentId(), request.getAuthorisationId(), spiAccountConsent, psuData);
     }
 
     private UpdateConsentPsuDataResponse applyIdentification(UpdateConsentPsuDataReq request) {

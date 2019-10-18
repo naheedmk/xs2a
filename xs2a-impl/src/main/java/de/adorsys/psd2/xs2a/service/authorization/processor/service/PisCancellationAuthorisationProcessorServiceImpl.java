@@ -146,7 +146,8 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends BaseAuthor
     }
 
     private PisScaAuthorisationService getService(ScaApproach scaApproach) {
-        return services.stream().filter(s -> s.getScaApproachServiceType() == scaApproach).findFirst().orElseThrow(() -> new IllegalArgumentException(""));
+        return services.stream().filter(s -> s.getScaApproachServiceType() == scaApproach).findFirst()
+                   .orElseThrow(() -> new IllegalArgumentException("Pis cancellation authorisation service was not found for approach " + scaApproach));
     }
 
     private PsuIdData extractPsuIdData(UpdateAuthorisationRequest request,

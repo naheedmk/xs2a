@@ -102,7 +102,7 @@ public class AisScaMethodSelectedStage extends AisScaStage<UpdateConsentPsuDataR
         String authenticationMethodId = request.getAuthenticationMethodId();
         if (isDecoupledApproach(request.getAuthorizationId(), authenticationMethodId)) {
             aisConsentService.updateScaApproach(request.getAuthorizationId(), ScaApproach.DECOUPLED);
-            return commonDecoupledAisService.proceedDecoupledApproach(request, spiAccountConsent, authenticationMethodId, psuData);
+            return commonDecoupledAisService.proceedDecoupledApproach(request.getConsentId(), request.getAuthorisationId(), spiAccountConsent, authenticationMethodId, psuData);
         }
 
         return proceedEmbeddedApproach(request, spiAccountConsent, psuData);

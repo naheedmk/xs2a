@@ -21,10 +21,8 @@ import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
-import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataResponse;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
@@ -158,7 +156,8 @@ public class PisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
     }
 
     private PisScaAuthorisationService getService(ScaApproach scaApproach) {
-        return services.stream().filter(s -> s.getScaApproachServiceType() == scaApproach).findFirst().orElseThrow(() -> new IllegalArgumentException(""));
+        return services.stream().filter(s -> s.getScaApproachServiceType() == scaApproach).findFirst()
+                   .orElseThrow(() -> new IllegalArgumentException("Pis authorisation service was not found for approach " + scaApproach));
     }
 
     private PsuIdData extractPsuIdData(UpdateAuthorisationRequest request,
