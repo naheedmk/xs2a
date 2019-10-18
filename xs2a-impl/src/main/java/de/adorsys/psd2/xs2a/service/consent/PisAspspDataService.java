@@ -28,8 +28,4 @@ public class PisAspspDataService {
     public String getInternalPaymentIdByEncryptedString(String encryptedId) {
         return pisCommonPaymentServiceEncrypted.getDecryptedId(encryptedId).orElse(null);
     }
-
-    public boolean updateMultilevelScaByPaymentId(String paymentId, boolean multilevelScaRequired) {
-        return pisCommonPaymentServiceEncrypted.updateMultilevelSca(paymentId, multilevelScaRequired);
-    }
 }

@@ -49,16 +49,4 @@ public class PisAspspDataServiceTest {
         //Then
         assertThat(actualResponse).isNull();
     }
-
-    @Test
-    public void updateMultilevelScaByPaymentId() {
-        // Given
-        when(pisCommonPaymentServiceEncrypted.updateMultilevelSca(PAYMENT_ID, true)).thenReturn(true);
-
-        // When
-        boolean actualResponse = pisAspspDataService.updateMultilevelScaByPaymentId(PAYMENT_ID, true);
-
-        // Then
-        assertThat(actualResponse).isTrue();
-    }
 }

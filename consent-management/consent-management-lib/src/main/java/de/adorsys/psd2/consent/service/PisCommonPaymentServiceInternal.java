@@ -253,7 +253,7 @@ public class PisCommonPaymentServiceInternal implements PisCommonPaymentService 
     public boolean updateMultilevelSca(String paymentId, boolean multilevelScaRequired) {
         Optional<PisCommonPaymentData> pisCommonPaymentDataOptional = pisCommonPaymentDataRepository.findByPaymentId(paymentId);
         if (!pisCommonPaymentDataOptional.isPresent()) {
-            log.info("Payment ID: [{}]. Get update multilevel SCA required status failed, because payment is not found",
+            log.info("Payment ID: [{}]. Update multilevel SCA required status failed, because payment is not found",
                      paymentId);
             return false;
         }

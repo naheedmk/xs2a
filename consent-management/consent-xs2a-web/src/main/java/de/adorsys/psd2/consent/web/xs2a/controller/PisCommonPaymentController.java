@@ -316,7 +316,7 @@ public class PisCommonPaymentController {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "Bad Request")})
     public ResponseEntity<Boolean> updateMultilevelScaRequired(
-        @ApiParam(name = "payment-id", value = "The payment identification of the related payment.", example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7")
+        @ApiParam(name = "payment-id", value = "The payment identification of the related payment.", example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7", required = true)
         @PathVariable(name = "payment-id")
             String paymentId,
         @ApiParam(name = "multilevel-sca", value = "Multilevel SCA.", example = "false")

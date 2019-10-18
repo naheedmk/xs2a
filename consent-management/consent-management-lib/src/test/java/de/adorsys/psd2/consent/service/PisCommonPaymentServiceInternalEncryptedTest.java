@@ -340,6 +340,7 @@ public class PisCommonPaymentServiceInternalEncryptedTest {
 
         // Then
         assertTrue(actualResponse);
+        verify(pisCommonPaymentService, times(1)).updateMultilevelSca(DECRYPTED_PAYMENT_ID, true);
     }
 
     private PisPaymentInfo buildPisPaymentInfoRequest() {
