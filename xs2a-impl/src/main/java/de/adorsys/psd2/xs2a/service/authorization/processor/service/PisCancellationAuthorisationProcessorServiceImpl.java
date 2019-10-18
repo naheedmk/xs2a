@@ -67,6 +67,7 @@ import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("PMD")
 public class PisCancellationAuthorisationProcessorServiceImpl extends BaseAuthorisationProcessorService {
     private static final String UNSUPPORTED_ERROR_MESSAGE = "Current SCA status is not supported";
 

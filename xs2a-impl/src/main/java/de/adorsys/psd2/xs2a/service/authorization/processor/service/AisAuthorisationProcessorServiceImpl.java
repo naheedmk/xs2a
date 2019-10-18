@@ -62,6 +62,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("PMD")
 public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProcessorService {
 
     private final List<AisAuthorizationService> services;
