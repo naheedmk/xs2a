@@ -18,23 +18,22 @@ package de.adorsys.psd2.xs2a.service.authorization.processor;
 
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.service.authorization.processor.service.AuthorisationProcessorService;
+import org.springframework.context.ApplicationContext;
 
 public class ScaMethodSelectedAuthorisationProcessor extends AuthorisationProcessor {
-    private AuthorisationProcessor nextProcessor;
 
-    @Override
-    public void setNext(AuthorisationProcessor nextProcessor) {
-        this.nextProcessor = nextProcessor;
+    public ScaMethodSelectedAuthorisationProcessor(ApplicationContext applicationContext) {
+        super(applicationContext);
     }
 
     @Override
-    public AuthorisationProcessorResponse process(AuthorisationProcessorRequest request) {
-        if (ScaStatus.SCAMETHODSELECTED == request.getScaStatus()) {
-            AuthorisationProcessorService processorService = getProcessorService(request);
-            return processorService.doScaMethodSelected(request);
-        } else {
-            nextProcessor.process(request);
-        }
-        return null;
+    public ScaStatus getScaStatus() {
+        return ScaStatus.SCAMETHODSELECTED;
+    }
+
+    @Override
+    protected AuthorisationProcessorResponse execute(AuthorisationProcessorRequest request,
+                                                     AuthorisationProcessorService processorService) {
+        return processorService.doScaMethodSelected(request);
     }
 }

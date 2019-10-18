@@ -19,6 +19,7 @@ package de.adorsys.psd2.xs2a.service.authorization;
 import de.adorsys.psd2.xs2a.service.authorization.processor.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -26,9 +27,11 @@ import org.springframework.stereotype.Service;
 public class AuthorisationChainResponsibilityService {
 
     private AuthorisationProcessor receivedAuthorisationProcessor;
+    private ApplicationContext applicationContext;
 
     @Autowired
-    public AuthorisationChainResponsibilityService() {
+    public AuthorisationChainResponsibilityService(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
         initAuthorisationChains();
     }
 
@@ -37,14 +40,14 @@ public class AuthorisationChainResponsibilityService {
     }
 
     private void initAuthorisationChains() {
-        receivedAuthorisationProcessor = new ReceivedAuthorisationProcessor();
-        AuthorisationProcessor psuIdentifiedAuthorisationProcessor = new PsuIdentifiedAuthorisationProcessor();
-        AuthorisationProcessor psuAuthenticatedAuthorisationProcessor = new PsuAuthenticatedAuthorisationProcessor();
-        AuthorisationProcessor scaMethodSelectedAuthorisationProcessor = new ScaMethodSelectedAuthorisationProcessor();
-        AuthorisationProcessor startedAuthorisationProcessor = new StartedAuthorisationProcessor();
-        AuthorisationProcessor finalisedAuthorisationProcessor = new FinalisedAuthorisationProcessor();
-        AuthorisationProcessor failedAuthorisationProcessor = new FailedAuthorisationProcessor();
-        AuthorisationProcessor exemptedAuthorisationProcessor = new ExemptedAuthorisationProcessor();
+        receivedAuthorisationProcessor = new ReceivedAuthorisationProcessor(applicationContext);
+        AuthorisationProcessor psuIdentifiedAuthorisationProcessor = new PsuIdentifiedAuthorisationProcessor(applicationContext);
+        AuthorisationProcessor psuAuthenticatedAuthorisationProcessor = new PsuAuthenticatedAuthorisationProcessor(applicationContext);
+        AuthorisationProcessor scaMethodSelectedAuthorisationProcessor = new ScaMethodSelectedAuthorisationProcessor(applicationContext);
+        AuthorisationProcessor startedAuthorisationProcessor = new StartedAuthorisationProcessor(applicationContext);
+        AuthorisationProcessor finalisedAuthorisationProcessor = new FinalisedAuthorisationProcessor(applicationContext);
+        AuthorisationProcessor failedAuthorisationProcessor = new FailedAuthorisationProcessor(applicationContext);
+        AuthorisationProcessor exemptedAuthorisationProcessor = new ExemptedAuthorisationProcessor(applicationContext);
 
         receivedAuthorisationProcessor.setNext(psuIdentifiedAuthorisationProcessor);
         psuIdentifiedAuthorisationProcessor.setNext(psuAuthenticatedAuthorisationProcessor);

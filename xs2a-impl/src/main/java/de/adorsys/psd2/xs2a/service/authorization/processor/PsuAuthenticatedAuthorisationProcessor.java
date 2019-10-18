@@ -18,23 +18,22 @@ package de.adorsys.psd2.xs2a.service.authorization.processor;
 
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.service.authorization.processor.service.AuthorisationProcessorService;
+import org.springframework.context.ApplicationContext;
 
 public class PsuAuthenticatedAuthorisationProcessor extends AuthorisationProcessor {
-    private AuthorisationProcessor nextProcessor;
 
-    @Override
-    public void setNext(AuthorisationProcessor nextProcessor) {
-        this.nextProcessor = nextProcessor;
+    public PsuAuthenticatedAuthorisationProcessor(ApplicationContext applicationContext) {
+        super(applicationContext);
     }
 
     @Override
-    public AuthorisationProcessorResponse process(AuthorisationProcessorRequest request) {
-        if (ScaStatus.PSUAUTHENTICATED == request.getScaStatus()) {
-            AuthorisationProcessorService processorService = getProcessorService(request);
-            return processorService.doScaPsuAuthenticated(request);
-        } else {
-            nextProcessor.process(request);
-        }
-        return null;
+    public ScaStatus getScaStatus() {
+        return ScaStatus.PSUAUTHENTICATED;
+    }
+
+    @Override
+    protected AuthorisationProcessorResponse execute(AuthorisationProcessorRequest request,
+                                                     AuthorisationProcessorService processorService) {
+        return processorService.doScaPsuAuthenticated(request);
     }
 }

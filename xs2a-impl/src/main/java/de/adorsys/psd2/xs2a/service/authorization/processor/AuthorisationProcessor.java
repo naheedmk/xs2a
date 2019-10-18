@@ -17,23 +17,30 @@
 package de.adorsys.psd2.xs2a.service.authorization.processor;
 
 import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
+import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.service.authorization.processor.service.AisAuthorisationProcessorServiceImpl;
 import de.adorsys.psd2.xs2a.service.authorization.processor.service.AuthorisationProcessorService;
 import de.adorsys.psd2.xs2a.service.authorization.processor.service.PisAuthorisationProcessorServiceImpl;
 import de.adorsys.psd2.xs2a.service.authorization.processor.service.PisCancellationAuthorisationProcessorServiceImpl;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.context.ApplicationContext;
 
-@NoArgsConstructor
-@AllArgsConstructor
 public abstract class AuthorisationProcessor {
     private ApplicationContext applicationContext;
+    private AuthorisationProcessor nextProcessor;
 
-    public abstract void setNext(AuthorisationProcessor nextProcessor);
+    public AuthorisationProcessor(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
-    public abstract AuthorisationProcessorResponse process(AuthorisationProcessorRequest request);
+    public void setNext(AuthorisationProcessor nextProcessor) {
+        this.nextProcessor = nextProcessor;
+    }
+
+    public abstract ScaStatus getScaStatus();
+
+    protected abstract AuthorisationProcessorResponse execute(AuthorisationProcessorRequest request,
+                                                              AuthorisationProcessorService processorService);
 
     public AuthorisationProcessorResponse apply(AuthorisationProcessorRequest request) {
         AuthorisationProcessorResponse processorResponse = process(request);
@@ -41,6 +48,18 @@ public abstract class AuthorisationProcessor {
         //update authorisation
         getProcessorService(request).updateAuthorisation(request, processorResponse);
         return processorResponse;
+    }
+
+    AuthorisationProcessorResponse process(AuthorisationProcessorRequest request) {
+        if (getScaStatus() == request.getScaStatus()) {
+            AuthorisationProcessorService processorService = getProcessorService(request);
+            return execute(request, processorService);
+        } else {
+            if (hasNext()) {
+                nextProcessor.process(request);
+            }
+        }
+        return null;
     }
 
     AuthorisationProcessorService getProcessorService(AuthorisationProcessorRequest request) {
@@ -56,4 +75,7 @@ public abstract class AuthorisationProcessor {
         throw new IllegalArgumentException("Authorisation processor service is unknown: " + request);
     }
 
+    private boolean hasNext() {
+        return nextProcessor != null;
+    }
 }
