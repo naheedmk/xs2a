@@ -56,7 +56,7 @@ public abstract class AuthorisationProcessor {
             return execute(request, processorService);
         } else {
             if (hasNext()) {
-                nextProcessor.process(request);
+                return nextProcessor.process(request);
             }
         }
         return null;

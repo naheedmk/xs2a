@@ -97,7 +97,7 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends BaseAuthor
     public AuthorisationProcessorResponse doScaReceived(AuthorisationProcessorRequest authorisationProcessorRequest) {
         Xs2aUpdatePisCommonPaymentPsuDataRequest request = (Xs2aUpdatePisCommonPaymentPsuDataRequest) authorisationProcessorRequest.getUpdateAuthorisationRequest();
         GetPisAuthorisationResponse pisAuthorisationResponse = (GetPisAuthorisationResponse) authorisationProcessorRequest.getAuthorisation();
-        return request.isUpdatePsuIdentification() || pisAuthorisationResponse.getChosenScaApproach() != ScaApproach.DECOUPLED
+        return request.isUpdatePsuIdentification() && pisAuthorisationResponse.getChosenScaApproach() != ScaApproach.DECOUPLED
                    ? applyIdentification(request)
                    : applyAuthorisation(request, pisAuthorisationResponse);
     }
