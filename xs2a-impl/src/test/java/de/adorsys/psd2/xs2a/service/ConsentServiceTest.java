@@ -35,6 +35,7 @@ import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.*;
 import de.adorsys.psd2.xs2a.exception.MessageCategory;
 import de.adorsys.psd2.xs2a.exception.MessageError;
+import de.adorsys.psd2.xs2a.service.authorization.AuthorisationChainResponsibilityService;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
 import de.adorsys.psd2.xs2a.service.authorization.ais.AisScaAuthorisationService;
 import de.adorsys.psd2.xs2a.service.authorization.ais.AisScaAuthorisationServiceResolver;
@@ -172,6 +173,8 @@ public class ConsentServiceTest {
     private InitialSpiAspspConsentDataProvider initialSpiAspspConsentDataProvider;
     @Mock
     private SpiAspspConsentDataProvider spiAspspConsentDataProvider;
+    @Mock
+    private AuthorisationChainResponsibilityService authorisationChainResponsibilityService;
     @Mock
     private LoggingContextService loggingContextService;
 
