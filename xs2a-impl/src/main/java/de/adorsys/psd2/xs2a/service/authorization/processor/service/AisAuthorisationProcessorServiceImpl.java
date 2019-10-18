@@ -122,16 +122,15 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             return commonDecoupledAisService.proceedDecoupledApproach(request.getBusinessObjectId(), request.getAuthorisationId(), spiAccountConsent, authenticationMethodId, psuData);
         }
 
-        return proceedEmbeddedApproach(authorisationProcessorRequest, spiAccountConsent, psuData);
+        return proceedEmbeddedApproach(authorisationProcessorRequest, authenticationMethodId, spiAccountConsent, psuData);
     }
 
     private boolean isDecoupledApproach(String authorisationId, String authenticationMethodId) {
         return aisConsentService.isAuthenticationMethodDecoupled(authorisationId, authenticationMethodId);
     }
 
-    private UpdateConsentPsuDataResponse proceedEmbeddedApproach(AuthorisationProcessorRequest authorisationProcessorRequest, SpiAccountConsent spiAccountConsent, PsuIdData psuData) {
+    private UpdateConsentPsuDataResponse proceedEmbeddedApproach(AuthorisationProcessorRequest authorisationProcessorRequest, String authenticationMethodId, SpiAccountConsent spiAccountConsent, PsuIdData psuData) {
         UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
-        String authenticationMethodId = request.getAuthenticationMethodId();
         SpiResponse<SpiAuthorizationCodeResult> spiResponse = aisConsentSpi.requestAuthorisationCode(spiContextDataProvider.provideWithPsuIdData(psuData), authenticationMethodId, spiAccountConsent, aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getBusinessObjectId()));
 
         if (spiResponse.hasError()) {
@@ -313,7 +312,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             return commonDecoupledAisService.proceedDecoupledApproach(request.getBusinessObjectId(), request.getAuthorisationId(), spiAccountConsent, scaMethod.getAuthenticationMethodId(), psuData);
         }
 
-        return proceedEmbeddedApproach(authorisationProcessorRequest, spiAccountConsent, psuData);
+        return proceedEmbeddedApproach(authorisationProcessorRequest, scaMethod.getAuthenticationMethodId(), spiAccountConsent, psuData);
     }
 
     private UpdateConsentPsuDataResponse applyIdentification(AuthorisationProcessorRequest authorisationProcessorRequest) {
