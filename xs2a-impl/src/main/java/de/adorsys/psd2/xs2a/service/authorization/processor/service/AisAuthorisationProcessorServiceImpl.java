@@ -270,6 +270,10 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             return new UpdateConsentPsuDataResponse(ScaStatus.FINALISED, consentId, authorisationId);
         }
 
+        if (authorisationResponse.getChosenScaApproach() == ScaApproach.DECOUPLED) {
+            return commonDecoupledAisService.proceedDecoupledApproach(consentId, authorisationId, spiAccountConsent, psuData);
+        }
+
         SpiResponse<SpiAvailableScaMethodsResponse> spiResponse = aisConsentSpi.requestAvailableScaMethods(spiContextDataProvider.provideWithPsuIdData(psuData), spiAccountConsent, aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId));
 
         if (spiResponse.hasError()) {
