@@ -145,6 +145,10 @@ public class AisScaReceivedAuthorisationStage extends AisScaStage<UpdateConsentP
             return new UpdateConsentPsuDataResponse(ScaStatus.FINALISED, consentId, authorisationId);
         }
 
+        if (authorisationResponse.getChosenScaApproach() == ScaApproach.DECOUPLED) {
+            return commonDecoupledAisService.proceedDecoupledApproach(request.getConsentId(), request.getAuthorisationId(), spiAccountConsent, psuData);
+        }
+
         SpiResponse<SpiAvailableScaMethodsResponse> spiResponse = aisConsentSpi.requestAvailableScaMethods(spiContextDataProvider.provideWithPsuIdData(psuData), spiAccountConsent, aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId));
 
         if (spiResponse.hasError()) {
