@@ -14,6 +14,16 @@
 
 === Using the CMS-ASPSP-API
 
+`PUT /aspsp-api/v1/pis/transaction-status/{payment-id}/status/{status}`:
+on this endpoint you can update transaction status of payment by its payment id from CMS `pis_common_payment` table.
+
+In order to do this you can follow next steps:
+
+* initiate payment in redirect approach
+* get payment id from payment response by redirect id
+* change transaction status with endpoint `PUT /aspsp-api/v1/pis/transaction-status/{payment-id}/status/{status}`
+* get payment information to ensure transaction status has changed
+
 === Using the Tpp locking interface
 
 === Using the Consents/Payments export interface
