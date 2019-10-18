@@ -64,6 +64,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @SuppressWarnings("PMD")
 public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProcessorService {
+    private static final String UNSUPPORTED_ERROR_MESSAGE = "Current SCA status is not supported";
 
     private final List<AisAuthorizationService> services;
     private final Xs2aAisConsentService aisConsentService;
@@ -125,31 +126,6 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
         return proceedEmbeddedApproach(authorisationProcessorRequest, authenticationMethodId, spiAccountConsent, psuData);
     }
 
-    private boolean isDecoupledApproach(String authorisationId, String authenticationMethodId) {
-        return aisConsentService.isAuthenticationMethodDecoupled(authorisationId, authenticationMethodId);
-    }
-
-    private UpdateConsentPsuDataResponse proceedEmbeddedApproach(AuthorisationProcessorRequest authorisationProcessorRequest, String authenticationMethodId, SpiAccountConsent spiAccountConsent, PsuIdData psuData) {
-        UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
-        SpiResponse<SpiAuthorizationCodeResult> spiResponse = aisConsentSpi.requestAuthorisationCode(spiContextDataProvider.provideWithPsuIdData(psuData), authenticationMethodId, spiAccountConsent, aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getBusinessObjectId()));
-
-        if (spiResponse.hasError()) {
-            ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
-            writeLog(authorisationProcessorRequest, psuData, errorHolder, "Proceed embedded approach when performs authorisation depending on selected SCA method has failed.");
-            return new UpdateConsentPsuDataResponse(errorHolder, request.getBusinessObjectId(), request.getAuthorisationId());
-        }
-
-        SpiAuthorizationCodeResult authorizationCodeResult = spiResponse.getPayload();
-
-        SpiAuthenticationObject chosenScaMethod = authorizationCodeResult.getSelectedScaMethod();
-        ChallengeData challengeData = authorizationCodeResult.getChallengeData();
-
-        UpdateConsentPsuDataResponse response = new UpdateConsentPsuDataResponse(ScaStatus.SCAMETHODSELECTED, request.getBusinessObjectId(), request.getAuthorisationId());
-        response.setChosenScaMethod(spiToXs2aAuthenticationObjectMapper.mapToXs2aAuthenticationObject(chosenScaMethod));
-        response.setChallengeData(challengeData);
-        return response;
-    }
-
     @Override
     public AuthorisationProcessorResponse doScaMethodSelected(AuthorisationProcessorRequest authorisationProcessorRequest) {
         UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
@@ -195,7 +171,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
 
     @Override
     public AuthorisationProcessorResponse doScaStarted(AuthorisationProcessorRequest authorisationProcessorRequest) {
-        return statusResponse(ScaStatus.STARTED, authorisationProcessorRequest);
+        throw new UnsupportedOperationException(UNSUPPORTED_ERROR_MESSAGE);
     }
 
     @Override
@@ -205,12 +181,33 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
 
     @Override
     public AuthorisationProcessorResponse doScaFailed(AuthorisationProcessorRequest authorisationProcessorRequest) {
-        return statusResponse(ScaStatus.FAILED, authorisationProcessorRequest);
+        throw new UnsupportedOperationException(UNSUPPORTED_ERROR_MESSAGE);
     }
 
     @Override
     public AuthorisationProcessorResponse doScaExempted(AuthorisationProcessorRequest authorisationProcessorRequest) {
-        return statusResponse(ScaStatus.EXEMPTED, authorisationProcessorRequest);
+        throw new UnsupportedOperationException(UNSUPPORTED_ERROR_MESSAGE);
+    }
+
+    private UpdateConsentPsuDataResponse proceedEmbeddedApproach(AuthorisationProcessorRequest authorisationProcessorRequest, String authenticationMethodId, SpiAccountConsent spiAccountConsent, PsuIdData psuData) {
+        UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
+        SpiResponse<SpiAuthorizationCodeResult> spiResponse = aisConsentSpi.requestAuthorisationCode(spiContextDataProvider.provideWithPsuIdData(psuData), authenticationMethodId, spiAccountConsent, aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getBusinessObjectId()));
+
+        if (spiResponse.hasError()) {
+            ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
+            writeLog(authorisationProcessorRequest, psuData, errorHolder, "Proceed embedded approach when performs authorisation depending on selected SCA method has failed.");
+            return new UpdateConsentPsuDataResponse(errorHolder, request.getBusinessObjectId(), request.getAuthorisationId());
+        }
+
+        SpiAuthorizationCodeResult authorizationCodeResult = spiResponse.getPayload();
+
+        SpiAuthenticationObject chosenScaMethod = authorizationCodeResult.getSelectedScaMethod();
+        ChallengeData challengeData = authorizationCodeResult.getChallengeData();
+
+        UpdateConsentPsuDataResponse response = new UpdateConsentPsuDataResponse(ScaStatus.SCAMETHODSELECTED, request.getBusinessObjectId(), request.getAuthorisationId());
+        response.setChosenScaMethod(spiToXs2aAuthenticationObjectMapper.mapToXs2aAuthenticationObject(chosenScaMethod));
+        response.setChallengeData(challengeData);
+        return response;
     }
 
     private AisAuthorizationService getService(ScaApproach scaApproach) {
@@ -344,9 +341,12 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
                  errorHolder);
     }
 
-    @NotNull
     private UpdateConsentPsuDataResponse statusResponse(ScaStatus scaStatus, AuthorisationProcessorRequest authorisationProcessorRequest) {
         UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
         return new UpdateConsentPsuDataResponse(scaStatus, request.getBusinessObjectId(), request.getAuthorisationId());
+    }
+
+    private boolean isDecoupledApproach(String authorisationId, String authenticationMethodId) {
+        return aisConsentService.isAuthenticationMethodDecoupled(authorisationId, authenticationMethodId);
     }
 }
