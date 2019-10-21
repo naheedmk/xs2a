@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.web.filter;
 
+import de.adorsys.psd2.consent.api.service.TppService;
 import de.adorsys.psd2.validator.certificate.util.CertificateExtractorUtil;
 import de.adorsys.psd2.validator.certificate.util.TppCertificateData;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
@@ -60,6 +61,7 @@ public class QwacCertificateFilter extends AbstractXs2aFilter {
     private final RequestProviderService requestProviderService;
     private final TppErrorMessageBuilder tppErrorMessageBuilder;
     private final TppRoleValidationService tppRoleValidationService;
+    private final TppService tppService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -89,6 +91,7 @@ public class QwacCertificateFilter extends AbstractXs2aFilter {
                 tppInfo.setCity(tppCertificateData.getCity());
                 tppInfo.setState(tppCertificateData.getState());
                 tppInfo.setIssuerCN(tppCertificateData.getIssuerCN());
+                tppInfo.setDnsList(tppCertificateData.getDnsList());
 
                 String tppRolesAllowedHeader = requestProviderService.getTppRolesAllowedHeader();
                 if (StringUtils.isNotBlank(tppRolesAllowedHeader)) {
@@ -96,7 +99,10 @@ public class QwacCertificateFilter extends AbstractXs2aFilter {
                         .map(roles -> roles.split(","))
                         .map(Arrays::asList)
                         .map(this::mapToTppRoles)
-                        .ifPresent(tppInfo::setTppRoles);
+                        .ifPresent(roles -> {
+                            tppInfo.setTppRoles(roles);
+                            tppService.updateTppInfo(tppInfo);
+                        });
 
                     if (!tppRoleValidationService.hasAccess(tppInfo, request)) {
                         log.info("InR-ID: [{}], X-Request-ID: [{}], Access forbidden for TPP with authorisation number: [{}]",
@@ -110,8 +116,6 @@ public class QwacCertificateFilter extends AbstractXs2aFilter {
                         .map(this::mapToTppRoles)
                         .ifPresent(tppInfo::setTppRoles);
                 }
-
-                tppInfo.setDnsList(tppCertificateData.getDnsList());
 
                 tppInfoHolder.setTppInfo(tppInfo);
             } catch (CertificateValidationException e) {

@@ -35,7 +35,6 @@ public class TppRoleValidationServiceTest {
     @InjectMocks
     private TppRoleValidationService tppRoleValidationService;
 
-
     @Test
     public void shouldSuccess_when_correctRole() {
         MockHttpServletRequest request = new MockHttpServletRequest();

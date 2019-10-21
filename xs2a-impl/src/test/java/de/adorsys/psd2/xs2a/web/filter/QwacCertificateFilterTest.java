@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.web.filter;
 
+import de.adorsys.psd2.consent.api.service.TppService;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.core.tpp.TppRole;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
@@ -73,6 +74,8 @@ public class QwacCertificateFilterTest {
     private RequestProviderService requestProviderService;
     @Mock
     private TppErrorMessageBuilder tppErrorMessageBuilder;
+    @Mock
+    private TppService tppService;
 
     @Test
     public void doFilterInternal_success() throws IOException, ServletException {
@@ -145,6 +148,7 @@ public class QwacCertificateFilterTest {
         verify(chain).doFilter(any(), any());
         verify(tppInfoHolder).setTppInfo(tppInfoArgumentCaptor.capture());
         TppInfo tppInfo = tppInfoArgumentCaptor.getValue();
+        verify(tppService, atLeastOnce()).updateTppInfo(tppInfo);
         assertEquals(roles, tppInfo.getTppRoles());
     }
 

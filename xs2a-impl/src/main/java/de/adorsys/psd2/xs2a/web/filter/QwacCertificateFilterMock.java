@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.web.filter;
 
+import de.adorsys.psd2.consent.api.service.TppService;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.tpp.TppInfoHolder;
 import de.adorsys.psd2.xs2a.service.validator.tpp.TppRoleValidationService;
@@ -40,8 +41,8 @@ public class QwacCertificateFilterMock extends QwacCertificateFilter {
     @Value("${qwac-certificate-mock}")
     private String qwacCertificateMock;
 
-    public QwacCertificateFilterMock(TppInfoHolder tppInfoHolder, RequestProviderService requestProviderService, TppErrorMessageBuilder tppErrorMessageBuilder, TppRoleValidationService tppRoleValidationService) {
-        super(tppInfoHolder, requestProviderService, tppErrorMessageBuilder, tppRoleValidationService);
+    public QwacCertificateFilterMock(TppInfoHolder tppInfoHolder, RequestProviderService requestProviderService, TppErrorMessageBuilder tppErrorMessageBuilder, TppRoleValidationService tppRoleValidationService, TppService tppService) {
+        super(tppInfoHolder, requestProviderService, tppErrorMessageBuilder, tppRoleValidationService, tppService);
     }
 
     @Override
