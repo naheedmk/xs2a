@@ -21,7 +21,7 @@ import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponseType;
 import de.adorsys.psd2.xs2a.domain.authorisation.CancellationAuthorisationResponse;
-import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcessorResponse;
+import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorResponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;

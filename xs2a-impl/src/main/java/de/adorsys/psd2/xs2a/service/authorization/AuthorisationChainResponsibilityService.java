@@ -17,6 +17,8 @@
 package de.adorsys.psd2.xs2a.service.authorization;
 
 import de.adorsys.psd2.xs2a.service.authorization.processor.*;
+import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorRequest;
+import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

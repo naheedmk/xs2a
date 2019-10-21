@@ -16,8 +16,8 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.processor.service;
 
-import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcessorRequest;
-import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcessorResponse;
+import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorRequest;
+import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorResponse;
 
 public interface AuthorisationProcessorService {
 

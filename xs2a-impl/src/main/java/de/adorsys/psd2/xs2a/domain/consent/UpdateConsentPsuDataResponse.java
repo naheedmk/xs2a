@@ -18,7 +18,7 @@ package de.adorsys.psd2.xs2a.domain.consent;
 
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
-import de.adorsys.psd2.xs2a.service.authorization.processor.AuthorisationProcessorResponse;
+import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorResponse;
 import lombok.Data;
 
 // Class can't be immutable, because it it used in aspect (links setting)
