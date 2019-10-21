@@ -2,8 +2,8 @@
 
 == Table of Contents
 
-* Bugfix: Fix sql native query representation
+* Bugfix: Fixed request for finding non recurring consent usages
 
-== Bugfix: Fix sql native query representation
+== Bugfix: Fixed request for finding non recurring consent usages
 
-Added mandatory attribute `nativeQuery=true` for native query.
+From now on, request for finding non recurring consent usages is working for old version of `spring-data`.
