@@ -81,6 +81,17 @@ public class TppRedirectUriBodyValidatorImplTest {
     }
 
     @Test
+    public void validate_oAuthApproach_sucess() {
+        when(aspspProfileServiceWrapper.getScaRedirectFlow()).thenReturn(ScaRedirectFlow.OAUTH);
+        when(scaApproachResolver.resolveScaApproach()).thenReturn(ScaApproach.REDIRECT);
+
+        tppRedirectUriBodyValidator.validate(request, messageError);
+
+        verify(scaApproachResolver).resolveScaApproach();
+        assertTrue(messageError.getTppMessages().isEmpty());
+    }
+
+    @Test
     public void validate_RedirectApproachAndRedirectPreferredHeaderTrue_TppRedirectUriIsBotContain_error() {
         when(scaApproachResolver.resolveScaApproach()).thenReturn(ScaApproach.REDIRECT);
 

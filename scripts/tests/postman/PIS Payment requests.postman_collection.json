@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5a94e82b-e9fc-41e4-b5e3-69ca6e326fcf",
+		"_postman_id": "397d4cdf-3ce0-4ea6-a878-26d4dde7cdd8",
 		"name": "PIS Payment requests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1665,7 +1665,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"payment_id\": \"{{internal_payment_id}}\",\n    \"endToEndIdentification\": \"WBG-123456789\",\n    \"debtorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"instructedAmount\": {\n      \"currency\": \"EUR\",\n      \"amount\": \"0.01\"\n    },\n    \"creditorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"creditorAgent\" : \"AAAADEBBXXX\",\n    \"creditorName\": \"WBG\",\n    \"creditorAddress\": {\n      \"buildingNumber\": \"56\",\n      \"townName\": \"Nürnberg\",\n      \"country\": \"DE\",\n      \"postCode\": \"90543\",\n      \"streetName\": \"WBG Straße\"\n    },\n    \"remittanceInformationUnstructured\": \"Ref. Number WBG-1222\"\n  }",
+											"raw": "",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1732,7 +1732,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"payment_id\": \"{{internal_payment_id}}\",\n    \"endToEndIdentification\": \"WBG-123456789\",\n    \"debtorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"instructedAmount\": {\n      \"currency\": \"EUR\",\n      \"amount\": \"0.01\"\n    },\n    \"creditorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"creditorAgent\" : \"AAAADEBBXXX\",\n    \"creditorName\": \"WBG\",\n    \"creditorAddress\": {\n      \"buildingNumber\": \"56\",\n      \"townName\": \"Nürnberg\",\n      \"country\": \"DE\",\n      \"postCode\": \"90543\",\n      \"streetName\": \"WBG Straße\"\n    },\n    \"remittanceInformationUnstructured\": \"Ref. Number WBG-1222\"\n  }",
+											"raw": "",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -6376,7 +6376,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"payment_id\": \"{{internal_payment_id}}\",\n    \"endToEndIdentification\": \"WBG-123456789\",\n    \"debtorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"instructedAmount\": {\n      \"currency\": \"EUR\",\n      \"amount\": \"0.01\"\n    },\n    \"creditorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"creditorAgent\" : \"AAAADEBBXXX\",\n    \"creditorName\": \"WBG\",\n    \"creditorAddress\": {\n      \"buildingNumber\": \"56\",\n      \"townName\": \"Nürnberg\",\n      \"country\": \"DE\",\n      \"postCode\": \"90543\",\n      \"streetName\": \"WBG Straße\"\n    },\n    \"remittanceInformationUnstructured\": \"Ref. Number WBG-1222\"\n  }",
+											"raw": "",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -6443,7 +6443,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"payment_id\": \"{{internal_payment_id}}\",\n    \"endToEndIdentification\": \"WBG-123456789\",\n    \"debtorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"instructedAmount\": {\n      \"currency\": \"EUR\",\n      \"amount\": \"0.01\"\n    },\n    \"creditorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"creditorAgent\" : \"AAAADEBBXXX\",\n    \"creditorName\": \"WBG\",\n    \"creditorAddress\": {\n      \"buildingNumber\": \"56\",\n      \"townName\": \"Nürnberg\",\n      \"country\": \"DE\",\n      \"postCode\": \"90543\",\n      \"streetName\": \"WBG Straße\"\n    },\n    \"remittanceInformationUnstructured\": \"Ref. Number WBG-1222\"\n  }",
+											"raw": "",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -11131,7 +11131,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"payment_id\": \"{{internal_payment_id}}\",\n    \"endToEndIdentification\": \"WBG-123456789\",\n    \"debtorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"instructedAmount\": {\n      \"currency\": \"EUR\",\n      \"amount\": \"0.01\"\n    },\n    \"creditorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"creditorAgent\" : \"AAAADEBBXXX\",\n    \"creditorName\": \"WBG\",\n    \"creditorAddress\": {\n      \"buildingNumber\": \"56\",\n      \"townName\": \"Nürnberg\",\n      \"country\": \"DE\",\n      \"postCode\": \"90543\",\n      \"streetName\": \"WBG Straße\"\n    },\n    \"remittanceInformationUnstructured\": \"Ref. Number WBG-1222\"\n  }",
+											"raw": "",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -11198,7 +11198,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"payment_id\": \"{{internal_payment_id}}\",\n    \"endToEndIdentification\": \"WBG-123456789\",\n    \"debtorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"instructedAmount\": {\n      \"currency\": \"EUR\",\n      \"amount\": \"0.01\"\n    },\n    \"creditorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"creditorAgent\" : \"AAAADEBBXXX\",\n    \"creditorName\": \"WBG\",\n    \"creditorAddress\": {\n      \"buildingNumber\": \"56\",\n      \"townName\": \"Nürnberg\",\n      \"country\": \"DE\",\n      \"postCode\": \"90543\",\n      \"streetName\": \"WBG Straße\"\n    },\n    \"remittanceInformationUnstructured\": \"Ref. Number WBG-1222\"\n  }",
+											"raw": "",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -14028,7 +14028,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"payment_id\": \"{{internal_payment_id}}\",\n    \"endToEndIdentification\": \"WBG-123456789\",\n    \"debtorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"instructedAmount\": {\n      \"currency\": \"EUR\",\n      \"amount\": \"0.01\"\n    },\n    \"creditorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"creditorAgent\" : \"AAAADEBBXXX\",\n    \"creditorName\": \"WBG\",\n    \"creditorAddress\": {\n      \"buildingNumber\": \"56\",\n      \"townName\": \"Nürnberg\",\n      \"country\": \"DE\",\n      \"postCode\": \"90543\",\n      \"streetName\": \"WBG Straße\"\n    },\n    \"remittanceInformationUnstructured\": \"Ref. Number WBG-1222\"\n  }",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -14095,7 +14095,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"payment_id\": \"{{internal_payment_id}}\",\n    \"endToEndIdentification\": \"WBG-123456789\",\n    \"debtorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"instructedAmount\": {\n      \"currency\": \"EUR\",\n      \"amount\": \"0.01\"\n    },\n    \"creditorAccount\": {\n      \"currency\": \"EUR\",\n      \"iban\": \"{{iban_single}}\"\n    },\n    \"creditorAgent\" : \"AAAADEBBXXX\",\n    \"creditorName\": \"WBG\",\n    \"creditorAddress\": {\n      \"buildingNumber\": \"56\",\n      \"townName\": \"Nürnberg\",\n      \"country\": \"DE\",\n      \"postCode\": \"90543\",\n      \"streetName\": \"WBG Straße\"\n    },\n    \"remittanceInformationUnstructured\": \"Ref. Number WBG-1222\"\n  }",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
