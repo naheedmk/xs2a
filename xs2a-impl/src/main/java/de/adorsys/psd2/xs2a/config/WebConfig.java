@@ -87,7 +87,7 @@ public class WebConfig implements WebMvcConfigurer {
         // The interceptors are executed in the order in which they are declared for preHandle(...) and vice versa for postHandle(...).
         // Logging interceptors:
         registry.addInterceptor(new AccountLoggingInterceptor(tppService, requestProviderService, loggingContextService)).addPathPatterns(ACCOUNTS_PATH);
-        registry.addInterceptor(new ConsentLoggingInterceptor(tppService, redirectIdService, requestProviderService, xs2aObjectMapper, loggingContextService)).addPathPatterns(CONSENTS_PATH);
+        registry.addInterceptor(new ConsentLoggingInterceptor(tppService, redirectIdService, requestProviderService, loggingContextService)).addPathPatterns(CONSENTS_PATH);
         registry.addInterceptor(new FundsConfirmationLoggingInterceptor(tppService, requestProviderService)).addPathPatterns(FUNDS_CONFIRMATION_PATH);
         registry.addInterceptor(new PaymentLoggingInterceptor(tppService, redirectIdService, requestProviderService, loggingContextService)).addPathPatterns(SINGLE_PAYMENTS_PATH, BULK_PAYMENTS_PATH, PERIODIC_PAYMENTS_PATH);
         registry.addInterceptor(new SigningBasketLoggingInterceptor(tppService, redirectIdService, requestProviderService)).addPathPatterns(SIGNING_BASKETS_PATH);

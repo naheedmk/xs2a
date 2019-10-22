@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.web.interceptor.logging;
 
-import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.xs2a.component.logger.TppLogger;
 import de.adorsys.psd2.xs2a.service.RedirectIdService;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
@@ -39,7 +38,6 @@ public class ConsentLoggingInterceptor extends HandlerInterceptorAdapter {
     private final TppService tppService;
     private final RedirectIdService redirectIdService;
     private final RequestProviderService requestProviderService;
-    private final Xs2aObjectMapper objectMapper;
     private final LoggingContextService loggingContextService;
 
     @Override
