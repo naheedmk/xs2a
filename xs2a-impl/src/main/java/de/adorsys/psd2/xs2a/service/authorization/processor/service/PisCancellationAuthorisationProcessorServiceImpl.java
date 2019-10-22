@@ -67,7 +67,6 @@ import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("PMD")
 public class PisCancellationAuthorisationProcessorServiceImpl extends BaseAuthorisationProcessorService {
     private static final String UNSUPPORTED_ERROR_MESSAGE = "Current SCA status is not supported";
 
@@ -203,6 +202,8 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends BaseAuthor
         return new Xs2aUpdatePisCommonPaymentPsuDataResponse(PSUIDENTIFIED, paymentId, authorisationId, psuData);
     }
 
+    // ToDo refactor this method https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1086
+    @SuppressWarnings({"PMD.NPathComplexity", "PMD.CyclomaticComplexity", "PMD.ExcessiveMethodLength"})
     private Xs2aUpdatePisCommonPaymentPsuDataResponse applyAuthorisation(Xs2aUpdatePisCommonPaymentPsuDataRequest request, GetPisAuthorisationResponse pisAuthorisationResponse) {
         PsuIdData psuData = extractPsuIdData(request, pisAuthorisationResponse);
         String authorisationId = request.getAuthorisationId();
@@ -295,7 +296,7 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends BaseAuthor
                 return pisCommonDecoupledService.proceedDecoupledCancellation(request, payment, chosenMethod.getAuthenticationMethodId());
             }
 
-            return proceedSingleScaEmbeddedApproach(payment, chosenMethod, spiContextData, spiAspspConsentDataProvider, request, psuData, pisAuthorisationResponse);
+            return proceedSingleScaEmbeddedApproach(payment, chosenMethod, spiContextData, spiAspspConsentDataProvider, request, psuData);
 
         } else if (isMultipleScaMethods(spiScaMethods)) {
             xs2aPisCommonPaymentService.saveAuthenticationMethods(authorisationId, spiToXs2aAuthenticationObjectMapper.mapToXs2aListAuthenticationObject(spiScaMethods));
@@ -314,8 +315,7 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends BaseAuthor
                                                                                        SpiContextData contextData,
                                                                                        SpiAspspConsentDataProvider spiAspspConsentDataProvider,
                                                                                        Xs2aUpdatePisCommonPaymentPsuDataRequest request,
-                                                                                       PsuIdData psuData,
-                                                                                       GetPisAuthorisationResponse pisAuthorisationResponse) {
+                                                                                       PsuIdData psuData) {
         String authorisationId = request.getAuthorisationId();
         String paymentId = request.getPaymentId();
 

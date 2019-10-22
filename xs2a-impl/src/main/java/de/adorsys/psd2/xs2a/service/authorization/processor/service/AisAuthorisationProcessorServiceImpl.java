@@ -61,7 +61,6 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("PMD")
 public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProcessorService {
     private static final String UNSUPPORTED_ERROR_MESSAGE = "Current SCA status is not supported";
 
@@ -221,7 +220,6 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
 
     private UpdateConsentPsuDataResponse applyAuthorisation(AuthorisationProcessorRequest authorisationProcessorRequest) {
         UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
-        AccountConsentAuthorization authorisationResponse = (AccountConsentAuthorization) authorisationProcessorRequest.getAuthorisation();
         String consentId = request.getBusinessObjectId();
         String authorisationId = request.getAuthorisationId();
         Optional<AccountConsent> accountConsentOptional = aisConsentService.getAccountConsentById(consentId);
@@ -234,9 +232,9 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
 
-        AccountConsent accountConsent = accountConsentOptional.get();
+        AccountConsentAuthorization authorisationResponse = (AccountConsentAuthorization) authorisationProcessorRequest.getAuthorisation();
         PsuIdData psuData = extractPsuIdData(request, authorisationResponse);
-
+        AccountConsent accountConsent = accountConsentOptional.get();
         SpiAccountConsent spiAccountConsent = aisConsentMapper.mapToSpiAccountConsent(accountConsent);
         SpiContextData spiContextData = spiContextDataProvider.provideWithPsuIdData(psuData);
         SpiPsuData spiPsuData = psuDataMapper.mapToSpiPsuData(psuData);

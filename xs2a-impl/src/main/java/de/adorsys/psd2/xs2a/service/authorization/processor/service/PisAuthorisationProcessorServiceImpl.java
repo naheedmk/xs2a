@@ -68,7 +68,6 @@ import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("PMD")
 public class PisAuthorisationProcessorServiceImpl extends BaseAuthorisationProcessorService {
     private static final String UNSUPPORTED_ERROR_MESSAGE = "Current SCA status is not supported";
 
@@ -207,6 +206,8 @@ public class PisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
         return new Xs2aUpdatePisCommonPaymentPsuDataResponse(PSUIDENTIFIED, paymentId, authorisationId, psuData);
     }
 
+    // ToDo refactor this method https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1086
+    @SuppressWarnings({"PMD.NPathComplexity", "PMD.CyclomaticComplexity"})
     private Xs2aUpdatePisCommonPaymentPsuDataResponse applyAuthorisation(Xs2aUpdatePisCommonPaymentPsuDataRequest request, GetPisAuthorisationResponse pisAuthorisationResponse) {
         PsuIdData psuData = extractPsuIdData(request, pisAuthorisationResponse);
         PaymentType paymentType = pisAuthorisationResponse.getPaymentType();
@@ -376,7 +377,7 @@ public class PisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
         SpiAuthenticationObject spiAuthenticationObject = authorizationCodeResult.getSelectedScaMethod();
         ChallengeData challengeData = authorizationCodeResult.getChallengeData();
 
-        Xs2aUpdatePisCommonPaymentPsuDataResponse response = new Xs2aUpdatePisCommonPaymentPsuDataResponse(ScaStatus.SCAMETHODSELECTED, paymentId, authorisationId, psuData);
+        Xs2aUpdatePisCommonPaymentPsuDataResponse response = new Xs2aUpdatePisCommonPaymentPsuDataResponse(SCAMETHODSELECTED, paymentId, authorisationId, psuData);
         response.setChosenScaMethod(spiToXs2aAuthenticationObjectMapper.mapToXs2aAuthenticationObject(spiAuthenticationObject));
         response.setChallengeData(challengeData);
         return response;
