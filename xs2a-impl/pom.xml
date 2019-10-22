@@ -244,7 +244,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback-clasic.version}</version>
+            <version>${logback-classic.version}</version>
             <scope>test</scope>
         </dependency>
 
