@@ -118,8 +118,6 @@ public class PisScaMethodSelectedStageTest {
 
         when(requestProviderService.getRequestId()).thenReturn(UUID.randomUUID());
         when(spiPaymentServiceResolver.getPaymentService(buildResponse(), PaymentType.SINGLE)).thenReturn(singlePaymentSpi);
-
-        when(xs2aPisCommonPaymentService.updateMultilevelSca(PAYMENT_ID, true)).thenReturn(true);
     }
 
     @Test
@@ -159,28 +157,6 @@ public class PisScaMethodSelectedStageTest {
 
         verify(xs2aPisCommonPaymentService, never()).updateMultilevelSca(PAYMENT_ID, true);
         verify(updatePaymentAfterSpiService, times(1)).updatePaymentStatus(PAYMENT_ID, ACCP_TRANSACTION_STATUS);
-    }
-
-    @Test
-    public void apply_SuccessAndMultilevelScaRequiredUpdated() {
-        when(pisAspspDataService.getInternalPaymentIdByEncryptedString(PAYMENT_ID)).thenReturn(any());
-        when(applicationContext.getBean(SinglePaymentSpi.class))
-            .thenReturn(singlePaymentSpi);
-
-        when(singlePaymentSpi.verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any()))
-            .thenReturn(buildSuccessSpiResponse(SPI_PAYMENT_EXECUTION_RESPONSE_WITH_PATC_STATUS));
-
-        when(updatePaymentAfterSpiService.updatePaymentStatus(PAYMENT_ID, PATC_TRANSACTION_STATUS))
-            .thenReturn(true);
-
-        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResponse = pisScaMethodSelectedStage.apply(buildRequest(), buildResponse());
-
-        assertThat(actualResponse).isNotNull();
-        assertThat(actualResponse.hasError()).isFalse();
-        assertThat(actualResponse.getScaStatus()).isEqualTo(FINALISED);
-
-        verify(xs2aPisCommonPaymentService, times(1)).updateMultilevelSca(PAYMENT_ID, true);
-        verify(updatePaymentAfterSpiService, times(1)).updatePaymentStatus(PAYMENT_ID, PATC_TRANSACTION_STATUS);
     }
 
     private Xs2aUpdatePisCommonPaymentPsuDataRequest buildRequest() {

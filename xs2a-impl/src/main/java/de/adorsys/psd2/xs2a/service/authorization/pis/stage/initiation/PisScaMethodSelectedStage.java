@@ -61,16 +61,12 @@ public class PisScaMethodSelectedStage extends PisScaStage<Xs2aUpdatePisCommonPa
     private final SpiPaymentServiceResolver spiPaymentServiceResolver;
     private final Xs2aPisCommonPaymentService xs2aPisCommonPaymentService;
 
-    public PisScaMethodSelectedStage(PisAspspDataService pisAspspDataService, Xs2aUpdatePaymentAfterSpiService updatePaymentAfterSpiService,
-                                     Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper, SpiErrorMapper spiErrorMapper,
-                                     SpiContextDataProvider spiContextDataProvider,
-                                     SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory, RequestProviderService requestProviderService,
-                                     Xs2aToSpiPaymentMapper xs2aToSpiPaymentMapper, SpiPaymentServiceResolver spiPaymentServiceResolver) {
-        this.spiErrorMapper = spiErrorMapper;
+    public PisScaMethodSelectedStage(PisAspspDataService pisAspspDataService, Xs2aUpdatePaymentAfterSpiService updatePaymentAfterSpiService, SpiContextDataProvider spiContextDataProvider, SpiErrorMapper spiErrorMapper, Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory, RequestProviderService requestProviderService, Xs2aToSpiPaymentMapper xs2aToSpiPaymentMapper, SpiPaymentServiceResolver spiPaymentServiceResolver, Xs2aPisCommonPaymentService xs2aPisCommonPaymentService) {
         this.pisAspspDataService = pisAspspDataService;
         this.updatePaymentAfterSpiService = updatePaymentAfterSpiService;
-        this.xs2aPisCommonPaymentMapper = xs2aPisCommonPaymentMapper;
         this.spiContextDataProvider = spiContextDataProvider;
+        this.spiErrorMapper = spiErrorMapper;
+        this.xs2aPisCommonPaymentMapper = xs2aPisCommonPaymentMapper;
         this.aspspConsentDataProviderFactory = aspspConsentDataProviderFactory;
         this.requestProviderService = requestProviderService;
         this.xs2aToSpiPaymentMapper = xs2aToSpiPaymentMapper;
