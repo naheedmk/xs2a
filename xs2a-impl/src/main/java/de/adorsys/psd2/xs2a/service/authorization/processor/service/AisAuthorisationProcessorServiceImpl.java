@@ -50,23 +50,18 @@ import de.adorsys.psd2.xs2a.spi.domain.consent.SpiVerifyScaAuthorisationResponse
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.AisConsentSpi;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProcessorService {
     private static final String UNSUPPORTED_ERROR_MESSAGE = "Current SCA status is not supported";
 
     private final List<AisAuthorizationService> services;
     private final Xs2aAisConsentService aisConsentService;
-    private final RequestProviderService requestProviderService;
     private final AisConsentSpi aisConsentSpi;
     private final Xs2aAisConsentMapper aisConsentMapper;
     private final SpiContextDataProvider spiContextDataProvider;
@@ -76,6 +71,21 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
     private final SpiToXs2aAuthenticationObjectMapper spiToXs2aAuthenticationObjectMapper;
     private final AisScaAuthorisationService aisScaAuthorisationService;
     private final Xs2aToSpiPsuDataMapper psuDataMapper;
+
+    public AisAuthorisationProcessorServiceImpl(RequestProviderService requestProviderService, List<AisAuthorizationService> services, Xs2aAisConsentService aisConsentService, AisConsentSpi aisConsentSpi, Xs2aAisConsentMapper aisConsentMapper, SpiContextDataProvider spiContextDataProvider, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory, SpiErrorMapper spiErrorMapper, CommonDecoupledAisService commonDecoupledAisService, SpiToXs2aAuthenticationObjectMapper spiToXs2aAuthenticationObjectMapper, AisScaAuthorisationService aisScaAuthorisationService, Xs2aToSpiPsuDataMapper psuDataMapper) {
+        super(requestProviderService);
+        this.services = services;
+        this.aisConsentService = aisConsentService;
+        this.aisConsentSpi = aisConsentSpi;
+        this.aisConsentMapper = aisConsentMapper;
+        this.spiContextDataProvider = spiContextDataProvider;
+        this.aspspConsentDataProviderFactory = aspspConsentDataProviderFactory;
+        this.spiErrorMapper = spiErrorMapper;
+        this.commonDecoupledAisService = commonDecoupledAisService;
+        this.spiToXs2aAuthenticationObjectMapper = spiToXs2aAuthenticationObjectMapper;
+        this.aisScaAuthorisationService = aisScaAuthorisationService;
+        this.psuDataMapper = psuDataMapper;
+    }
 
     @Override
     public void updateAuthorisation(AuthorisationProcessorRequest request, AuthorisationProcessorResponse response) {
@@ -106,7 +116,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.AIS_400)
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.CONSENT_UNKNOWN_400))
                                           .build();
-            writeLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Apply authorisation when update consent PSU data has failed. Consent not found by id.");
+            writeErrorLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Apply authorisation when update consent PSU data has failed. Consent not found by id.");
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
 
@@ -135,7 +145,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.AIS_400)
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.CONSENT_UNKNOWN_400))
                                           .build();
-            writeLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Apply authorisation when update consent PSU data has failed. Consent not found by id.");
+            writeErrorLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Apply authorisation when update consent PSU data has failed. Consent not found by id.");
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
         AccountConsent accountConsent = accountConsentOptional.get();
@@ -149,7 +159,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
-            writeLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Verify SCA authorisation failed when update PSU data.");
+            writeErrorLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Verify SCA authorisation failed when update PSU data.");
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
 
@@ -193,7 +203,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
-            writeLog(authorisationProcessorRequest, psuData, errorHolder, "Proceed embedded approach when performs authorisation depending on selected SCA method has failed.");
+            writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "Proceed embedded approach when performs authorisation depending on selected SCA method has failed.");
             return new UpdateConsentPsuDataResponse(errorHolder, request.getBusinessObjectId(), request.getAuthorisationId());
         }
 
@@ -228,7 +238,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.AIS_400)
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.CONSENT_UNKNOWN_400))
                                           .build();
-            writeLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Apply authorisation when update consent PSU data has failed. Consent not found by id.");
+            writeErrorLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Apply authorisation when update consent PSU data has failed. Consent not found by id.");
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
 
@@ -246,7 +256,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
 
         if (authorisationStatusSpiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(authorisationStatusSpiResponse, ServiceType.AIS);
-            writeLog(authorisationProcessorRequest, psuData, errorHolder, "Authorise PSU when apply authorisation has failed.");
+            writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "Authorise PSU when apply authorisation has failed.");
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
 
@@ -254,7 +264,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.AIS_401)
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
                                           .build();
-            writeLog(authorisationProcessorRequest, psuData, errorHolder, "Authorise PSU when apply authorisation has failed. PSU credentials invalid.");
+            writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "Authorise PSU when apply authorisation has failed. PSU credentials invalid.");
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
 
@@ -272,7 +282,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
-            writeLog(authorisationProcessorRequest, psuData, errorHolder, "Request available SCA methods when apply authorisation has failed.");
+            writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "Request available SCA methods when apply authorisation has failed.");
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
 
@@ -289,7 +299,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.AIS_400)
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.SCA_METHOD_UNKNOWN))
                                           .build();
-            writeLog(authorisationProcessorRequest, psuData, errorHolder, "Apply authorisation has failed. Consent rejected because no available SCA methods.");
+            writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "Apply authorisation has failed. Consent rejected because no available SCA methods.");
             aisConsentService.updateConsentStatus(consentId, ConsentStatus.REJECTED);
             UpdateConsentPsuDataResponse response = new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
             aisConsentService.updateConsentAuthorization(aisConsentMapper.mapToSpiUpdateConsentPsuDataReq(request, response));
@@ -319,23 +329,11 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.AIS_400)
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR_NO_PSU))
                                           .build();
-            writeLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Apply identification when update consent PSU data has failed. No PSU data available in request.");
+            writeErrorLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Apply identification when update consent PSU data has failed. No PSU data available in request.");
             return new UpdateConsentPsuDataResponse(errorHolder, request.getBusinessObjectId(), request.getAuthorisationId());
         }
 
         return new UpdateConsentPsuDataResponse(ScaStatus.PSUIDENTIFIED, request.getBusinessObjectId(), request.getAuthorisationId());
-    }
-
-    private void writeLog(AuthorisationProcessorRequest request, PsuIdData psuData, ErrorHolder errorHolder, String message) {
-        String messageToLog = String.format("InR-ID: [{}], X-Request-ID: [{}], Consent-ID [{}], Authorisation-ID [{}], PSU-ID [{}], SCA Approach [{}]. %s Error msg: [{}]", message);
-        log.info(messageToLog,
-                 requestProviderService.getInternalRequestId(),
-                 requestProviderService.getRequestId(),
-                 request.getUpdateAuthorisationRequest().getBusinessObjectId(),
-                 request.getUpdateAuthorisationRequest().getAuthorisationId(),
-                 psuData != null ? psuData.getPsuId() : "-",
-                 request.getScaApproach(),
-                 errorHolder);
     }
 
     private UpdateConsentPsuDataResponse statusResponse(ScaStatus scaStatus, AuthorisationProcessorRequest authorisationProcessorRequest) {

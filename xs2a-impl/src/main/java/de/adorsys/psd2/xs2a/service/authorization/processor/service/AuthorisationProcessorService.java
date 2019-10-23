@@ -19,23 +19,80 @@ package de.adorsys.psd2.xs2a.service.authorization.processor.service;
 import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorRequest;
 import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorResponse;
 
+/**
+ * Implementations of this interface contain the business logic, needed to perform embedded and decoupled SCA
+ */
 public interface AuthorisationProcessorService {
 
+    /**
+     * Updates authorisation in the CMS after each successful authorisation step execution
+     *
+     * @param request the request object, containing controller incoming data and authorisation data from CMS
+     * @param response the result object, containing the successful result of authorisation or the error data
+     */
     void updateAuthorisation(AuthorisationProcessorRequest request, AuthorisationProcessorResponse response);
 
+    /**
+     * Contains business logic to perform at the `received` SCA status of authorisation
+     *
+     * @param request the request object, containing controller incoming data and authorisation data from CMS
+     * @return the result object, containing the successful result of authorisation or the error data
+     */
     AuthorisationProcessorResponse doScaReceived(AuthorisationProcessorRequest request);
 
+    /**
+     * Contains business logic to perform at the `psuIdentified` SCA status of authorisation
+     *
+     * @param request the request object, containing controller incoming data and authorisation data from CMS
+     * @return the result object, containing the successful result of authorisation or the error data
+     */
     AuthorisationProcessorResponse doScaPsuIdentified(AuthorisationProcessorRequest request);
 
+    /**
+     * Contains business logic to perform at the `psuAuthenticated` SCA status of authorisation
+     *
+     * @param request the request object, containing controller incoming data and authorisation data from CMS
+     * @return the result object, containing the successful result of authorisation or the error data
+     */
     AuthorisationProcessorResponse doScaPsuAuthenticated(AuthorisationProcessorRequest request);
 
+    /**
+     * Contains business logic to perform at the `scaMethodSelected` SCA status of authorisation
+     *
+     * @param request the request object, containing controller incoming data and authorisation data from CMS
+     * @return the result object, containing the successful result of authorisation or the error data
+     */
     AuthorisationProcessorResponse doScaMethodSelected(AuthorisationProcessorRequest request);
 
+    /**
+     * Contains business logic to perform at the `started` SCA status of authorisation
+     *
+     * @param request the request object, containing controller incoming data and authorisation data from CMS
+     * @return the result object, containing the successful result of authorisation or the error data
+     */
     AuthorisationProcessorResponse doScaStarted(AuthorisationProcessorRequest request);
 
+    /**
+     * Contains business logic to perform at the `finalised` SCA status of authorisation
+     *
+     * @param request the request object, containing controller incoming data and authorisation data from CMS
+     * @return the result object, containing the successful result of authorisation or the error data
+     */
     AuthorisationProcessorResponse doScaFinalised(AuthorisationProcessorRequest request);
 
+    /**
+     * Contains business logic to perform at the `failed` SCA status of authorisation
+     *
+     * @param request the request object, containing controller incoming data and authorisation data from CMS
+     * @return the result object, containing the successful result of authorisation or the error data
+     */
     AuthorisationProcessorResponse doScaFailed(AuthorisationProcessorRequest request);
 
+    /**
+     * Contains business logic to perform at the `exempted` SCA status of authorisation
+     *
+     * @param request the request object, containing controller incoming data and authorisation data from CMS
+     * @return the result object, containing the successful result of authorisation or the error data
+     */
     AuthorisationProcessorResponse doScaExempted(AuthorisationProcessorRequest request);
 }

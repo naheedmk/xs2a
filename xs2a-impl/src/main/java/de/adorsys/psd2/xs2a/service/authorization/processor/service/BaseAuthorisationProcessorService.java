@@ -17,14 +17,54 @@
 package de.adorsys.psd2.xs2a.service.authorization.processor.service;
 
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.psd2.xs2a.domain.ErrorHolder;
+import de.adorsys.psd2.xs2a.service.RequestProviderService;
+import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorRequest;
+import de.adorsys.psd2.xs2a.service.mapper.psd2.ServiceType;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
+@Slf4j
 abstract class BaseAuthorisationProcessorService implements AuthorisationProcessorService {
+    private final RequestProviderService requestProviderService;
+
+    protected BaseAuthorisationProcessorService(RequestProviderService requestProviderService) {
+        this.requestProviderService = requestProviderService;
+    }
 
     boolean isPsuExist(PsuIdData psuIdData) {
         return Optional.ofNullable(psuIdData)
                    .map(PsuIdData::isNotEmpty)
                    .orElse(false);
+    }
+
+    void writeErrorLog(AuthorisationProcessorRequest request, PsuIdData psuData, ErrorHolder errorHolder, String message) {
+        String businessObjectName = request.getServiceType() == ServiceType.AIS
+                                        ? "Consent-ID"
+                                        : "Payment-ID";
+        String messageToLog = String.format("InR-ID: [{}], X-Request-ID: [{}], %s [{}], Authorisation-ID [{}], PSU-ID [{}], SCA Approach [{}]. %s Error msg: [{}]", businessObjectName, message);
+        log.info(messageToLog,
+                 requestProviderService.getInternalRequestId(),
+                 requestProviderService.getRequestId(),
+                 request.getUpdateAuthorisationRequest().getBusinessObjectId(),
+                 request.getUpdateAuthorisationRequest().getAuthorisationId(),
+                 psuData != null ? psuData.getPsuId() : "-",
+                 request.getScaApproach(),
+                 errorHolder);
+    }
+
+    void writeInfoLog(AuthorisationProcessorRequest request, PsuIdData psuData, String message) {
+        String businessObjectName = request.getServiceType() == ServiceType.AIS
+                                        ? "Consent-ID"
+                                        : "Payment-ID";
+        String messageToLog = String.format("InR-ID: [{}], X-Request-ID: [{}], %s [{}], Authorisation-ID [{}], PSU-ID [{}], SCA Approach [{}]. %s", businessObjectName, message);
+        log.info(messageToLog,
+                 requestProviderService.getInternalRequestId(),
+                 requestProviderService.getRequestId(),
+                 request.getUpdateAuthorisationRequest().getBusinessObjectId(),
+                 request.getUpdateAuthorisationRequest().getAuthorisationId(),
+                 psuData != null ? psuData.getPsuId() : "-",
+                 request.getScaApproach());
     }
 }
