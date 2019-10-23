@@ -1099,9 +1099,7 @@ public class ConsentServiceTest {
         updatePsuData.setPassword(PASSWORD);
         UpdateConsentPsuDataResponse updateConsentPsuDataResponse = buildUpdateConsentPsuDataResponse();
         updateConsentPsuDataResponse.setScaStatus(ScaStatus.RECEIVED);
-
-        when(redirectAisAuthorizationService.updateConsentPsuData(updatePsuData, getAccountConsentAuthorisation()))
-            .thenReturn(updateConsentPsuDataResponse);
+        when(authorisationChainResponsibilityService.apply(any())).thenReturn(new UpdateConsentPsuDataResponse(ScaStatus.RECEIVED, CONSENT_ID, AUTHORISATION_ID));
 
         ArgumentCaptor<ConsentStatus> consentStatusArgumentCaptor = ArgumentCaptor.forClass(ConsentStatus.class);
         ArgumentCaptor<ScaStatus> scaStatusArgumentCaptor = ArgumentCaptor.forClass(ScaStatus.class);
@@ -1140,10 +1138,7 @@ public class ConsentServiceTest {
             .thenReturn(Optional.of(authorization));
 
         UpdateConsentPsuDataReq updateConsentPsuDataReq = buildUpdateConsentPsuDataReq(CONSENT_ID);
-        when(redirectAisAuthorizationService.updateConsentPsuData(updateConsentPsuDataReq, authorization))
-            .thenReturn(buildUpdateConsentPsuDataResponse());
-
-
+        when(authorisationChainResponsibilityService.apply(any())).thenReturn(new UpdateConsentPsuDataResponse(ScaStatus.RECEIVED, CONSENT_ID, AUTHORISATION_ID));
         ArgumentCaptor<EventType> argumentCaptor = ArgumentCaptor.forClass(EventType.class);
 
         // When
@@ -1224,8 +1219,7 @@ public class ConsentServiceTest {
             .thenReturn(Optional.of(authorization));
 
         UpdateConsentPsuDataReq updateConsentPsuDataReq = buildUpdateConsentPsuDataReq(CONSENT_ID);
-        when(redirectAisAuthorizationService.updateConsentPsuData(updateConsentPsuDataReq, authorization))
-            .thenReturn(buildUpdateConsentPsuDataResponse());
+        when(authorisationChainResponsibilityService.apply(any())).thenReturn(new UpdateConsentPsuDataResponse(ScaStatus.RECEIVED, CONSENT_ID, AUTHORISATION_ID));
 
         ArgumentCaptor<ConsentStatus> consentStatusArgumentCaptor = ArgumentCaptor.forClass(ConsentStatus.class);
         ArgumentCaptor<ScaStatus> scaStatusArgumentCaptor = ArgumentCaptor.forClass(ScaStatus.class);
