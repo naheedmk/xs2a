@@ -27,15 +27,15 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Component
 public class OauthPaymentValidator extends OauthValidator<PisCommonPaymentResponse> {
     private static final MessageError MESSAGE_ERROR = new MessageError(ErrorType.PIS_403, TppMessageInformation.of(MessageErrorCode.FORBIDDEN));
 
-    private static final List<TransactionStatus> NOT_ALLOWED_STATUSES_FOR_GET_REQUESTS =
-        Arrays.asList(TransactionStatus.RCVD, TransactionStatus.PDNG, TransactionStatus.PATC);
+    private static final Set<TransactionStatus> NOT_ALLOWED_STATUSES_FOR_GET_REQUESTS =
+        EnumSet.of(TransactionStatus.RCVD, TransactionStatus.PDNG, TransactionStatus.PATC);
 
     public OauthPaymentValidator(RequestProviderService requestProviderService,
                                  AspspProfileServiceWrapper aspspProfileServiceWrapper,
