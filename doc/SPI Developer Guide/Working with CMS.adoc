@@ -14,9 +14,9 @@
 
 === Using the CMS-ASPSP-API
 
-CMS-ASPSP-API is an api for banks to make some changes in CMS.
+CMS-ASPSP-API is an api for banks to make particular changes in CMS and to get needed information from it.
 
-List of endpoints in CMS-ASPSP-API:
+In order to do it use next endpoints in CMS-ASPSP-API:
 
 * `GET aspsp-api/v1/ais/consents/tpp/{tpp-id}` - get consent by TPP.
 * `GET aspsp-api/v1/ais/consents/psu` - get consent by PSU.
