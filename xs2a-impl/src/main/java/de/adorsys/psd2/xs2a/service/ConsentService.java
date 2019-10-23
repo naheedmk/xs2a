@@ -514,14 +514,12 @@ public class ConsentService {
         }
 
         AccountConsentAuthorization consentAuthorization = authorization.get();
-        UpdateConsentPsuDataResponse response = service.updateConsentPsuData(updatePsuData, authorization.get());
-        loggingContextService.storeScaStatus(response.getScaStatus());
-
         UpdateConsentPsuDataResponse response = (UpdateConsentPsuDataResponse) authorisationChainResponsibilityService.apply(
             new AisAuthorisationProcessorRequest(consentAuthorization.getChosenScaApproach(),
                                                  consentAuthorization.getScaStatus(),
                                                  updatePsuData,
                                                  consentAuthorization));
+        loggingContextService.storeScaStatus(response.getScaStatus());
 
         return Optional.ofNullable(response)
                    .map(s -> Optional.ofNullable(s.getErrorHolder())
