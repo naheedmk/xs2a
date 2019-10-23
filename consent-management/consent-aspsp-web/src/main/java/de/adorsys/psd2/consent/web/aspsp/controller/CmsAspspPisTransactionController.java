@@ -45,13 +45,12 @@ public class CmsAspspPisTransactionController {
         @PathVariable("status") String status,
         @RequestHeader(value = "instance-id", required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId) {
         try {
-            TransactionStatus.valueOf(status);
+            return aspspPaymentService.updatePaymentStatus(paymentId, TransactionStatus.valueOf(status), instanceId)
+                       ? ResponseEntity.ok().build()
+                       : ResponseEntity.badRequest().build();
         } catch (IllegalArgumentException illegalArgumentException) {
             return ResponseEntity.badRequest().build();
         }
-        return aspspPaymentService.updatePaymentStatus(paymentId, TransactionStatus.valueOf(status), instanceId)
-                   ? ResponseEntity.ok().build()
-                   : ResponseEntity.badRequest().build();
     }
 }
 
