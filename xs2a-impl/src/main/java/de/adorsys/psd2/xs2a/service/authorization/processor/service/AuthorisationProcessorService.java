@@ -28,7 +28,6 @@ public interface AuthorisationProcessorService {
      * Updates authorisation in the CMS after each successful authorisation step execution
      *
      * @param request the request object, containing incoming data from controller and authorisation data from CMS
-     * @return the result object, containing the successful result of authorisation or the error response
      */
     void updateAuthorisation(AuthorisationProcessorRequest request, AuthorisationProcessorResponse response);
 
