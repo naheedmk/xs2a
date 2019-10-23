@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OauthConsentValidator extends OauthValidator<AccountConsent> {
-    private final static MessageError MESSAGE_ERROR = new MessageError(ErrorType.AIS_403, TppMessageInformation.of(MessageErrorCode.FORBIDDEN));
+    private static final MessageError MESSAGE_ERROR = new MessageError(ErrorType.AIS_403, TppMessageInformation.of(MessageErrorCode.FORBIDDEN));
 
     public OauthConsentValidator(RequestProviderService requestProviderService,
                                  AspspProfileServiceWrapper aspspProfileServiceWrapper,
