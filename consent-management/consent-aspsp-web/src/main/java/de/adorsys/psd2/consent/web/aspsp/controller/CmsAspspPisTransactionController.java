@@ -44,6 +44,11 @@ public class CmsAspspPisTransactionController {
             allowableValues = "ACCC, ACCP, ACSC, ACSP, ACTC, ACWC, ACWP, RCVD, PDNG, RJCT, CANC, ACFC, PATC", required = true)
         @PathVariable("status") String status,
         @RequestHeader(value = "instance-id", required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId) {
+        try {
+            TransactionStatus.valueOf(status);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            return ResponseEntity.badRequest().build();
+        }
         return aspspPaymentService.updatePaymentStatus(paymentId, TransactionStatus.valueOf(status), instanceId)
                    ? ResponseEntity.ok().build()
                    : ResponseEntity.badRequest().build();
