@@ -64,7 +64,6 @@ public class AisScaAuthenticatedStageTest {
     private static final String AUTHORISATION = "Bearer 1111111";
     private static final String CONSENT_ID = "Test consentId";
     private static final String WRONG_CONSENT_ID = "wrong consent id";
-    private static final String TEST_AUTHENTICATION_DATA = "Test authenticationData";
     private static final String PSU_ID = "Test psuId";
     private static final ConsentStatus VALID_CONSENT_STATUS = ConsentStatus.VALID;
     private static final ConsentStatus PARTIALLY_AUTHORISED_CONSENT_STATUS = ConsentStatus.PARTIALLY_AUTHORISED;
