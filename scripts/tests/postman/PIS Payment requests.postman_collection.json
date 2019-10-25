@@ -1515,8 +1515,7 @@
 												"exec": [
 													"const jsonData = pm.response.json();",
 													"",
-													"const parts = jsonData._links.scaOAuth.href.split('/');",
-													"const authorisationId = parts[ parts.length - 2 ];",
+													"const authorisationId = jsonData.authorisationId;",
 													"",
 													"pm.globals.set(\"authorisation_id\", authorisationId);",
 													"",
@@ -6286,8 +6285,7 @@
 												"exec": [
 													"const jsonData = pm.response.json();",
 													"",
-													"const parts = jsonData._links.scaOAuth.href.split('/');",
-													"const authorisationId = parts[ parts.length - 2 ];",
+													"const authorisationId = jsonData.authorisationId;",
 													"",
 													"pm.globals.set(\"authorisation_id\", authorisationId);",
 													"",

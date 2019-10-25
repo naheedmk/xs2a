@@ -1398,9 +1398,7 @@
 										"exec": [
 											"const jsonData = pm.response.json();",
 											"",
-											"const parts = jsonData._links.scaOAuth.href.split('/');",
-											"parts.pop();",
-											"const authorisationId = parts.pop();",
+											"const authorisationId = jsonData.authorisationId;",
 											"",
 											"pm.test(\"Status code is 201\", () => {",
 											"    pm.response.to.have.status(201);",
@@ -3773,9 +3771,7 @@
 										"exec": [
 											"const jsonData = pm.response.json();",
 											"",
-											"const parts = jsonData._links.scaOAuth.href.split('/');",
-											"parts.pop();",
-											"const authorisationId = parts.pop();",
+											"const authorisationId = jsonData.authorisationId;",
 											"",
 											"pm.test(\"Status code is 201\", () => {",
 											"    pm.response.to.have.status(201);",
@@ -8653,9 +8649,7 @@
 										"exec": [
 											"const jsonData = pm.response.json();",
 											"",
-											"const parts = jsonData._links.scaOAuth.href.split('/');",
-											"parts.pop();",
-											"const authorisationId = parts.pop();",
+											"const authorisationId = jsonData.authorisationId;",
 											"",
 											"pm.test(\"Status code is 201\", () => {",
 											"    pm.response.to.have.status(201);",
@@ -20444,9 +20438,7 @@
 										"exec": [
 											"const jsonData = pm.response.json();",
 											"",
-											"const parts = jsonData._links.scaOAuth.href.split('/');",
-											"parts.pop();",
-											"const authorisationId = parts.pop();",
+											"const authorisationId = jsonData.authorisationId;",
 											"",
 											"pm.test(\"Status code is 201\", () => {",
 											"    pm.response.to.have.status(201);",
