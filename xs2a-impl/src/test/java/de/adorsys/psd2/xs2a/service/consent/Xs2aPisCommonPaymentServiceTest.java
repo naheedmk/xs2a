@@ -2,12 +2,15 @@ package de.adorsys.psd2.xs2a.service.consent;
 
 import de.adorsys.psd2.consent.api.CmsScaMethod;
 import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
+import de.adorsys.psd2.consent.api.pis.authorisation.UpdatePisCommonPaymentPsuDataRequest;
+import de.adorsys.psd2.consent.api.pis.authorisation.UpdatePisCommonPaymentPsuDataResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.core.tpp.TppRole;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
@@ -42,6 +45,8 @@ public class Xs2aPisCommonPaymentServiceTest {
     private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType");
     private static final CreatePisCommonPaymentResponse CREATE_PIS_COMMON_PAYMENT_RESPONSE = new CreatePisCommonPaymentResponse(PAYMENT_ID);
     private static final PisCommonPaymentResponse PIS_COMMON_PAYMENT_RESPONSE = new PisCommonPaymentResponse();
+    private static final UpdatePisCommonPaymentPsuDataRequest UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST = buildUpdatePisCommonPaymentPsuDataRequest();
+    private static final UpdatePisCommonPaymentPsuDataResponse UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_RESPONSE = new UpdatePisCommonPaymentPsuDataResponse(ScaStatus.RECEIVED);
     private static final List<Xs2aAuthenticationObject> AUTHENTICATION_OBJECT_LIST = Collections.singletonList(new Xs2aAuthenticationObject());
     private static final List<CmsScaMethod> CMS_SCA_METHOD_LIST = Collections.singletonList(new CmsScaMethod(AUTHORISATION_ID, true));
 
@@ -179,6 +184,33 @@ public class Xs2aPisCommonPaymentServiceTest {
 
         // Then
         assertThat(actualResponse).isTrue();
+    }
+
+    @Test
+    public void updatePisAuthorization_success() {
+        when(pisCommonPaymentServiceEncrypted.updatePisAuthorisation(AUTHORISATION_ID, UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST))
+            .thenReturn(Optional.of(UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_RESPONSE));
+
+        Optional<UpdatePisCommonPaymentPsuDataResponse> updatePisCommonPaymentPsuDataResponse = xs2aPisCommonPaymentService.updatePisAuthorisation(UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST);
+
+        assertThat(updatePisCommonPaymentPsuDataResponse.isPresent()).isTrue();
+        assertThat(updatePisCommonPaymentPsuDataResponse.get()).isEqualTo(UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_RESPONSE);
+    }
+
+    @Test
+    public void updatePisAuthorization_failure() {
+        when(pisCommonPaymentServiceEncrypted.updatePisAuthorisation(AUTHORISATION_ID, UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST))
+            .thenReturn(Optional.empty());
+
+        Optional<UpdatePisCommonPaymentPsuDataResponse> updatePisCommonPaymentPsuDataResponse = xs2aPisCommonPaymentService.updatePisAuthorisation(UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST);
+
+        assertThat(updatePisCommonPaymentPsuDataResponse.isPresent()).isFalse();
+    }
+
+    private static UpdatePisCommonPaymentPsuDataRequest buildUpdatePisCommonPaymentPsuDataRequest() {
+        UpdatePisCommonPaymentPsuDataRequest request = new UpdatePisCommonPaymentPsuDataRequest();
+        request.setAuthorizationId(AUTHORISATION_ID);
+        return request;
     }
 
     private static TppInfo buildTppInfo() {
