@@ -17,6 +17,8 @@
 package de.adorsys.psd2.xs2a.service.consent;
 
 import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
+import de.adorsys.psd2.consent.api.pis.authorisation.UpdatePisCommonPaymentPsuDataRequest;
+import de.adorsys.psd2.consent.api.pis.authorisation.UpdatePisCommonPaymentPsuDataResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentRequest;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
@@ -74,6 +76,11 @@ public class Xs2aPisCommonPaymentService {
         pisCommonPaymentServiceEncrypted.updateCommonPayment(pisCommonPaymentRequest, paymentId);
     }
 
+    public Optional<UpdatePisCommonPaymentPsuDataResponse> updatePisAuthorisation(UpdatePisCommonPaymentPsuDataRequest request) {
+        String authorisationId = request.getAuthorizationId();
+        return pisCommonPaymentServiceEncrypted.updatePisAuthorisation(authorisationId, request);
+    }
+
     /**
      * Requests CMS to retrieve authentication method and checks if requested authentication method is decoupled.
      *
@@ -109,7 +116,7 @@ public class Xs2aPisCommonPaymentService {
     /**
      * Updates multilevelScaRequired and stores changes into database
      *
-     * @param paymentId Payment ID
+     * @param paymentId             Payment ID
      * @param multilevelScaRequired new value for boolean multilevel sca required
      */
     public boolean updateMultilevelSca(String paymentId, boolean multilevelScaRequired) {

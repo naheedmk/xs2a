@@ -246,7 +246,10 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends BaseAuthor
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
                                           .build();
             writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "PSU authorisation failed due to incorrect credentials.");
-            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
+
+            Xs2aUpdatePisCommonPaymentPsuDataResponse response = new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
+            xs2aPisCommonPaymentService.updatePisAuthorisation(xs2aPisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(request, response));
+            return response;
         }
 
         if (pisAuthorisationResponse.getChosenScaApproach() == ScaApproach.DECOUPLED) {

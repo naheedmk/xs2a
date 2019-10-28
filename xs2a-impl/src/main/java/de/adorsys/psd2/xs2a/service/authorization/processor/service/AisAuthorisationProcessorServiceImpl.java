@@ -265,7 +265,9 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
                                           .build();
             writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "Authorise PSU when apply authorisation has failed. PSU credentials invalid.");
-            return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
+            UpdateConsentPsuDataResponse response = new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
+            aisConsentService.updateConsentAuthorization(aisConsentMapper.mapToSpiUpdateConsentPsuDataReq(request, response));
+            return response;
         }
 
         if (aisScaAuthorisationService.isOneFactorAuthorisation(accountConsent)) {
