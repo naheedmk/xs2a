@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {AmountModelMapper.class, PurposeCodeMapper.class, Xs2aAddressMapper.class, AspspProfileServiceWrapper.class})
 public abstract class AccountModelMapper {
-    private static final List<MulticurrencyAccountLevel> MULTICURRENCY_ACCOUNT_LEVELS = Arrays.asList(MulticurrencyAccountLevel.AGGREGATION, MulticurrencyAccountLevel.AGGREGATION_AND_SUBACCOUNT);
+    private static final List<MulticurrencyAccountLevel> MULTICURRENCY_ACCOUNT_AGGREGATION_LEVELS = Arrays.asList(MulticurrencyAccountLevel.AGGREGATION, MulticurrencyAccountLevel.AGGREGATION_AND_SUBACCOUNT);
 
     @Autowired
     protected HrefLinkMapper hrefLinkMapper;
@@ -171,7 +171,7 @@ public abstract class AccountModelMapper {
     }
 
     private String getMulticurrencyRepresentationOrNull() {
-        return MULTICURRENCY_ACCOUNT_LEVELS.contains(aspspProfileServiceWrapper.getMulticurrencyAccountLevel()) ? "XXX" : null;
+        return MULTICURRENCY_ACCOUNT_AGGREGATION_LEVELS.contains(aspspProfileServiceWrapper.getMulticurrencyAccountLevel()) ? "XXX" : null;
     }
 }
 
