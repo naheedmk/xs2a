@@ -1,3 +1,12 @@
 = Release notes v.5.4
 
 == Table of Contents
+
+* Implement support of Multicurrency Accounts
+
+== Implement support of Multicurrency Accounts
+
+From now on, XS2A supports multicurrency accounts.
+It can be enabled in ASPSP Profile by setting `multicurrencyAccountLevelSupported` property to `AGGREGATION_AND_SUBACCOUNT` or `AGGREGATION` value.
+When TPP asks for account list information or account information, ASPSP can return `null` in `currency` field.
+This means that this is a multicurrency account and XS2A marks `currency` field with `XXX` text.
