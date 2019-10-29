@@ -6,5 +6,5 @@
 
 == Validate access of TPP based on QWAC certificate
 
-Removal of TPP roles validation based on QWAC certificate has been reintroduced.
+TPP roles validation based on QWAC certificate has been reintroduced.
 XS2A will once again validate whether TPP has access to specific endpoint based on its roles in the certificate.
