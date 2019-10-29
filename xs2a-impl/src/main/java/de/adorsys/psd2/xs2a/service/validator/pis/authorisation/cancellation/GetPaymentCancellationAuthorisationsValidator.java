@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.validator.pis.authorisation.cancellation;
 
+import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.pis.AbstractPisTppValidator;
 import de.adorsys.psd2.xs2a.service.validator.pis.CommonPaymentObject;
@@ -26,6 +27,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class GetPaymentCancellationAuthorisationsValidator extends AbstractPisTppValidator<CommonPaymentObject> {
+
+    public GetPaymentCancellationAuthorisationsValidator(RequestProviderService requestProviderService) {
+        super(requestProviderService);
+    }
 
     /**
      * Validates get payment cancellation authorisations request

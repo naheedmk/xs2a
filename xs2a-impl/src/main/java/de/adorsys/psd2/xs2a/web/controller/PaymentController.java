@@ -271,7 +271,14 @@ public class PaymentController implements PaymentApi {
                                                           String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod,
                                                           UUID psUDeviceID, String psUGeoLocation) {
 
-        ResponseObject<ScaStatus> serviceResponse = paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(paymentId, cancellationId);
+        Optional<PaymentType> paymentType = PaymentType.getByValue(paymentService);
+        if (!paymentType.isPresent()) {
+            ResponseObject<TransactionStatus> responseObject = ResponseObject.<TransactionStatus>builder()
+                                                                   .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
+            return responseErrorMapper.generateErrorResponse(responseObject.getError());
+        }
+        ResponseObject<ScaStatus> serviceResponse =
+            paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(paymentId, cancellationId, paymentType.get(), paymentProduct);
         return serviceResponse.hasError()
                    ? responseErrorMapper.generateErrorResponse(serviceResponse.getError())
                    : responseMapper.ok(serviceResponse, authorisationMapper::mapToScaStatusResponse);
@@ -283,7 +290,14 @@ public class PaymentController implements PaymentApi {
                                                             String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage,
                                                             String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
 
-        ResponseObject<Xs2aAuthorisationSubResources> serviceResponse = paymentAuthorisationService.getPaymentInitiationAuthorisations(paymentId);
+        Optional<PaymentType> paymentTypeOptional = PaymentType.getByValue(paymentService);
+        if (!paymentTypeOptional.isPresent()) {
+            ResponseObject<TransactionStatus> responseObject = ResponseObject.<TransactionStatus>builder()
+                                                                   .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
+            return responseErrorMapper.generateErrorResponse(responseObject.getError());
+        }
+
+        ResponseObject<Xs2aAuthorisationSubResources> serviceResponse = paymentAuthorisationService.getPaymentInitiationAuthorisations(paymentId, paymentProduct, paymentTypeOptional.get());
         return serviceResponse.hasError()
                    ? responseErrorMapper.generateErrorResponse(serviceResponse.getError())
                    : responseMapper.ok(serviceResponse, authorisationMapper::mapToAuthorisations);
@@ -297,8 +311,15 @@ public class PaymentController implements PaymentApi {
                                                                                    String psUAcceptEncoding, String psUAcceptLanguage,
                                                                                    String psUUserAgent, String psUHttpMethod, UUID psUDeviceID,
                                                                                    String psUGeoLocation) {
+        Optional<PaymentType> paymentTypeOptional = PaymentType.getByValue(paymentService);
+        if (!paymentTypeOptional.isPresent()) {
+            ResponseObject<TransactionStatus> responseObject = ResponseObject.<TransactionStatus>builder()
+                                                                   .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
+            return responseErrorMapper.generateErrorResponse(responseObject.getError());
+        }
 
-        ResponseObject<Xs2aPaymentCancellationAuthorisationSubResource> serviceResponse = paymentCancellationAuthorisationService.getPaymentInitiationCancellationAuthorisationInformation(paymentId);
+        ResponseObject<Xs2aPaymentCancellationAuthorisationSubResource> serviceResponse =
+            paymentCancellationAuthorisationService.getPaymentInitiationCancellationAuthorisationInformation(paymentId, paymentTypeOptional.get(), paymentProduct);
         return serviceResponse.hasError()
                    ? responseErrorMapper.generateErrorResponse(serviceResponse.getError())
                    : responseMapper.ok(serviceResponse, consentModelMapper::mapToCancellations);
@@ -311,7 +332,15 @@ public class PaymentController implements PaymentApi {
                                                         String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent,
                                                         String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
 
-        ResponseObject<ScaStatus> serviceResponse = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(paymentId, authorisationId);
+        Optional<PaymentType> paymentTypeOptional = PaymentType.getByValue(paymentService);
+        if (!paymentTypeOptional.isPresent()) {
+            ResponseObject<TransactionStatus> responseObject = ResponseObject.<TransactionStatus>builder()
+                                                                   .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
+            return responseErrorMapper.generateErrorResponse(responseObject.getError());
+        }
+
+        ResponseObject<ScaStatus> serviceResponse =
+            paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(paymentId, authorisationId, paymentTypeOptional.get(), paymentProduct);
         return serviceResponse.hasError()
                    ? responseErrorMapper.generateErrorResponse(serviceResponse.getError())
                    : responseMapper.ok(serviceResponse, authorisationMapper::mapToScaStatusResponse);

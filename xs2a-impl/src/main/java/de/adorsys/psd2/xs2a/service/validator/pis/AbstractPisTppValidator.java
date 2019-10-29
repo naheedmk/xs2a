@@ -16,13 +16,20 @@
 
 package de.adorsys.psd2.xs2a.service.validator.pis;
 
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
+import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
+import de.adorsys.psd2.xs2a.service.RequestProviderService;
+import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.validator.BusinessValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.tpp.PisTppInfoValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
 
 /**
  * Common validator for validating TPP in payments and executing request-specific business validation afterwards.
@@ -30,18 +37,22 @@ import org.springframework.stereotype.Component;
  *
  * @param <T> type of object to be checked
  */
+@Slf4j
 @Component
 public abstract class AbstractPisTppValidator<T extends PaymentTypeAndInfoProvider> implements BusinessValidator<T> {
     private PisTppInfoValidator pisTppInfoValidator;
-    private PaymentTypeAndProductValidator paymentProductAndTypeValidator;
+    private RequestProviderService requestProviderService;
+
+    public AbstractPisTppValidator(RequestProviderService requestProviderService) {
+        this.requestProviderService = requestProviderService;
+    }
 
     @NotNull
     @Override
     public ValidationResult validate(@NotNull T object) {
-        ValidationResult productAndTypeValidationResult =
-            paymentProductAndTypeValidator.validateTypeAndProduct(object.getPaymentType(), object.getPaymentProduct());
-        if (productAndTypeValidationResult.isNotValid()) {
-            return productAndTypeValidationResult;
+        ValidationResult paymentTypeAndProductValidationResult = validatePaymentTypeAndProduct(object);
+        if (paymentTypeAndProductValidationResult.isNotValid()) {
+            return paymentTypeAndProductValidationResult;
         }
 
         TppInfo tppInfoInPayment = object.getTppInfo();
@@ -53,6 +64,24 @@ public abstract class AbstractPisTppValidator<T extends PaymentTypeAndInfoProvid
         return executeBusinessValidation(object);
     }
 
+    private ValidationResult validatePaymentTypeAndProduct(T object) {
+        PisCommonPaymentResponse paymentResponse = object.getPisCommonPaymentResponse();
+
+        if (!object.getPaymentType().equals(paymentResponse.getPaymentType())) {
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment ID: [{}]. Payment validation has failed: payment type [{}] is incorrect",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentResponse.getExternalId(), object.getPaymentType());
+            return ValidationResult.invalid(ErrorType.PIS_405, of(MessageErrorCode.SERVICE_INVALID_405_FOR_PAYMENT));
+        }
+
+        if (!object.getPaymentProduct().equals(paymentResponse.getPaymentProduct())) {
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment ID: [{}]. Payment validation has failed: payment product [{}] is incorrect",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentResponse.getExternalId(), object.getPaymentProduct());
+            return ValidationResult.invalid(ErrorType.PIS_403, of(MessageErrorCode.PRODUCT_INVALID_FOR_PAYMENT));
+        }
+
+        return ValidationResult.valid();
+    }
+
     /**
      * Executes request-specific business validation
      *
@@ -62,8 +91,11 @@ public abstract class AbstractPisTppValidator<T extends PaymentTypeAndInfoProvid
     protected abstract ValidationResult executeBusinessValidation(T paymentObject);
 
     @Autowired
-    public void setPisValidators(PisTppInfoValidator pisTppInfoValidator, PaymentTypeAndProductValidator paymentProductAndTypeValidator) {
+    public void setPisValidators(PisTppInfoValidator pisTppInfoValidator) {
         this.pisTppInfoValidator = pisTppInfoValidator;
-        this.paymentProductAndTypeValidator = paymentProductAndTypeValidator;
+    }
+
+    public RequestProviderService getRequestProviderService() {
+        return requestProviderService;
     }
 }

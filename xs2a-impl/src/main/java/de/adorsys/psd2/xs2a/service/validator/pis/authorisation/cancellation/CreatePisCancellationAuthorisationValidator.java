@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.validator.pis.payment;
+package de.adorsys.psd2.xs2a.service.validator.pis.authorisation.cancellation;
 
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
@@ -22,26 +22,23 @@ import de.adorsys.psd2.xs2a.service.validator.pis.AbstractPisTppValidator;
 import org.springframework.stereotype.Component;
 
 /**
- * Validator to be used for validating get payment status by ID request according to some business rules
+ * Validator to be used for validating create pis cancellation authorisation request according to some business rules
  */
 @Component
-public class GetPaymentStatusByIdValidator extends AbstractPisTppValidator<GetPaymentStatusByIdPO> {
+public class CreatePisCancellationAuthorisationValidator extends AbstractPisTppValidator<CreatePisCancellationAuthorisationPO> {
 
-    public GetPaymentStatusByIdValidator(RequestProviderService requestProviderService) {
+    public CreatePisCancellationAuthorisationValidator(RequestProviderService requestProviderService) {
         super(requestProviderService);
     }
 
     /**
-     * Validates get payment status by ID request by checking whether:
-     * <ul>
-     * <li>given payment's type and product are valid for the payment</li>
-     * </ul>
+     * Validates get payment cancellation authorisations request
      *
      * @param paymentObject payment information object
      * @return valid result if the payment is valid, invalid result with appropriate error otherwise
      */
     @Override
-    protected ValidationResult executeBusinessValidation(GetPaymentStatusByIdPO paymentObject) {
+    protected ValidationResult executeBusinessValidation(CreatePisCancellationAuthorisationPO paymentObject) {
         return ValidationResult.valid();
     }
 }
