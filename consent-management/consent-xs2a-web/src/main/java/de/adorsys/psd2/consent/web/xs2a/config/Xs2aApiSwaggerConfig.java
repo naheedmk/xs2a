@@ -27,11 +27,16 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import org.springframework.boot.info.BuildProperties;
+import org.springframework.core.env.Environment;
+import lombok.RequiredArgsConstructor;
 
 @EnableSwagger2
 public class Xs2aApiSwaggerConfig {
     @Value("${license.url}")
     private String licenseUrl;
+    private final BuildProperties buildProperties;
+    private final Environment env;
 
     @SuppressWarnings("Guava")  // Intellij IDEA claims that Guava predicates could be replaced with Java API,
                                 // but actually it is not possible
@@ -52,7 +57,7 @@ public class Xs2aApiSwaggerConfig {
         return new ApiInfoBuilder()
             .title("XS2A CMS Internal API")
             .contact(new Contact("adorsys GmbH & Co. KG", "https://adorsys.de/en/psd2", "psd2@adorsys.de"))
-            .version("1.0")
+            .version(buildProperties.getVersion()+" "+buildProperties.get("build.number"))
             .license("Apache License 2.0")
             .licenseUrl(licenseUrl)
             .build();

@@ -28,12 +28,17 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import org.springframework.boot.info.BuildProperties;
+import org.springframework.core.env.Environment;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
     @Value("${license.url}")
     private String licenseUrl;
+    private final BuildProperties buildProperties;
+    private final Environment env;
 
     @Bean(name = "api")
     public Docket apiDocklet() {
@@ -51,7 +56,7 @@ public class SwaggerConfig {
         return new ApiInfoBuilder()
                    .title("ASPSP Profile rest API")
                    .contact(new Contact("pru, adorsys GmbH & Co. KG", "http://www.adorsys.de", "pru@adorsys.com.ua"))
-                   .version("1.0")
+                   .version(buildProperties.getVersion()+" "+buildProperties.get("build.number"))
                    .license("Apache License 2.0")
                    .licenseUrl(licenseUrl)
                    .build();
