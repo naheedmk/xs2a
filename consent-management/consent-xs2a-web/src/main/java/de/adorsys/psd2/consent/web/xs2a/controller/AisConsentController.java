@@ -167,17 +167,17 @@ public class AisConsentController {
                    : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping(path = "/authorizations/{authorization-id}/{authorization-status}")
+    @PutMapping(path = "/authorisations/{authorisation-id}/{authorisation-status}")
     @ApiOperation(value = "Update consent authorization status.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 404, message = "Not Found")})
-    public ResponseEntity<Void> updateConsentAuthorizationStatus(
-        @ApiParam(name = "authorization-id", value = "The consent authorization identification assigned to the created authorization.", example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7")
-        @PathVariable("authorization-id") String authorizationId,
+    public ResponseEntity<Void> updateConsentAuthorisationStatus(
+        @ApiParam(name = "authorisation-id", value = "The consent authorisation identification assigned to the created authorisation.", example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7")
+        @PathVariable("authorisation-id") String authorisationId,
         @ApiParam(value = "The following code values are permitted 'VALID', 'REJECTED', 'REVOKED_BY_PSU', 'TERMINATED_BY_TPP'. These values might be extended by ASPSP by more values.", example = "VALID")
-        @PathVariable("authorization-status") String scaStatus) {
-        return aisConsentAuthorisationServiceEncrypted.updateConsentAuthorizationStatus(authorizationId, ScaStatus.fromValue(scaStatus))
+        @PathVariable("authorisation-status") String scaStatus) {
+        return aisConsentAuthorisationServiceEncrypted.updateConsentAuthorisationStatus(authorisationId, ScaStatus.fromValue(scaStatus))
                    ? new ResponseEntity<>(HttpStatus.OK)
                    : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

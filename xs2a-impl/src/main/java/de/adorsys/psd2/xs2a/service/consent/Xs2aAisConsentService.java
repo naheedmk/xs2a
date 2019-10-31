@@ -176,8 +176,8 @@ public class Xs2aAisConsentService {
             });
     }
 
-    public void updateConsentAuthorizationStatus(String authorisationId, ScaStatus scaStatus){
-        aisConsentAuthorisationServiceEncrypted.updateConsentAuthorizationStatus(authorisationId, scaStatus);
+    public void updateConsentAuthorisationStatus(String authorisationId, ScaStatus scaStatus) {
+        aisConsentAuthorisationServiceEncrypted.updateConsentAuthorisationStatus(authorisationId, scaStatus);
     }
 
     /**

@@ -120,7 +120,7 @@ public class AisScaMethodSelectedStage extends AisScaStage<UpdateConsentPsuDataR
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getConsentId(), request.getAuthorizationId(), request.getPsuData().getPsuId(), authenticationMethodId, messageError);
 
             if (messageError.getTppMessage().getMessageErrorCode() == MessageErrorCode.PSU_CREDENTIALS_INVALID) {
-                aisConsentService.updateConsentAuthorizationStatus(request.getAuthorizationId(), ScaStatus.FAILED);
+                aisConsentService.updateConsentAuthorisationStatus(request.getAuthorizationId(), ScaStatus.FAILED);
             }
             return createFailedResponse(messageError, spiResponse.getErrors(), request);
         }

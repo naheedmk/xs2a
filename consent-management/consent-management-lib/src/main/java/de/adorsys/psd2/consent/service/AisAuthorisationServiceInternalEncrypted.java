@@ -64,8 +64,8 @@ public class AisAuthorisationServiceInternalEncrypted implements AisConsentAutho
 
     @Override
     @Transactional
-    public boolean updateConsentAuthorizationStatus(String authorizationId, ScaStatus scaStatus) {
-        return aisConsentAuthorisationService.updateConsentAuthorizationStatus(authorizationId, scaStatus);
+    public boolean updateConsentAuthorisationStatus(String authorisationId, ScaStatus scaStatus) {
+        return aisConsentAuthorisationService.updateConsentAuthorisationStatus(authorisationId, scaStatus);
     }
 
     @Override

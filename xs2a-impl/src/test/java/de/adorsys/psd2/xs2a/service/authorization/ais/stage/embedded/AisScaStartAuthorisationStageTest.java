@@ -236,7 +236,7 @@ public class AisScaStartAuthorisationStageTest {
         assertThat(actualResponse.getScaStatus()).isEqualTo(FAILED_SCA_STATUS);
         assertThat(actualResponse.getMessageError().getErrorType()).isEqualTo(ErrorType.AIS_401);
 
-        verify(aisConsentService).updateConsentAuthorizationStatus(AUTHORISATION_ID, FAILED_SCA_STATUS);
+        verify(aisConsentService).updateConsentAuthorisationStatus(AUTHORISATION_ID, FAILED_SCA_STATUS);
     }
 
     @Test
