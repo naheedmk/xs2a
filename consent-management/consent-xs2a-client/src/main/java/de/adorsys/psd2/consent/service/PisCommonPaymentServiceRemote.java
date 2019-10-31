@@ -94,8 +94,8 @@ public class PisCommonPaymentServiceRemote implements PisCommonPaymentServiceEnc
     public Optional<CreatePisAuthorisationResponse> createAuthorization(String paymentId, CreatePisAuthorisationRequest request) {
         try {
             return Optional.ofNullable(consentRestTemplate.postForEntity(remotePisCommonPaymentUrls.createPisAuthorisation(),
-                                                                  request, CreatePisAuthorisationResponse.class, paymentId))
-                .map(ResponseEntity::getBody);
+                                                                         request, CreatePisAuthorisationResponse.class, paymentId))
+                       .map(ResponseEntity::getBody);
         } catch (CmsRestException cmsRestException) {
             log.warn("No authorisation was created for the paymentId {}", paymentId);
             return Optional.empty();
@@ -117,6 +117,13 @@ public class PisCommonPaymentServiceRemote implements PisCommonPaymentServiceEnc
     public Optional<UpdatePisCommonPaymentPsuDataResponse> updatePisAuthorisation(String authorisationId, UpdatePisCommonPaymentPsuDataRequest request) {
         return Optional.ofNullable(consentRestTemplate.exchange(remotePisCommonPaymentUrls.updatePisAuthorisation(), HttpMethod.PUT, new HttpEntity<>(request),
                                                                 UpdatePisCommonPaymentPsuDataResponse.class, request.getAuthorizationId()))
+                   .map(ResponseEntity::getBody);
+    }
+
+    @Override
+    public Optional<Boolean> updatePisAuthorisationStatus(String authorisationId, ScaStatus scaStatus) {
+        return Optional.ofNullable(consentRestTemplate.exchange(remotePisCommonPaymentUrls.updatePisAuthorisationStatus(), HttpMethod.PUT, new HttpEntity<>(null),
+                                                                Boolean.class, authorisationId, scaStatus.getValue()))
                    .map(ResponseEntity::getBody);
     }
 

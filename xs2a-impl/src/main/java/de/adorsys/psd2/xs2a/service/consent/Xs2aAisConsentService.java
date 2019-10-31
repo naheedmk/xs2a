@@ -176,6 +176,10 @@ public class Xs2aAisConsentService {
             });
     }
 
+    public void updateConsentAuthorizationStatus(String authorisationId, ScaStatus scaStatus){
+        aisConsentAuthorisationServiceEncrypted.updateConsentAuthorizationStatus(authorisationId, scaStatus);
+    }
+
     /**
      * Sends a PUT request to CMS to update AIS account access information by consent ID
      *
