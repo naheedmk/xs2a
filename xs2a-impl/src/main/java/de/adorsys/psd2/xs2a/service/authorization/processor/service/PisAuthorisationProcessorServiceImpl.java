@@ -164,6 +164,10 @@ public class PisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
             writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "Verify SCA authorisation and execute payment has failed.");
+
+            if (errorHolder.getTppMessageInformationList().get(0).getMessageErrorCode() == MessageErrorCode.PSU_CREDENTIALS_INVALID) {
+                xs2aPisCommonPaymentService.updatePisAuthorisationStatus(authorisationId, FAILED);
+            }
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
         }
 
@@ -254,9 +258,8 @@ public class PisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
                                           .build();
             writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "PSU authorisation failed due to incorrect credentials.");
 
-            Xs2aUpdatePisCommonPaymentPsuDataResponse response = new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
-            xs2aPisCommonPaymentService.updatePisAuthorisation(xs2aPisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(request, response));
-            return response;
+            xs2aPisCommonPaymentService.updatePisAuthorisationStatus(authorisationId, FAILED);
+            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
         }
 
         if (psuAuthorisationResponse.isScaExempted() && paymentType != PaymentType.PERIODIC) {
@@ -360,6 +363,10 @@ public class PisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
             writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "Proceed embedded approach when performs authorisation depending on selected SCA method has failed.");
+
+            if (errorHolder.getTppMessageInformationList().get(0).getMessageErrorCode() == MessageErrorCode.PSU_CREDENTIALS_INVALID) {
+                xs2aPisCommonPaymentService.updatePisAuthorisationStatus(authorisationId, FAILED);
+            }
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
         }
 

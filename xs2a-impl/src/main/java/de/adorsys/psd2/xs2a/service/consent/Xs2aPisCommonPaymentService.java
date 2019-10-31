@@ -17,13 +17,12 @@
 package de.adorsys.psd2.xs2a.service.consent;
 
 import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
-import de.adorsys.psd2.consent.api.pis.authorisation.UpdatePisCommonPaymentPsuDataRequest;
-import de.adorsys.psd2.consent.api.pis.authorisation.UpdatePisCommonPaymentPsuDataResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentRequest;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
+import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthenticationObject;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
@@ -76,9 +75,8 @@ public class Xs2aPisCommonPaymentService {
         pisCommonPaymentServiceEncrypted.updateCommonPayment(pisCommonPaymentRequest, paymentId);
     }
 
-    public Optional<UpdatePisCommonPaymentPsuDataResponse> updatePisAuthorisation(UpdatePisCommonPaymentPsuDataRequest request) {
-        String authorisationId = request.getAuthorizationId();
-        return pisCommonPaymentServiceEncrypted.updatePisAuthorisation(authorisationId, request);
+    public boolean updatePisAuthorisationStatus(String authorisationId, ScaStatus scaStatus) {
+        return pisCommonPaymentServiceEncrypted.updatePisAuthorisationStatus(authorisationId, scaStatus);
     }
 
     /**
