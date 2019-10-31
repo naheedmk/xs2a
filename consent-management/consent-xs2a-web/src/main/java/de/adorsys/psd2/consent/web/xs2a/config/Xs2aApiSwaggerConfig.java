@@ -32,6 +32,7 @@ import org.springframework.core.env.Environment;
 import lombok.RequiredArgsConstructor;
 
 @EnableSwagger2
+@RequiredArgsConstructor
 public class Xs2aApiSwaggerConfig {
     @Value("${license.url}")
     private String licenseUrl;

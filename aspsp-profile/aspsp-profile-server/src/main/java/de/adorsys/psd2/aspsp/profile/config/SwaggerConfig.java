@@ -34,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableSwagger2
+@RequiredArgsConstructor
 public class SwaggerConfig {
     @Value("${license.url}")
     private String licenseUrl;
