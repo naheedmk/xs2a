@@ -187,24 +187,29 @@ public class Xs2aPisCommonPaymentServiceTest {
     }
 
     @Test
-    public void updatePisAuthorization_success() {
-        when(pisCommonPaymentServiceEncrypted.updatePisAuthorisation(AUTHORISATION_ID, UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST))
-            .thenReturn(Optional.of(UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_RESPONSE));
+    public void updatePisAuthorizationStatus_success() {
+        // Given
+        when(pisCommonPaymentServiceEncrypted.updatePisAuthorisationStatus(AUTHORISATION_ID, ScaStatus.FAILED))
+            .thenReturn(true);
 
-        Optional<UpdatePisCommonPaymentPsuDataResponse> updatePisCommonPaymentPsuDataResponse = xs2aPisCommonPaymentService.updatePisAuthorisation(UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST);
+        // When
+        boolean result = xs2aPisCommonPaymentService.updatePisAuthorisationStatus(AUTHORISATION_ID, ScaStatus.FAILED);
 
-        assertThat(updatePisCommonPaymentPsuDataResponse.isPresent()).isTrue();
-        assertThat(updatePisCommonPaymentPsuDataResponse.get()).isEqualTo(UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_RESPONSE);
+        // Then
+        assertThat(result).isTrue();
     }
 
     @Test
-    public void updatePisAuthorization_failure() {
-        when(pisCommonPaymentServiceEncrypted.updatePisAuthorisation(AUTHORISATION_ID, UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST))
-            .thenReturn(Optional.empty());
+    public void updatePisAuthorizationStatus_failure() {
+        // Given
+        when(pisCommonPaymentServiceEncrypted.updatePisAuthorisationStatus(AUTHORISATION_ID, ScaStatus.FAILED))
+            .thenReturn(false);
 
-        Optional<UpdatePisCommonPaymentPsuDataResponse> updatePisCommonPaymentPsuDataResponse = xs2aPisCommonPaymentService.updatePisAuthorisation(UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST);
+        // When
+        boolean result = xs2aPisCommonPaymentService.updatePisAuthorisationStatus(AUTHORISATION_ID, ScaStatus.FAILED);
 
-        assertThat(updatePisCommonPaymentPsuDataResponse.isPresent()).isFalse();
+        // Then
+        assertThat(result).isFalse();
     }
 
     private static UpdatePisCommonPaymentPsuDataRequest buildUpdatePisCommonPaymentPsuDataRequest() {

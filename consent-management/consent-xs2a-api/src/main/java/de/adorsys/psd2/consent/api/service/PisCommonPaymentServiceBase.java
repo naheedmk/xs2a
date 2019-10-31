@@ -103,7 +103,7 @@ interface PisCommonPaymentServiceBase {
      * @param scaStatus       The to be updated status
      * @return
      */
-    Optional<Boolean> updatePisAuthorisationStatus(String authorisationId, ScaStatus scaStatus);
+    boolean updatePisAuthorisationStatus(String authorisationId, ScaStatus scaStatus);
 
     /**
      * Updates payment cancellation authorization

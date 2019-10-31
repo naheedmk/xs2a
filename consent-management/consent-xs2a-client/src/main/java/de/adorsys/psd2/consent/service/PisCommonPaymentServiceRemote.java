@@ -121,10 +121,14 @@ public class PisCommonPaymentServiceRemote implements PisCommonPaymentServiceEnc
     }
 
     @Override
-    public Optional<Boolean> updatePisAuthorisationStatus(String authorisationId, ScaStatus scaStatus) {
-        return Optional.ofNullable(consentRestTemplate.exchange(remotePisCommonPaymentUrls.updatePisAuthorisationStatus(), HttpMethod.PUT, new HttpEntity<>(null),
-                                                                Boolean.class, authorisationId, scaStatus.getValue()))
-                   .map(ResponseEntity::getBody);
+    public boolean updatePisAuthorisationStatus(String authorisationId, ScaStatus scaStatus) {
+        try {
+            consentRestTemplate.put(remotePisCommonPaymentUrls.updatePisAuthorisationStatus(), null, authorisationId, scaStatus.getValue());
+            return true;
+        } catch (CmsRestException cmsRestException) {
+            log.info("Couldn't update authorisation status by authorisationId {}", authorisationId);
+        }
+        return false;
     }
 
     @Override

@@ -104,7 +104,7 @@ public class PisCommonPaymentServiceInternalEncrypted implements PisCommonPaymen
 
     @Override
     @Transactional
-    public Optional<Boolean> updatePisAuthorisationStatus(String authorisationId, ScaStatus scaStatus) {
+    public boolean updatePisAuthorisationStatus(String authorisationId, ScaStatus scaStatus) {
         return pisCommonPaymentService.updatePisAuthorisationStatus(authorisationId, scaStatus);
     }
 
