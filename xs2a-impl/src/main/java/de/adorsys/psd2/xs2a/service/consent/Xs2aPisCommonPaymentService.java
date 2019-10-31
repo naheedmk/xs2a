@@ -115,7 +115,7 @@ public class Xs2aPisCommonPaymentService {
     /**
      * Updates multilevelScaRequired and stores changes into database
      *
-     * @param paymentId             Payment ID
+     * @param paymentId Payment ID
      * @param multilevelScaRequired new value for boolean multilevel sca required
      */
     public boolean updateMultilevelSca(String paymentId, boolean multilevelScaRequired) {
