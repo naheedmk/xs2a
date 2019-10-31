@@ -4575,7 +4575,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts/{{resource_id}}/transactions?bookingStatus={{booking_status}}&withBalance={{with_balance}}&dateFrom=2018-01-01&dateTo={{endFormat}}",
+									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts/{{resource_id}}/transactions?bookingStatus={{booking_status}}&withBalance={{with_balance}}&dateFrom=2018-01-01&dateTo=2020-09-30",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{url_xs2a}}"
@@ -4601,7 +4601,7 @@
 										},
 										{
 											"key": "dateTo",
-											"value": "{{endFormat}}"
+											"value": "2020-09-30"
 										}
 									]
 								},
