@@ -29,6 +29,7 @@
 
     <properties>
         <ruleset.basedir>../..</ruleset.basedir>
+	<ci.build.number>&#8203;</ci.build.number>
     </properties>
 
     <dependencies>
