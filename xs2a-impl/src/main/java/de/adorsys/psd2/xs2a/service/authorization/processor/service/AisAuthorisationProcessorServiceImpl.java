@@ -162,7 +162,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             writeErrorLog(authorisationProcessorRequest, request.getPsuData(), errorHolder, "Verify SCA authorisation failed when update PSU data.");
 
             if (errorHolder.getTppMessageInformationList().get(0).getMessageErrorCode() == MessageErrorCode.PSU_CREDENTIALS_INVALID) {
-                aisConsentService.updateConsentAuthorizationStatus(request.getAuthorisationId(), ScaStatus.FAILED);
+                aisConsentService.updateConsentAuthorisationStatus(request.getAuthorisationId(), ScaStatus.FAILED);
             }
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
@@ -210,7 +210,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
             writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "Proceed embedded approach when performs authorisation depending on selected SCA method has failed.");
 
             if (errorHolder.getTppMessageInformationList().get(0).getMessageErrorCode() == MessageErrorCode.PSU_CREDENTIALS_INVALID) {
-                aisConsentService.updateConsentAuthorizationStatus(request.getAuthorisationId(), ScaStatus.FAILED);
+                aisConsentService.updateConsentAuthorisationStatus(request.getAuthorisationId(), ScaStatus.FAILED);
             }
             return new UpdateConsentPsuDataResponse(errorHolder, request.getBusinessObjectId(), request.getAuthorisationId());
         }
@@ -273,7 +273,7 @@ public class AisAuthorisationProcessorServiceImpl extends BaseAuthorisationProce
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
                                           .build();
             writeErrorLog(authorisationProcessorRequest, psuData, errorHolder, "Authorise PSU when apply authorisation has failed. PSU credentials invalid.");
-            aisConsentService.updateConsentAuthorizationStatus(authorisationId, ScaStatus.FAILED);
+            aisConsentService.updateConsentAuthorisationStatus(authorisationId, ScaStatus.FAILED);
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
 

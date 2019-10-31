@@ -110,8 +110,8 @@ public class AisConsentRemoteUrls {
      * Method: PUT
      * PathVariables: String consentId, String authorizationId, String authorisationStatus
      */
-    public String updateAisConsentAuthorizationStatus() {
-        return consentServiceBaseUrl + "/ais/consent/authorizations/{authorization-id}/{authorization-status}";
+    public String updateAisConsentAuthorisationStatus() {
+        return consentServiceBaseUrl + "/ais/consent/authorisations/{authorisation-id}/{authorisation-status}";
     }
 
     /**

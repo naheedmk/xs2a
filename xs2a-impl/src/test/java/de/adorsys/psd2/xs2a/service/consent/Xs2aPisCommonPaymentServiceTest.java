@@ -188,7 +188,7 @@ public class Xs2aPisCommonPaymentServiceTest {
     }
 
     @Test
-    public void updatePisAuthorizationStatus_success() {
+    public void updatePisAuthorisationStatus_success() {
         // Given
         when(pisCommonPaymentServiceEncrypted.updatePisAuthorisationStatus(AUTHORISATION_ID, ScaStatus.FAILED))
             .thenReturn(true);
@@ -201,7 +201,7 @@ public class Xs2aPisCommonPaymentServiceTest {
     }
 
     @Test
-    public void updatePisAuthorizationStatus_failure() {
+    public void updatePisAuthorisationStatus_failure() {
         // Given
         when(pisCommonPaymentServiceEncrypted.updatePisAuthorisationStatus(AUTHORISATION_ID, ScaStatus.FAILED))
             .thenReturn(false);

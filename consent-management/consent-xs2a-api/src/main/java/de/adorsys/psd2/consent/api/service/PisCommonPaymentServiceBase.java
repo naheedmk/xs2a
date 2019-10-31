@@ -87,7 +87,7 @@ interface PisCommonPaymentServiceBase {
     Optional<CreatePisAuthorisationResponse> createAuthorizationCancellation(String paymentId, CreatePisAuthorisationRequest pisAuthorisationRequest);
 
     /**
-     * Updates payment authorization
+     * Updates payment authorisation
      *
      * @param authorisationId String representation of the authorisation identifier
      * @param request         Incoming request for updating authorization

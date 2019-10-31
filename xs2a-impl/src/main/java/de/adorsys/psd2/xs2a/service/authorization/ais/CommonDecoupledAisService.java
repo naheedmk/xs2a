@@ -61,7 +61,7 @@ public class CommonDecoupledAisService {
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), consentId, authorisationId, psuData.getPsuId(), authenticationMethodId, errorHolder);
 
             if (errorHolder.getTppMessageInformationList().get(0).getMessageErrorCode() == MessageErrorCode.PSU_CREDENTIALS_INVALID) {
-                aisConsentService.updateConsentAuthorizationStatus(authorisationId, ScaStatus.FAILED);
+                aisConsentService.updateConsentAuthorisationStatus(authorisationId, ScaStatus.FAILED);
             }
             return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId);
         }
