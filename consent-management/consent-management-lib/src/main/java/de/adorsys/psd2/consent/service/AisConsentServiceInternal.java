@@ -23,13 +23,8 @@ import de.adorsys.psd2.consent.api.service.AisConsentService;
 import de.adorsys.psd2.consent.domain.AuthorisationTemplateEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.TppInfoEntity;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.domain.account.AisConsentAction;
-import de.adorsys.psd2.consent.domain.account.AspspAccountAccessHolder;
-import de.adorsys.psd2.consent.domain.account.TppAccountAccessHolder;
-import de.adorsys.psd2.consent.repository.AisConsentActionRepository;
-import de.adorsys.psd2.consent.repository.AisConsentRepository;
-import de.adorsys.psd2.consent.repository.TppInfoRepository;
+import de.adorsys.psd2.consent.domain.account.*;
+import de.adorsys.psd2.consent.repository.*;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.mapper.TppInfoMapper;
@@ -57,6 +52,8 @@ import static de.adorsys.psd2.xs2a.core.consent.ConsentStatus.*;
 public class AisConsentServiceInternal implements AisConsentService {
     private final AisConsentRepository aisConsentRepository;
     private final AisConsentActionRepository aisConsentActionRepository;
+    private final AisConsentUsageRepository aisConsentUsageRepository;
+    private final AisConsentTransactionRepository aisConsentTransactionRepository;
     private final TppInfoRepository tppInfoRepository;
     private final AisConsentMapper consentMapper;
     private final PsuDataMapper psuDataMapper;
@@ -376,9 +373,45 @@ public class AisConsentServiceInternal implements AisConsentService {
         if (!request.isUpdateUsage()) {
             return;
         }
-        aisConsentUsageService.incrementUsage(consent, request.getRequestUri());
+        aisConsentUsageService.incrementUsage(consent, request);
+
+        boolean expired = checkOneOffConsentForExpiration(consent);
+
         consent.setLastActionDate(LocalDate.now());
         aisConsentRepository.save(consent);
+    }
+
+    /**
+     * Checks, should the one-off consent be expired after using its all GET endpoints (accounts, balances, transactions)
+     * in all possible combinations.
+     *
+     * @param consent the {@link AisConsent} to check.
+     * @return true if the consent should be expired, false otherwise.
+     */
+    private boolean checkOneOffConsentForExpiration(AisConsent consent) {
+
+        List<String> consentResourceIds = consent.getAspspAccountAccesses()
+                                              .stream()
+                                              .map(AspspAccountAccess::getResourceId)
+                                              .distinct()
+                                              .collect(Collectors.toList());
+
+        boolean isExpired = false;
+        for (String resourceId : consentResourceIds) {
+            long transactions = aisConsentTransactionRepository.findByConsentIdAndResourceId(consent, resourceId).iterator().next().getNumberOfTransactions();
+            long usedTransactions = aisConsentUsageRepository.countByConsentIdAndResourceIdAndTransactionIdNotNull(consent.getId(), resourceId);
+
+            // не забыть про дополнительные запросы на балансы и тд!!!
+            // всегда будут: readAccountList, readAccountDetails,
+            // по типу консента будут: readBalances, readTransactionList
+            if (usedTransactions < transactions) {
+                break;
+            }
+
+            isExpired = true;
+        }
+
+        return isExpired;
     }
 
     private void updateStatus(AisConsent aisConsent) {

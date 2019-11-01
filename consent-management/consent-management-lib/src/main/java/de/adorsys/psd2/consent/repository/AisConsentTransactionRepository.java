@@ -17,22 +17,15 @@
 package de.adorsys.psd2.consent.repository;
 
 import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.domain.account.AisConsentUsage;
-import org.springframework.data.jpa.repository.Lock;
+import de.adorsys.psd2.consent.domain.account.AisConsentTransaction;
 import org.springframework.data.repository.CrudRepository;
 
-import javax.persistence.LockModeType;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
-public interface AisConsentUsageRepository extends CrudRepository<AisConsentUsage, Long> {
-    @Lock(value = LockModeType.OPTIMISTIC_FORCE_INCREMENT)
-    Optional<AisConsentUsage> findWriteByConsentAndUsageDateAndRequestUri(AisConsent aisConsent, LocalDate usageDate, String requestUri);
+public interface AisConsentTransactionRepository extends CrudRepository<AisConsentTransaction, Long> {
 
-    @Lock(value = LockModeType.OPTIMISTIC)
-    List<AisConsentUsage> findReadByConsentAndUsageDate(AisConsent aisConsent, LocalDate usageDate);
+    List<AisConsentTransaction> findByConsentIdAndResourceId(AisConsent aisConsent, String instanceId);
 
-    long countByConsentIdAndResourceIdAndTransactionIdNotNull(Long consentId, String resourceId);
+    List<AisConsentTransaction> findDistinctByConsentId(AisConsent aisConsent);
 
 }

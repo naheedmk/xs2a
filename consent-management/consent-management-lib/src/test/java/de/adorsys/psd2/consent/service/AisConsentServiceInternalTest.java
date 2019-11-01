@@ -102,8 +102,6 @@ public class AisConsentServiceInternalTest {
     @Mock
     private PsuData psuDataMocked;
     @Mock
-    private PsuData anotherPsuDataMocked;
-    @Mock
     private CmsPsuService cmsPsuService;
     @Mock
     private AisConsentUsageService aisConsentUsageService;
@@ -521,7 +519,7 @@ public class AisConsentServiceInternalTest {
         when(aisConsentRepository.findByExternalId(EXTERNAL_CONSENT_ID)).thenReturn(Optional.empty());
 
         try {
-            aisConsentService.checkConsentAndSaveActionLog(new AisConsentActionRequest(TPP_ID, EXTERNAL_CONSENT_ID, ActionStatus.SUCCESS, REQUEST_URI, true));
+            aisConsentService.checkConsentAndSaveActionLog(new AisConsentActionRequest(TPP_ID, EXTERNAL_CONSENT_ID, ActionStatus.SUCCESS, REQUEST_URI, true, null, null));
             assertTrue("Method works without exceptions", true);
         } catch (Exception ex) {
             fail("Exception should not be appeared.");
@@ -531,17 +529,19 @@ public class AisConsentServiceInternalTest {
     @Test
     public void checkConsentAndSaveActionLog_updateUsageCounter() {
         // When
-        aisConsentService.checkConsentAndSaveActionLog(new AisConsentActionRequest(TPP_ID, EXTERNAL_CONSENT_ID, ActionStatus.SUCCESS, REQUEST_URI, true));
+        AisConsentActionRequest request = new AisConsentActionRequest(TPP_ID, EXTERNAL_CONSENT_ID, ActionStatus.SUCCESS, REQUEST_URI, true, null, null);
+        aisConsentService.checkConsentAndSaveActionLog(request);
         // Then
-        verify(aisConsentUsageService, atLeastOnce()).incrementUsage(aisConsent, REQUEST_URI);
+        verify(aisConsentUsageService, atLeastOnce()).incrementUsage(aisConsent, request);
     }
 
     @Test
     public void checkConsentAndSaveActionLog_NotUpdateUsageCounter() {
         // When
-        aisConsentService.checkConsentAndSaveActionLog(new AisConsentActionRequest(TPP_ID, EXTERNAL_CONSENT_ID, ActionStatus.SUCCESS, REQUEST_URI, false));
+        AisConsentActionRequest request = new AisConsentActionRequest(TPP_ID, EXTERNAL_CONSENT_ID, ActionStatus.SUCCESS, REQUEST_URI, false, null, null);
+        aisConsentService.checkConsentAndSaveActionLog(request);
         // Then
-        verify(aisConsentUsageService, never()).incrementUsage(aisConsent, REQUEST_URI);
+        verify(aisConsentUsageService, never()).incrementUsage(aisConsent, request);
     }
 
     @Test
@@ -558,7 +558,7 @@ public class AisConsentServiceInternalTest {
         doNothing().when(aisConsentConfirmationExpirationService).expireConsent(consent);
 
         // When
-        aisConsentService.checkConsentAndSaveActionLog(new AisConsentActionRequest(TPP_ID, EXTERNAL_CONSENT_ID, ActionStatus.SUCCESS, "/uri", false));
+        aisConsentService.checkConsentAndSaveActionLog(new AisConsentActionRequest(TPP_ID, EXTERNAL_CONSENT_ID, ActionStatus.SUCCESS, "/uri", false, null, null));
 
         // Then
         verify(aisConsentConfirmationExpirationService, atLeastOnce()).expireConsent(consent);
