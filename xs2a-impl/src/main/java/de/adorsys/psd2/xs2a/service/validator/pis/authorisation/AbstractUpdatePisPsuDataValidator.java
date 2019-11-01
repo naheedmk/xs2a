@@ -27,7 +27,7 @@ import de.adorsys.psd2.xs2a.service.validator.PisEndpointAccessCheckerService;
 import de.adorsys.psd2.xs2a.service.validator.PisPsuDataUpdateAuthorisationCheckerValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationStageCheckValidator;
-import de.adorsys.psd2.xs2a.service.validator.pis.AbstractPisTppValidator;
+import de.adorsys.psd2.xs2a.service.validator.pis.AbstractPisValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +44,7 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.SERVICE_BLOCKED;
  */
 @Slf4j
 @Component
-public abstract class AbstractUpdatePisPsuDataValidator<T extends UpdatePisPsuDataPO> extends AbstractPisTppValidator<T> {
+public abstract class AbstractUpdatePisPsuDataValidator<T extends UpdatePisPsuDataPO> extends AbstractPisValidator<T> {
     private final PisEndpointAccessCheckerService pisEndpointAccessCheckerService;
     private final PisAuthorisationValidator pisAuthorisationValidator;
     private final PisAuthorisationStatusValidator pisAuthorisationStatusValidator;

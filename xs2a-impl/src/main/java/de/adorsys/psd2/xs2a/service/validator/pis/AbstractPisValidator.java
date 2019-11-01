@@ -39,11 +39,11 @@ import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
  */
 @Slf4j
 @Component
-public abstract class AbstractPisTppValidator<T extends PaymentTypeAndInfoProvider> implements BusinessValidator<T> {
+public abstract class AbstractPisValidator<T extends PaymentTypeAndInfoProvider> implements BusinessValidator<T> {
     private PisTppInfoValidator pisTppInfoValidator;
     private RequestProviderService requestProviderService;
 
-    public AbstractPisTppValidator(RequestProviderService requestProviderService) {
+    public AbstractPisValidator(RequestProviderService requestProviderService) {
         this.requestProviderService = requestProviderService;
     }
 

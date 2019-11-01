@@ -273,7 +273,7 @@ public class PaymentController implements PaymentApi {
 
         Optional<PaymentType> paymentType = PaymentType.getByValue(paymentService);
         if (!paymentType.isPresent()) {
-            ResponseObject<TransactionStatus> responseObject = ResponseObject.<TransactionStatus>builder()
+            ResponseObject<ScaStatus> responseObject = ResponseObject.<ScaStatus>builder()
                                                                    .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
@@ -292,7 +292,7 @@ public class PaymentController implements PaymentApi {
 
         Optional<PaymentType> paymentTypeOptional = PaymentType.getByValue(paymentService);
         if (!paymentTypeOptional.isPresent()) {
-            ResponseObject<TransactionStatus> responseObject = ResponseObject.<TransactionStatus>builder()
+            ResponseObject<Xs2aAuthorisationSubResources> responseObject = ResponseObject.<Xs2aAuthorisationSubResources>builder()
                                                                    .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
@@ -313,7 +313,7 @@ public class PaymentController implements PaymentApi {
                                                                                    String psUGeoLocation) {
         Optional<PaymentType> paymentTypeOptional = PaymentType.getByValue(paymentService);
         if (!paymentTypeOptional.isPresent()) {
-            ResponseObject<TransactionStatus> responseObject = ResponseObject.<TransactionStatus>builder()
+            ResponseObject<Xs2aPaymentCancellationAuthorisationSubResource> responseObject = ResponseObject.<Xs2aPaymentCancellationAuthorisationSubResource>builder()
                                                                    .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
@@ -334,7 +334,7 @@ public class PaymentController implements PaymentApi {
 
         Optional<PaymentType> paymentTypeOptional = PaymentType.getByValue(paymentService);
         if (!paymentTypeOptional.isPresent()) {
-            ResponseObject<TransactionStatus> responseObject = ResponseObject.<TransactionStatus>builder()
+            ResponseObject<ScaStatus> responseObject = ResponseObject.<ScaStatus>builder()
                                                                    .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }

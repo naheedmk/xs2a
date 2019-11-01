@@ -18,14 +18,14 @@ package de.adorsys.psd2.xs2a.service.validator.pis.payment;
 
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
-import de.adorsys.psd2.xs2a.service.validator.pis.AbstractPisTppValidator;
+import de.adorsys.psd2.xs2a.service.validator.pis.AbstractPisValidator;
 import org.springframework.stereotype.Component;
 
 /**
  * Validator to be used for validating get payment by ID request according to some business rules
  */
 @Component
-public class GetPaymentByIdValidator extends AbstractPisTppValidator<GetPaymentByIdPO> {
+public class GetPaymentByIdValidator extends AbstractPisValidator<GetPaymentByIdPO> {
 
     public GetPaymentByIdValidator(RequestProviderService requestProviderService) {
         super(requestProviderService);
