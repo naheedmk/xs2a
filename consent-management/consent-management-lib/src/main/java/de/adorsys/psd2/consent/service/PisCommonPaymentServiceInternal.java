@@ -574,16 +574,6 @@ public class PisCommonPaymentServiceInternal implements PisCommonPaymentService 
                 paymentData.setPsuDataList(cmsPsuService.enrichPsuData(psuData, psuListInPayment));
                 pisAuthorisation.setPsuData(psuData);
             }
-
-        } else {
-            boolean isPsuCorrect = Objects.nonNull(psuDataInAuthorisation)
-                                       && Objects.nonNull(psuDataInRequest)
-                                       && psuDataInAuthorisation.contentEquals(psuDataInRequest);
-            if (!isPsuCorrect) {
-                log.info("Authorisation ID: [{}], SCA status: [{}]. Update payment authorisation failed, because PSU data request does not match stored PSU data",
-                         pisAuthorisation.getExternalId(), pisAuthorisation.getScaStatus().getValue());
-                return pisAuthorisation.getScaStatus();
-            }
         }
 
         if (ScaStatus.SCAMETHODSELECTED == request.getScaStatus()) {
