@@ -16,6 +16,8 @@
 
 package de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers;
 
+import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -36,6 +38,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -81,7 +84,52 @@ public class Xs2aToSpiPaymentInfoMapperTest {
         assertEquals(PAYMENT_DATA, spiPaymentInfo.getPaymentData());
         assertEquals(spiPsuDataList, spiPaymentInfo.getPsuDataList());
         assertEquals(STATUS_CHANGE_TIMESTAMP, spiPaymentInfo.getStatusChangeTimestamp());
+        assertEquals(commonPayment.getCreationTimestamp(), spiPaymentInfo.getCreationTimestamp());
     }
+
+    @Test
+    public void mapToSpiPaymentInfo_CommonPaymentData_Success() {
+        //Given
+        CommonPaymentData commonPaymentData = buildCommonPaymentData();
+        //When
+        SpiPaymentInfo spiPaymentInfo = xs2aToSpiPaymentInfoMapper.mapToSpiPaymentInfo(commonPaymentData);
+        //Then
+        assertEquals(commonPaymentData.getExternalId(), spiPaymentInfo.getPaymentId());
+        assertEquals(commonPaymentData.getPaymentType(), spiPaymentInfo.getPaymentType());
+        assertEquals(commonPaymentData.getTransactionStatus(), spiPaymentInfo.getPaymentStatus());
+        assertEquals(commonPaymentData.getPaymentData(), spiPaymentInfo.getPaymentData());
+        assertEquals(spiPsuDataList, spiPaymentInfo.getPsuDataList());
+        assertEquals(commonPaymentData.getCreationTimestamp(), spiPaymentInfo.getCreationTimestamp());
+        assertEquals(commonPaymentData.getStatusChangeTimestamp(), spiPaymentInfo.getStatusChangeTimestamp());
+    }
+
+    @Test
+    public void xs2aToSpiPaymentInfo_mapToSpiPaymentRequest() {
+        //Given
+        CommonPayment commonPayment = buildCommonPayment();
+        //When
+        SpiPaymentInfo spiPaymentInfo = new Xs2aToSpiPaymentInfo().mapToSpiPaymentRequest(commonPayment, PAYMENT_PRODUCT);
+        //Then
+        assertEquals(PAYMENT_ID, spiPaymentInfo.getPaymentId());
+        assertEquals(PAYMENT_PRODUCT, spiPaymentInfo.getPaymentProduct());
+        assertEquals(PaymentType.SINGLE, spiPaymentInfo.getPaymentType());
+        assertEquals(PAYMENT_DATA, spiPaymentInfo.getPaymentData());
+        assertEquals(STATUS_CHANGE_TIMESTAMP, spiPaymentInfo.getStatusChangeTimestamp());
+        assertEquals(commonPayment.getCreationTimestamp(), spiPaymentInfo.getCreationTimestamp());
+    }
+
+    private CommonPaymentData buildCommonPaymentData() {
+        PisCommonPaymentResponse pisCommonPaymentResponse = new PisCommonPaymentResponse();
+        pisCommonPaymentResponse.setExternalId(UUID.randomUUID().toString());
+        pisCommonPaymentResponse.setPaymentType(PaymentType.SINGLE);
+        pisCommonPaymentResponse.setTransactionStatus(TransactionStatus.RCVD);
+        pisCommonPaymentResponse.setPaymentData("test".getBytes());
+        pisCommonPaymentResponse.setPsuData(psuDataList);
+        pisCommonPaymentResponse.setCreationTimestamp(OffsetDateTime.now());
+        pisCommonPaymentResponse.setStatusChangeTimestamp(OffsetDateTime.now().minusMinutes(1));
+        return pisCommonPaymentResponse;
+    }
+
 
     private CommonPayment buildCommonPayment() {
         CommonPayment commonPayment = new CommonPayment();
@@ -92,6 +140,7 @@ public class Xs2aToSpiPaymentInfoMapperTest {
         commonPayment.setPaymentData(PAYMENT_DATA);
         commonPayment.setPsuDataList(psuDataList);
         commonPayment.setStatusChangeTimestamp(STATUS_CHANGE_TIMESTAMP);
+        commonPayment.setCreationTimestamp(OffsetDateTime.now());
         return commonPayment;
     }
 
@@ -103,3 +152,4 @@ public class Xs2aToSpiPaymentInfoMapperTest {
         return new SpiPsuData(psuId, null, null, null, null);
     }
 }
+

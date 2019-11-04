@@ -72,6 +72,7 @@ public class Xs2aToSpiPaymentMapper {
         spiPaymentInfo.setStatus(paymentInfo.getTransactionStatus());
         spiPaymentInfo.setPaymentData(paymentInfo.getPaymentData());
         spiPaymentInfo.setPsuDataList(xs2aToSpiPsuDataMapper.mapToSpiPsuDataList(paymentInfo.getPsuDataList()));
+        spiPaymentInfo.setCreationTimestamp(paymentInfo.getCreationTimestamp());
         return spiPaymentInfo;
     }
 }
