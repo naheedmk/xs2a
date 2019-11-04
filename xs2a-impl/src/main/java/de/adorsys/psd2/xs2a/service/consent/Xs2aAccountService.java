@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.consent;
 
-import de.adorsys.psd2.consent.api.service.AccountServiceBase;
+import de.adorsys.psd2.consent.api.service.AccountServiceEncrypted;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class Xs2aAccountService {
 
-    private final AccountServiceBase accountServiceBase;
+    private final AccountServiceEncrypted accountServiceBase;
 
     public void saveNumberOfTransaction(String consentId, String resourceId, int numberOfTransactions) {
         accountServiceBase.saveNumberOfTransactions(consentId, resourceId, numberOfTransactions);

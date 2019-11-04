@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.service;
 
-import de.adorsys.psd2.consent.api.service.AccountServiceBase;
+import de.adorsys.psd2.consent.api.service.AccountService;
 import de.adorsys.psd2.consent.api.service.AccountServiceEncrypted;
 import de.adorsys.psd2.consent.service.security.SecurityDataService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ import java.util.Optional;
 public class AccountServiceInternalEncrypted implements AccountServiceEncrypted {
 
     private final SecurityDataService securityDataService;
-    private final AccountServiceBase accountServiceBase;
+    private final AccountService accountServiceBase;
 
     @Override
     @Transactional

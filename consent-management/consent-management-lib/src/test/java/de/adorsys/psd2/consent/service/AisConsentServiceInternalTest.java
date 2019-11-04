@@ -111,6 +111,8 @@ public class AisConsentServiceInternalTest {
     private TppInfoRepository tppInfoRepository;
     @Mock
     private AisConsentRequestTypeService aisConsentRequestTypeService;
+    @Mock
+    private OneOffConsentExpirationService oneOffConsentExpirationService;
 
     @Before
     public void setUp() {
@@ -122,6 +124,7 @@ public class AisConsentServiceInternalTest {
         when(aisConsentActionRepository.save(action)).thenReturn(action);
         when(tppInfoRepository.findByAuthorisationNumber(any())).thenReturn(Optional.of(buildTppInfoEntity()));
         when(aisConsentRepository.findByExternalId(EXTERNAL_CONSENT_ID)).thenReturn(Optional.ofNullable(aisConsent));
+        when(oneOffConsentExpirationService.isConsentExpired(any(AisConsent.class))).thenReturn(false);
     }
 
     @Test
@@ -648,12 +651,6 @@ public class AisConsentServiceInternalTest {
         return buildCorrectCreateAisConsentRequest(LocalDate.now());
     }
 
-    private CreateAisConsentRequest buildCorrectCreateAisConsentRequest(List<TppRole> roles) {
-        CreateAisConsentRequest createAisConsentRequest = buildCorrectCreateAisConsentRequest();
-        createAisConsentRequest.setTppInfo(buildTppInfo(roles));
-        return createAisConsentRequest;
-    }
-
     private CreateAisConsentRequest buildCorrectCreateAisConsentRequest(LocalDate validUntil) {
         CreateAisConsentRequest request = new CreateAisConsentRequest();
         request.setAccess(buildAccess());
@@ -716,12 +713,6 @@ public class AisConsentServiceInternalTest {
     private TppInfoEntity buildTppInfoEntity() {
         TppInfoEntity tppInfoEntity = new TppInfoEntity();
         tppInfoEntity.setAuthorisationNumber("tpp-id-1");
-        return tppInfoEntity;
-    }
-
-    private TppInfoEntity buildTppInfoEntity(List<TppRole> roles) {
-        TppInfoEntity tppInfoEntity = buildTppInfoEntity();
-        tppInfoEntity.setTppRoles(roles);
         return tppInfoEntity;
     }
 }

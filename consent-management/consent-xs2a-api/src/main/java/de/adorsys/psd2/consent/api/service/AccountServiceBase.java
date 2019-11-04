@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.api.service;
 
-public interface AccountServiceBase {
+interface AccountServiceBase {
 
     boolean saveNumberOfTransactions(String consentId, String resourceId, int numberOfTransactions);
 

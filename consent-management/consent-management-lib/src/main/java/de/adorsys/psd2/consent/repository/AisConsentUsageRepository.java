@@ -33,6 +33,5 @@ public interface AisConsentUsageRepository extends CrudRepository<AisConsentUsag
     @Lock(value = LockModeType.OPTIMISTIC)
     List<AisConsentUsage> findReadByConsentAndUsageDate(AisConsent aisConsent, LocalDate usageDate);
 
-    long countByConsentIdAndResourceIdAndTransactionIdNotNull(Long consentId, String resourceId);
-
+    long countByConsentIdAndResourceId(Long consentId, String resourceId);
 }
