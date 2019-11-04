@@ -57,11 +57,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.Currency;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -142,7 +143,6 @@ public class CreateSinglePaymentServiceTest {
         verify(singlePaymentInitiationService).initiatePayment(argumentCaptor.capture(), eq("sepa-credit-transfers"), eq(PSU_DATA));
         SinglePayment singlePayment = argumentCaptor.getValue();
         assertNotNull(singlePayment.getCreationTimestamp());
-        assertTrue(singlePayment.getCreationTimestamp().isBefore(OffsetDateTime.now()));
     }
 
     @Test
