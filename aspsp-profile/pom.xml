@@ -34,7 +34,7 @@
         <module>aspsp-profile-lib</module>
         <module>aspsp-profile-remote</module>
         <module>aspsp-profile-web</module>
-        <module>aspsp-profile-update-api</module>
+        <module>aspsp-profile-internal-api</module>
     </modules>
     <packaging>pom</packaging>
 

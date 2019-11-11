@@ -41,7 +41,7 @@
 
         <dependency>
             <groupId>de.adorsys.psd2</groupId>
-            <artifactId>aspsp-profile-update-api</artifactId>
+            <artifactId>aspsp-profile-internal-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
