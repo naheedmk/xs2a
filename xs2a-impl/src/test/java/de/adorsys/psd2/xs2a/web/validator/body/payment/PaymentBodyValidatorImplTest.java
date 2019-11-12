@@ -113,8 +113,9 @@ public class PaymentBodyValidatorImplTest {
     @Mock
     private AspspProfileServiceWrapper aspspProfileServiceWrapper;
     private MockHttpServletRequest mockRequest;
-
+    @Mock
     private FieldExtractor fieldExtractor;
+
     private PaymentValidationConfig validationConfig;
     private PathParameterExtractor pathParameterExtractor;
 
@@ -124,7 +125,6 @@ public class PaymentBodyValidatorImplTest {
         messageError = new MessageError(ErrorType.PIS_400);
         validationConfig = new DefaultPaymentValidationConfigImpl();
         ErrorBuildingService errorService = new ErrorBuildingServiceMock(ErrorType.PIS_400);
-        fieldExtractor = new FieldExtractor(errorService, xs2aObjectMapper);
         pathParameterExtractor = new PathParameterExtractor();
         CurrencyValidator currencyValidator = new CurrencyValidator(errorService);
         DateFieldValidator dateFieldValidator = new DateFieldValidator(errorService, new LocalDateConverter(), fieldExtractor);
