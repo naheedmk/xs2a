@@ -80,6 +80,7 @@ public class PisAuthorisationServiceInternalTest {
     @Mock
     private CmsPsuService cmsPsuService;
 
+    private PisCommonPaymentData pisCommonPaymentData;
     private List<PisAuthorization> pisAuthorizationList = new ArrayList<>();
     private PisAuthorization pisAuthorization;
 
@@ -109,6 +110,7 @@ public class PisAuthorisationServiceInternalTest {
         when(psuDataMapper.mapToPsuData(any(PsuIdData.class))).thenCallRealMethod();
         pisAuthorization = buildPisAuthorisation(EXTERNAL_ID, PaymentAuthorisationType.CREATED);
         PisCommonPaymentData pisCommonPaymentData = buildPisCommonPaymentData();
+        pisCommonPaymentData = buildPisCommonPaymentData();
         pisPaymentData = buildPaymentData(pisCommonPaymentData);
         pisAuthorizationList.add(buildPisAuthorisation(EXTERNAL_ID, PaymentAuthorisationType.CANCELLED));
         pisAuthorizationList.add(buildPisAuthorisation(AUTHORISATION_ID, PaymentAuthorisationType.CREATED));

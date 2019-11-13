@@ -17,6 +17,7 @@
 package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.consent.api.CmsResponse;
+import de.adorsys.psd2.consent.api.CmsScaMethod;
 import de.adorsys.psd2.consent.api.pis.authorisation.*;
 import de.adorsys.psd2.consent.api.service.PisAuthorisationService;
 import de.adorsys.psd2.consent.service.security.SecurityDataService;
@@ -54,6 +55,7 @@ public class PisAuthorisationServiceInternalEncryptedTest {
     private static final CreatePisAuthorisationRequest CREATE_PIS_AUTHORISATION_REQUEST = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PSU_DATA, ScaApproach.REDIRECT, TPP_REDIRECT_URIs);
     private static final String INTERNAL_REQUEST_ID = "5c2d5564-367f-4e03-a621-6bef76fa4208";
     private static final String CANCELLATION_INTERNAL_REQUEST_ID = "5b8d8b12-9363-4d9e-9b7e-2219cbcfc311";
+    private static final String AUTHENTICATION_METHOD_ID = "authentication method id";
 
     @InjectMocks
     private PisAuthorisationServiceInternalEncrypted pisAuthorisationServiceInternalEncrypted;
