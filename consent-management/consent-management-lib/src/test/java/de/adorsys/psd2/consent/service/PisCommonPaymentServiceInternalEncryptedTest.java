@@ -18,7 +18,7 @@
 package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
-import de.adorsys.psd2.consent.api.pis.authorisation.*;
+import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationRequest;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentRequest;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
@@ -28,7 +28,6 @@ import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import org.junit.Before;
@@ -87,24 +86,8 @@ public class PisCommonPaymentServiceInternalEncryptedTest {
             .thenReturn(Optional.of(buildPisCommonPaymentResponse(DECRYPTED_PAYMENT_ID)));
         when(pisCommonPaymentService.updateCommonPaymentStatusById(DECRYPTED_PAYMENT_ID, TRANSACTION_STATUS))
             .thenReturn(Optional.of(true));
-        when(pisCommonPaymentService.createAuthorization(DECRYPTED_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST))
-            .thenReturn(Optional.of(buildCreatePisAuthorisationResponse()));
-        when(pisCommonPaymentService.createAuthorizationCancellation(DECRYPTED_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST))
-            .thenReturn(Optional.of(buildCreatePisAuthorisationResponse()));
-        when(pisCommonPaymentService.updatePisAuthorisation(AUTHORISATION_ID, buildUpdatePisCommonPaymentPsuDataRequest()))
-            .thenReturn(Optional.of(buildUpdatePisCommonPaymentPsuDataResponse()));
-        when(pisCommonPaymentService.updatePisCancellationAuthorisation(AUTHORISATION_ID, buildUpdatePisCommonPaymentPsuDataRequest()))
-            .thenReturn(Optional.of(buildUpdatePisCommonPaymentPsuDataResponse()));
-        when(pisCommonPaymentService.getPisAuthorisationById(AUTHORISATION_ID))
-            .thenReturn(Optional.of(buildGetPisAuthorisationResponse()));
-        when(pisCommonPaymentService.getPisCancellationAuthorisationById(AUTHORISATION_ID))
-            .thenReturn(Optional.of(buildGetPisAuthorisationResponse()));
-        when(pisCommonPaymentService.getAuthorisationsByPaymentId(DECRYPTED_PAYMENT_ID, PaymentAuthorisationType.CREATED))
-            .thenReturn(Optional.of(buildPaymentAuthorisations()));
         when(pisCommonPaymentService.getPsuDataListByPaymentId(DECRYPTED_PAYMENT_ID))
             .thenReturn(Optional.of(buildPsuIdDataList()));
-        when(pisCommonPaymentService.getAuthorisationScaStatus(DECRYPTED_PAYMENT_ID, AUTHORISATION_ID, PaymentAuthorisationType.CREATED))
-            .thenReturn(Optional.of(SCA_STATUS));
     }
 
     @Test
@@ -169,71 +152,6 @@ public class PisCommonPaymentServiceInternalEncryptedTest {
     }
 
     @Test
-    public void createAuthorization_success() {
-        // Given
-        CreatePisAuthorisationResponse expected = buildCreatePisAuthorisationResponse();
-
-        // When
-        Optional<CreatePisAuthorisationResponse> actual =
-            pisCommonPaymentServiceInternalEncrypted.createAuthorization(ENCRYPTED_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST);
-
-        // Then
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
-        verify(pisCommonPaymentService, times(1))
-            .createAuthorization(DECRYPTED_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST);
-    }
-
-    @Test
-    public void createAuthorizationCancellation_success() {
-        // Given
-        CreatePisAuthorisationResponse expected = buildCreatePisAuthorisationResponse();
-
-        // When
-        Optional<CreatePisAuthorisationResponse> actual =
-            pisCommonPaymentServiceInternalEncrypted.createAuthorizationCancellation(ENCRYPTED_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST);
-
-        // Then
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
-        verify(pisCommonPaymentService, times(1))
-            .createAuthorizationCancellation(DECRYPTED_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST);
-    }
-
-    @Test
-    public void updatePisAuthorisation_success() {
-        // Given
-        UpdatePisCommonPaymentPsuDataRequest request = buildUpdatePisCommonPaymentPsuDataRequest();
-        UpdatePisCommonPaymentPsuDataResponse expected = buildUpdatePisCommonPaymentPsuDataResponse();
-
-        // When
-        Optional<UpdatePisCommonPaymentPsuDataResponse> actual = pisCommonPaymentServiceInternalEncrypted.updatePisAuthorisation(AUTHORISATION_ID, request);
-
-        // Then
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
-        verify(pisCommonPaymentService, times(1))
-            .updatePisAuthorisation(AUTHORISATION_ID, request);
-    }
-
-    @Test
-    public void updatePisCancellationAuthorisation_success() {
-        // Given
-        UpdatePisCommonPaymentPsuDataRequest request = buildUpdatePisCommonPaymentPsuDataRequest();
-        UpdatePisCommonPaymentPsuDataResponse expected = buildUpdatePisCommonPaymentPsuDataResponse();
-
-        // When
-        Optional<UpdatePisCommonPaymentPsuDataResponse> actual =
-            pisCommonPaymentServiceInternalEncrypted.updatePisCancellationAuthorisation(AUTHORISATION_ID, request);
-
-        // Then
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
-        verify(pisCommonPaymentService, times(1))
-            .updatePisCancellationAuthorisation(AUTHORISATION_ID, request);
-    }
-
-    @Test
     public void updateCommonPayment_success() {
         // Given
         PisCommonPaymentRequest request = buildPisCommonPaymentRequest();
@@ -244,64 +162,6 @@ public class PisCommonPaymentServiceInternalEncryptedTest {
         // Then
         verify(pisCommonPaymentService, times(1))
             .updateCommonPayment(request, DECRYPTED_PAYMENT_ID);
-    }
-
-    @Test
-    public void getPisAuthorisationById_success() {
-        // Given
-        GetPisAuthorisationResponse expected = buildGetPisAuthorisationResponse();
-
-        // When
-        Optional<GetPisAuthorisationResponse> actual =
-            pisCommonPaymentServiceInternalEncrypted.getPisAuthorisationById(AUTHORISATION_ID);
-
-        // Then
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
-        verify(pisCommonPaymentService, times(1)).getPisAuthorisationById(AUTHORISATION_ID);
-    }
-
-    @Test
-    public void getPisCancellationAuthorisationById_success() {
-        // Given
-        GetPisAuthorisationResponse expected = buildGetPisAuthorisationResponse();
-
-        // When
-        Optional<GetPisAuthorisationResponse> actual =
-            pisCommonPaymentServiceInternalEncrypted.getPisCancellationAuthorisationById(AUTHORISATION_ID);
-
-        // Then
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
-        verify(pisCommonPaymentService, times(1))
-            .getPisCancellationAuthorisationById(AUTHORISATION_ID);
-    }
-
-    @Test
-    public void getAuthorisationsByPaymentId_success() {
-        // Given
-        List<String> expected = buildPaymentAuthorisations();
-
-        // When
-        Optional<List<String>> actual = pisCommonPaymentServiceInternalEncrypted.getAuthorisationsByPaymentId(ENCRYPTED_PAYMENT_ID,
-                                                                                                              PaymentAuthorisationType.CREATED);
-
-        // Then
-        assertTrue(actual.isPresent());
-        assertEquals(expected, actual.get());
-        verify(pisCommonPaymentService, times(1))
-            .getAuthorisationsByPaymentId(DECRYPTED_PAYMENT_ID, PaymentAuthorisationType.CREATED);
-    }
-
-    @Test
-    public void getAuthorisationScaStatus_success() {
-        // When
-        Optional<ScaStatus> actual = pisCommonPaymentServiceInternalEncrypted.getAuthorisationScaStatus(ENCRYPTED_PAYMENT_ID, AUTHORISATION_ID, PaymentAuthorisationType.CREATED);
-
-        // Then
-        assertTrue(actual.isPresent());
-        assertEquals(SCA_STATUS, actual.get());
-        verify(pisCommonPaymentService, times(1)).getAuthorisationScaStatus(DECRYPTED_PAYMENT_ID, AUTHORISATION_ID, PaymentAuthorisationType.CREATED);
     }
 
     @Test
@@ -316,18 +176,6 @@ public class PisCommonPaymentServiceInternalEncryptedTest {
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
         verify(pisCommonPaymentService, times(1)).getPsuDataListByPaymentId(DECRYPTED_PAYMENT_ID);
-    }
-
-    @Test
-    public void getAuthorisationScaApproach() {
-        when(pisCommonPaymentService.getAuthorisationScaApproach(AUTHORISATION_ID, PaymentAuthorisationType.CREATED))
-            .thenReturn(Optional.of(new AuthorisationScaApproachResponse(ScaApproach.EMBEDDED)));
-
-        Optional<AuthorisationScaApproachResponse> actual = pisCommonPaymentServiceInternalEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, PaymentAuthorisationType.CREATED);
-
-        assertTrue(actual.isPresent());
-        assertEquals(ScaApproach.EMBEDDED, actual.get().getScaApproach());
-        verify(pisCommonPaymentService, times(1)).getAuthorisationScaApproach(eq(AUTHORISATION_ID), eq(PaymentAuthorisationType.CREATED));
     }
 
     @Test
@@ -363,27 +211,5 @@ public class PisCommonPaymentServiceInternalEncryptedTest {
 
     private List<PsuIdData> buildPsuIdDataList() {
         return Collections.singletonList(PSU_DATA);
-    }
-
-    private CreatePisAuthorisationResponse buildCreatePisAuthorisationResponse() {
-        return new CreatePisAuthorisationResponse(AUTHORISATION_ID, ScaStatus.RECEIVED, INTERNAL_REQUEST_ID, CANCELLATION_INTERNAL_REQUEST_ID, null);
-    }
-
-    private UpdatePisCommonPaymentPsuDataRequest buildUpdatePisCommonPaymentPsuDataRequest() {
-        UpdatePisCommonPaymentPsuDataRequest request = new UpdatePisCommonPaymentPsuDataRequest();
-        request.setAuthorizationId(AUTHORISATION_ID);
-        return request;
-    }
-
-    private UpdatePisCommonPaymentPsuDataResponse buildUpdatePisCommonPaymentPsuDataResponse() {
-        return new UpdatePisCommonPaymentPsuDataResponse(SCA_STATUS);
-    }
-
-    private GetPisAuthorisationResponse buildGetPisAuthorisationResponse() {
-        return new GetPisAuthorisationResponse();
-    }
-
-    private List<String> buildPaymentAuthorisations() {
-        return Collections.singletonList(AUTHORISATION_ID);
     }
 }

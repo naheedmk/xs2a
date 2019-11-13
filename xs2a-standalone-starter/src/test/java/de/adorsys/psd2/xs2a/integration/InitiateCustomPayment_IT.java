@@ -22,6 +22,7 @@ import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationRequest;
 import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
+import de.adorsys.psd2.consent.api.service.PisAuthorisationServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
@@ -126,6 +127,8 @@ public class InitiateCustomPayment_IT {
     @MockBean
     private PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
     @MockBean
+    private PisAuthorisationServiceEncrypted pisAuthorisationServiceEncrypted;
+    @MockBean
     private SinglePaymentSpi singlePaymentSpi;
 
     @MockBean
@@ -172,15 +175,15 @@ public class InitiateCustomPayment_IT {
 
     @Test
     public void initiateSinglePaymentCustom_explicit_embedded_successful() throws Exception {
-        given(pisCommonPaymentServiceEncrypted.createAuthorization(ENCRYPT_PAYMENT_ID, getPisAuthorisationRequest(ScaApproach.EMBEDDED)))
-            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS, null, null, null)));
+        given(pisAuthorisationServiceEncrypted.createAuthorization(ENCRYPT_PAYMENT_ID, getPisAuthorisationRequest(ScaApproach.EMBEDDED)))
+            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS, null, null)));
         initiateSinglePaymentCustom_successful(httpHeadersExplicit, ScaApproach.EMBEDDED);
     }
 
     @Test
     public void initiateSinglePaymentCustom_explicit_redirect_successful() throws Exception {
-        given(pisCommonPaymentServiceEncrypted.createAuthorization(ENCRYPT_PAYMENT_ID, getPisAuthorisationRequest(ScaApproach.REDIRECT)))
-            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS, null, null, null)));
+        given(pisAuthorisationServiceEncrypted.createAuthorization(ENCRYPT_PAYMENT_ID, getPisAuthorisationRequest(ScaApproach.REDIRECT)))
+            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS, null, null)));
         initiateSinglePaymentCustom_successful(httpHeadersExplicit, ScaApproach.REDIRECT);
     }
 
@@ -196,7 +199,7 @@ public class InitiateCustomPayment_IT {
             .willReturn(SpiPaymentInitiationResponseBuilder.buildSinglePaymentResponse(false));
         given(consentRestTemplate.exchange(any(String.class), any(HttpMethod.class), any(), any(Class.class), any(String.class)))
             .willReturn(ResponseEntity.ok(Boolean.TRUE));
-        given(pisCommonPaymentServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, PaymentAuthorisationType.CREATED))
+        given(pisAuthorisationServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, PaymentAuthorisationType.CREATED))
             .willReturn(Optional.of(new AuthorisationScaApproachResponse(scaApproach)));
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(UrlBuilder.buildInitiatePaymentUrl(SINGLE_PAYMENT_TYPE.getValue(), CUSTOM_PAYMENT_PRODUCT));

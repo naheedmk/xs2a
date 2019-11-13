@@ -23,6 +23,7 @@ import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationRespo
 import de.adorsys.psd2.consent.api.pis.authorisation.GetPisAuthorisationResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
+import de.adorsys.psd2.consent.api.service.PisAuthorisationServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.consent.api.service.UpdatePaymentAfterSpiServiceEncrypted;
@@ -40,7 +41,6 @@ import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
@@ -134,6 +134,8 @@ public class PaymentStartAuthorisationIT {
     @MockBean
     private PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
     @MockBean
+    private PisAuthorisationServiceEncrypted pisAuthorisationServiceEncrypted;
+    @MockBean
     private AspspDataService aspspDataService;
     @MockBean
     private CommonPaymentSpi commonPaymentSpi;
@@ -174,12 +176,12 @@ public class PaymentStartAuthorisationIT {
             .willReturn(Optional.of(buildPisCommonPaymentResponse()));
 
         given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(ScaApproach.EMBEDDED));
-        given(pisCommonPaymentServiceEncrypted.createAuthorization(eq(PAYMENT_ID), createPisAuthorisationRequestCaptor.capture()))
-            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, ScaStatus.PSUIDENTIFIED, null, null, buildPsuIdData())));
+        given(pisAuthorisationServiceEncrypted.createAuthorization(eq(PAYMENT_ID), createPisAuthorisationRequestCaptor.capture()))
+            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, ScaStatus.PSUIDENTIFIED, null, null)));
 
-        given(pisCommonPaymentServiceEncrypted.getPisAuthorisationById(AUTHORISATION_ID))
+        given(pisAuthorisationServiceEncrypted.getPisAuthorisationById(AUTHORISATION_ID))
             .willReturn(Optional.of(buildGetPisAuthorisationResponse(ScaStatus.PSUIDENTIFIED)));
-        given(pisCommonPaymentServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, PaymentAuthorisationType.CREATED))
+        given(pisAuthorisationServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, PaymentAuthorisationType.CREATED))
             .willReturn(Optional.of(new AuthorisationScaApproachResponse(ScaApproach.EMBEDDED)));
         given(paymentAuthorisationSpi.authorisePsu(any(SpiContextData.class), any(SpiPsuData.class), eq(PSU_PASS), any(SpiPayment.class), any(SpiAspspConsentDataProvider.class)))
             .willReturn(SpiResponse.<SpiAuthorisationStatus>builder()
@@ -242,9 +244,5 @@ public class PaymentStartAuthorisationIT {
 
     private Authorisation buildAuthorisation() {
         return new Authorisation(AUTHORISATION_ID, ScaStatus.RECEIVED, null);
-    }
-
-    private PsuIdData buildPsuIdData() {
-        return new PsuIdData(PSU_ID, null, null, null);
     }
 }
