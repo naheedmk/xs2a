@@ -84,7 +84,7 @@ public class PisAuthorisationServiceInternal implements PisAuthorisationService 
                        closePreviousAuthorisationsByPsu(pmt.getAuthorizations(), request.getAuthorizationType(), request.getPsuData());
                        return saveNewAuthorisation(pmt, request);
                    })
-                   .map(c -> new CreatePisAuthorisationResponse(c.getExternalId(), c.getScaStatus(), c.getPaymentData().getInternalRequestId(), c.getPaymentData().getCancellationInternalRequestId()));
+                   .map(c -> new CreatePisAuthorisationResponse(c.getExternalId(), c.getScaStatus(), c.getPaymentData().getInternalRequestId(), c.getPaymentData().getCancellationInternalRequestId(), request.getPsuData()));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class PisAuthorisationServiceInternal implements PisAuthorisationService 
                        closePreviousAuthorisationsByPsu(pmt.getAuthorizations(), request.getAuthorizationType(), request.getPsuData());
                        return saveNewAuthorisation(pmt, request);
                    })
-                   .map(c -> new CreatePisAuthorisationResponse(c.getExternalId(), c.getScaStatus(), c.getPaymentData().getInternalRequestId(), c.getPaymentData().getCancellationInternalRequestId()));
+                   .map(c -> new CreatePisAuthorisationResponse(c.getExternalId(), c.getScaStatus(), c.getPaymentData().getInternalRequestId(), c.getPaymentData().getCancellationInternalRequestId(), request.getPsuData()));
     }
 
     /**

@@ -18,18 +18,13 @@
 package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
-import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationRequest;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentRequest;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.consent.api.service.PisCommonPaymentService;
 import de.adorsys.psd2.consent.service.security.SecurityDataService;
-import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
-import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
-import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,18 +43,9 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class PisCommonPaymentServiceInternalEncryptedTest {
     private static final TransactionStatus TRANSACTION_STATUS = TransactionStatus.RCVD;
-    private static final ScaStatus SCA_STATUS = ScaStatus.SCAMETHODSELECTED;
     private static final String ENCRYPTED_PAYMENT_ID = "encrypted payment id";
     private static final String DECRYPTED_PAYMENT_ID = "1856e4fa-8af8-427b-85ec-4caf515ce074";
-    private static final PaymentAuthorisationType AUTHORISATION_TYPE = PaymentAuthorisationType.CREATED;
-    private static final String AUTHORISATION_ID = "46f2e3a7-1855-4815-8755-5ca76769a1a4";
     private static final PsuIdData PSU_DATA = new PsuIdData(null, null, null, null);
-    private static final String TPP_REDIRECT_URI = "request/redirect_uri";
-    private static final String TPP_NOK_REDIRECT_URI = "request/nok_redirect_uri";
-    private static final TppRedirectUri TPP_REDIRECT_URIs = new TppRedirectUri(TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
-    private static final CreatePisAuthorisationRequest CREATE_PIS_AUTHORISATION_REQUEST = new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PSU_DATA, ScaApproach.REDIRECT, TPP_REDIRECT_URIs);
-    private static final String INTERNAL_REQUEST_ID = "5c2d5564-367f-4e03-a621-6bef76fa4208";
-    private static final String CANCELLATION_INTERNAL_REQUEST_ID = "5b8d8b12-9363-4d9e-9b7e-2219cbcfc311";
 
     @InjectMocks
     private PisCommonPaymentServiceInternalEncrypted pisCommonPaymentServiceInternalEncrypted;

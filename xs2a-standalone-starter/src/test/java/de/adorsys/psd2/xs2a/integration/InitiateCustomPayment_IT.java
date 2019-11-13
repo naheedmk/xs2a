@@ -27,10 +27,12 @@ import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
 import de.adorsys.psd2.event.service.model.EventBO;
-import de.adorsys.psd2.mapper.config.ObjectMapperConfig;
 import de.adorsys.psd2.starter.Xs2aStandaloneStarter;
 import de.adorsys.psd2.starter.config.validation.PaymentValidationConfigImpl;
-import de.adorsys.psd2.xs2a.config.*;
+import de.adorsys.psd2.xs2a.config.CorsConfigurationProperties;
+import de.adorsys.psd2.xs2a.config.WebConfig;
+import de.adorsys.psd2.xs2a.config.Xs2aEndpointPathConstant;
+import de.adorsys.psd2.xs2a.config.Xs2aInterfaceConfig;
 import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
@@ -176,14 +178,14 @@ public class InitiateCustomPayment_IT {
     @Test
     public void initiateSinglePaymentCustom_explicit_embedded_successful() throws Exception {
         given(pisAuthorisationServiceEncrypted.createAuthorization(ENCRYPT_PAYMENT_ID, getPisAuthorisationRequest(ScaApproach.EMBEDDED)))
-            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS, null, null)));
+            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS, null, null, null)));
         initiateSinglePaymentCustom_successful(httpHeadersExplicit, ScaApproach.EMBEDDED);
     }
 
     @Test
     public void initiateSinglePaymentCustom_explicit_redirect_successful() throws Exception {
         given(pisAuthorisationServiceEncrypted.createAuthorization(ENCRYPT_PAYMENT_ID, getPisAuthorisationRequest(ScaApproach.REDIRECT)))
-            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS, null, null)));
+            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, SCA_STATUS, null, null, null)));
         initiateSinglePaymentCustom_successful(httpHeadersExplicit, ScaApproach.REDIRECT);
     }
 

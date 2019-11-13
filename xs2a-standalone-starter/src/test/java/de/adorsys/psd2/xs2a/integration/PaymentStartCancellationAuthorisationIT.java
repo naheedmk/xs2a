@@ -149,7 +149,7 @@ public class PaymentStartCancellationAuthorisationIT {
 
         given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(ScaApproach.EMBEDDED));
         given(pisAuthorisationServiceEncrypted.createAuthorizationCancellation(eq(PAYMENT_ID), createPisAuthorisationRequestCaptor.capture()))
-            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, PIS_AUTHORISATION_SCA_STATUS, null, null)));
+            .willReturn(Optional.of(new CreatePisAuthorisationResponse(AUTHORISATION_ID, PIS_AUTHORISATION_SCA_STATUS, null, null, null)));
 
         given(pisAuthorisationServiceEncrypted.getPisCancellationAuthorisationById(AUTHORISATION_ID))
             .willReturn(Optional.of(buildGetPisAuthorisationResponse()));
