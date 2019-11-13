@@ -33,8 +33,8 @@ you'll receive the same response as it would be with `PSU-ID` in header.
 From now on, it's possible to return standing order report on Get Transaction Status request(`GET /v1/accounts/{{account_id}}/transactions`) in JSON format.
 
 This endpoint is offering a list of all standing orders related to a dedicated payment account in case of `bookingStatus` parameter equals `information`.
-To support the `information` feature is optional for the ASPSP. Error code if not supported.
+The support the `information` feature is optional for the ASPSP. Error code will be responded if it is not supported.
 The query parameters `dateFrom`, `dateTo`, `withBalance`, `deltaList` and `entryReferenceFrom` will be ignored and have no effect on the
 result.
 
-In the accept header the `application/JSON` header must be supported, since the standing order report is supported in JSON only within this specification.
+Only `application/JSON` for response content type is supported.
