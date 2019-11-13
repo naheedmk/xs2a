@@ -167,16 +167,17 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
     public ResponseObject<Xs2aAuthorisationSubResources> getPaymentInitiationAuthorisations(String paymentId, String paymentProduct, PaymentType paymentType) {
         xs2aEventService.recordPisTppRequest(paymentId, EventType.GET_PAYMENT_AUTHORISATION_REQUEST_RECEIVED);
 
-        Optional<PisCommonPaymentResponse> pisCommonPaymentResponse = pisCommonPaymentService.getPisCommonPaymentById(paymentId);
-        if (!pisCommonPaymentResponse.isPresent()) {
+        Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = pisCommonPaymentService.getPisCommonPaymentById(paymentId);
+        if (!pisCommonPaymentResponseOptional.isPresent()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get Payment authorisation failed. PIS CommonPayment not found by id",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId);
             return ResponseObject.<Xs2aAuthorisationSubResources>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404_NO_PAYMENT))
                        .build();
         }
+        PisCommonPaymentResponse pisCommonPaymentResponse = pisCommonPaymentResponseOptional.get();
 
-        ValidationResult validationResult = getPaymentAuthorisationsValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse.get(), paymentType, paymentProduct));
+        ValidationResult validationResult = getPaymentAuthorisationsValidator.validate(new CommonPaymentObject(pisCommonPaymentResponse, paymentType, paymentProduct));
         if (validationResult.isNotValid()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Get payment initiation authorisation - validation failed: {}",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, validationResult.getMessageError());
@@ -185,7 +186,7 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
                        .build();
         }
 
-        loggingContextService.storeTransactionStatus(pisCommonPaymentResponse.get().getTransactionStatus());
+        loggingContextService.storeTransactionStatus(pisCommonPaymentResponse.getTransactionStatus());
 
         PisScaAuthorisationService pisScaAuthorisationService = pisScaAuthorisationServiceResolver.getService();
         return pisScaAuthorisationService.getAuthorisationSubResources(paymentId)
@@ -264,16 +265,6 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
         }
 
         PisCommonPaymentResponse pisCommonPayment = pisCommonPaymentResponse.get();
-        boolean isMultilevel = pisCommonPayment.isMultilevelScaRequired();
-
-        PsuIdData psuIdData = psuDataFromRequest;
-
-        if (psuDataFromRequest.isEmpty() && !isMultilevel) {
-            Optional<PsuIdData> psuIdDataFromDb = pisPsuDataService.getPsuDataByPaymentId(paymentId).stream().findFirst();
-            if (psuIdDataFromDb.isPresent()) {
-                psuIdData = psuIdDataFromDb.get();
-            }
-        }
 
         ValidationResult validationResult = createPisAuthorisationValidator.validate(new CommonPaymentObject(pisCommonPayment, paymentService, paymentProduct));
         if (validationResult.isNotValid()) {
@@ -285,6 +276,8 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
         }
 
         PisScaAuthorisationService pisScaAuthorisationService = pisScaAuthorisationServiceResolver.getService();
+
+        PsuIdData psuIdData = getActualPsuData(psuDataFromRequest, paymentId, pisCommonPayment.isMultilevelScaRequired());
         Optional<Xs2aCreatePisAuthorisationResponse> commonPaymentAuthorisation = pisScaAuthorisationService.createCommonPaymentAuthorisation(paymentId, paymentService, psuIdData);
 
         if (!commonPaymentAuthorisation.isPresent()) {
@@ -299,5 +292,15 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
         return ResponseObject.<Xs2aCreatePisAuthorisationResponse>builder()
                    .body(createAuthorisationResponse)
                    .build();
+    }
+
+    private PsuIdData getActualPsuData(PsuIdData psuDataFromRequest, String paymentId, boolean isMultilevel) {
+        if (psuDataFromRequest.isNotEmpty() || isMultilevel) {
+            return psuDataFromRequest;
+        }
+
+        return pisPsuDataService.getPsuDataByPaymentId(paymentId).stream()
+                   .findFirst()
+                   .orElse(psuDataFromRequest);
     }
 }
