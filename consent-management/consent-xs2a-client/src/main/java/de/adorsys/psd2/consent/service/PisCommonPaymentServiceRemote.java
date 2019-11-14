@@ -46,7 +46,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-// TODO discuss error handling (e.g. 400 HttpCode response) https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/581
 @Slf4j
 @Service
 @RequiredArgsConstructor
