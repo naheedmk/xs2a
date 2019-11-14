@@ -66,13 +66,19 @@ public abstract class PaymentUpdateAuthorisationBase {
     private static final String PSU_CREDENTIALS_INVALID_RESP = "/json/payment/res/explicit/psu_credentials_invalid_response.json";
     private static final String FORMAT_ERROR_RESP = "/json/payment/res/explicit/format_error_response.json";
 
-    @Autowired protected MockMvc mockMvc;
+    @Autowired
+    protected MockMvc mockMvc;
 
-    @MockBean protected TppService tppService;
-    @MockBean protected TppStopListService tppStopListService;
-    @MockBean protected AspspProfileService aspspProfileService;
-    @MockBean protected Xs2aEventServiceEncrypted eventServiceEncrypted;
-    @MockBean protected PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
+    @MockBean
+    protected TppService tppService;
+    @MockBean
+    protected TppStopListService tppStopListService;
+    @MockBean
+    protected AspspProfileService aspspProfileService;
+    @MockBean
+    protected Xs2aEventServiceEncrypted eventServiceEncrypted;
+    @MockBean
+    protected PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
 
     public void before() {
         given(tppService.getTppInfo()).willReturn(TPP_INFO);
@@ -118,7 +124,10 @@ public abstract class PaymentUpdateAuthorisationBase {
             .willReturn(CmsResponse.<PisCommonPaymentResponse>builder()
                             .payload(pisCommonPaymentResponse)
                             .build());
-
+        given(pisCommonPaymentServiceEncrypted.updatePisAuthorisationStatus(AUTHORISATION_ID, ScaStatus.FAILED))
+            .willReturn(CmsResponse.<Boolean>builder()
+                            .payload(Boolean.TRUE)
+                            .build());
         MockHttpServletRequestBuilder requestBuilder = put(buildRequestUrl());
         requestBuilder.headers(httpHeaders);
         requestBuilder.content(request);
