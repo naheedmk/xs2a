@@ -49,7 +49,8 @@ If PSU closes an account in the bank - then ASPSP can use this endpoint. AIS and
 == Provided implementation of delta access for transaction list request
 
 Delta access was implemented for transaction list request `GET /v1/accounts/{account-id}/transactions`.
-Parameters `entryReferenceFrom` and `deltaList` are provided to SPI level.
+Parameters `entryReferenceFrom` and `deltaList` are provided to SPI level in `SpiTransactionReportParameters` object.
+Also `acceptMediaType`, `withBalance`, `dateFrom`, `dateTo`, `bookingStatus` were moved from method parameters to `SpiTransactionReportParameters` object.
 Parameter `dateFrom` is not mandatory when TPP sends `entryReferenceFrom` or `deltaList` parameter and it is supported by ASPSP.
 When TPP sends transaction list request with period parameters (`dateFrom` and `dateTo`) and one of a delta access parameters (`entryReferenceFrom` or `deltaList`)
 and this parameter is not supported by ASPSP, then request will be processed only with period parameters.
