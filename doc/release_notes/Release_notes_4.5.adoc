@@ -26,3 +26,4 @@ From now on, endpoints for accessing and updating ASPSP Profile are located in `
 
 From now on, when you try to start authorisation for payment/consent with password and without `PSU-ID` in header,
 you'll receive the same response as it would be with `PSU-ID` in header.
+.
