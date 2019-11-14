@@ -16,42 +16,7 @@
 
 package de.adorsys.psd2.xs2a.web.validator.body.consent;
 
-import de.adorsys.psd2.mapper.Xs2aObjectMapper;
-import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
-import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
-import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
-import de.adorsys.psd2.xs2a.exception.MessageError;
-import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
-import de.adorsys.psd2.xs2a.web.validator.body.AbstractBodyValidatorImpl;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import de.adorsys.psd2.xs2a.web.validator.body.BodyValidator;
 
-import javax.servlet.http.HttpServletRequest;
-
-
-@Component
-public class TransactionListBodyValidator extends AbstractBodyValidatorImpl implements TransactionListDownloadBodyValidator {
-
-    static final String BOOKING_STATUS_PARAM = "bookingStatus";
-
-    @Autowired
-    public TransactionListBodyValidator(ErrorBuildingService errorBuildingService, Xs2aObjectMapper xs2aObjectMapper) {
-        super(errorBuildingService, xs2aObjectMapper);
-    }
-
-    @Override
-    public MessageError validate(HttpServletRequest request, MessageError messageError) {
-        String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
-        if (StringUtils.isNotBlank(acceptHeader)) {
-            String bookingStatus = request.getParameter(BOOKING_STATUS_PARAM);
-            if (BookingStatus.INFORMATION.getValue().equals(bookingStatus) &&
-                    !MediaType.APPLICATION_JSON_VALUE.equals(acceptHeader)) {
-                errorBuildingService.enrichMessageError(messageError, TppMessageInformation.of(MessageErrorCode.REQUESTED_FORMATS_INVALID));
-            }
-        }
-        return messageError;
-    }
+public interface TransactionListBodyValidator extends BodyValidator {
 }

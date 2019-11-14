@@ -31,9 +31,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.junit.Assert.*;
 
-public class TransactionListBodyValidatorTest {
+public class TransactionListBodyValidatorImplTest {
 
-    private TransactionListBodyValidator transactionListBodyValidator;
+    private TransactionListBodyValidatorImpl transactionListBodyValidatorImpl;
     private MessageError messageError;
     private MockHttpServletRequest request;
 
@@ -43,16 +43,16 @@ public class TransactionListBodyValidatorTest {
         request = new MockHttpServletRequest();
 
         ErrorBuildingService errorBuildingService = new ErrorBuildingServiceMock(ErrorType.AIS_400);
-        transactionListBodyValidator = new TransactionListBodyValidator(errorBuildingService, new Xs2aObjectMapper());
+        transactionListBodyValidatorImpl = new TransactionListBodyValidatorImpl(errorBuildingService, new Xs2aObjectMapper());
     }
 
     @Test
     public void validate_successForAnyBookingStatusWhenJson() {
         request.addHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         for (BookingStatus bookingStatus : BookingStatus.values()) {
-            request.setParameter(TransactionListBodyValidator.BOOKING_STATUS_PARAM, bookingStatus.getValue());
+            request.setParameter(TransactionListBodyValidatorImpl.BOOKING_STATUS_PARAM, bookingStatus.getValue());
 
-            transactionListBodyValidator.validate(request, messageError);
+            transactionListBodyValidatorImpl.validate(request, messageError);
             assertTrue(messageError.getTppMessages().isEmpty());
         }
     }
@@ -60,9 +60,9 @@ public class TransactionListBodyValidatorTest {
     @Test
     public void validate_requestedFormatInvalidError() {
         request.addHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE);
-        request.setParameter(TransactionListBodyValidator.BOOKING_STATUS_PARAM, BookingStatus.INFORMATION.getValue());
+        request.setParameter(TransactionListBodyValidatorImpl.BOOKING_STATUS_PARAM, BookingStatus.INFORMATION.getValue());
 
-        transactionListBodyValidator.validate(request, messageError);
+        transactionListBodyValidatorImpl.validate(request, messageError);
 
         assertFalse(messageError.getTppMessages().isEmpty());
         assertEquals(MessageErrorCode.REQUESTED_FORMATS_INVALID, messageError.getTppMessage().getMessageErrorCode());
@@ -74,9 +74,9 @@ public class TransactionListBodyValidatorTest {
 
         for (BookingStatus bookingStatus : BookingStatus.values()) {
             if (BookingStatus.INFORMATION != bookingStatus) {
-                request.setParameter(TransactionListBodyValidator.BOOKING_STATUS_PARAM, bookingStatus.getValue());
+                request.setParameter(TransactionListBodyValidatorImpl.BOOKING_STATUS_PARAM, bookingStatus.getValue());
 
-                transactionListBodyValidator.validate(request, messageError);
+                transactionListBodyValidatorImpl.validate(request, messageError);
                 assertTrue(messageError.getTppMessages().isEmpty());
             }
         }
@@ -84,7 +84,7 @@ public class TransactionListBodyValidatorTest {
 
     @Test
     public void validate_noAcceptHeader() {
-        transactionListBodyValidator.validate(request, messageError);
+        transactionListBodyValidatorImpl.validate(request, messageError);
         assertTrue(messageError.getTppMessages().isEmpty());
     }
 }
