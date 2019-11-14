@@ -39,7 +39,7 @@ public class UrlBuilder {
     public static String buildGetTransactionsUrl(String accountId) {
         return UriComponentsBuilder.fromPath(UrlHolder.ACCOUNT_TRANSACTIONS_URL)
                    .queryParam("bookingStatus", "booked")
-                   .queryParam("dateFrom", "2019-10-18T12:38:01.509+03:00")
+                   .queryParam("dateFrom", "2019-10-18")
                    .buildAndExpand(accountId)
                    .toUriString();
     }
