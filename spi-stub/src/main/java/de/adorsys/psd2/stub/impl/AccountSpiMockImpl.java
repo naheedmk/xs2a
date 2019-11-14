@@ -76,7 +76,7 @@ public class AccountSpiMockImpl implements AccountSpi {
         log.info("AccountSpi#requestTransactionsForAccount: contextData {}, acceptMediaType {}, withBalance {}, dateFrom {}, dateTo {}, bookingStatus {}, accountReference {}, accountConsent-id {}, aspspConsentData {}", contextData, spiTransactionReportParameters.getAcceptMediaType(), spiTransactionReportParameters.isWithBalance(), spiTransactionReportParameters.getDateFrom(), spiTransactionReportParameters.getDateTo(), spiTransactionReportParameters.getBookingStatus(), accountReference, accountConsent.getId(), aspspConsentDataProvider.loadAspspConsentData());
 
 
-        List<SpiTransaction> transactions = BookingStatus.INFORMATION == bookingStatus ?
+        List<SpiTransaction> transactions = BookingStatus.INFORMATION == spiTransactionReportParameters.getBookingStatus() ?
                                                 buildSpiInformationTransactionList() :
                                                 buildSpiTransactionList();
 
