@@ -17,13 +17,16 @@
 package de.adorsys.psd2.xs2a.service.validator.ais.consent;
 
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
+import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.ais.consent.dto.CreateConsentAuthorisationObject;
-import de.adorsys.psd2.xs2a.service.validator.pis.authorisation.AuthorisationPsuDataChecker;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationPsuDataChecker;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.PSU_CREDENTIALS_INVALID;
@@ -51,22 +54,22 @@ public class CreateConsentAuthorisationValidator extends AbstractConsentTppValid
     protected ValidationResult executeBusinessValidation(CreateConsentAuthorisationObject createConsentAuthorisationObject) {
 
         PsuIdData psuDataFromRequest = createConsentAuthorisationObject.getPsuIdDataFromRequest();
-        List<PsuIdData> psuDataFromDb = createConsentAuthorisationObject.getAccountConsent().getPsuIdDataList();
+        AccountConsent accountConsent = createConsentAuthorisationObject.getAccountConsent();
+        List<PsuIdData> psuDataFromDb = accountConsent.getPsuIdDataList();
 
         if (authorisationPsuDataChecker.isPsuDataWrong(
-            createConsentAuthorisationObject.getAccountConsent().isMultilevelScaRequired(),
+            accountConsent.isMultilevelScaRequired(),
             psuDataFromDb,
             psuDataFromRequest)) {
 
             return ValidationResult.invalid(AIS_401, PSU_CREDENTIALS_INVALID);
         }
 
-        // If the authorisation for this consent ID and for this PSU ID is already finalised - return error.
-        boolean isFinalised = createConsentAuthorisationObject.getAccountConsent().getAuthorisations()
+        // If the authorisation for this consent ID and for this PSU ID has status FINALISED or EXEMPTED - return error.
+        boolean isFinalised = accountConsent.getAuthorisations()
                                   .stream()
-                                  .filter(authorisation -> authorisation.getPsuIdData() != null)
-                                  .filter(authorisation -> authorisation.getPsuIdData().contentEquals(psuDataFromRequest))
-                                  .anyMatch(authorisation -> authorisation.getScaStatus().isFinalisedStatus());
+                                  .filter(auth -> psuDataFromRequest.contentEquals(auth.getPsuIdData()))
+                                  .anyMatch(auth -> EnumSet.of(ScaStatus.FINALISED, ScaStatus.EXEMPTED).contains(auth.getScaStatus()));
 
         if (isFinalised) {
             return ValidationResult.invalid(AIS_409, STATUS_INVALID);

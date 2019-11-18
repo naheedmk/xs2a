@@ -19,13 +19,15 @@ package de.adorsys.psd2.xs2a.service.validator.pis.authorisation.initiation;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationPsuDataChecker;
 import de.adorsys.psd2.xs2a.service.validator.pis.AbstractPisValidator;
-import de.adorsys.psd2.xs2a.service.validator.pis.authorisation.AuthorisationPsuDataChecker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
@@ -61,27 +63,25 @@ public class CreatePisAuthorisationValidator extends AbstractPisValidator<Create
 
         PsuIdData psuDataFromRequest = createPisAuthorisationObject.getPsuDataFromRequest();
         List<PsuIdData> psuDataFromDb = createPisAuthorisationObject.getPisCommonPaymentResponse().getPsuData();
+        PisCommonPaymentResponse pisCommonPaymentResponse = createPisAuthorisationObject.getPisCommonPaymentResponse();
 
         if (authorisationPsuDataChecker.isPsuDataWrong(
-            createPisAuthorisationObject.getPisCommonPaymentResponse().isMultilevelScaRequired(),
+            pisCommonPaymentResponse.isMultilevelScaRequired(),
             psuDataFromDb,
             psuDataFromRequest)) {
 
             return ValidationResult.invalid(PIS_401, PSU_CREDENTIALS_INVALID);
         }
 
-        // If the authorisation for this payment ID and for this PSU ID is already finalised - return error.
-        boolean isFinalised = createPisAuthorisationObject.getPisCommonPaymentResponse().getAuthorisations()
+        // If the authorisation for this payment ID and for this PSU ID has status FINALISED or EXEMPTED - return error.
+        boolean isFinalised = pisCommonPaymentResponse.getAuthorisations()
                                   .stream()
-                                  .filter(authorisation -> authorisation.getPsuData() != null)
-                                  .filter(authorisation -> authorisation.getPsuData().contentEquals(psuDataFromRequest))
-                                  .anyMatch(authorisation -> authorisation.getScaStatus().isFinalisedStatus());
+                                  .filter(auth -> psuDataFromRequest.contentEquals(auth.getPsuData()))
+                                  .anyMatch(auth -> EnumSet.of(ScaStatus.FINALISED, ScaStatus.EXEMPTED).contains(auth.getScaStatus()));
 
         if (isFinalised) {
             return ValidationResult.invalid(PIS_409, STATUS_INVALID);
         }
-
-        PisCommonPaymentResponse pisCommonPaymentResponse = createPisAuthorisationObject.getPisCommonPaymentResponse();
 
         // TODO temporary solution: CMS should be refactored to return response objects instead of Strings, Enums, Booleans etc.,
         //  so we should receive this error from CMS https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1104

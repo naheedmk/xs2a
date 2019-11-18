@@ -16,13 +16,16 @@
 
 package de.adorsys.psd2.xs2a.service.validator.pis.authorisation.cancellation;
 
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationPsuDataChecker;
 import de.adorsys.psd2.xs2a.service.validator.pis.AbstractPisValidator;
-import de.adorsys.psd2.xs2a.service.validator.pis.authorisation.AuthorisationPsuDataChecker;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.PSU_CREDENTIALS_INVALID;
@@ -53,22 +56,22 @@ public class CreatePisCancellationAuthorisationValidator extends AbstractPisVali
     protected ValidationResult executeBusinessValidation(CreatePisCancellationAuthorisationObject createPisCancellationAuthorisationObject) {
 
         PsuIdData psuDataFromRequest = createPisCancellationAuthorisationObject.getPsuData();
-        List<PsuIdData> psuDataFromDb = createPisCancellationAuthorisationObject.getPisCommonPaymentResponse().getPsuData();
+        PisCommonPaymentResponse pisCommonPaymentResponse = createPisCancellationAuthorisationObject.getPisCommonPaymentResponse();
+        List<PsuIdData> psuDataFromDb = pisCommonPaymentResponse.getPsuData();
 
         if (authorisationPsuDataChecker.isPsuDataWrong(
-            createPisCancellationAuthorisationObject.getPisCommonPaymentResponse().isMultilevelScaRequired(),
+            pisCommonPaymentResponse.isMultilevelScaRequired(),
             psuDataFromDb,
             psuDataFromRequest)) {
 
             return ValidationResult.invalid(PIS_401, PSU_CREDENTIALS_INVALID);
         }
 
-        // If the cancellation authorisation for this payment ID and for this PSU ID is already finalised - return error.
-        boolean isFinalised = createPisCancellationAuthorisationObject.getPisCommonPaymentResponse().getAuthorisations()
+        // If the cancellation authorisation for this payment ID and for this PSU ID has status FINALISED or EXEMPTED - return error.
+        boolean isFinalised = pisCommonPaymentResponse.getAuthorisations()
                                   .stream()
-                                  .filter(authorisation -> authorisation.getPsuData() != null)
-                                  .filter(authorisation -> authorisation.getPsuData().contentEquals(psuDataFromRequest))
-                                  .anyMatch(authorisation -> authorisation.getScaStatus().isFinalisedStatus());
+                                  .filter(auth -> psuDataFromRequest.contentEquals(auth.getPsuData()))
+                                  .anyMatch(auth -> EnumSet.of(ScaStatus.FINALISED, ScaStatus.EXEMPTED).contains(auth.getScaStatus()));
 
         if (isFinalised) {
             return ValidationResult.invalid(PIS_409, STATUS_INVALID);

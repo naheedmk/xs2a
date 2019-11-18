@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.validator.pis.authorisation;
+package de.adorsys.psd2.xs2a.service.validator.authorisation;
 
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import org.apache.commons.collections4.CollectionUtils;
