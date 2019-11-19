@@ -21,7 +21,7 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationPsuDataChecker;
-import de.adorsys.psd2.xs2a.service.validator.authorisation.PisAuthorisationStatusChecker;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.PisCancellationAuthorisationStatusChecker;
 import de.adorsys.psd2.xs2a.service.validator.pis.AbstractPisValidator;
 import org.springframework.stereotype.Component;
 
@@ -39,13 +39,13 @@ import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.PIS_409;
 public class CreatePisCancellationAuthorisationValidator extends AbstractPisValidator<CreatePisCancellationAuthorisationObject> {
 
     private final AuthorisationPsuDataChecker authorisationPsuDataChecker;
-    private final PisAuthorisationStatusChecker pisAuthorisationStatusChecker;
+    private final PisCancellationAuthorisationStatusChecker pisCancellationAuthorisationStatusChecker;
 
     public CreatePisCancellationAuthorisationValidator(RequestProviderService requestProviderService, AuthorisationPsuDataChecker authorisationPsuDataChecker,
-                                                       PisAuthorisationStatusChecker pisAuthorisationStatusChecker) {
+                                                       PisCancellationAuthorisationStatusChecker pisCancellationAuthorisationStatusChecker) {
         super(requestProviderService);
         this.authorisationPsuDataChecker = authorisationPsuDataChecker;
-        this.pisAuthorisationStatusChecker = pisAuthorisationStatusChecker;
+        this.pisCancellationAuthorisationStatusChecker = pisCancellationAuthorisationStatusChecker;
     }
 
     /**
@@ -70,7 +70,7 @@ public class CreatePisCancellationAuthorisationValidator extends AbstractPisVali
         }
 
         // If the cancellation authorisation for this payment ID and for this PSU ID has status FINALISED or EXEMPTED - return error.
-        boolean isFinalised = pisAuthorisationStatusChecker.isFinalised(psuDataFromRequest, pisCommonPaymentResponse.getAuthorisations());
+        boolean isFinalised = pisCancellationAuthorisationStatusChecker.isFinalised(psuDataFromRequest, pisCommonPaymentResponse.getAuthorisations());
 
         if (isFinalised) {
             return ValidationResult.invalid(PIS_409, STATUS_INVALID);

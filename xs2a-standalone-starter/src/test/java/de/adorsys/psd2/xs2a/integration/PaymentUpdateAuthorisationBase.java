@@ -24,6 +24,7 @@ import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
 import de.adorsys.psd2.xs2a.core.authorisation.Authorisation;
+import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -151,6 +152,6 @@ public abstract class PaymentUpdateAuthorisationBase {
     }
 
     private Authorisation buildAuthorisation(PsuIdData psuIdData) {
-        return new Authorisation(AUTHORISATION_ID, ScaStatus.RECEIVED, psuIdData);
+        return new Authorisation(AUTHORISATION_ID, ScaStatus.RECEIVED, psuIdData, PaymentAuthorisationType.CREATED);
     }
 }

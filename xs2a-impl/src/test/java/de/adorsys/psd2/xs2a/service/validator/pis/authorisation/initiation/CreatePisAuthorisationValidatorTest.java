@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.service.validator.pis.authorisation.initiation;
 
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.authorisation.Authorisation;
+import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
@@ -201,7 +202,7 @@ public class CreatePisAuthorisationValidatorTest {
         // Given
         PisCommonPaymentResponse commonPaymentResponse = buildPisCommonPaymentResponse(TRANSACTION_STATUS, TPP_INFO);
         commonPaymentResponse.setPsuData(Collections.singletonList(PSU_DATA_1));
-        commonPaymentResponse.setAuthorisations(Collections.singletonList(new Authorisation("1", ScaStatus.FINALISED, PSU_DATA_1)));
+        commonPaymentResponse.setAuthorisations(Collections.singletonList(new Authorisation("1", ScaStatus.FINALISED, PSU_DATA_1, PaymentAuthorisationType.CREATED)));
         when(pisAuthorisationStatusChecker.isFinalised(any(PsuIdData.class), anyList())).thenReturn(true);
 
         // When

@@ -26,7 +26,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 @Component
-public class PisAuthorisationStatusChecker extends AbstractAuthorisationsStatusChecker<Authorisation> {
+public class PisCancellationAuthorisationStatusChecker extends AbstractAuthorisationsStatusChecker<Authorisation> {
 
     @Override
     public boolean isFinalised(PsuIdData psuDataFromRequest, List<Authorisation> authorisations) {
@@ -34,7 +34,7 @@ public class PisAuthorisationStatusChecker extends AbstractAuthorisationsStatusC
         return authorisations
                    .stream()
                    .filter(auth -> psuDataFromRequest.contentEquals(auth.getPsuData()))
-                   .filter(auth -> auth.getAuthorizationType() == PaymentAuthorisationType.CREATED)
+                   .filter(auth -> auth.getAuthorizationType() == PaymentAuthorisationType.CANCELLED)
                    .anyMatch(auth -> EnumSet.of(ScaStatus.FINALISED, ScaStatus.EXEMPTED).contains(auth.getScaStatus()));
     }
 }

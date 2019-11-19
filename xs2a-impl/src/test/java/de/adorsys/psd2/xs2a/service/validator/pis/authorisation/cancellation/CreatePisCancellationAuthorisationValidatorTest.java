@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.service.validator.pis.authorisation.cancellation;
 
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.authorisation.Authorisation;
+import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
@@ -27,6 +28,7 @@ import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationPsuDataChecker;
 import de.adorsys.psd2.xs2a.service.validator.authorisation.PisAuthorisationStatusChecker;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.PisCancellationAuthorisationStatusChecker;
 import de.adorsys.psd2.xs2a.service.validator.tpp.PisTppInfoValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +75,7 @@ public class CreatePisCancellationAuthorisationValidatorTest {
     @Mock
     private AuthorisationPsuDataChecker authorisationPsuDataChecker;
     @Mock
-    private PisAuthorisationStatusChecker pisAuthorisationStatusChecker;
+    private PisCancellationAuthorisationStatusChecker pisCancellationAuthorisationStatusChecker;
 
     @InjectMocks
     private CreatePisCancellationAuthorisationValidator createPisCancellationAuthorisationValidator;
@@ -155,7 +157,7 @@ public class CreatePisCancellationAuthorisationValidatorTest {
         // Given
         PisCommonPaymentResponse commonPaymentResponse = buildPisCommonPaymentResponseWithPsuIdDataAndAuthorisation(TPP_INFO);
         CreatePisCancellationAuthorisationObject createPisCancellationAuthorisationObject = new CreatePisCancellationAuthorisationObject(commonPaymentResponse, PSU_ID_DATA, SINGLE, CORRECT_PAYMENT_PRODUCT);
-        when(pisAuthorisationStatusChecker.isFinalised(any(PsuIdData.class), anyList())).thenReturn(true);
+        when(pisCancellationAuthorisationStatusChecker.isFinalised(any(PsuIdData.class), anyList())).thenReturn(true);
 
         // When
         ValidationResult validationResult = createPisCancellationAuthorisationValidator.validate(createPisCancellationAuthorisationObject);
@@ -187,7 +189,7 @@ public class CreatePisCancellationAuthorisationValidatorTest {
     }
 
     private PisCommonPaymentResponse buildPisCommonPaymentResponseWithPsuIdDataAndAuthorisation(TppInfo tppInfo) {
-        Authorisation authorisation = new Authorisation("1", ScaStatus.FINALISED, PSU_ID_DATA);
+        Authorisation authorisation = new Authorisation("1", ScaStatus.FINALISED, PSU_ID_DATA, PaymentAuthorisationType.CREATED);
 
         PisCommonPaymentResponse pisCommonPaymentResponse = buildPisCommonPaymentResponse(tppInfo);
         pisCommonPaymentResponse.setAuthorisations(Collections.singletonList(authorisation));
