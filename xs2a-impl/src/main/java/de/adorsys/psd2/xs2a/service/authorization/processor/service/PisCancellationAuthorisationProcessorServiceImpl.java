@@ -59,8 +59,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.FINALISED;
-
 @Service
 public class PisCancellationAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisationProcessorService {
 
@@ -82,7 +80,7 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends PaymentBas
                                                             SpiToXs2aAuthenticationObjectMapper spiToXs2aAuthenticationObjectMapper,
                                                             PisPsuDataService pisPsuDataService, Xs2aToSpiPsuDataMapper xs2aToSpiPsuDataMapper) {
         super(requestProviderService, services, xs2aPisCommonPaymentService, xs2aToSpiPaymentMapper,
-              pisCommonDecoupledService, spiContextDataProvider, aspspConsentDataProviderFactory, spiErrorMapper,
+              spiContextDataProvider, aspspConsentDataProviderFactory, spiErrorMapper,
               spiToXs2aAuthenticationObjectMapper, pisAspspDataService, xs2aPisCommonPaymentMapper,
               xs2aToSpiPsuDataMapper);
         this.paymentCancellationSpi = paymentCancellationSpi;
@@ -150,7 +148,7 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends PaymentBas
 
         updatePaymentAfterSpiService.updatePaymentStatus(paymentId, TransactionStatus.CANC);
 
-        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, paymentId, authorisationId, psuData);
+        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(ScaStatus.FINALISED, paymentId, authorisationId, psuData);
     }
 
     @Override

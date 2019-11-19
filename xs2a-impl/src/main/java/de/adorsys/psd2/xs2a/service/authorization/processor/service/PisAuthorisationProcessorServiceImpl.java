@@ -58,8 +58,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.EXEMPTED;
-
 @Service
 public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisationProcessorService {
 
@@ -81,7 +79,7 @@ public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisati
                                                 SpiToXs2aAuthenticationObjectMapper spiToXs2aAuthenticationObjectMapper,
                                                 PaymentAuthorisationSpi paymentAuthorisationSpi,
                                                 PisCommonDecoupledService pisCommonDecoupledService, Xs2aToSpiPsuDataMapper xs2aToSpiPsuDataMapper) {
-        super(requestProviderService, services, xs2aPisCommonPaymentService, xs2aToSpiPaymentMapper, pisCommonDecoupledService,
+        super(requestProviderService, services, xs2aPisCommonPaymentService, xs2aToSpiPaymentMapper,
               spiContextDataProvider, aspspConsentDataProviderFactory, spiErrorMapper, spiToXs2aAuthenticationObjectMapper,
               pisAspspDataService, xs2aPisCommonPaymentMapper, xs2aToSpiPsuDataMapper);
         this.spiPaymentServiceResolver = spiPaymentServiceResolver;
@@ -134,7 +132,7 @@ public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisati
     @Override
     public AuthorisationProcessorResponse doScaExempted(AuthorisationProcessorRequest authorisationProcessorRequest) {
         UpdateAuthorisationRequest request = authorisationProcessorRequest.getUpdateAuthorisationRequest();
-        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(EXEMPTED, request.getBusinessObjectId(), request.getAuthorisationId(), request.getPsuData());
+        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(ScaStatus.EXEMPTED, request.getBusinessObjectId(), request.getAuthorisationId(), request.getPsuData());
     }
 
     @Override

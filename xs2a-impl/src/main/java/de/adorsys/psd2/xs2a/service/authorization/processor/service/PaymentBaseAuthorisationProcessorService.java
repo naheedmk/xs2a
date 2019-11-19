@@ -29,7 +29,6 @@ import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
-import de.adorsys.psd2.xs2a.service.authorization.pis.PisCommonDecoupledService;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationService;
 import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorRequest;
 import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorResponse;
@@ -65,7 +64,6 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
     private List<PisScaAuthorisationService> services;
     private Xs2aPisCommonPaymentService xs2aPisCommonPaymentService;
     private Xs2aToSpiPaymentMapper xs2aToSpiPaymentMapper;
-    private PisCommonDecoupledService pisCommonDecoupledService;
     private SpiContextDataProvider spiContextDataProvider;
     private SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
     private SpiErrorMapper spiErrorMapper;
@@ -78,7 +76,6 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
                                                        List<PisScaAuthorisationService> services,
                                                        Xs2aPisCommonPaymentService xs2aPisCommonPaymentService,
                                                        Xs2aToSpiPaymentMapper xs2aToSpiPaymentMapper,
-                                                       PisCommonDecoupledService pisCommonDecoupledService,
                                                        SpiContextDataProvider spiContextDataProvider,
                                                        SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
                                                        SpiErrorMapper spiErrorMapper,
@@ -90,7 +87,6 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
         this.services = services;
         this.xs2aPisCommonPaymentService = xs2aPisCommonPaymentService;
         this.xs2aToSpiPaymentMapper = xs2aToSpiPaymentMapper;
-        this.pisCommonDecoupledService = pisCommonDecoupledService;
         this.spiContextDataProvider = spiContextDataProvider;
         this.aspspConsentDataProviderFactory = aspspConsentDataProviderFactory;
         this.spiErrorMapper = spiErrorMapper;
@@ -245,7 +241,7 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
         }
 
         if (pisAuthorisationResponse.getChosenScaApproach() == ScaApproach.DECOUPLED) {
-            return pisCommonDecoupledService.proceedDecoupledInitiation(request, payment);
+            return proceedDecoupledApproach(request, payment);
         }
 
         SpiResponse<SpiAvailableScaMethodsResponse> availableScaMethodsResponse = requestAvailableScaMethods(payment, aspspConsentDataProvider, contextData);
@@ -406,5 +402,10 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
         response.setChosenScaMethod(spiToXs2aAuthenticationObjectMapper.mapToXs2aAuthenticationObject(spiAuthenticationObject));
         response.setChallengeData(challengeData);
         return response;
+    }
+
+    private Xs2aUpdatePisCommonPaymentPsuDataResponse proceedDecoupledApproach(Xs2aUpdatePisCommonPaymentPsuDataRequest request,
+                                                                               SpiPayment payment) {
+        return proceedDecoupledApproach(request, payment, null);
     }
 }

@@ -334,7 +334,7 @@ public class PisAuthorisationProcessorServiceImplTest {
         pisAuthorisationProcessorService.doScaReceived(request);
 
         // Then
-        verify(pisCommonDecoupledService).proceedDecoupledInitiation(any(), any());
+        verify(pisCommonDecoupledService).proceedDecoupledInitiation(any(), any(), any());
     }
 
     @Test
@@ -761,7 +761,7 @@ public class PisAuthorisationProcessorServiceImplTest {
         pisAuthorisationProcessorService.doScaPsuIdentified(request);
 
         // Then
-        verify(pisCommonDecoupledService).proceedDecoupledInitiation(any(), any());
+        verify(pisCommonDecoupledService).proceedDecoupledInitiation(any(), any(), any());
     }
 
     @Test
