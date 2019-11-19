@@ -175,7 +175,7 @@ If parameter = FALSE, then XS2A sends the response with HTTP code 400 SESSIONS_N
 
 If parameter = TRUE, then TPP roles from certificate will be validated
 
-If parameter = FALSE, then no validation will occur.|FALSE |TRUE, FALSE
+If parameter = FALSE, then no validation will occur.|TRUE |TRUE, FALSE
 
 |signingBasketSupported |This field indicates if an ASPSP supports signing basket or not.
 
