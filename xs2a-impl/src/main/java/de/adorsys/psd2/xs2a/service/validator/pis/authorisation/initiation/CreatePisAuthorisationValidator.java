@@ -19,15 +19,14 @@ package de.adorsys.psd2.xs2a.service.validator.pis.authorisation.initiation;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationPsuDataChecker;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.PisAuthorisationStatusChecker;
 import de.adorsys.psd2.xs2a.service.validator.pis.AbstractPisValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
@@ -41,10 +40,13 @@ import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.*;
 public class CreatePisAuthorisationValidator extends AbstractPisValidator<CreatePisAuthorisationObject> {
 
     private final AuthorisationPsuDataChecker authorisationPsuDataChecker;
+    private final PisAuthorisationStatusChecker pisAuthorisationStatusChecker;
 
-    public CreatePisAuthorisationValidator(RequestProviderService requestProviderService, AuthorisationPsuDataChecker authorisationPsuDataChecker) {
+    public CreatePisAuthorisationValidator(RequestProviderService requestProviderService, AuthorisationPsuDataChecker authorisationPsuDataChecker,
+                                           PisAuthorisationStatusChecker pisAuthorisationStatusChecker) {
         super(requestProviderService);
         this.authorisationPsuDataChecker = authorisationPsuDataChecker;
+        this.pisAuthorisationStatusChecker = pisAuthorisationStatusChecker;
     }
 
     /**
@@ -74,10 +76,7 @@ public class CreatePisAuthorisationValidator extends AbstractPisValidator<Create
         }
 
         // If the authorisation for this payment ID and for this PSU ID has status FINALISED or EXEMPTED - return error.
-        boolean isFinalised = pisCommonPaymentResponse.getAuthorisations()
-                                  .stream()
-                                  .filter(auth -> psuDataFromRequest.contentEquals(auth.getPsuData()))
-                                  .anyMatch(auth -> EnumSet.of(ScaStatus.FINALISED, ScaStatus.EXEMPTED).contains(auth.getScaStatus()));
+        boolean isFinalised = pisAuthorisationStatusChecker.isFinalised(psuDataFromRequest, pisCommonPaymentResponse.getAuthorisations());
 
         if (isFinalised) {
             return ValidationResult.invalid(PIS_409, STATUS_INVALID);

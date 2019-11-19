@@ -26,6 +26,7 @@ import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.ais.consent.dto.CreateConsentAuthorisationObject;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.AisAuthorisationStatusChecker;
 import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationPsuDataChecker;
 import de.adorsys.psd2.xs2a.service.validator.tpp.AisConsentTppInfoValidator;
 import org.junit.Before;
@@ -40,8 +41,7 @@ import java.util.Collections;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -67,6 +67,8 @@ public class CreateConsentAuthorisationValidatorTest {
     private AisConsentTppInfoValidator aisConsentTppInfoValidator;
     @Mock
     private AuthorisationPsuDataChecker authorisationPsuDataChecker;
+    @Mock
+    private AisAuthorisationStatusChecker aisAuthorisationStatusChecker;
 
     @InjectMocks
     private CreateConsentAuthorisationValidator createConsentAuthorisationValidator;
@@ -135,6 +137,7 @@ public class CreateConsentAuthorisationValidatorTest {
         // Given
         AccountConsent accountConsent = buildAccountConsentWithPsuIdDataAndAuthorisation();
         CreateConsentAuthorisationObject createPisAuthorisationPO = new CreateConsentAuthorisationObject(accountConsent, PSU_DATA);
+        when(aisAuthorisationStatusChecker.isFinalised(any(PsuIdData.class), anyList())).thenReturn(true);
 
         // When
         ValidationResult validationResult = createConsentAuthorisationValidator.validate(createPisAuthorisationPO);

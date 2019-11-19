@@ -27,6 +27,7 @@ import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationPsuDataChecker;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.PisAuthorisationStatusChecker;
 import de.adorsys.psd2.xs2a.service.validator.tpp.PisTppInfoValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,8 +44,7 @@ import static de.adorsys.psd2.xs2a.core.profile.PaymentType.SINGLE;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
 import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.*;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,6 +78,8 @@ public class CreatePisAuthorisationValidatorTest {
     private RequestProviderService requestProviderService;
     @Mock
     private AuthorisationPsuDataChecker authorisationPsuDataChecker;
+    @Mock
+    private PisAuthorisationStatusChecker pisAuthorisationStatusChecker;
 
     @InjectMocks
     private CreatePisAuthorisationValidator createPisAuthorisationValidator;
@@ -200,6 +202,8 @@ public class CreatePisAuthorisationValidatorTest {
         PisCommonPaymentResponse commonPaymentResponse = buildPisCommonPaymentResponse(TRANSACTION_STATUS, TPP_INFO);
         commonPaymentResponse.setPsuData(Collections.singletonList(PSU_DATA_1));
         commonPaymentResponse.setAuthorisations(Collections.singletonList(new Authorisation("1", ScaStatus.FINALISED, PSU_DATA_1)));
+        when(pisAuthorisationStatusChecker.isFinalised(any(PsuIdData.class), anyList())).thenReturn(true);
+
         // When
         CreatePisAuthorisationObject createPisAuthorisationObject = new CreatePisAuthorisationObject(commonPaymentResponse, SINGLE, CORRECT_PAYMENT_PRODUCT, PSU_DATA_1);
         ValidationResult validationResult = createPisAuthorisationValidator.validate(createPisAuthorisationObject);

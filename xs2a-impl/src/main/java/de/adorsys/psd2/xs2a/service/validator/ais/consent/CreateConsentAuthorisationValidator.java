@@ -17,16 +17,15 @@
 package de.adorsys.psd2.xs2a.service.validator.ais.consent;
 
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.ais.consent.dto.CreateConsentAuthorisationObject;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.AisAuthorisationStatusChecker;
 import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationPsuDataChecker;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.PSU_CREDENTIALS_INVALID;
@@ -42,6 +41,7 @@ import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.AIS_409;
 public class CreateConsentAuthorisationValidator extends AbstractConsentTppValidator<CreateConsentAuthorisationObject> {
 
     private final AuthorisationPsuDataChecker authorisationPsuDataChecker;
+    private final AisAuthorisationStatusChecker aisAuthorisationStatusChecker;
 
     /**
      * Validates create consent authorisation request
@@ -66,10 +66,7 @@ public class CreateConsentAuthorisationValidator extends AbstractConsentTppValid
         }
 
         // If the authorisation for this consent ID and for this PSU ID has status FINALISED or EXEMPTED - return error.
-        boolean isFinalised = accountConsent.getAuthorisations()
-                                  .stream()
-                                  .filter(auth -> psuDataFromRequest.contentEquals(auth.getPsuIdData()))
-                                  .anyMatch(auth -> EnumSet.of(ScaStatus.FINALISED, ScaStatus.EXEMPTED).contains(auth.getScaStatus()));
+        boolean isFinalised = aisAuthorisationStatusChecker.isFinalised(psuDataFromRequest, accountConsent.getAuthorisations());
 
         if (isFinalised) {
             return ValidationResult.invalid(AIS_409, STATUS_INVALID);

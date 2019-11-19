@@ -26,6 +26,7 @@ import de.adorsys.psd2.xs2a.exception.MessageError;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.authorisation.AuthorisationPsuDataChecker;
+import de.adorsys.psd2.xs2a.service.validator.authorisation.PisAuthorisationStatusChecker;
 import de.adorsys.psd2.xs2a.service.validator.tpp.PisTppInfoValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +41,7 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 import static de.adorsys.psd2.xs2a.core.profile.PaymentType.SINGLE;
 import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.*;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,6 +72,8 @@ public class CreatePisCancellationAuthorisationValidatorTest {
     RequestProviderService requestProviderService;
     @Mock
     private AuthorisationPsuDataChecker authorisationPsuDataChecker;
+    @Mock
+    private PisAuthorisationStatusChecker pisAuthorisationStatusChecker;
 
     @InjectMocks
     private CreatePisCancellationAuthorisationValidator createPisCancellationAuthorisationValidator;
@@ -153,6 +155,7 @@ public class CreatePisCancellationAuthorisationValidatorTest {
         // Given
         PisCommonPaymentResponse commonPaymentResponse = buildPisCommonPaymentResponseWithPsuIdDataAndAuthorisation(TPP_INFO);
         CreatePisCancellationAuthorisationObject createPisCancellationAuthorisationObject = new CreatePisCancellationAuthorisationObject(commonPaymentResponse, PSU_ID_DATA, SINGLE, CORRECT_PAYMENT_PRODUCT);
+        when(pisAuthorisationStatusChecker.isFinalised(any(PsuIdData.class), anyList())).thenReturn(true);
 
         // When
         ValidationResult validationResult = createPisCancellationAuthorisationValidator.validate(createPisCancellationAuthorisationObject);
