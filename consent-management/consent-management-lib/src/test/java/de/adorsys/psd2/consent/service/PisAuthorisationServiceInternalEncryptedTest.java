@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.consent.service;
 
+import de.adorsys.psd2.consent.api.CmsError;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.pis.authorisation.*;
 import de.adorsys.psd2.consent.api.service.PisAuthorisationService;
@@ -46,6 +47,7 @@ public class PisAuthorisationServiceInternalEncryptedTest {
     private static final ScaStatus SCA_STATUS = ScaStatus.SCAMETHODSELECTED;
     private static final String ENCRYPTED_PAYMENT_ID = "encrypted payment id";
     private static final String DECRYPTED_PAYMENT_ID = "1856e4fa-8af8-427b-85ec-4caf515ce074";
+    private static final String AUTHORISATION_METHOD_ID = "33346cb3-a01b-4196-a6b9-40b0e4cd2639";
     private static final String AUTHORISATION_ID = "46f2e3a7-1855-4815-8755-5ca76769a1a4";
     private static final PsuIdData PSU_DATA = new PsuIdData(null, null, null, null);
     private static final String TPP_REDIRECT_URI = "request/redirect_uri";
@@ -118,6 +120,17 @@ public class PisAuthorisationServiceInternalEncryptedTest {
     }
 
     @Test
+    public void createAuthorization_technicalError() {
+        when(securityDataService.decryptId(ENCRYPTED_PAYMENT_ID)).thenReturn(Optional.empty());
+
+        CmsResponse<CreatePisAuthorisationResponse> actual =
+            pisAuthorisationServiceInternalEncrypted.createAuthorization(ENCRYPTED_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST);
+
+        assertTrue(actual.hasError());
+        assertEquals(CmsError.TECHNICAL_ERROR, actual.getError());
+    }
+
+    @Test
     public void createAuthorizationCancellation_success() {
         // Given
         CreatePisAuthorisationResponse expected = buildCreatePisAuthorisationResponse();
@@ -132,6 +145,17 @@ public class PisAuthorisationServiceInternalEncryptedTest {
         assertEquals(expected, actual.getPayload());
         verify(pisAuthorisationService, times(1))
             .createAuthorizationCancellation(DECRYPTED_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST);
+    }
+
+    @Test
+    public void createAuthorizationCancellation_technicalError() {
+        when(securityDataService.decryptId(ENCRYPTED_PAYMENT_ID)).thenReturn(Optional.empty());
+
+        CmsResponse<CreatePisAuthorisationResponse> actual =
+            pisAuthorisationServiceInternalEncrypted.createAuthorizationCancellation(ENCRYPTED_PAYMENT_ID, CREATE_PIS_AUTHORISATION_REQUEST);
+
+        assertTrue(actual.hasError());
+        assertEquals(CmsError.TECHNICAL_ERROR, actual.getError());
     }
 
     @Test
@@ -219,6 +243,22 @@ public class PisAuthorisationServiceInternalEncryptedTest {
     }
 
     @Test
+    public void getAuthorisationsByPaymentId_technicalError() {
+        // Given
+        when(securityDataService.decryptId(ENCRYPTED_PAYMENT_ID)).thenReturn(Optional.empty());
+
+        // When
+        CmsResponse<List<String>> actual = pisAuthorisationServiceInternalEncrypted.getAuthorisationsByPaymentId(ENCRYPTED_PAYMENT_ID,
+                                                                                                                 PaymentAuthorisationType.CREATED);
+
+        // Then
+        assertTrue(actual.hasError());
+        assertEquals(CmsError.TECHNICAL_ERROR, actual.getError());
+
+        verify(pisAuthorisationService, never()).getAuthorisationsByPaymentId(DECRYPTED_PAYMENT_ID, PaymentAuthorisationType.CREATED);
+    }
+
+    @Test
     public void getAuthorisationScaStatus_success() {
         // When
         CmsResponse<ScaStatus> actual = pisAuthorisationServiceInternalEncrypted.getAuthorisationScaStatus(ENCRYPTED_PAYMENT_ID, AUTHORISATION_ID, PaymentAuthorisationType.CREATED);
@@ -229,6 +269,20 @@ public class PisAuthorisationServiceInternalEncryptedTest {
         assertEquals(SCA_STATUS, actual.getPayload());
         verify(pisAuthorisationService, times(1)).getAuthorisationScaStatus(DECRYPTED_PAYMENT_ID, AUTHORISATION_ID, PaymentAuthorisationType.CREATED);
     }
+
+    @Test
+    public void getAuthorisationScaStatus_technicalError() {
+        when(securityDataService.decryptId(ENCRYPTED_PAYMENT_ID)).thenReturn(Optional.empty());
+        // When
+        CmsResponse<ScaStatus> actual = pisAuthorisationServiceInternalEncrypted.getAuthorisationScaStatus(ENCRYPTED_PAYMENT_ID, AUTHORISATION_ID, PaymentAuthorisationType.CREATED);
+
+        // Then
+        assertTrue(actual.hasError());
+        assertEquals(CmsError.TECHNICAL_ERROR, actual.getError());
+
+        verify(pisAuthorisationService, never()).getAuthorisationScaStatus(DECRYPTED_PAYMENT_ID, AUTHORISATION_ID, PaymentAuthorisationType.CREATED);
+    }
+
     @Test
     public void getAuthorisationScaApproach() {
         when(pisAuthorisationService.getAuthorisationScaApproach(AUTHORISATION_ID, PaymentAuthorisationType.CREATED))
@@ -242,6 +296,34 @@ public class PisAuthorisationServiceInternalEncryptedTest {
 
         assertEquals(ScaApproach.EMBEDDED, actual.getPayload().getScaApproach());
         verify(pisAuthorisationService, times(1)).getAuthorisationScaApproach(eq(AUTHORISATION_ID), eq(PaymentAuthorisationType.CREATED));
+    }
+
+    @Test
+    public void updatePisAuthorisationStatus() {
+        pisAuthorisationServiceInternalEncrypted.updatePisAuthorisationStatus(AUTHORISATION_ID, ScaStatus.RECEIVED);
+
+        verify(pisAuthorisationService).updatePisAuthorisationStatus(AUTHORISATION_ID, ScaStatus.RECEIVED);
+    }
+
+    @Test
+    public void isAuthenticationMethodDecoupled() {
+        pisAuthorisationServiceInternalEncrypted.isAuthenticationMethodDecoupled(AUTHORISATION_ID, AUTHORISATION_METHOD_ID);
+
+        verify(pisAuthorisationService).isAuthenticationMethodDecoupled(AUTHORISATION_ID, AUTHORISATION_METHOD_ID);
+    }
+
+    @Test
+    public void saveAuthenticationMethods() {
+        pisAuthorisationServiceInternalEncrypted.saveAuthenticationMethods(AUTHORISATION_ID, Collections.emptyList());
+
+        verify(pisAuthorisationService).saveAuthenticationMethods(AUTHORISATION_ID, Collections.emptyList());
+    }
+
+    @Test
+    public void updateScaApproach() {
+        pisAuthorisationServiceInternalEncrypted.updateScaApproach(AUTHORISATION_ID, ScaApproach.EMBEDDED);
+
+        verify(pisAuthorisationService).updateScaApproach(AUTHORISATION_ID, ScaApproach.EMBEDDED);
     }
 
     private CreatePisAuthorisationResponse buildCreatePisAuthorisationResponse() {

@@ -113,7 +113,7 @@ public class PisAuthorisationServiceInternalEncrypted implements PisAuthorisatio
         Optional<String> decryptIdOptional = securityDataService.decryptId(encryptedPaymentId);
 
         if (!decryptIdOptional.isPresent()) {
-            log.info("Encrypted Payment ID: [{}]. Get payment authrisation list failed, couldn't decrypt consent id",
+            log.info("Encrypted Payment ID: [{}]. Get payment authorisation list failed, couldn't decrypt consent id",
                      encryptedPaymentId);
             return CmsResponse.<List<String>>builder()
                        .error(TECHNICAL_ERROR)

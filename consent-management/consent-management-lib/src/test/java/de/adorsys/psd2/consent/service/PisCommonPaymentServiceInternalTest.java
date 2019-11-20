@@ -63,7 +63,6 @@ public class PisCommonPaymentServiceInternalTest {
     private PisCommonPaymentData pisCommonPaymentData;
     private List<PisAuthorization> pisAuthorizationList = new ArrayList<>();
 
-    private final long PIS_PAYMENT_DATA_ID = 1;
     private static final String EXTERNAL_ID = "4b112130-6a96-4941-a220-2da8a4af2c65";
     private static final String PAYMENT_ID = "5bbde955ca10e8e4035a10c2";
     private static final String AUTHORISATION_ID = "ad746cb3-a01b-4196-a6b9-40b0e4cd2350";
@@ -142,7 +141,7 @@ public class PisCommonPaymentServiceInternalTest {
 
     private PisCommonPaymentData buildPisCommonPaymentData(AuthorisationTemplateEntity authorisationTemplateEntity) {
         PisCommonPaymentData pisCommonPaymentData = new PisCommonPaymentData();
-        pisCommonPaymentData.setId(PIS_PAYMENT_DATA_ID);
+        pisCommonPaymentData.setId(1L);
         pisCommonPaymentData.setPaymentId(PAYMENT_ID);
         pisCommonPaymentData.setTransactionStatus(RCVD);
         pisCommonPaymentData.setAuthorizations(pisAuthorizationList);
