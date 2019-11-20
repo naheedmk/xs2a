@@ -26999,33 +26999,10 @@
 											"script": {
 												"id": "83f45a10-10ef-4c2b-b9f1-3e29d0ae53fa",
 												"exec": [
-													"const jsonData = pm.response.json();",
-													"",
-													"const authorisationId = jsonData._links.updatePsuAuthentication.href.split('/').pop();",
-													"",
-													"pm.test(\"Select cancellationId \", () => {",
-													"    pm.expect(jsonData).to.have.property('cancellationId');",
-													"    ",
-													"    pm.globals.set(\"cancellation_id\", jsonData.cancellationId);",
+													"pm.test(\"Status code is 401\", function () {",
+													"    pm.response.to.have.status(401);",
 													"});",
-													"",
-													"pm.test(\"Status code is 201\", function () {",
-													"    pm.response.to.have.status(201);",
-													"});",
-													"",
-													"pm.test(\"Select scaStatus \", () => {",
-													"    pm.expect(jsonData).to.have.property('scaStatus');",
-													"    const scaStatus = jsonData.scaStatus;",
-													"    pm.expect(scaStatus).to.eql('psuIdentified');",
-													"});",
-													"",
-													"pm.test(\"Links exist\", () => {",
-													"    pm.expect(jsonData).to.have.property('_links');",
-													"    const _links = jsonData._links;",
-													"    ",
-													"    pm.expect(_links).to.have.property('scaStatus');",
-													"    pm.expect(_links).to.have.property('updatePsuAuthentication');",
-													"});"
+													""
 												],
 												"type": "text/javascript"
 											}
@@ -27067,70 +27044,6 @@
 												"{{payment_product}}",
 												"{{payment_id}}",
 												"cancellation-authorisations"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "10. Update PSU data for payment cancellation with PSU-ID single",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"id": "f8ee040e-1fd9-415f-9d19-bad3df14d8a4",
-												"exec": [
-													"pm.test('Status code is 401', () => {",
-													"   pm.response.to.have.status(401);",
-													"});",
-													"",
-													"pm.test(\"Error code is PSU_CREDENTIALS_INVALID\", () => {",
-													"    const jsonData = pm.response.json();",
-													"    const error = jsonData.tppMessages[0];",
-													"    pm.expect(error.code).to.eql('PSU_CREDENTIALS_INVALID');",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Accept",
-												"value": "application/json"
-											},
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											},
-											{
-												"key": "PSU-ID",
-												"value": "{{psu_id_single}}"
-											},
-											{
-												"key": "X-Request-ID",
-												"value": "{{x_request_id}}"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "{\n\t\"psuData\": {\n\t\t\"password\": \"{{psu_id_password}}\"\n\t}\n}"
-										},
-										"url": {
-											"raw": "{{protocol}}://{{url_xs2a}}/v1/{{payment_service}}/{{payment_product}}/{{payment_id}}/cancellation-authorisations/{{cancellation_id}}",
-											"protocol": "{{protocol}}",
-											"host": [
-												"{{url_xs2a}}"
-											],
-											"path": [
-												"v1",
-												"{{payment_service}}",
-												"{{payment_product}}",
-												"{{payment_id}}",
-												"cancellation-authorisations",
-												"{{cancellation_id}}"
 											]
 										}
 									},
