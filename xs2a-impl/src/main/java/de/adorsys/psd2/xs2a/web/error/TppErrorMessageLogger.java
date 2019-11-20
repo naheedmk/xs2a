@@ -1,4 +1,4 @@
-package de.adorsys.psd2.xs2a.service;
+package de.adorsys.psd2.xs2a.web.error;
 
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
@@ -20,12 +20,12 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ErrorService {
+public class TppErrorMessageLogger {
     private final ServiceTypeDiscoveryService serviceTypeDiscoveryService;
     private final ErrorMapperContainer errorMapperContainer;
     private final Xs2aObjectMapper xs2aObjectMapper;
 
-    public void log(HttpServletResponse response, int status, TppErrorMessage tppErrorMessage) throws IOException {
+    public void error(HttpServletResponse response, int status, TppErrorMessage tppErrorMessage) throws IOException {
         response.setStatus(status);
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         ServiceType serviceType = serviceTypeDiscoveryService.getServiceType();
