@@ -139,7 +139,7 @@
     </developers>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -156,7 +156,7 @@
         <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
         <jsr311.pi.version>1.1.1</jsr311.pi.version>
         <commons.io.version>2.6</commons.io.version>
-        <pmd.plugin.version>3.10.0</pmd.plugin.version>
+        <pmd.plugin.version>3.12.0</pmd.plugin.version>
         <com.auth0.java-jwt.version>3.3.0</com.auth0.java-jwt.version>
         <tomitribe-http-signatures.version>1.0</tomitribe-http-signatures.version>
         <nimbus-jose-jwt.version>7.9</nimbus-jose-jwt.version>
@@ -187,8 +187,8 @@
         <javax.el-api.version>3.0.0</javax.el-api.version>
         <jaxb-api.version>2.3.0</jaxb-api.version>
         <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
-        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
-        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <classmate.version>1.4.0</classmate.version>
 
         <jackson.version>2.10.1</jackson.version>
@@ -751,7 +751,7 @@ Use it manually to generate javadocs. Don't commit it
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.2</version>
+                <version>0.8.3</version>
                 <configuration>
                     <destFile>${sonar.jacoco.reportPath}</destFile>
                     <dataFile>${sonar.jacoco.reportPath}</dataFile>

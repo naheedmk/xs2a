@@ -2,7 +2,6 @@
 language: java
 
 jdk:
-  - openjdk8
   - openjdk11
 
 git:
@@ -26,11 +25,10 @@ install:
 before_script:
   - mvn --version || travis_terminate 1
 
-# JavaDocs are broken in Java 11 and fixed only in Java 12 : https://bugs.openjdk.java.net/browse/JDK-8212233
 script:
   - env BUILD_NUMBER=$TRAVIS_BUILD_ID /bin/bash ./scripts/set_xs2a_connector_version_in_swagger.sh
   - mvn -B -V clean install || travis_terminate 1
-  - "if [ $TRAVIS_JDK_VERSION == oraclejdk8 ]; then mvn -B -V javadoc:javadoc; fi || travis_terminate 1"
+  - mvn -B -V javadoc:javadoc || travis_terminate 1
   - mvn -B -V pmd:check || travis_terminate 1
   - echo "TRAVIS_JDK_VERSION is $TRAVIS_JDK_VERSION" || travis_terminate 1
   - docker run -it --rm -v $PWD:/src -w /src -u $(id -u ${USER}):$(id -g ${USER})
