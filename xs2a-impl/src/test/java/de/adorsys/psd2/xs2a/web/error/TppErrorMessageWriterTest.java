@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -81,8 +81,7 @@ public class TppErrorMessageWriterTest {
         verify(errorMapperContainer).getErrorBody(messageError);
         verify(xs2aObjectMapper).writeValue(writerArgumentCaptor.capture(), errorBodyArgumentCaptor.capture());
 
-        assertThat(writerArgumentCaptor.getValue()).isEqualTo(PRINT_WRITER);
-        assertThat(errorBodyArgumentCaptor.getValue()).isEqualTo(ERROR_BODY.getBody());
-
+        assertEquals(writerArgumentCaptor.getValue(), PRINT_WRITER);
+        assertEquals(errorBodyArgumentCaptor.getValue(), ERROR_BODY.getBody());
     }
 }
