@@ -16,17 +16,25 @@
 
 package de.adorsys.psd2.consent.service;
 
+import de.adorsys.psd2.consent.api.CmsError;
 import de.adorsys.psd2.consent.api.CmsResponse;
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentRequest;
+import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.consent.domain.AuthorisationTemplateEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.TppInfoEntity;
 import de.adorsys.psd2.consent.domain.payment.PisAuthorization;
 import de.adorsys.psd2.consent.domain.payment.PisCommonPaymentData;
+import de.adorsys.psd2.consent.domain.payment.PisPaymentData;
 import de.adorsys.psd2.consent.repository.PisCommonPaymentDataRepository;
+import de.adorsys.psd2.consent.repository.PisPaymentDataRepository;
 import de.adorsys.psd2.consent.repository.TppInfoRepository;
 import de.adorsys.psd2.consent.service.mapper.PisCommonPaymentMapper;
+import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
+import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
+import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.core.tpp.TppRole;
@@ -38,15 +46,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static de.adorsys.psd2.xs2a.core.pis.TransactionStatus.RCVD;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PisCommonPaymentServiceInternalTest {
@@ -59,6 +63,12 @@ public class PisCommonPaymentServiceInternalTest {
     private PisCommonPaymentMapper pisCommonPaymentMapper;
     @Mock
     private TppInfoRepository tppInfoRepository;
+    @Mock
+    private PisCommonPaymentConfirmationExpirationService pisCommonPaymentConfirmationExpirationService;
+    @Mock
+    private PisPaymentDataRepository pisPaymentDataRepository;
+    @Mock
+    private PsuDataMapper psuDataMapper;
 
     private PisCommonPaymentData pisCommonPaymentData;
     private List<PisAuthorization> pisAuthorizationList = new ArrayList<>();
@@ -133,6 +143,133 @@ public class PisCommonPaymentServiceInternalTest {
         assertTrue(actualResponse.isSuccessful());
 
         assertFalse(actualResponse.getPayload());
+    }
+
+    @Test
+    public void getPisCommonPaymentStatusById_success() {
+        when(pisCommonPaymentDataRepository.findByPaymentId(PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentData));
+        when(pisCommonPaymentConfirmationExpirationService.checkAndUpdatePaymentDataOnConfirmationExpiration(pisCommonPaymentData))
+            .thenReturn(pisCommonPaymentData);
+
+        CmsResponse<TransactionStatus> actual = pisCommonPaymentService.getPisCommonPaymentStatusById(PAYMENT_ID);
+
+        assertTrue(actual.isSuccessful());
+        assertEquals(TransactionStatus.RCVD, actual.getPayload());
+    }
+
+    @Test
+    public void getPisCommonPaymentStatusById_logicalError() {
+        when(pisCommonPaymentDataRepository.findByPaymentId(PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentData));
+        when(pisCommonPaymentConfirmationExpirationService.checkAndUpdatePaymentDataOnConfirmationExpiration(pisCommonPaymentData))
+            .thenReturn(null);
+
+        CmsResponse<TransactionStatus> actual = pisCommonPaymentService.getPisCommonPaymentStatusById(PAYMENT_ID);
+
+        assertTrue(actual.hasError());
+        assertEquals(CmsError.LOGICAL_ERROR, actual.getError());
+    }
+
+    @Test
+    public void getCommonPaymentById_success() {
+        when(pisCommonPaymentDataRepository.findByPaymentId(PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentData));
+        when(pisCommonPaymentConfirmationExpirationService.checkAndUpdatePaymentDataOnConfirmationExpiration(pisCommonPaymentData))
+            .thenReturn(pisCommonPaymentData);
+        PisCommonPaymentResponse pisCommonPaymentResponse = new PisCommonPaymentResponse();
+        when(pisCommonPaymentMapper.mapToPisCommonPaymentResponse(pisCommonPaymentData))
+            .thenReturn(Optional.of(pisCommonPaymentResponse));
+
+        CmsResponse<PisCommonPaymentResponse> actual = pisCommonPaymentService.getCommonPaymentById(PAYMENT_ID);
+
+        assertTrue(actual.isSuccessful());
+        assertEquals(pisCommonPaymentResponse, actual.getPayload());
+    }
+
+    @Test
+    public void getCommonPaymentById_logicalError() {
+        when(pisCommonPaymentDataRepository.findByPaymentId(PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentData));
+        when(pisCommonPaymentConfirmationExpirationService.checkAndUpdatePaymentDataOnConfirmationExpiration(pisCommonPaymentData))
+            .thenReturn(pisCommonPaymentData);
+        when(pisCommonPaymentMapper.mapToPisCommonPaymentResponse(pisCommonPaymentData))
+            .thenReturn(Optional.empty());
+
+        CmsResponse<PisCommonPaymentResponse> actual = pisCommonPaymentService.getCommonPaymentById(PAYMENT_ID);
+
+        assertTrue(actual.hasError());
+        assertEquals(CmsError.LOGICAL_ERROR, actual.getError());
+    }
+
+    @Test
+    public void updateCommonPaymentStatusById_success() {
+        when(pisCommonPaymentDataRepository.findByPaymentId(PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentData));
+        when(pisCommonPaymentConfirmationExpirationService.checkAndUpdatePaymentDataOnConfirmationExpiration(pisCommonPaymentData))
+            .thenReturn(pisCommonPaymentData);
+
+        CmsResponse<Boolean> actual = pisCommonPaymentService.updateCommonPaymentStatusById(PAYMENT_ID, TransactionStatus.RCVD);
+
+        assertTrue(actual.isSuccessful());
+        assertEquals(TransactionStatus.RCVD, pisCommonPaymentData.getTransactionStatus());
+
+        verify(pisCommonPaymentDataRepository).save(pisCommonPaymentData);
+    }
+
+    @Test
+    public void updateCommonPaymentStatusById_transactionStatusIsFinalised() {
+        pisCommonPaymentData.setTransactionStatus(TransactionStatus.ACCC);
+        when(pisCommonPaymentDataRepository.findByPaymentId(PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentData));
+        when(pisCommonPaymentConfirmationExpirationService.checkAndUpdatePaymentDataOnConfirmationExpiration(pisCommonPaymentData))
+            .thenReturn(pisCommonPaymentData);
+
+        CmsResponse<Boolean> actual = pisCommonPaymentService.updateCommonPaymentStatusById(PAYMENT_ID, TransactionStatus.RCVD);
+
+        assertTrue(actual.isSuccessful());
+        assertFalse(actual.getPayload());
+        assertEquals(TransactionStatus.ACCC, pisCommonPaymentData.getTransactionStatus());
+
+        verify(pisCommonPaymentDataRepository, never()).save(any());
+    }
+
+    @Test
+    public void updateCommonPayment() {
+        PisCommonPaymentRequest request = new PisCommonPaymentRequest();
+        when(pisCommonPaymentDataRepository.findByPaymentId(PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentData));
+        when(pisCommonPaymentMapper.mapToPisPaymentDataList(request.getPayments(), pisCommonPaymentData)).thenReturn(Collections.emptyList());
+
+        CmsResponse<CmsResponse.VoidResponse> actual = pisCommonPaymentService.updateCommonPayment(request, PAYMENT_ID);
+
+        assertTrue(actual.isSuccessful());
+        assertEquals(CmsResponse.voidResponse(), actual.getPayload());
+
+        verify(pisPaymentDataRepository).saveAll(Collections.emptyList());
+    }
+
+    @Test
+    public void getPsuDataListByPaymentId_success() {
+        PisPaymentData pisPaymentData = new PisPaymentData();
+        pisPaymentData.setPaymentData(pisCommonPaymentData);
+        when(pisPaymentDataRepository.findByPaymentId(PAYMENT_ID))
+            .thenReturn(Optional.of(Collections.singletonList(pisPaymentData)));
+        when(psuDataMapper.mapToPsuIdDataList(pisCommonPaymentData.getPsuDataList())).thenReturn(Collections.emptyList());
+
+
+        CmsResponse<List<PsuIdData>> actual = pisCommonPaymentService.getPsuDataListByPaymentId(PAYMENT_ID);
+
+        assertTrue(actual.isSuccessful());
+        assertTrue(actual.getPayload().isEmpty());
+    }
+
+    @Test
+    public void getPsuDataListByPaymentId_logicalError() {
+        PisPaymentData pisPaymentData = new PisPaymentData();
+        pisPaymentData.setPaymentData(pisCommonPaymentData);
+        when(pisPaymentDataRepository.findByPaymentId(PAYMENT_ID))
+            .thenReturn(Optional.of(Collections.singletonList(pisPaymentData)));
+        when(psuDataMapper.mapToPsuIdDataList(pisCommonPaymentData.getPsuDataList())).thenReturn(null);
+
+
+        CmsResponse<List<PsuIdData>> actual = pisCommonPaymentService.getPsuDataListByPaymentId(PAYMENT_ID);
+
+        assertTrue(actual.hasError());
+        assertEquals(CmsError.LOGICAL_ERROR, actual.getError());
     }
 
     private PisCommonPaymentData buildPisCommonPaymentData() {
