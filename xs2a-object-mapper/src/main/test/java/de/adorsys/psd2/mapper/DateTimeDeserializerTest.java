@@ -47,7 +47,6 @@ public class DateTimeDeserializerTest {
         assertEquals(LocalDateTime.parse("2018-10-03T23:40:40.324"), localDateTimeObject.getField1());
     }
 
-
     private static class TestLocalDateTimeObject {
         private LocalDateTime field1;
 
