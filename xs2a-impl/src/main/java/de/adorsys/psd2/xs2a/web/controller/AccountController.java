@@ -24,7 +24,7 @@ import de.adorsys.psd2.xs2a.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.domain.Transactions;
 import de.adorsys.psd2.xs2a.domain.account.*;
 import de.adorsys.psd2.xs2a.exception.MessageError;
-import de.adorsys.psd2.xs2a.web.error.TppErrorMessageLogger;
+import de.adorsys.psd2.xs2a.web.error.TppErrorMessageWriter;
 import de.adorsys.psd2.xs2a.service.ais.AccountDetailsService;
 import de.adorsys.psd2.xs2a.service.ais.AccountListService;
 import de.adorsys.psd2.xs2a.service.ais.BalanceService;
@@ -75,7 +75,7 @@ public class AccountController implements AccountApi {
     private final AccountModelMapper accountModelMapper;
     private final ResponseErrorMapper responseErrorMapper;
     private final TppErrorMessageBuilder tppErrorMessageBuilder;
-    private final TppErrorMessageLogger tppErrorMessageLogger;
+    private final TppErrorMessageWriter tppErrorMessageWriter;
 
     @Override
     public ResponseEntity getAccountList(UUID xRequestID, String consentID, Boolean withBalance, String digest, String signature, byte[] tpPSignatureCertificate, String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
@@ -172,7 +172,7 @@ public class AccountController implements AccountApi {
 
     private void flushResponseError(int status, TppErrorMessage errorMessage) {
         try {
-            tppErrorMessageLogger.error(response, status, errorMessage);
+            tppErrorMessageWriter.writeError(response, status, errorMessage);
             response.flushBuffer();
         } catch (IOException e) {
             log.info(" Writing to the httpServletResponse failed.");

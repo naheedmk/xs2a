@@ -38,7 +38,7 @@ import de.adorsys.psd2.xs2a.service.mapper.ResponseMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ResponseErrorMapper;
 import de.adorsys.psd2.xs2a.web.error.TppErrorMessageBuilder;
-import de.adorsys.psd2.xs2a.web.error.TppErrorMessageLogger;
+import de.adorsys.psd2.xs2a.web.error.TppErrorMessageWriter;
 import de.adorsys.psd2.xs2a.web.filter.TppErrorMessage;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -120,7 +120,7 @@ public class AccountControllerTest {
     @Mock
     private TppErrorMessageBuilder tppErrorMessageBuilder;
     @Mock
-    private TppErrorMessageLogger tppErrorMessageLogger;
+    private TppErrorMessageWriter tppErrorMessageWriter;
 
 
     @Before

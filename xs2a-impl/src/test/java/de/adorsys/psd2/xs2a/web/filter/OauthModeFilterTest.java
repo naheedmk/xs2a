@@ -23,7 +23,7 @@ import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.web.error.TppErrorMessageBuilder;
-import de.adorsys.psd2.xs2a.web.error.TppErrorMessageLogger;
+import de.adorsys.psd2.xs2a.web.error.TppErrorMessageWriter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,7 +72,7 @@ public class OauthModeFilterTest {
     @Mock
     private TppErrorMessageBuilder tppErrorMessageBuilder;
     @Mock
-    private TppErrorMessageLogger tppErrorMessageLogger;
+    private TppErrorMessageWriter tppErrorMessageWriter;
     @Mock
     private AspspProfileServiceWrapper aspspProfileService;
     @Mock
@@ -110,7 +110,7 @@ public class OauthModeFilterTest {
         oauthModeFilter.doFilterInternal(request, response, chain);
 
         // Then
-        verify(tppErrorMessageLogger).error(eq(response), statusCode.capture(), message.capture());
+        verify(tppErrorMessageWriter).writeError(eq(response), statusCode.capture(), message.capture());
         verify(chain, never()).doFilter(any(), any());
         assertEquals((Integer) 401, statusCode.getValue());
         assertEquals(TPP_ERROR_MESSAGE_UNAUTHORIZED, message.getValue());
@@ -133,7 +133,7 @@ public class OauthModeFilterTest {
         oauthModeFilter.doFilterInternal(request, response, chain);
 
         // Then
-        verify(tppErrorMessageLogger).error(eq(response), statusCode.capture(), message.capture());
+        verify(tppErrorMessageWriter).writeError(eq(response), statusCode.capture(), message.capture());
         verify(chain, never()).doFilter(any(), any());
         assertEquals((Integer) 403, statusCode.getValue());
         assertEquals(TPP_ERROR_MESSAGE_FORBIDDEN, message.getValue());

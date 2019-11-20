@@ -25,7 +25,7 @@ import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.tpp.TppInfoHolder;
 import de.adorsys.psd2.xs2a.service.validator.tpp.TppRoleValidationService;
 import de.adorsys.psd2.xs2a.web.error.TppErrorMessageBuilder;
-import de.adorsys.psd2.xs2a.web.error.TppErrorMessageLogger;
+import de.adorsys.psd2.xs2a.web.error.TppErrorMessageWriter;
 import de.adorsys.psd2.xs2a.web.mapper.TppInfoRolesMapper;
 import de.adorsys.psd2.xs2a.web.mapper.Xs2aTppInfoMapper;
 import org.junit.Before;
@@ -79,7 +79,7 @@ public class QwacCertificateFilterTest {
     @Mock
     private TppErrorMessageBuilder tppErrorMessageBuilder;
     @Mock
-    private TppErrorMessageLogger tppErrorMessageLogger;
+    private TppErrorMessageWriter tppErrorMessageWriter;
     @Mock
     private TppService tppService;
     @Mock
@@ -119,7 +119,7 @@ public class QwacCertificateFilterTest {
         qwacCertificateFilter.doFilterInternal(request, response, chain);
 
         //Then
-        verify(tppErrorMessageLogger).error(eq(response), statusCode.capture(), message.capture());
+        verify(tppErrorMessageWriter).writeError(eq(response), statusCode.capture(), message.capture());
         verify(chain, never()).doFilter(any(), any());
         assertEquals((Integer) 401, statusCode.getValue());
         assertEquals(TPP_ERROR_MESSAGE_EXPIRED, message.getValue());
@@ -183,7 +183,7 @@ public class QwacCertificateFilterTest {
         qwacCertificateFilter.doFilterInternal(request, response, chain);
 
         //Then
-        verify(tppErrorMessageLogger).error(eq(response), statusCode.capture(), message.capture());
+        verify(tppErrorMessageWriter).writeError(eq(response), statusCode.capture(), message.capture());
         verify(chain, never()).doFilter(any(), any());
         assertEquals((Integer) 401, statusCode.getValue());
         assertEquals(TPP_ERROR_MESSAGE_ACCESS, message.getValue());

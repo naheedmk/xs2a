@@ -20,12 +20,12 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class TppErrorMessageLogger {
+public class TppErrorMessageWriter {
     private final ServiceTypeDiscoveryService serviceTypeDiscoveryService;
     private final ErrorMapperContainer errorMapperContainer;
     private final Xs2aObjectMapper xs2aObjectMapper;
 
-    public void error(HttpServletResponse response, int status, TppErrorMessage tppErrorMessage) throws IOException {
+    public void writeError(HttpServletResponse response, int status, TppErrorMessage tppErrorMessage) throws IOException {
         response.setStatus(status);
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         ServiceType serviceType = serviceTypeDiscoveryService.getServiceType();
