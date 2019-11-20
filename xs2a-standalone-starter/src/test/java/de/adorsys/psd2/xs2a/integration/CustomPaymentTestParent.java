@@ -32,9 +32,7 @@ import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import de.adorsys.psd2.xs2a.integration.builder.AspspSettingsBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.TppInfoBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
-import de.adorsys.psd2.xs2a.service.context.LoggingContextService;
 import de.adorsys.psd2.xs2a.spi.service.CommonPaymentSpi;
-import de.adorsys.psd2.xs2a.spi.service.SinglePaymentSpi;
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -89,11 +87,7 @@ public abstract class CustomPaymentTestParent {
     @MockBean
     protected PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
     @MockBean
-    private SinglePaymentSpi singlePaymentSpi;
-    @MockBean
     protected CommonPaymentSpi commonPaymentSpi;
-    @MockBean
-    private LoggingContextService loggingContextService;
     @MockBean
     @Qualifier("consentRestTemplate")
     protected RestTemplate consentRestTemplate;

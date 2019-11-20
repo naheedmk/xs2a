@@ -23,6 +23,7 @@ import de.adorsys.psd2.xs2a.config.CorsConfigurationProperties;
 import de.adorsys.psd2.xs2a.config.WebConfig;
 import de.adorsys.psd2.xs2a.config.Xs2aEndpointPathConstant;
 import de.adorsys.psd2.xs2a.config.Xs2aInterfaceConfig;
+import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
@@ -119,6 +120,7 @@ public class GetCustomPaymentIT extends CustomPaymentTestParent {
         byte[] data = IOUtils.resourceToByteArray(requestContentPath);
         response.setPaymentData(data);
         spiPaymentInfo.setPaymentData(data);
+        spiPaymentInfo.setStatus(TransactionStatus.ACSP);
 
         given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(ScaApproach.EMBEDDED));
 
