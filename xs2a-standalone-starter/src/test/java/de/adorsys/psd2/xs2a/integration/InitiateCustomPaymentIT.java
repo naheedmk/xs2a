@@ -58,6 +58,7 @@ import org.springframework.util.MultiValueMap;
 import java.io.IOException;
 import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -74,7 +75,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     Xs2aEndpointPathConstant.class,
     Xs2aInterfaceConfig.class
 })
-public class InitiateCustomPayment_IT extends CustomPaymentTestParent {
+public class InitiateCustomPaymentIT extends CustomPaymentTestParent {
     @Before
     public void init() {
         super.init();
@@ -83,60 +84,60 @@ public class InitiateCustomPayment_IT extends CustomPaymentTestParent {
     //Single
     @Test
     public void initiateSinglePaymentCustom_explicit_embedded_successful() throws Exception {
-        initiateSinglePaymentCustomJson_successful(ScaApproach.EMBEDDED);
+        initiateSinglePaymentCustomSuccessful(httpHeadersJson, ScaApproach.EMBEDDED, SINGLE_PAYMENT_CUSTOM_REQUEST_JSON_PATH);
     }
 
     @Test
     public void initiateSinglePaymentCustom_explicit_redirect_successful() throws Exception {
-        initiateSinglePaymentCustomJson_successful(ScaApproach.REDIRECT);
+        initiateSinglePaymentCustomSuccessful(httpHeadersJson, ScaApproach.REDIRECT, SINGLE_PAYMENT_CUSTOM_REQUEST_JSON_PATH);
     }
 
     @Test
     public void initiateSinglePaymentCustomXML_explicit_embedded_successful() throws Exception {
-        initiateSinglePaymentCustomXml_successful(ScaApproach.EMBEDDED);
+        initiateSinglePaymentCustomSuccessful(httpHeadersXml, ScaApproach.EMBEDDED, SINGLE_PAYMENT_CUSTOM_REQUEST_XML_PATH);
     }
 
     @Test
     public void initiateSinglePaymentCustomXML_explicit_redirect_successful() throws Exception {
-        initiateSinglePaymentCustomXml_successful(ScaApproach.REDIRECT);
+        initiateSinglePaymentCustomSuccessful(httpHeadersXml, ScaApproach.REDIRECT, SINGLE_PAYMENT_CUSTOM_REQUEST_XML_PATH);
     }
 
     //Periodic
     @Test
     public void initiatePeriodicPaymentCustom_explicit_embedded_successful() throws Exception {
-        initiatePeriodicPaymentCustom_successful(ScaApproach.EMBEDDED);
+        initiatePeriodicPaymentCustomSuccessful(ScaApproach.EMBEDDED);
     }
 
     @Test
     public void initiatePeriodicPaymentCustom_explicit_redirect_successful() throws Exception {
-        initiatePeriodicPaymentCustom_successful(ScaApproach.REDIRECT);
+        initiatePeriodicPaymentCustomSuccessful(ScaApproach.REDIRECT);
     }
 
     //Bulk
     @Test
     public void initiateBulkPaymentCustom_explicit_embedded_successful() throws Exception {
-        initiateBulkPaymentCustom_successful(httpHeadersJson, ScaApproach.EMBEDDED, BULK_PAYMENT_CUSTOM_REQUEST_JSON_PATH);
+        initiateBulkPaymentCustomSuccessful(httpHeadersJson, ScaApproach.EMBEDDED, BULK_PAYMENT_CUSTOM_REQUEST_JSON_PATH);
     }
 
     @Test
     public void initiateBulkPaymentCustom_explicit_redirect_successful() throws Exception {
-        initiateBulkPaymentCustom_successful(httpHeadersJson, ScaApproach.REDIRECT, BULK_PAYMENT_CUSTOM_REQUEST_JSON_PATH);
+        initiateBulkPaymentCustomSuccessful(httpHeadersJson, ScaApproach.REDIRECT, BULK_PAYMENT_CUSTOM_REQUEST_JSON_PATH);
     }
 
     @Test
     public void initiateBulkPaymentCustomXML_explicit_embedded_successful() throws Exception {
-        initiateBulkPaymentCustom_successful(httpHeadersXml, ScaApproach.EMBEDDED, BULK_PAYMENT_CUSTOM_REQUEST_XML_PATH);
+        initiateBulkPaymentCustomSuccessful(httpHeadersXml, ScaApproach.EMBEDDED, BULK_PAYMENT_CUSTOM_REQUEST_XML_PATH);
     }
 
     @Test
     public void initiateBulkPaymentCustomXML_explicit_redirect_successful() throws Exception {
-        initiateBulkPaymentCustom_successful(httpHeadersXml, ScaApproach.REDIRECT, BULK_PAYMENT_CUSTOM_REQUEST_XML_PATH);
+        initiateBulkPaymentCustomSuccessful(httpHeadersXml, ScaApproach.REDIRECT, BULK_PAYMENT_CUSTOM_REQUEST_XML_PATH);
     }
 
-    private void initiateBulkPaymentCustom_successful(HttpHeaders headers, ScaApproach scaApproach, String requestContentPath) throws Exception {
+    private void initiateBulkPaymentCustomSuccessful(HttpHeaders headers, ScaApproach scaApproach, String requestContentPath) throws Exception {
         makePreparation(scaApproach);
 
-        String paymentUrl = UrlBuilder.buildInitiatePaymentUrl(BULK_PAYMENT_TYPE.getValue(), CUSTOM_PAYMENT_PRODUCT);
+        String paymentUrl = UrlBuilder.buildInitiatePaymentUrl(PaymentType.BULK.getValue(), CUSTOM_PAYMENT_PRODUCT);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(paymentUrl)
                                                            .headers(headers)
                                                            .content(IOUtils.resourceToString(requestContentPath, UTF_8));
@@ -151,23 +152,15 @@ public class InitiateCustomPayment_IT extends CustomPaymentTestParent {
             .andExpect(content().json(IOUtils.resourceToString(filePath, UTF_8)));
     }
 
-    private void initiateSinglePaymentCustomJson_successful(ScaApproach scaApproach) throws Exception {
-        initiateSinglePaymentCustom_successful(httpHeadersJson, scaApproach, SINGLE_PAYMENT_CUSTOM_REQUEST_JSON_PATH);
-    }
-
-    private void initiateSinglePaymentCustomXml_successful(ScaApproach scaApproach) throws Exception {
-        initiateSinglePaymentCustom_successful(httpHeadersXml, scaApproach, SINGLE_PAYMENT_CUSTOM_REQUEST_XML_PATH);
-    }
-
     private CreatePisAuthorisationRequest getPisAuthorisationRequest(ScaApproach scaApproach) {
         return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PsuIdDataBuilder.buildPsuIdData(), scaApproach, TPP_REDIRECT_URIs);
     }
 
-    private void initiateSinglePaymentCustom_successful(HttpHeaders headers, ScaApproach scaApproach, String requestContentPath) throws Exception {
+    private void initiateSinglePaymentCustomSuccessful(HttpHeaders headers, ScaApproach scaApproach, String requestContentPath) throws Exception {
         // Given
         makePreparation(scaApproach);
 
-        String paymentUrl = UrlBuilder.buildInitiatePaymentUrl(SINGLE_PAYMENT_TYPE.getValue(), CUSTOM_PAYMENT_PRODUCT);
+        String paymentUrl = UrlBuilder.buildInitiatePaymentUrl(PaymentType.SINGLE.getValue(), CUSTOM_PAYMENT_PRODUCT);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(paymentUrl)
                                                            .headers(headers)
                                                            .content(IOUtils.resourceToString(requestContentPath, UTF_8));
@@ -182,10 +175,10 @@ public class InitiateCustomPayment_IT extends CustomPaymentTestParent {
             .andExpect(content().json(IOUtils.resourceToString(filePath, UTF_8)));
     }
 
-    private void initiatePeriodicPaymentCustom_successful(ScaApproach scaApproach) throws Exception {
+    private void initiatePeriodicPaymentCustomSuccessful(ScaApproach scaApproach) throws Exception {
         makePreparation(scaApproach);
 
-        String paymentUrl = UrlBuilder.buildInitiatePaymentUrl(PERIODIC_PAYMENT_TYPE.getValue(), CUSTOM_PAYMENT_PRODUCT);
+        String paymentUrl = UrlBuilder.buildInitiatePaymentUrl(PaymentType.PERIODIC.getValue(), CUSTOM_PAYMENT_PRODUCT);
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                                                            .multipart(paymentUrl)
@@ -217,7 +210,7 @@ public class InitiateCustomPayment_IT extends CustomPaymentTestParent {
         given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(scaApproach));
         given(commonPaymentSpi.initiatePayment(any(SpiContextData.class), any(SpiPaymentInfo.class), any(SpiAspspConsentDataProvider.class)))
             .willReturn(PisCommonPaymentResponseBuilder.buildSpiPaymentInitiationResponse());
-        given(consentRestTemplate.exchange(any(String.class), any(HttpMethod.class), any(), any(Class.class), any(String.class)))
+        given(consentRestTemplate.exchange(anyString(), any(HttpMethod.class), any(), any(Class.class), anyString()))
             .willReturn(ResponseEntity.ok(Boolean.TRUE));
         given(pisCommonPaymentServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID, PaymentAuthorisationType.CREATED))
             .willReturn(CmsResponse.<AuthorisationScaApproachResponse>builder()

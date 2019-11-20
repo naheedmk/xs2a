@@ -23,6 +23,7 @@ import de.adorsys.psd2.xs2a.config.CorsConfigurationProperties;
 import de.adorsys.psd2.xs2a.config.WebConfig;
 import de.adorsys.psd2.xs2a.config.Xs2aEndpointPathConstant;
 import de.adorsys.psd2.xs2a.config.Xs2aInterfaceConfig;
+import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.integration.builder.UrlBuilder;
@@ -30,6 +31,7 @@ import de.adorsys.psd2.xs2a.integration.builder.payment.PisCommonPaymentResponse
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPaymentInfo;
+import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiGetPaymentStatusResponse;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +67,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     Xs2aEndpointPathConstant.class,
     Xs2aInterfaceConfig.class
 })
-public class GetCustomPayment_IT extends CustomPaymentTestParent {
+public class GetCustomPaymentStatusIT extends CustomPaymentTestParent {
 
     @Before
     public void init() {
@@ -75,70 +77,74 @@ public class GetCustomPayment_IT extends CustomPaymentTestParent {
     //Single
     @Test
     public void single_Xml() throws Exception {
-        getPayment(SINGLE_PAYMENT_TYPE, SINGLE_PAYMENT_CUSTOM_REQUEST_XML_PATH, MediaType.APPLICATION_XML);
+        getPaymentStatus(PaymentType.SINGLE, MediaType.APPLICATION_XML);
     }
 
     @Test
     public void single_Json() throws Exception {
-        getPayment(SINGLE_PAYMENT_TYPE, SINGLE_PAYMENT_CUSTOM_REQUEST_JSON_PATH, MediaType.APPLICATION_JSON);
+        getPaymentStatus(PaymentType.SINGLE, MediaType.APPLICATION_JSON);
     }
 
     //Periodic
     @Test
     public void periodic_Xml() throws Exception {
-        getPayment(PERIODIC_PAYMENT_TYPE, PERIODIC_PAYMENT_CUSTOM_REQUEST_XML_PATH, MediaType.APPLICATION_XML);
+        getPaymentStatus(PaymentType.PERIODIC, MediaType.APPLICATION_XML);
     }
 
     @Test
     public void periodic_Json() throws Exception {
-        getPayment(PERIODIC_PAYMENT_TYPE, PERIODIC_PAYMENT_CUSTOM_REQUEST_JSON_PATH, MediaType.APPLICATION_JSON);
+        getPaymentStatus(PaymentType.PERIODIC, MediaType.APPLICATION_JSON);
     }
 
     //Bulk
     @Test
     public void bulk_Xml() throws Exception {
-        getPayment(BULK_PAYMENT_TYPE, BULK_PAYMENT_CUSTOM_REQUEST_XML_PATH, MediaType.APPLICATION_XML);
+        getPaymentStatus(PaymentType.BULK, MediaType.APPLICATION_XML);
     }
 
     @Test
     public void bulk_Json() throws Exception {
-        getPayment(BULK_PAYMENT_TYPE, BULK_PAYMENT_CUSTOM_REQUEST_JSON_PATH, MediaType.APPLICATION_JSON);
+        getPaymentStatus(PaymentType.BULK, MediaType.APPLICATION_JSON);
     }
 
-    private void getPayment(PaymentType paymentType, String requestContentPath, MediaType mediaType) throws Exception {
+
+    private void getPaymentStatus(PaymentType paymentType, MediaType mediaType) throws Exception {
         // Given
-        HttpHeaders headers = mediaType == MediaType.APPLICATION_XML ? updateHeadersWithAcceptTypeXml(httpHeadersXml) : httpHeadersXml;
+        boolean isMediaTypeXml = mediaType == MediaType.APPLICATION_XML;
+        HttpHeaders headers = isMediaTypeXml ? updateHeadersWithAcceptTypeXml(httpHeadersXml) : httpHeadersXml;
+        String requestContentPath = isMediaTypeXml ? PAYMENT_CUSTOM_STATUS_RESPONSE_XML_PATH : PAYMENT_CUSTOM_STATUS_RESPONSE_JSON_PATH;
+
+        byte[] data = IOUtils.resourceToByteArray(requestContentPath);
 
         PisCommonPaymentResponse response = new PisCommonPaymentResponse();
         response.setPaymentType(paymentType);
         response.setPaymentProduct(CUSTOM_PAYMENT_PRODUCT);
         response.setTppInfo(TPP_INFO);
+        response.setPaymentData(data);
 
         SpiPaymentInfo spiPaymentInfo = new SpiPaymentInfo(CUSTOM_PAYMENT_PRODUCT);
-
-        byte[] data = IOUtils.resourceToByteArray(requestContentPath);
-        response.setPaymentData(data);
         spiPaymentInfo.setPaymentData(data);
-
-        given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(ScaApproach.EMBEDDED));
 
         given(pisCommonPaymentServiceEncrypted.getCommonPaymentById(ENCRYPT_PAYMENT_ID))
             .willReturn(CmsResponse.<PisCommonPaymentResponse>builder().payload(response).build());
-        given(commonPaymentSpi.getPaymentById(any(SpiContextData.class), anyString(), any(SpiPaymentInfo.class), any(SpiAspspConsentDataProvider.class)))
-            .willReturn(PisCommonPaymentResponseBuilder.buildGetPaymentResponse(spiPaymentInfo));
+
+        byte[] paymentStatusRaw = isMediaTypeXml ? data : null;
+        SpiGetPaymentStatusResponse buildGetPaymentStatusResponse = new SpiGetPaymentStatusResponse(TransactionStatus.RCVD, null, mediaType.toString(), paymentStatusRaw);
+        given(commonPaymentSpi.getPaymentStatusById(any(SpiContextData.class), anyString(), any(SpiPaymentInfo.class), any(SpiAspspConsentDataProvider.class)))
+            .willReturn(PisCommonPaymentResponseBuilder.buildGetPaymentStatusResponse(buildGetPaymentStatusResponse));
+
+        given(aspspProfileService.getScaApproaches()).willReturn(Collections.singletonList(ScaApproach.EMBEDDED));
 
         String content = IOUtils.resourceToString(requestContentPath, UTF_8);
-        String paymentUrl = UrlBuilder.buildGetPaymentUrl(paymentType.getValue(), CUSTOM_PAYMENT_PRODUCT, ENCRYPT_PAYMENT_ID);
+        String paymentUrl = UrlBuilder.buildGetTransactionStatusUrl(paymentType.getValue(), CUSTOM_PAYMENT_PRODUCT, ENCRYPT_PAYMENT_ID);
 
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(paymentUrl)
-                                                           .headers(headers)
-                                                           .content(content);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(paymentUrl).headers(headers);
         // When
         ResultActions resultActions = mockMvc.perform(requestBuilder);
 
-        //Then
-        ResultMatcher resultMatcher = mediaType == MediaType.APPLICATION_XML ? content().string(content) : content().json(content);
+        ResultMatcher resultMatcher = isMediaTypeXml ? content().string(content) : content().json(content);
 
+        //Then
         resultActions.andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(mediaType))
             .andExpect(resultMatcher);

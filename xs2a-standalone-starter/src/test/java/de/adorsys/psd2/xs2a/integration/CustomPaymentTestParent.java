@@ -29,20 +29,19 @@ import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
-import de.adorsys.psd2.xs2a.domain.ContentType;
 import de.adorsys.psd2.xs2a.integration.builder.AspspSettingsBuilder;
 import de.adorsys.psd2.xs2a.integration.builder.TppInfoBuilder;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.context.LoggingContextService;
 import de.adorsys.psd2.xs2a.spi.service.CommonPaymentSpi;
 import de.adorsys.psd2.xs2a.spi.service.SinglePaymentSpi;
-import de.adorsys.psd2.xs2a.web.validator.constants.Xs2aHeaderConstant;
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
@@ -56,28 +55,25 @@ import static org.mockito.BDDMockito.given;
 
 public abstract class CustomPaymentTestParent {
     protected static final Charset UTF_8 = StandardCharsets.UTF_8;
-    protected static final String TPP_REDIRECT_URI = "request/redirect_uri";
-    protected static final String TPP_NOK_REDIRECT_URI = "request/nok_redirect_uri";
-    protected HttpHeaders httpHeadersJson = new HttpHeaders();
-    protected HttpHeaders httpHeadersXml = new HttpHeaders();
-    protected MultiKeyMap responseMap = new MultiKeyMap();
+    static final String TPP_REDIRECT_URI = "request/redirect_uri";
+    static final String TPP_NOK_REDIRECT_URI = "request/nok_redirect_uri";
+    HttpHeaders httpHeadersJson = new HttpHeaders();
+    HttpHeaders httpHeadersXml = new HttpHeaders();
+    MultiKeyMap responseMap = new MultiKeyMap();
     protected static final TppInfo TPP_INFO = TppInfoBuilder.buildTppInfo();
-    protected static final String ENCRYPT_PAYMENT_ID = "DfLtDOgo1tTK6WQlHlb-TMPL2pkxRlhZ4feMa5F4tOWwNN45XLNAVfWwoZUKlQwb_=_bS6p6XvTWI";
-    protected static final PaymentType SINGLE_PAYMENT_TYPE = PaymentType.SINGLE;
-    protected static final PaymentType PERIODIC_PAYMENT_TYPE = PaymentType.PERIODIC;
-    protected static final PaymentType BULK_PAYMENT_TYPE = PaymentType.BULK;
-    protected static final String CUSTOM_PAYMENT_PRODUCT = "custom-payment";
+    static final String ENCRYPT_PAYMENT_ID = "DfLtDOgo1tTK6WQlHlb-TMPL2pkxRlhZ4feMa5F4tOWwNN45XLNAVfWwoZUKlQwb_=_bS6p6XvTWI";
+    static final String CUSTOM_PAYMENT_PRODUCT = "custom-payment";
     protected static final String AUTHORISATION_ID = "e8356ea7-8e3e-474f-b5ea-2b89346cb2dc";
-    protected static final ScaStatus SCA_STATUS = ScaStatus.RECEIVED;
-    protected static final TppRedirectUri TPP_REDIRECT_URIs = new TppRedirectUri(TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
-    protected static final String SINGLE_PAYMENT_CUSTOM_REQUEST_JSON_PATH = "/json/payment/req/SinglePaymentCustomInitiate_request.json";
-    protected static final String SINGLE_PAYMENT_CUSTOM_REQUEST_XML_PATH = "/xml/payment/spi/res/SinglePaymentCustomInitiate_request.xml";
-    protected static final String PERIODIC_PAYMENT_CUSTOM_REQUEST_XML_PATH = "/xml/payment/spi/res/PeriodicPaymentCustomInitiate_request.xml";
-    protected static final String PERIODIC_PAYMENT_CUSTOM_REQUEST_JSON_PATH = "/json/payment/req/PeriodicPaymentCustomInitiate_request.json";
-    protected static final String BULK_PAYMENT_CUSTOM_REQUEST_XML_PATH = "/xml/payment/spi/res/BulkPaymentCustomInitiate_request.xml";
-    protected static final String BULK_PAYMENT_CUSTOM_REQUEST_JSON_PATH = "/json/payment/req/BulkPaymentCustomInitiate_request.json";
-    protected static final String PAYMENT_CUSTOM_STATUS_RESPONSE_JSON_PATH = "/json/payment/req/SinglePaymentCustomStatus_response.json";
-    protected static final String PAYMENT_CUSTOM_STATUS_RESPONSE_XML_PATH = "/xml/payment/spi/res/SinglePaymentCustomStatus_response.xml";
+    static final ScaStatus SCA_STATUS = ScaStatus.RECEIVED;
+    static final TppRedirectUri TPP_REDIRECT_URIs = new TppRedirectUri(TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
+    static final String SINGLE_PAYMENT_CUSTOM_REQUEST_JSON_PATH = "/json/payment/req/SinglePaymentCustomInitiate_request.json";
+    static final String SINGLE_PAYMENT_CUSTOM_REQUEST_XML_PATH = "/xml/payment/spi/res/SinglePaymentCustomInitiate_request.xml";
+    static final String PERIODIC_PAYMENT_CUSTOM_REQUEST_XML_PATH = "/xml/payment/spi/res/PeriodicPaymentCustomInitiate_request.xml";
+    static final String PERIODIC_PAYMENT_CUSTOM_REQUEST_JSON_PATH = "/json/payment/req/PeriodicPaymentCustomInitiate_request.json";
+    static final String BULK_PAYMENT_CUSTOM_REQUEST_XML_PATH = "/xml/payment/spi/res/BulkPaymentCustomInitiate_request.xml";
+    static final String BULK_PAYMENT_CUSTOM_REQUEST_JSON_PATH = "/json/payment/req/BulkPaymentCustomInitiate_request.json";
+    static final String PAYMENT_CUSTOM_STATUS_RESPONSE_JSON_PATH = "/json/payment/req/SinglePaymentCustomStatus_response.json";
+    static final String PAYMENT_CUSTOM_STATUS_RESPONSE_XML_PATH = "/xml/payment/spi/res/SinglePaymentCustomStatus_response.xml";
 
     @Autowired
     protected MockMvc mockMvc;
@@ -117,10 +113,11 @@ public abstract class CustomPaymentTestParent {
         httpHeadersJson.setAll(headerMap);
         // when we use Explicit auth mode we need to set 'true' and value 'signingBasketSupported' in profile also should be 'true'
         httpHeadersJson.add("TPP-Explicit-Authorisation-Preferred", "true");
-        httpHeadersJson.add(Xs2aHeaderConstant.CONTENT_TYPE, ContentType.JSON.getType());
+        httpHeadersJson.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         httpHeadersXml.setAll(headerMap);
-        httpHeadersXml.add(Xs2aHeaderConstant.CONTENT_TYPE, ContentType.XML.getType());
+        httpHeadersXml.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
+
 
         responseMap.put(PaymentType.SINGLE, ScaApproach.EMBEDDED, "/json/payment/res/explicit/SinglePaymentCustomInitiate_embedded_explicit_response.json");
         responseMap.put(PaymentType.SINGLE, ScaApproach.REDIRECT, "/json/payment/res/explicit/SinglePaymentCustomInitiate_redirect_explicit_response.json");
@@ -151,7 +148,7 @@ public abstract class CustomPaymentTestParent {
     }
 
     protected HttpHeaders updateHeadersWithAcceptTypeXml(HttpHeaders httpHeaders) {
-        httpHeaders.add(Xs2aHeaderConstant.ACCEPT_TYPE, ContentType.XML.getType());
+        httpHeaders.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE);
         return httpHeaders;
     }
 }
