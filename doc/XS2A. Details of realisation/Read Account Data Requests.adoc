@@ -110,8 +110,6 @@ In case of bookingStatus equals "information", the query parameters dateFrom, da
 
 The standing order report is supported in JSON format only.
 
-image::ReadTransactionList.png[Read Transaction List, title='Confirmation of Funds Service (Read Transaction List)', align='center']
-
 ==== Report format
 TPP could specify preferable format (xml or JSON or text) for Read Transaction List by setting appropriate type in “Content Type" field. It will be validated on xs2a side. Further actions will be performed on the connector side.
 
@@ -123,5 +121,7 @@ Possible variants that may be received from SPI in getTransactionList request:
 * the standing order report is supported only in JSON format within this specification.
 
 From the TPP side the download can be initiated by accessing new endpoint in account controller - *GET /v1/accounts/{account-id}/transactions/download/{download-id}*. TPP should provide the AIS consent account ID and the download ID. As a response for accessing this endpoint, the TPP receives the stream with transaction list.
+
+image::ReadTransactionList.png[Read Transaction List, title='Read Transaction List', align='center']
 
 === Read Transaction Details
