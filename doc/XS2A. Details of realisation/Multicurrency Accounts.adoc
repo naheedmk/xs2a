@@ -5,9 +5,9 @@
 :toc: left
 
 toc::[]
-*Definition:* A multicurrency account is an account which is a collection of different sub- accounts which are all addressed by the same account identifier like an IBAN by e.g. payment initiating parties. The sub-accounts are legally different accounts and they all differ in their currency, balances and transactions. An account identifier like an IBAN together with a currency always addresses uniquely a sub-account of a multicurrency account.
+*Definition:* A multicurrency account is an account which is a collection of different sub-accounts which are all addressed by the same account identifier like an IBAN by e.g. payment initiating parties. The sub-accounts are legally different accounts and they all differ in their currency, balances and transactions. An account identifier like an IBAN together with a currency always addresses uniquely a sub-account of a multicurrency account.
 
-The specification supports to address multicurrency accounts either on collection or on sub- account level. The currency data attribute in the corresponding data structure "Account Reference" allows to build structures like:
+The specification supports to address multicurrency accounts either on collection or on sub-account level. The currency data attribute in the corresponding data structure "Account Reference" allows to build structures like:
 
 {"iban": "DE40100100103307118608"}
 
