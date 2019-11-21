@@ -68,9 +68,9 @@ Might be ignored if a delta function is used or if bookingStatus equals "inform
 |Optional if supported by API provider
 
 |This data attribute is indicating that the AISP is in favor to get all transactions after the transaction with identification entryReferenceFrom alternatively to the above defined period
-|If this data element is contained, the entries "dateFrom" and "dateTo" might be ignored by the ASPSP in case of a delta report is supported (ASPSP-profile contains parameter "entryReferenceFrom" = true).
+|If this data element is contained, the entries "dateFrom" and "dateTo" might be ignored by the ASPSP in case of a delta report is supported (ASPSP-profile contains parameter "entryReferenceFromSupported" = true).
 
- This delta indicator might be rejected by the ASPSP if this function is not supported (in ASPSP-profile "entryReferenceFrom" = false), in this case in response an error should be sent *"PARAMETER_NOT_SUPPORTED" HTTP code 400*
+ This delta indicator might be rejected by the ASPSP if this function is not supported (in ASPSP-profile "entryReferenceFromSupported" = false), in this case in response an error should be sent *"PARAMETER_NOT_SUPPORTED" HTTP code 400*
 
  If query parameters "dateFrom" and "dateTo", and "entryReference" are present in request, but "entryReferenceFromSupported"=false - response should contain transaction list for period "dateFrom" and "dateTo".
 |deltaList
@@ -79,7 +79,7 @@ Might be ignored if a delta function is used or if bookingStatus equals "inform
 |This data attribute is indicating that the AISP is in favor to get all transactions after the last report access for this PSU
 |If this data element is contained, the entries "dateFrom" and "dateTo" might be ignored by the ASPSP in case of a delta report is supported (ASPSP-profile contains parameter "deltaList " = true).
 
- This delta indicator might be rejected by the ASPSP if this function is not supported (in ASPSP-profile "deltaList" =false), in this case in response an error should be sent *"PARAMETER_NOT_SUPPORTED" HTTP code 400*
+ This delta indicator might be rejected by the ASPSP if this function is not supported (in ASPSP-profile "deltaListSupported" =false), in this case in response an error should be sent *"PARAMETER_NOT_SUPPORTED" HTTP code 400*
 
  If query parameters "dateFrom" and "dateTo", and "deltaList" are present in request, but "deltaListSupported"=false - response should contain transaction list for period "dateFrom" and "dateTo".
 4+|- Transaction List Response should contain parameter "entryReference" for every sent transaction (for both reports – with parameter “deltaList” and “entryReferenceFrom”, if supported by ASPSP)
