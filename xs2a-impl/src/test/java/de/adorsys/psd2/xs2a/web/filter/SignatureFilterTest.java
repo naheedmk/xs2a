@@ -24,6 +24,7 @@ import de.adorsys.psd2.xs2a.web.error.TppErrorMessageBuilder;
 import de.adorsys.psd2.xs2a.web.error.TppErrorMessageWriter;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.Before;
+import de.adorsys.psd2.xs2a.web.request.RequestPathResolver;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -48,6 +49,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @RunWith(MockitoJUnitRunner.class)
 public class SignatureFilterTest {
     private static final JsonReader jsonReader = new JsonReader();
+    private static final String XS2A_PATH = "/v1/accounts";
+    private static final String CUSTOM_PATH = "/custom-endpoint";
     private static final String URI = "/request-uri/example";
 
     private static final String POST_METHOD = "POST";
@@ -70,6 +73,8 @@ public class SignatureFilterTest {
     private SignatureVerifier signatureVerifier;
     @Mock
     private FilterChain chain;
+    @Mock
+    private RequestPathResolver requestPathResolver;
 
     private Map<String, String> headerMap = new HashMap();
 
@@ -241,6 +246,23 @@ public class SignatureFilterTest {
         verify(digestVerifier, times(0)).verify(any(), any());
         verify(signatureVerifier, times(0)).verify(any(), any(), any(), any(), any());
         assertThat(mockResponse.getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    @Test
+    public void doFilter_onCustomEndpoint_shouldSkipFilter() throws ServletException, IOException {
+        // Given
+        MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+        MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+
+        when(requestPathResolver.resolveRequestPath(mockRequest))
+            .thenReturn(CUSTOM_PATH);
+
+        // When
+        signatureFilter.doFilter(mockRequest, mockResponse, filterChain);
+
+        // Then
+        verify(filterChain).doFilter(mockRequest, mockResponse);
+        verifyZeroInteractions(aspspProfileServiceWrapper, requestProviderService);
     }
 
     private MockHttpServletRequest getCorrectRequest(Map<String, String> headerMap, String body, String method) {
