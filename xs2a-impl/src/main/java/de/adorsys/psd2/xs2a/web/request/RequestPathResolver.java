@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.integration;
+package de.adorsys.psd2.xs2a.web.request;
 
-import de.adorsys.psd2.xs2a.web.filter.ContentCachingWrappingFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * This filter duplicates the functionality of ContentCachingWrappingFilter, but doesn't actually checks whether the
- * requests comes from XS2A endpoint and applies it anyway
- */
-// TODO: remove this mock filter and properly enable XS2A filters for integration tests https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/815
 @Component
-public class MockContentCachingWrappingFilter extends ContentCachingWrappingFilter {
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return false;
+public class RequestPathResolver {
+    private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
+
+    public String resolveRequestPath(HttpServletRequest httpServletRequest) {
+        return URL_PATH_HELPER.getPathWithinApplication(httpServletRequest);
     }
 }
