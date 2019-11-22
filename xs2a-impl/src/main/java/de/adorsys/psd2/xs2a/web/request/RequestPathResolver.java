@@ -25,6 +25,12 @@ import javax.servlet.http.HttpServletRequest;
 public class RequestPathResolver {
     private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
 
+    /**
+     * Returns string representation of request path for the given request, without context path
+     *
+     * @param httpServletRequest request to extract path from
+     * @return request path
+     */
     public String resolveRequestPath(HttpServletRequest httpServletRequest) {
         return URL_PATH_HELPER.getPathWithinApplication(httpServletRequest);
     }
