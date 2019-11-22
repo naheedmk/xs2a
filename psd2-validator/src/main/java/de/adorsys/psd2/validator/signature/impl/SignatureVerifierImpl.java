@@ -32,15 +32,15 @@ public class SignatureVerifierImpl implements SignatureVerifier {
 
     @Override
     public boolean verify(String signature, String tppEncodedCert, Map<String, String> headers, String method, String url) {
-        Map<String, String> headersMap = RequestHeaders.fromMap(headers).toMap();
-
-        Signature signatureData = Signature.fromString(signature);
-
         X509Certificate certificate = X509CertUtils.parse(tppEncodedCert);
+
         if (certificate == null) {
             log.warn("TPP Certificate has not parsed!");
             return false;
         }
+
+        Map<String, String> headersMap = RequestHeaders.fromMap(headers).toMap();
+        Signature signatureData = Signature.fromString(signature);
 
         try {
             Verifier verifier = new Verifier(certificate.getPublicKey(), signatureData);

@@ -117,19 +117,19 @@ public class RequestHeaders {
                    .orElse(false);
     }
 
-    public Optional<String> get(String headerName) {
+    public Optional<String> getHeaderByName(String headerName) {
         return Optional.ofNullable(headers.get(headerNamesLowerCased.get(headerName.toLowerCase())));
     }
 
     public Optional<String> getAspspId() {
-        return get(X_GTW_ASPSP_ID);
+        return getHeaderByName(X_GTW_ASPSP_ID);
     }
 
     public Optional<String> getBankCode() {
-        return get(X_GTW_BANK_CODE);
+        return getHeaderByName(X_GTW_BANK_CODE);
     }
 
     public Optional<String> getBic() {
-        return get(X_GTW_BIC);
+        return getHeaderByName(X_GTW_BIC);
     }
 }

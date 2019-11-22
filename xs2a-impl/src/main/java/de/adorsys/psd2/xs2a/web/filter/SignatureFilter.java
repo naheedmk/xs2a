@@ -63,7 +63,6 @@ public class SignatureFilter extends AbstractXs2aFilter {
         }
 
         String digest = request.getHeader("digest");
-        String encodedCertificate = request.getHeader("tpp-signature-certificate");
         String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 
         boolean digestValid = digestVerifier.verify(digest, body);
@@ -79,6 +78,7 @@ public class SignatureFilter extends AbstractXs2aFilter {
         String signature = request.getHeader("signature");
         String method = request.getMethod();
         String url = request.getRequestURL().toString();
+        String encodedCertificate = request.getHeader("tpp-signature-certificate");
 
         boolean signatureValid = signatureVerifier.verify(signature, encodedCertificate, allHeaders, method, url);
         if (!signatureValid) {

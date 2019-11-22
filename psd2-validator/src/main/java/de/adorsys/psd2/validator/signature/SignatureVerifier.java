@@ -25,7 +25,7 @@ public interface SignatureVerifier {
      * Verifies signature compliance with incoming headers map and TPP-SIGNATURE-CERTIFICATE
      *
      * @param signature  generated value according Signing HTTP Messages
-     * @see <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/</a>
+     * @see <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/ > HTTP Signature </a>
      *
      * @param tppEncodedCert The certificate used for signing the request, in base64 encoding.
      * @param headers Map with all request header with their value

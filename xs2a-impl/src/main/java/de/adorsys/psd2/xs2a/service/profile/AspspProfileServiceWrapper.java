@@ -61,7 +61,7 @@ public class AspspProfileServiceWrapper {
      *
      * @return 'true' if tpp signature is required, 'false' if not
      */
-    public boolean getTppSignatureRequired() {
+    public Boolean getTppSignatureRequired() {
         return readAspspSettings().getCommon().isTppSignatureRequired();
     }
 
@@ -109,7 +109,7 @@ public class AspspProfileServiceWrapper {
      *
      * @return true if ASPSP supports Global consents, false if doesn't
      */
-    public boolean isGlobalConsentSupported() {
+    public Boolean isGlobalConsentSupported() {
         return readAspspSettings().getAis().getConsentTypes().isGlobalConsentSupported();
     }
 
