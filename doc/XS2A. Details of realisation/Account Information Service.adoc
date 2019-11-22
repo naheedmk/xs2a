@@ -220,6 +220,34 @@ Field *lastActionDate* - is containing the date of the last action on the consen
 * When consent is created and gets status "Received" - lastActionDate contains date of consent creation.
 * When consent status is changed - lastActionDate also is updated with new date.
 
+=== Additional Account Information
+The following rules and requirements for the support of this service apply.
+
+An ASPSP might require an agreement with the TPP to use this service.
+
+An ASPSP might differ in rules on different additional data types due e.g. to different  regulatory requirements.
+
+An ASPSP might require an explicit consent by the PSU to deliver this service.
+
+An ASPSP might limit this service to the case where the PSU equals the legal  account owner.
+
+An ASPSP might require consent by the account owner for an PSU within the ASPSP prior to enabling consenting possibility.
+
+ASPSP may decide whether to support additional account information or not, by setting the corresponding value for parameter in the ASPSP-Profile:
+
+* *accountOwnerInformationSupported* (boolean, default value is FALSE).
+During Consent creation in request the additional account information for AIS as *owner name* and *address information* can be asking.
+
+Optional field *"additionalAccountInformation"* of type *"Additional Information Access"* in the Consent Request:
+
+* is asking for additional information as added within this structured object. This data element might be ignored by the ASPSP if it is not supported (*"accountOwnerInformationSupported" = FALSE*). In this case it will not be part of the consent model which is generated through the call where this object is contained.
+* value of this parameter can be array or empty:
+** If the array is empty in the request, the TPP is asking for the account owner name of all accessible accounts.
+** If the array is empty, also the arrays for accounts, balances or transactions shall be empty if used.
+This should be passed to SPI together with consent object. Get Consent of received consent should respond with created consent.
+
+If additional account information is supported by ASPSP, then after authorisation of consent ASPSP will indicate additional account information in Account Details or empty array in Account Details (if consent right to have additional info is not confirmed for this PSU). And this state of consent should be responded on Get consent.
+
 === Account Identifier
 *aspspAccountId* - This field is a specific unique identifier for bank accounts used in payments, AIS, and PIIS consents (known to bank and given by bank) instead of IBAN and to give all consents for account by this identifier.
 
