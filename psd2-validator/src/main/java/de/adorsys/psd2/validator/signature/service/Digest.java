@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Provides generating hashed value according specification [RFC5843] (Additional Hash Algorithms for HTTP Instance Digests)
- * @see <a href="https://www.rfc-editor.org/rfc/pdfrfc/rfc5843.txt.pdf"> HTTP Instance Digests </a>
+ * @see <a href="https://www.rfc-editor.org/rfc/pdfrfc/rfc5843.txt.pdf">HTTP Instance Digests</a>
  *
  */
 public class Digest {
