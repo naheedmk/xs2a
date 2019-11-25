@@ -23,7 +23,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Provides generating hashed value according specification [RFC5843] (Additional Hash Algorithms for HTTP Instance Digests)
+ * Provides hashed value generation according to specification [RFC5843] (Additional Hash Algorithms for HTTP Instance Digests)
  * @see <a href="https://www.rfc-editor.org/rfc/pdfrfc/rfc5843.txt.pdf">HTTP Instance Digests</a>
  *
  */

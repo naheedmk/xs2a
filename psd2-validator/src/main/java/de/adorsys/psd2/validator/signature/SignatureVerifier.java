@@ -28,8 +28,8 @@ public interface SignatureVerifier {
      * @see <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures"> HTTP Signature </a>
      *
      * @param tppEncodedCert The certificate used for signing the request, in base64 encoding.
-     * @param headers Map with all request header with their value
-     * @param method Name of HTTP method according rfc1945 spec. (HTTP/1.0)
+     * @param headers Map with all request headers with their values
+     * @param method Name of HTTP method according to rfc1945 spec. (HTTP/1.0)
      * @param url URL form request
      * @return <code>true</code> if signature is compliance with other parameters. <code>false</code> otherwise.
      */

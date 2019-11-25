@@ -25,7 +25,7 @@ public interface DigestVerifier {
      *
      * @param digestHeader Request header which contains a Hash of the message body.
      * @param body Message body form request
-     * @return <code>true</code> if digest header is compliance with message body. <code>false</code> otherwise.
+     * @return <code>true</code> if digest header is compliant with message body. <code>false</code> otherwise.
      */
     boolean verify(@NonNull String digestHeader, @NonNull String body);
 }

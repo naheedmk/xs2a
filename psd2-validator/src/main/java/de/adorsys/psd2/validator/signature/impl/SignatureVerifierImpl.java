@@ -35,7 +35,7 @@ public class SignatureVerifierImpl implements SignatureVerifier {
         X509Certificate certificate = X509CertUtils.parse(tppEncodedCert);
 
         if (certificate == null) {
-            log.warn("TPP Certificate has not parsed!");
+            log.warn("TPP Certificate couldn't be parsed!");
             return false;
         }
 
