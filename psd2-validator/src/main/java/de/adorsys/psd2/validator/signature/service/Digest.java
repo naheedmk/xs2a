@@ -24,12 +24,12 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Provides generating hashed value according specification [RFC5843] (Additional Hash Algorithms for HTTP Instance Digests)
- * @see <a href="https://www.rfc-editor.org/rfc/pdfrfc/rfc5843.txt.pdf" > HTTP Instance Digests </a>
+ * @see <a href="https://www.rfc-editor.org/rfc/pdfrfc/rfc5843.txt.pdf"> HTTP Instance Digests </a>
  *
  */
 public class Digest {
     private String headerValue;
-    private final static String HEADER_NAME = "Digest";
+    private static final String HEADER_NAME = "Digest";
 
     private Digest(String headerValue) {
         this.headerValue = headerValue;
@@ -76,7 +76,7 @@ public class Digest {
          * @param encodingAlgorithm Algorithm for encoding output result after hashing. BASE64 sets as default.
          * @return prepared DigestBuilder with encodingAlgorithm
          */
-        public DigestBuilder encodingAlgorithm(EncodingAlgorithm encodingAlgorithm) {
+        DigestBuilder encodingAlgorithm(EncodingAlgorithm encodingAlgorithm) {
             this.encodingAlgorithm = encodingAlgorithm;
             return this;
         }
