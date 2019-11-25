@@ -50,17 +50,10 @@ public class RequestHeaders {
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String AUTHORIZATION = "Authorization";
     public static final String CORRELATION_ID = "Correlation-ID";
-    // gateway
-    public static final String X_GTW_ASPSP_ID = "X-GTW-ASPSP-ID";
-    public static final String X_GTW_BANK_CODE = "X-GTW-Bank-Code";
-    public static final String X_GTW_BIC = "X-GTW-BIC";
 
     private static Map<String, String> headerNamesLowerCased = new HashMap<>();
 
     static {
-        headerNamesLowerCased.put(X_GTW_ASPSP_ID.toLowerCase(), X_GTW_ASPSP_ID);
-        headerNamesLowerCased.put(X_GTW_BANK_CODE.toLowerCase(), X_GTW_BANK_CODE);
-        headerNamesLowerCased.put(X_GTW_BIC.toLowerCase(), X_GTW_BIC);
         headerNamesLowerCased.put(X_REQUEST_ID.toLowerCase(), X_REQUEST_ID);
         headerNamesLowerCased.put(PSU_IP_ADDRESS.toLowerCase(), PSU_IP_ADDRESS);
         headerNamesLowerCased.put(DIGEST.toLowerCase(), DIGEST);
@@ -119,17 +112,5 @@ public class RequestHeaders {
 
     public Optional<String> getHeaderByName(String headerName) {
         return Optional.ofNullable(headers.get(headerNamesLowerCased.get(headerName.toLowerCase())));
-    }
-
-    public Optional<String> getAspspId() {
-        return getHeaderByName(X_GTW_ASPSP_ID);
-    }
-
-    public Optional<String> getBankCode() {
-        return getHeaderByName(X_GTW_BANK_CODE);
-    }
-
-    public Optional<String> getBic() {
-        return getHeaderByName(X_GTW_BIC);
     }
 }
