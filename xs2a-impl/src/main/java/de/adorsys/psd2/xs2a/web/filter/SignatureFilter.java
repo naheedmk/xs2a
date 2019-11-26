@@ -23,7 +23,6 @@ import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.web.error.TppErrorMessageBuilder;
 import de.adorsys.psd2.xs2a.web.error.TppErrorMessageWriter;
-import lombok.RequiredArgsConstructor;
 import de.adorsys.psd2.xs2a.web.request.RequestPathResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
