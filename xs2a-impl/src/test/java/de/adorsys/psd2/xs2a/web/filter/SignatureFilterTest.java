@@ -21,6 +21,7 @@ import de.adorsys.psd2.validator.signature.SignatureVerifier;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.web.error.TppErrorMessageBuilder;
+import de.adorsys.psd2.xs2a.web.error.TppErrorMessageWriter;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +41,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -61,6 +62,8 @@ public class SignatureFilterTest {
     private RequestProviderService requestProviderService;
     @Mock
     private TppErrorMessageBuilder tppErrorMessageBuilder;
+    @Mock
+    private TppErrorMessageWriter tppErrorMessageWriter;
     @Mock
     private DigestVerifier digestVerifier;
     @Mock
@@ -102,7 +105,7 @@ public class SignatureFilterTest {
         // given
         MockHttpServletRequest mockRequest = getCorrectRequest(headerMap, body, POST_METHOD);
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
-        String fullUrl = mockRequest.getRequestURL().toString();
+        mockResponseCode(mockResponse, HttpServletResponse.SC_BAD_REQUEST);
 
         when(digestVerifier.verify(headerMap.get("digest"), body)).thenReturn(false);
 
@@ -120,6 +123,7 @@ public class SignatureFilterTest {
         MockHttpServletRequest mockRequest = getCorrectRequest(headerMap, body, POST_METHOD);
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
         String fullUrl = mockRequest.getRequestURL().toString();
+        mockResponseCode(mockResponse,HttpServletResponse.SC_UNAUTHORIZED);
 
         when(digestVerifier.verify(headerMap.get("digest"), body)).thenReturn(true);
         when(signatureVerifier.verify(headerMap.get("signature"), headerMap.get("tpp-signature-certificate"), headerMap, POST_METHOD, fullUrl)).thenReturn(false);
@@ -155,6 +159,7 @@ public class SignatureFilterTest {
         headerMap.remove("x-request-id");
         MockHttpServletRequest mockRequest = getCorrectRequest(headerMap, body, POST_METHOD);
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+        mockResponseCode(mockResponse,HttpServletResponse.SC_BAD_REQUEST);
 
         // when
         signatureFilter.doFilterInternal(mockRequest, mockResponse, chain);
@@ -172,6 +177,7 @@ public class SignatureFilterTest {
         headerMap.remove("signature");
         MockHttpServletRequest mockRequest = getCorrectRequest(headerMap, body, POST_METHOD);
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+        mockResponseCode(mockResponse,HttpServletResponse.SC_UNAUTHORIZED);
 
         // when
         signatureFilter.doFilterInternal(mockRequest, mockResponse, chain);
@@ -189,6 +195,7 @@ public class SignatureFilterTest {
         headerMap.remove("tpp-signature-certificate");
         MockHttpServletRequest mockRequest = getCorrectRequest(headerMap, body, POST_METHOD);
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+        mockResponseCode(mockResponse,HttpServletResponse.SC_BAD_REQUEST);
 
         // when
         signatureFilter.doFilterInternal(mockRequest, mockResponse, chain);
@@ -206,6 +213,7 @@ public class SignatureFilterTest {
         headerMap.remove("digest");
         MockHttpServletRequest mockRequest = getCorrectRequest(headerMap, body, POST_METHOD);
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+        mockResponseCode(mockResponse, HttpServletResponse.SC_BAD_REQUEST);
 
         // when
         signatureFilter.doFilterInternal(mockRequest, mockResponse, chain);
@@ -223,6 +231,7 @@ public class SignatureFilterTest {
         headerMap.remove("date");
         MockHttpServletRequest mockRequest = getCorrectRequest(headerMap, body, POST_METHOD);
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+        mockResponseCode(mockResponse, HttpServletResponse.SC_BAD_REQUEST);
 
         // when
         signatureFilter.doFilterInternal(mockRequest, mockResponse, chain);
@@ -243,6 +252,13 @@ public class SignatureFilterTest {
         headerMap.forEach(mockRequest::addHeader);
 
         return mockRequest;
+    }
+
+    private void mockResponseCode(MockHttpServletResponse mockResponse, int code) throws IOException {
+        doAnswer((i) -> {
+            mockResponse.setStatus(code);
+            return null;
+        }).when(tppErrorMessageWriter).writeError(eq(mockResponse), eq(code), any());
     }
 
     private void fillDefaultHeaders() {

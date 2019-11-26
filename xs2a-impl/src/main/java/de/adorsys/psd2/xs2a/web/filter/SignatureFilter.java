@@ -22,6 +22,7 @@ import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.web.error.TppErrorMessageBuilder;
+import de.adorsys.psd2.xs2a.web.error.TppErrorMessageWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +37,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static de.adorsys.psd2.validator.signature.service.RequestHeaders.*;
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 import static de.adorsys.psd2.xs2a.exception.MessageCategory.ERROR;
 
@@ -47,6 +50,7 @@ public class SignatureFilter extends AbstractXs2aFilter {
     private static final String PATTERN_MESSAGE = "InR-ID: [{}], X-Request-ID: [{}], TPP unauthorized: {}";
     private final AspspProfileServiceWrapper aspspProfileService;
     private final RequestProviderService requestProviderService;
+    private final TppErrorMessageWriter tppErrorMessageWriter;
     private final TppErrorMessageBuilder tppErrorMessageBuilder;
     private final DigestVerifier digestVerifier;
     private final SignatureVerifier signatureVerifier;
@@ -62,7 +66,7 @@ public class SignatureFilter extends AbstractXs2aFilter {
             return;
         }
 
-        String digest = request.getHeader("digest");
+        String digest = request.getHeader(DIGEST);
         String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 
         boolean digestValid = digestVerifier.verify(digest, body);
@@ -75,10 +79,10 @@ public class SignatureFilter extends AbstractXs2aFilter {
         }
 
         Map<String, String> allHeaders = obtainRequestHeaders(request);
-        String signature = request.getHeader("signature");
+        String signature = request.getHeader(SIGNATURE);
         String method = request.getMethod();
         String url = request.getRequestURL().toString();
-        String encodedCertificate = request.getHeader("tpp-signature-certificate");
+        String encodedCertificate = request.getHeader(TPP_SIGNATURE_CERTIFICATE);
 
         boolean signatureValid = signatureVerifier.verify(signature, encodedCertificate, allHeaders, method, url);
         if (!signatureValid) {
@@ -98,14 +102,14 @@ public class SignatureFilter extends AbstractXs2aFilter {
     }
 
     private boolean validateHeadersExist(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (StringUtils.isBlank(request.getHeader("x-request-id"))) {
+        if (StringUtils.isBlank(request.getHeader(X_REQUEST_ID))) {
             String errorText = "Header 'x-request-id' is missing in request.";
             log.info("InR-ID: [{}], TPP unauthorized: {}", requestProviderService.getInternalRequestId(), errorText);
             setResponseStatusAndErrorCode(response, FORMAT_ERROR);
             return false;
         }
 
-        if (StringUtils.isBlank(request.getHeader("signature"))) {
+        if (StringUtils.isBlank(request.getHeader(SIGNATURE))) {
             String errorText = "Header 'signature' is missing in request.";
             log.info(PATTERN_MESSAGE, requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(),
                      errorText);
@@ -113,22 +117,15 @@ public class SignatureFilter extends AbstractXs2aFilter {
             return false;
         }
 
-        StringBuilder errorMessages = new StringBuilder();
-        if (StringUtils.isBlank(request.getHeader("tpp-signature-certificate"))) {
-            errorMessages.append("Header 'tpp-signature-certificate' is missing in request.").append("\n");
-        }
+        StringBuilder otherErrorMessages = new StringBuilder();
 
-        if (StringUtils.isBlank(request.getHeader("digest"))) {
-            errorMessages.append("Header 'digest' is missing in request.").append("\n");
-        }
+        Stream.of(TPP_SIGNATURE_CERTIFICATE, DIGEST, DATE)
+            .filter(nm -> StringUtils.isBlank(request.getHeader(nm)))
+            .forEach(nm -> appendMessageError(otherErrorMessages, nm));
 
-        if (StringUtils.isBlank(request.getHeader("date"))) {
-            errorMessages.append("Header 'date' is missing in request.").append("\n");
-        }
-
-        if (errorMessages.length() > 0) {
+        if (otherErrorMessages.length() > 0) {
             log.info(PATTERN_MESSAGE, requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(),
-                     errorMessages.toString());
+                     otherErrorMessages.toString());
             setResponseStatusAndErrorCode(response, FORMAT_ERROR);
             return false;
         }
@@ -136,8 +133,14 @@ public class SignatureFilter extends AbstractXs2aFilter {
         return true;
     }
 
+    private void appendMessageError(StringBuilder errorMessages, String headerName) {
+        errorMessages.append("Header '")
+            .append(headerName)
+            .append("' is missing in request.")
+            .append("\n");
+    }
+
     private void setResponseStatusAndErrorCode(HttpServletResponse response, MessageErrorCode messageErrorCode) throws IOException {
-        response.setStatus(messageErrorCode.getCode());
-        response.getWriter().print(tppErrorMessageBuilder.buildTppErrorMessage(ERROR, messageErrorCode));
+        tppErrorMessageWriter.writeError(response, messageErrorCode.getCode(), tppErrorMessageBuilder.buildTppErrorMessage(ERROR, messageErrorCode));
     }
 }

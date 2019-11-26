@@ -18,7 +18,6 @@ package de.adorsys.psd2.validator.signature.service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class RequestHeaders {
     public static final String X_REQUEST_ID = "X-Request-ID";
@@ -102,15 +101,5 @@ public class RequestHeaders {
 
     public Map<String, String> toMap() {
         return new HashMap<>(headers);
-    }
-
-    public boolean isAcceptJson() {
-        return Optional.ofNullable(headers.get(ACCEPT))
-                   .map(a -> a.toLowerCase().startsWith("application/json"))
-                   .orElse(false);
-    }
-
-    public Optional<String> getHeaderByName(String headerName) {
-        return Optional.ofNullable(headers.get(headerNamesLowerCased.get(headerName.toLowerCase())));
     }
 }
