@@ -3,7 +3,15 @@
 == Table of Contents
 
 * Refactoring: Removed MockContentCachingWrappingFilter
+* Refactoring: Fixed syntax errors in CMS APIs
 
 == Refactoring: Removed MockContentCachingWrappingFilter
 
 From now on, integration tests in XS2A are working properly with all XS2A filters and no longer rely on previously existing `MockContentCachingWrappingFilter`.
+
+== Refactoring: Fixed syntax errors in CMS APIs
+
+From now on, all path parameters in Swagger definitions of endpoints from `consent-aspsp-web`, `consent-psu-web` and `consent-xs2a-web` modules are correctly marked as required.
+
+Additionally, `cms-aspsp-api` endpoint for getting information about TPP by its authorisation number with path parameter (`GET aspsp-api/v1/tpp/{tpp-id}`) has been deprecated, as the value passed in path wasn't being used.
+New endpoint without the path parameter (`GET aspsp-api/v1/tpp`) should be used instead.
