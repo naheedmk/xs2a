@@ -36,6 +36,7 @@ import no.difi.certvalidator.api.CertificateValidationException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -92,32 +93,37 @@ public class QwacCertificateFilter extends AbstractXs2aFilter {
         String encodedTppQwacCert = getEncodedTppQwacCert();
 
         if (StringUtils.isNotBlank(encodedTppQwacCert)) {
+            TppCertificateData tppCertificateData;
             try {
-                TppCertificateData tppCertificateData = CertificateExtractorUtil.extract(encodedTppQwacCert);
-                if (isCertificateExpired(tppCertificateData.getNotAfter())) {
-                    buildCertificateExpiredErrorResponse(response);
-                    return;
-                }
+                tppCertificateData = CertificateExtractorUtil.extract(encodedTppQwacCert);
+            } catch (CertificateValidationException e) {
+                buildCertificateInvalidNoAccessErrorResponse(response, e);
+                return;
+            }
 
+            if (isCertificateExpired(tppCertificateData.getNotAfter())) {
+                buildCertificateExpiredErrorResponse(response);
+                return;
+            }
+
+            try {
+                boolean checkTppRolesFromCertificate = aspspProfileService.isCheckTppRolesFromCertificateSupported();
                 TppInfo tppInfo = xs2aTppInfoMapper.mapToTppInfo(tppCertificateData);
                 String tppRolesAllowedHeader = requestProviderService.getTppRolesAllowedHeader();
                 boolean checkTppRolesFromHeader = StringUtils.isNotBlank(tppRolesAllowedHeader);
-                boolean checkTppRolesFromCertificate = aspspProfileService.isCheckTppRolesFromCertificateSupported();
                 if (checkTppRolesFromHeader) {
                     processTppRolesFromHeader(tppInfo, tppRolesAllowedHeader);
                 } else if (checkTppRolesFromCertificate) {
                     processTppRolesFromCertificate(tppInfo, tppCertificateData);
                 }
-
                 boolean checkTppRoles = checkTppRolesFromHeader || checkTppRolesFromCertificate;
                 if (checkTppRoles && !tppRoleValidationService.hasAccess(tppInfo, request)) {
                     buildRoleInvalidErrorResponse(response, tppCertificateData);
                     return;
                 }
-
                 tppInfoHolder.setTppInfo(tppInfo);
-            } catch (CertificateValidationException e) {
-                buildCertificateInvalidNoAccessErrorResponse(response, e);
+            } catch (ResourceAccessException exception) {
+                tppErrorMessageWriter.writeServiceUnavailableError(response, exception);
                 return;
             }
         }
