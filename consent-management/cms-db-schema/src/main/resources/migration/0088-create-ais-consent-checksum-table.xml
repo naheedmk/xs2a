@@ -37,10 +37,8 @@
             </column>
             <column name="checksum" type="${blob.type}"/>
             <column name="checksum_type" type="VARCHAR(30)"/>
-            <column name="values_order" type="INTEGER"/>
         </createTable>
 
-        <addPrimaryKey tableName="ais_consent_checksum" columnNames="ais_consent_id, values_order" constraintName="ais_consent_checksum_pk"/>
         <addForeignKeyConstraint baseTableName="ais_consent_checksum" baseColumnNames="ais_consent_id" constraintName="fk_checksum_ais_consent" referencedTableName="ais_consent"
                                  referencedColumnNames="id"/>
     </changeSet>
