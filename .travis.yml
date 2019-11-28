@@ -27,11 +27,11 @@ before_script:
 
 script:
   - env BUILD_NUMBER=$TRAVIS_BUILD_ID /bin/bash ./scripts/set_xs2a_connector_version_in_swagger.sh
-  - mvn -B -V -q clean install pmd:check || travis_terminate 1
+  - mvn -B -V -Dlogging.level.root=INFO clean install pmd:check || travis_terminate 1
   # JavaDocs are broken in Java 11 and fixed only in Java 12 : https://bugs.openjdk.java.net/browse/JDK-8212233
-  - if [ $TRAVIS_JDK_VERSION == openjdk8 ]; then mvn -B -V javadoc:javadoc; fi || travis_terminate 1
+  - if [ $TRAVIS_JDK_VERSION == openjdk8 ]; then mvn -B -V -Dlogging.level.root=INFO javadoc:javadoc; fi || travis_terminate 1
   # Sonar analysis shall be run only for one version of Java
-  - if [ $TRAVIS_JDK_VERSION == openjdk8 ]; then mvn -B -V -q sonar:sonar -Dsonar.projectKey=adorsys_xs2a; fi || travis_terminate 1
+  - if [ $TRAVIS_JDK_VERSION == openjdk8 ]; then mvn -B -V -Dlogging.level.root=INFO sonar:sonar -Dsonar.projectKey=adorsys_xs2a; fi || travis_terminate 1
   - docker run -it --rm -v $PWD:/src -w /src -u $(id -u ${USER}):$(id -g ${USER}) adorsys/arc42-tools
     sh -c "make pages" || travis_terminate 1
 
@@ -42,7 +42,7 @@ before_deploy:
 deploy:
   - cleanup: false
     provider: script
-    script: mvn -q --settings scripts/mvn-release-settings.xml -Prelease -DskipTests -B
+    script: mvn -Dlogging.level.root=INFO --settings scripts/mvn-release-settings.xml -Prelease -DskipTests -B
       -U deploy || travis_terminate 1
     on:
       repo: adorsys/xs2a
