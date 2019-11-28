@@ -44,7 +44,8 @@ before_deploy:
 deploy:
   - cleanup: false
     provider: script
-    script: mvn -q --settings scripts/mvn-release-settings.xml -Prelease -DskipTests -B
+    script: mvn --settings scripts/mvn-release-settings.xml -Prelease -Dlogging.level.root=warn -Dlogging.level.org.springframework.boot=warn 
+      -Dlogging.level.org.springframework.test=warn -Dlogging.level.org.hibernate=warn -Dlogging.level.de.adorsys=warn -DskipTests -B
       -U deploy || travis_terminate 1
     on:
       repo: adorsys/xs2a
