@@ -34,9 +34,7 @@ import de.adorsys.psd2.consent.repository.AisConsentAuthorisationRepository;
 import de.adorsys.psd2.consent.repository.AisConsentRepository;
 import de.adorsys.psd2.consent.repository.specification.AisConsentAuthorizationSpecification;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
-import de.adorsys.psd2.consent.service.AisConsentConfirmationExpirationService;
-import de.adorsys.psd2.consent.service.AisConsentRequestTypeService;
-import de.adorsys.psd2.consent.service.AisConsentUsageService;
+import de.adorsys.psd2.consent.service.*;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsPsuAuthorisationMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
@@ -83,6 +81,8 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     private final AisConsentRequestTypeService aisConsentRequestTypeService;
     private final CmsPsuAuthorisationMapper cmsPsuPisAuthorisationMapper;
     private final AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
+    private final ChecksumService checksumService;
+    private final ChecksumUpdatingRequestMapper checksumUpdatingRequestMapper;
 
     @Override
     @Transactional
@@ -267,6 +267,11 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
 
         consent.setExpireDate(request.getValidUntil());
         consent.setAllowedFrequencyPerDay(request.getFrequencyPerDay());
+
+        if (!checksumService.updateChecksum(consent, checksumUpdatingRequestMapper.toChecksumUpdatingRequest(request))) {
+            return false;
+        }
+
         aisConsentUsageService.resetUsage(consent);
         aisConsentRepository.save(consent);
         return true;

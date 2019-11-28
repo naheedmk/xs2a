@@ -22,6 +22,7 @@ import de.adorsys.psd2.consent.domain.AuthorisationTemplateEntity;
 import de.adorsys.psd2.consent.domain.InstanceDependableEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.TppInfoEntity;
+import de.adorsys.psd2.consent.domain.Checksum;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
@@ -170,6 +171,9 @@ public class AisConsent extends InstanceDependableEntity {
 
     @Column(name = "int_req_id")
     private String internalRequestId;
+
+    @Embedded
+    private Checksum checksum = new Checksum();
 
     @Transient
     private ConsentStatus previousConsentStatus;

@@ -1,0 +1,5 @@
+package de.adorsys.psd2.consent.service;
+
+public enum ChecksumType {
+    ACCOUNT_ACCESSES, ASPSP_ACCOUNT_ACCESSES, RECURRING_INDICATOR, VALID_UNTIL, FREQUENCY_PER_DAY, COMBINED_SERVICE_INDICATOR
+}

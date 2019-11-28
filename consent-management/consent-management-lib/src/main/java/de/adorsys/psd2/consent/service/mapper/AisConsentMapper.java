@@ -148,7 +148,7 @@ public class AisConsentMapper {
         return accesses;
     }
 
-    private AisAccountAccess mapToAisAccountAccess(AisConsent consent) {
+    public AisAccountAccess mapToAisAccountAccess(AisConsent consent) {
         List<TppAccountAccess> accesses = consent.getAccesses();
         return new AisAccountAccess(mapToInitialAccountReferences(accesses, TypeAccess.ACCOUNT),
                                     mapToInitialAccountReferences(accesses, TypeAccess.BALANCE),
@@ -167,7 +167,7 @@ public class AisConsentMapper {
                    .collect(Collectors.toList());
     }
 
-    private AisAccountAccess mapToAspspAisAccountAccess(AisConsent consent) {
+    public AisAccountAccess mapToAspspAisAccountAccess(AisConsent consent) {
         List<AspspAccountAccess> accesses = consent.getAspspAccountAccesses();
         return new AisAccountAccess(mapToAccountReferences(accesses, TypeAccess.ACCOUNT),
                                     mapToAccountReferences(accesses, TypeAccess.BALANCE),

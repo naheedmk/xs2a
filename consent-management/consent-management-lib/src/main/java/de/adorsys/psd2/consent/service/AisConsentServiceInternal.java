@@ -70,6 +70,7 @@ public class AisConsentServiceInternal implements AisConsentService {
     private final AisConsentUsageService aisConsentUsageService;
     private final AisConsentRequestTypeService aisConsentRequestTypeService;
     private final OneOffConsentExpirationService oneOffConsentExpirationService;
+    private final ChecksumService checksumService;
 
     /**
      * Creates AIS consent.
@@ -87,7 +88,24 @@ public class AisConsentServiceInternal implements AisConsentService {
                        .error(LOGICAL_ERROR)
                        .build();
         }
+
         AisConsent consent = createConsentFromRequest(request);
+
+
+        if (!checksumService.updateChecksum(consent, new ChecksumUpdatingRequest(
+            consentMapper.mapToAisAccountAccess(consent),
+            null,
+            consent.getExpireDate(),
+            consent.getAllowedFrequencyPerDay(),
+            consent.isCombinedServiceIndicator(),
+            consent.isRecurringIndicator()
+        ))) {
+            log.info("The checksum is invalid..."); //TODO: #449 Proper description, maybe add correct error handling
+            return CmsResponse.<CreateAisConsentResponse>builder()
+                       .error(LOGICAL_ERROR)
+                       .build();
+        }
+
         tppInfoRepository.findByAuthorisationNumber(request.getTppInfo().getAuthorisationNumber())
             .ifPresent(consent::setTppInfo);
 
@@ -298,23 +316,30 @@ public class AisConsentServiceInternal implements AisConsentService {
     @Override
     @Transactional
     public CmsResponse<AisAccountConsent> updateAspspAccountAccessWithResponse(String consentId, AisAccountAccessInfo request) {
-        Optional<AisAccountConsent> consentOptional = getActualAisConsent(consentId)
-                                                          .map(consent -> {
-                                                              consent.addAspspAccountAccess(new AspspAccountAccessHolder(request)
-                                                                                                .getAccountAccesses());
-                                                              return consentMapper.mapToAisAccountConsent(aisConsentRepository.save(consent));
-                                                          });
+        Optional<AisConsent> consentOptional = getActualAisConsent(consentId);
 
-        if (consentOptional.isPresent()) {
+        if (!consentOptional.isPresent()) {
+            log.info("Consent ID [{}]. Update aspsp account access with response failed, because consent not found",
+                     consentId);
             return CmsResponse.<AisAccountConsent>builder()
-                       .payload(consentOptional.get())
+                       .error(LOGICAL_ERROR)
                        .build();
         }
 
-        log.info("Consent ID [{}]. Update aspsp account access with response failed, because consent not found",
-                 consentId);
+        AisConsent consent = consentOptional.get();
+        consent.addAspspAccountAccess(new AspspAccountAccessHolder(request).getAccountAccesses());
+
+        if (!checksumService.updateChecksum(consent, ChecksumType.ASPSP_ACCOUNT_ACCESSES, consent.getAspspAccountAccesses().toString())) {
+            //TODO: #449 log correctly
+            return CmsResponse.<AisAccountConsent>builder()
+                       .error(LOGICAL_ERROR)
+                       .build();
+        }
+
+        ChecksumValue checksumValue = consent.getChecksum().getBy(ChecksumType.ASPSP_ACCOUNT_ACCESSES);
+
         return CmsResponse.<AisAccountConsent>builder()
-                   .error(LOGICAL_ERROR)
+                   .payload(consentMapper.mapToAisAccountConsent(aisConsentRepository.save(consent)))
                    .build();
     }
 
