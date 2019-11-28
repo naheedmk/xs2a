@@ -27,7 +27,7 @@ before_script:
 
 script:
   - env BUILD_NUMBER=$TRAVIS_BUILD_ID /bin/bash ./scripts/set_xs2a_connector_version_in_swagger.sh
-  - mvn -B -V -Dlogging.level.*=WARN clean install pmd:check || travis_terminate 1
+  - mvn -B -V -Dlogging.level.root=OFF -Dlogging.level.org.springframework=OFF clean install pmd:check || travis_terminate 1
   # JavaDocs are broken in Java 11 and fixed only in Java 12 : https://bugs.openjdk.java.net/browse/JDK-8212233
   - if [ $TRAVIS_JDK_VERSION == openjdk8 ]; then mvn -B -V -Dlogging.level.*=WARN javadoc:javadoc; fi || travis_terminate 1
   # Sonar analysis shall be run only for one version of Java
