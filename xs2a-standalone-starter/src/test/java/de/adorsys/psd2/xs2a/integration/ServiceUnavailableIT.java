@@ -35,6 +35,7 @@ import de.adorsys.psd2.xs2a.config.WebConfig;
 import de.adorsys.psd2.xs2a.config.Xs2aEndpointPathConstant;
 import de.adorsys.psd2.xs2a.config.Xs2aInterfaceConfig;
 import de.adorsys.psd2.xs2a.core.consent.AspspConsentData;
+import de.adorsys.psd2.xs2a.core.profile.NotificationSupportedMode;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
@@ -93,6 +94,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
@@ -328,7 +330,7 @@ public class ServiceUnavailableIT {
         AisAccountConsent aisAccountConsent = AisConsentBuilder.buildAisAccountConsent(DEDICATED_CONSENT_REQUEST_JSON_PATH, ScaApproach.EMBEDDED, ENCRYPT_CONSENT_ID, xs2aObjectMapper);
         givenReturnOrThrowException(
             aisConsentServiceEncrypted.createConsent(any(CreateAisConsentRequest.class)),
-            buildCmsResponse(new CreateAisConsentResponse(ENCRYPT_CONSENT_ID, aisAccountConsent)),
+            buildCmsResponse(new CreateAisConsentResponse(ENCRYPT_CONSENT_ID, aisAccountConsent, Arrays.asList(NotificationSupportedMode.LAST, NotificationSupportedMode.SCA))),
             throwException);
         givenReturnOrThrowException(
             aisConsentServiceEncrypted.updateAspspAccountAccessWithResponse(eq(ENCRYPT_CONSENT_ID), any(AisAccountAccessInfo.class)),
