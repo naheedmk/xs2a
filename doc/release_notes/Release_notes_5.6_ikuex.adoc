@@ -2,9 +2,9 @@
 
 == Table of Contents
 
-* Recoverability of xs2a remote components
+* Bugfix: Incorrect response when XS2A remote components are unavailable
 
-== Recoverability of xs2a remote components
+== Bugfix: Incorrect response when XS2A remote components are unavailable
 
-From now on, when TPP sends request and any of XS2A remote component (CMS, ASPSP Profile or Connector) is unavailable,
+From now on, when TPP sends request and some XS2A remote component (CMS, ASPSP Profile or Connector) is unavailable,
 TPP will receive `503 Service Unavailable` error with `SERVICE_UNAVAILABLE` code.
