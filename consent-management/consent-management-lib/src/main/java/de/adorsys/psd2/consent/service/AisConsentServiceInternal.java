@@ -24,10 +24,7 @@ import de.adorsys.psd2.consent.api.service.AisConsentService;
 import de.adorsys.psd2.consent.domain.AuthorisationTemplateEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.TppInfoEntity;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.domain.account.AisConsentAction;
-import de.adorsys.psd2.consent.domain.account.AspspAccountAccessHolder;
-import de.adorsys.psd2.consent.domain.account.TppAccountAccessHolder;
+import de.adorsys.psd2.consent.domain.account.*;
 import de.adorsys.psd2.consent.repository.AisConsentActionRepository;
 import de.adorsys.psd2.consent.repository.AisConsentRepository;
 import de.adorsys.psd2.consent.repository.TppInfoRepository;
@@ -328,14 +325,18 @@ public class AisConsentServiceInternal implements AisConsentService {
 
         AisConsent consent = consentOptional.get();
         consent.addAspspAccountAccess(new AspspAccountAccessHolder(request).getAccountAccesses());
+        List<AspspAccountAccess> aspspAccountAccesses = consent.getAspspAccountAccesses();
 
-        if (!checksumService.updateChecksum(consent, ChecksumType.ASPSP_ACCOUNT_ACCESSES, consent.getAspspAccountAccesses().toString())) {
-            //TODO: #449 log correctly
-            return CmsResponse.<AisAccountConsent>builder()
-                       .error(LOGICAL_ERROR)
-                       .build();
+        if(!aspspAccountAccesses.isEmpty()) {
+            if (!checksumService.updateChecksum(consent, ChecksumType.ASPSP_ACCOUNT_ACCESSES, consent.getAspspAccountAccesses().toString())) {
+                //TODO: #449 log correctly
+                return CmsResponse.<AisAccountConsent>builder()
+                           .error(LOGICAL_ERROR)
+                           .build();
+            }
         }
 
+        //TODO: Remove this line, just for debug purposes
         ChecksumValue checksumValue = consent.getChecksum().getBy(ChecksumType.ASPSP_ACCOUNT_ACCESSES);
 
         return CmsResponse.<AisAccountConsent>builder()

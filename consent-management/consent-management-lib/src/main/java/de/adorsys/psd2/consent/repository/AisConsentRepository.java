@@ -17,6 +17,7 @@
 package de.adorsys.psd2.consent.repository;
 
 import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.service.ChecksumValue;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
