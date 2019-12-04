@@ -16,20 +16,17 @@
 
 package de.adorsys.psd2.validator.signature.service;
 
-public final class Constants {
+public final class CertificateConstants {
     // separators:
     public static final String EQUALS_SIGN_SEPARATOR = "=";
-    public static final String COLON_SEPARATOR = ":";
     public static final String COMMA_SEPARATOR = ",";
-    public static final String QUOTE_SEPARATOR = "\"";
     public static final String SPACE_SEPARATOR = " ";
     public static final String HEXADECIMAL_SPACE_SEPARATOR = "%20";
-    public static final String LINE_BREAK_SEPARATOR = "\n";
 
     // certificates:
     public static final String CERTIFICATE_SERIAL_NUMBER_ATTRIBUTE = "SN";
     public static final String CERTIFICATION_AUTHORITY_ATTRIBUTE = "CA";
 
-    private Constants() {
+    private CertificateConstants() {
     }
 }

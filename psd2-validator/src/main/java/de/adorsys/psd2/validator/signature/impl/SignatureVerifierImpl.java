@@ -28,7 +28,7 @@ import org.tomitribe.auth.signatures.Verifier;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
-import static de.adorsys.psd2.validator.signature.service.Constants.*;
+import static de.adorsys.psd2.validator.signature.service.CertificateConstants.*;
 
 @Slf4j
 public class SignatureVerifierImpl implements SignatureVerifier {
