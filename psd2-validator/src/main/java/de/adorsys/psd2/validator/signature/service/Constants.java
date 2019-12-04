@@ -17,17 +17,6 @@
 package de.adorsys.psd2.validator.signature.service;
 
 public final class Constants {
-    // header names:
-    public static final String DIGEST_HEADER_NAME = "Digest";
-    public static final String SIGNATURE_HEADER_NAME = "Signature";
-    public static final String TPP_SIGNATURE_CERTIFICATE_HEADER_NAME = "TPP-Signature-Certificate";
-
-    // signature header attributes names:
-    public static final String KEY_ID_ATTRIBUTE_NAME = "keyId";
-    public static final String ALGORITHM_ATTRIBUTE_NAME = "algorithm";
-    public static final String HEADERS_ATTRIBUTE_NAME = "headers";
-    public static final String SIGNATURE_ATTRIBUTE_NAME = "signature";
-
     // separators:
     public static final String EQUALS_SIGN_SEPARATOR = "=";
     public static final String COLON_SEPARATOR = ":";
