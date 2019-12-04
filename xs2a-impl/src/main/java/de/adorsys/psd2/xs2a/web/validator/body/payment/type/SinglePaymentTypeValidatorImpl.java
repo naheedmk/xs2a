@@ -45,9 +45,9 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 @Component
 public class SinglePaymentTypeValidatorImpl extends AbstractBodyValidatorImpl implements PaymentTypeValidator {
 
-    PaymentMapper paymentMapper;
+    protected PaymentMapper paymentMapper;
     private AmountValidator amountValidator;
-    PaymentValidationConfig validationConfig;
+    protected PaymentValidationConfig validationConfig;
     private IbanValidator ibanValidator;
 
     @Autowired
