@@ -80,7 +80,8 @@ public class NewProfileConfigurationMapper {
                                                                                  setting.isCombinedServiceIndicator(),
                                                                                  setting.isSigningBasketSupported(),
                                                                                  true,
-                                                                                 Collections.singletonList(NotificationSupportedMode.NONE));
+                                                                                 Collections.singletonList(NotificationSupportedMode.NONE),
+                                                                                 false);
 
         NewProfileConfiguration result = new NewProfileConfiguration();
         result.setSetting(new NewBankProfileSetting(ais, pis, piis, common));

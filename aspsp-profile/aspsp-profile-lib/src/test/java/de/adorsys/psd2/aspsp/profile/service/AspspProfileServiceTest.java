@@ -85,6 +85,7 @@ public class AspspProfileServiceTest {
     private static final List<String> SUPPORTED_TRANSACTION_STATUS_FORMATS = Arrays.asList("application/json", "application/xml");
     private static final boolean IS_CHECK_TPP_ROLES_FROM_CERTIFICATE = true;
     private static final List<NotificationSupportedMode> ASPSP_NOTIFICATIONS_SUPPORTED = Collections.singletonList(NotificationSupportedMode.NONE);
+    private static final boolean AUTHORISATION_CONFIRMATION_REQUEST_MANDATED = false;
 
     @InjectMocks
     private AspspProfileServiceImpl aspspProfileService;
@@ -246,7 +247,8 @@ public class AspspProfileServiceTest {
                                                                                  AIS_PIS_SESSION_SUPPORTED,
                                                                                  SIGNING_BASKET_SUPPORTED,
                                                                                  IS_CHECK_TPP_ROLES_FROM_CERTIFICATE,
-                                                                                 ASPSP_NOTIFICATIONS_SUPPORTED);
+                                                                                 ASPSP_NOTIFICATIONS_SUPPORTED,
+                                                                                 AUTHORISATION_CONFIRMATION_REQUEST_MANDATED);
         return new BankProfileSetting(ais, pis, piis, common);
     }
 

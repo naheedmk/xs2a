@@ -373,4 +373,13 @@ public class AspspProfileServiceWrapper {
     public List<NotificationSupportedMode> getNotificationSupportedModes() {
         return readAspspSettings().getCommon().getAspspNotificationsSupported();
     }
+
+    /**
+     * Shows if the confirmation of authorisation supported.
+     *
+     * @return true if ASPSP supports confirmation of authorisation, false otherwise.
+     */
+    public boolean isAuthorisationConfirmationRequestMandated() {
+        return readAspspSettings().getCommon().isAuthorisationConfirmationRequestMandated();
+    }
 }
