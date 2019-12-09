@@ -50,4 +50,5 @@ public class CommonAspspProfileSetting {
     private boolean checkTppRolesFromCertificateSupported;
     private List<NotificationSupportedMode> aspspNotificationsSupported = new ArrayList<>();
     private boolean authorisationConfirmationRequestMandated;
+    private boolean authorisationConfirmationCheckByXs2a;
 }

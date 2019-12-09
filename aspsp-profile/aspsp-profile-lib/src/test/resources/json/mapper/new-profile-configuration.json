@@ -57,7 +57,8 @@
       "aspspNotificationsSupported": [
         "NONE"
       ],
-      "authorisationConfirmationRequestMandated": false
+      "authorisationConfirmationRequestMandated": false,
+      "authorisationConfirmationCheckByXs2a": false
     },
     "piis": {
       "piisConsentSupported": false

@@ -81,6 +81,7 @@ public class NewProfileConfigurationMapper {
                                                                                  setting.isSigningBasketSupported(),
                                                                                  true,
                                                                                  Collections.singletonList(NotificationSupportedMode.NONE),
+                                                                                 false,
                                                                                  false);
 
         NewProfileConfiguration result = new NewProfileConfiguration();

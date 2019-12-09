@@ -62,3 +62,4 @@ setting:
     aspspNotificationsSupported:
       - NONE
     authorisationConfirmationRequestMandated: FALSE
+    authorisationConfirmationCheckByXs2a: FALSE
