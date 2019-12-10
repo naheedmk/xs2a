@@ -1,0 +1,98 @@
+{
+  "instanceId": "UNDEFINED",
+  "id": 70,
+  "externalId": "ff379e3e-2eb7-4d0e-9e1b-e53bae11fcc6",
+  "psuData": {
+    "instanceId": "UNDEFINED",
+    "id": 49,
+    "psuId": "max.musterman",
+    "psuIdType": null,
+    "psuCorporateId": null,
+    "psuCorporateIdType": null
+  },
+  "consent": {
+    "instanceId": "UNDEFINED",
+    "id": 49,
+    "externalId": "077bb594-282a-49ba-9d43-68ae850fe96d",
+    "recurringIndicator": true,
+    "tppRedirectPreferred": false,
+    "combinedServiceIndicator": false,
+    "requestDateTime": "2019-12-10T15:37:41.968",
+    "lastActionDate": "2019-12-10",
+    "expireDate":  "2021-10-10",
+    "psuDataList": [
+      {
+        "instanceId": "UNDEFINED",
+        "id": 49,
+        "psuId": "max.musterman",
+        "psuIdType": null,
+        "psuCorporateId": null,
+        "psuCorporateIdType": null
+      }
+    ],
+    "tppInfo": {
+      "instanceId": "UNDEFINED",
+      "id": 1,
+      "authorisationNumber": "PSDDE-FAKENCA-87B2AC",
+      "tppName": "",
+      "tppRoles": [
+        "AISP",
+        "PISP",
+        "PIISP"
+      ],
+      "authorityId": "DE-FAKENCA",
+      "authorityName": "Trust Service Provider AG",
+      "country": "Germany",
+      "organisation": "Fictional Corporation AG",
+      "organisationUnit": "Information Technology",
+      "city": "Nuremberg",
+      "state": "Bayern"
+    },
+    "authorisationTemplate": {
+      "id": 49,
+      "redirectUri": "",
+      "nokRedirectUri": "",
+      "cancelRedirectUri": null,
+      "cancelNokRedirectUri": null
+    },
+    "tppNotificationUri": null,
+    "tppNotificationContentPreferred": [],
+    "consentStatus": "VALID",
+    "consentType": "AIS",
+    "allowedFrequencyPerDay": 4,
+    "tppFrequencyPerDay": 10,
+    "usages": [],
+    "accesses": [],
+    "aspspAccountAccesses": [],
+    "aisConsentRequestType": "ALL_AVAILABLE_ACCOUNTS",
+    "creationTimestamp":  "2019-12-10T15:37:41.968+02:00",
+    "availableAccounts": "allAccounts",
+    "allPsd2": null,
+    "availableAccountsWithBalance": null,
+    "multilevelScaRequired": false,
+    "statusChangeTimestamp": "2019-12-10T15:38:10.607+02:00",
+    "ownerNameType": "NONE",
+    "ownerAddressType": "NONE",
+    "internalRequestId": "c3444243-0b21-479b-9df7-b24ddb935d22",
+    "checksum": "MDAxXyVfUFBoY3hZelZ5cU1kL1BhQS9peXMyR1pFL0d3OGdxeUh5MmRjcGlEWE00bGIvK2o4MFgyWmhKUjhIR2tvamQyMURKUUNSTGY2STV0VjQwdmdjUWdicHc9PQ==",
+    "previousConsentStatus": "VALID"
+  },
+  "scaStatus": "scaMethodSelected",
+  "authenticationMethodId": "V-WqTJ0rS3spOgN7xO5fw8",
+  "scaAuthenticationData": null,
+  "redirectUrlExpirationTimestamp": "2019-12-11T15:37:45.104+02:00",
+  "authorisationExpirationTimestamp": "2019-12-11T15:37:45.104+02:00",
+  "tppOkRedirectUri": "",
+  "tppNokRedirectUri": "",
+  "availableScaMethods": [
+    {
+      "authenticationMethodId": "V-WqTJ0rS3spOgN7xO5fw8",
+      "decoupled": false
+    },
+    {
+      "authenticationMethodId": "_NQxkforRUMgsgia47amR0",
+      "decoupled": false
+    }
+  ],
+  "scaApproach": "EMBEDDED"
+}

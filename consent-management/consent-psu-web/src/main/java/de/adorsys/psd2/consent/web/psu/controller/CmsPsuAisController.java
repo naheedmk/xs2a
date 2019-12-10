@@ -303,4 +303,25 @@ public class CmsPsuAisController {
                    .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping(path = "/authorisation/{authorisation-id}/confirmation-code")
+    @ApiOperation(value = "Store sca authorisation data in authorisation")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 408, message = "Request Timeout", response = CmsAisConsentResponse.class)
+    })
+    public ResponseEntity setScaAuthenticationData(
+        @ApiParam(name = CmsConstant.PATH.AUTHORISATION_ID, value = "The authorisation identifier of the current authorisation session", example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7", required = true)
+        @PathVariable(CmsConstant.PATH.AUTHORISATION_ID) String authorisationId,
+        @RequestHeader(value = CmsConstant.HEADERS.INSTANCE_ID, required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId,
+        @RequestBody(required = false) AuthenticationDataHolder authenticationDataHolder) {
+
+        try {
+            return cmsPsuAisService.setScaAuthenticationData(authorisationId, authenticationDataHolder, instanceId)
+                       ? ResponseEntity.ok().build()
+                       : ResponseEntity.badRequest().build();
+        } catch (AuthorisationIsExpiredException e) {
+            return new ResponseEntity<>(new CmsAisConsentResponse(e.getNokRedirectUri()), HttpStatus.REQUEST_TIMEOUT);
+        }
+    }
 }

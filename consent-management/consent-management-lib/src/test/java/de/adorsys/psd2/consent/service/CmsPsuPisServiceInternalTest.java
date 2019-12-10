@@ -45,6 +45,7 @@ import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.AuthenticationDataHolder;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
+import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,6 +55,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
@@ -61,6 +63,8 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
 
+import static de.adorsys.psd2.xs2a.core.pis.TransactionStatus.RJCT;
+import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.SCAMETHODSELECTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -83,6 +87,8 @@ public class CmsPsuPisServiceInternalTest {
     private static final PaymentAuthorisationType AUTHORISATION_TYPE_CREATED = PaymentAuthorisationType.CREATED;
     private static final String METHOD_ID = "SMS";
     private static final String AUTHENTICATION_DATA = "123456";
+    private JsonReader jsonReader = new JsonReader();
+    private static final AuthenticationDataHolder AUTHENTICATION_DATA_HOLDER = new AuthenticationDataHolder("method id ", "123456");
 
     @InjectMocks
     private CmsPsuPisServiceInternal cmsPsuPisServiceInternal;
@@ -150,7 +156,7 @@ public class CmsPsuPisServiceInternalTest {
     }
 
     @Test(expected = AuthorisationIsExpiredException.class)
-    public void updatePsuInPayment_athorisationIsExpired() throws AuthorisationIsExpiredException {
+    public void updatePsuInPayment_authorisationIsExpired() throws AuthorisationIsExpiredException {
         // Given
         when(pisAuthorisationSpecification.byExternalIdAndInstanceId(AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
@@ -394,7 +400,7 @@ public class CmsPsuPisServiceInternalTest {
         // Given
 
         // When
-        boolean actualResult = cmsPsuPisServiceInternal.updateAuthorisationStatus(PSU_ID_DATA, PAYMENT_ID, FINALISED_AUTHORISATION_ID, ScaStatus.SCAMETHODSELECTED, DEFAULT_SERVICE_INSTANCE_ID, authenticationDataHolder);
+        boolean actualResult = cmsPsuPisServiceInternal.updateAuthorisationStatus(PSU_ID_DATA, PAYMENT_ID, FINALISED_AUTHORISATION_ID, SCAMETHODSELECTED, DEFAULT_SERVICE_INSTANCE_ID, authenticationDataHolder);
 
         // Then
         assertFalse(actualResult);
@@ -511,6 +517,84 @@ public class CmsPsuPisServiceInternalTest {
             .byExternalIdAndInstanceId(WRONG_AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID);
     }
 
+    @Test
+    public void setScaAuthenticationData_success() throws AuthorisationIsExpiredException {
+        // given
+        PisAuthorization expectedAuthorization = buildPisAuthorisation();
+        expectedAuthorization.setScaStatus(ScaStatus.SCAMETHODSELECTED);
+
+        when(pisAuthorisationRepository.findOne(any())).thenReturn(Optional.of(expectedAuthorization));
+        expectedAuthorization.setScaAuthenticationData(AUTHENTICATION_DATA_HOLDER.getAuthenticationData());
+
+        // when
+        boolean actualResult = cmsPsuPisServiceInternal.setScaAuthenticationData(AUTHORISATION_ID, AUTHENTICATION_DATA_HOLDER, DEFAULT_SERVICE_INSTANCE_ID);
+
+        // then
+        assertThat(actualResult).isTrue();
+        verify(pisAuthorisationRepository, times(1)).save(expectedAuthorization);
+    }
+
+    @Test
+    public void setScaAuthenticationData_authorisationNotFound() throws AuthorisationIsExpiredException {
+        // given
+        when(pisAuthorisationRepository.findOne(any())).thenReturn(Optional.empty());
+
+        // when
+        boolean actualResult = cmsPsuPisServiceInternal.setScaAuthenticationData(AUTHORISATION_ID, AUTHENTICATION_DATA_HOLDER, DEFAULT_SERVICE_INSTANCE_ID);
+
+        // then
+        assertThat(actualResult).isFalse();
+        verify(pisAuthorisationRepository, times(0)).save(any());
+    }
+
+    @Test
+    public void setScaAuthenticationData_paymentIsFinalized() throws AuthorisationIsExpiredException {
+        // given
+        PisAuthorization authorization = buildPisAuthorisation();
+        PisCommonPaymentData payment = authorization.getPaymentData();
+        payment.setTransactionStatus(TransactionStatus.RJCT);
+
+        when(pisAuthorisationRepository.findOne(any())).thenReturn(Optional.of(authorization));
+
+        // when
+        boolean actualResult = cmsPsuPisServiceInternal.setScaAuthenticationData(AUTHORISATION_ID, AUTHENTICATION_DATA_HOLDER, DEFAULT_SERVICE_INSTANCE_ID);
+
+        // then
+        assertThat(actualResult).isFalse();
+        verify(pisAuthorisationRepository, times(0)).save(any());
+    }
+
+    @Test(expected = AuthorisationIsExpiredException.class)
+    public void setScaAuthenticationData_authorisationIsExpired() throws AuthorisationIsExpiredException {
+        // given
+        PisAuthorization authorization = buildPisAuthorisation();
+        authorization.setAuthorisationExpirationTimestamp(LocalDateTime.now().minusDays(1).atOffset(ZoneOffset.UTC));
+
+        when(pisAuthorisationRepository.findOne(any())).thenReturn(Optional.of(authorization));
+
+        // when
+        cmsPsuPisServiceInternal.setScaAuthenticationData(AUTHORISATION_ID, AUTHENTICATION_DATA_HOLDER, DEFAULT_SERVICE_INSTANCE_ID);
+
+        // then
+        verify(pisAuthorisationRepository, times(0)).save(any());
+    }
+
+    @Test
+    public void setScaAuthenticationData_authorisationIsReceived() throws AuthorisationIsExpiredException {
+        // given
+        PisAuthorization authorization = buildPisAuthorisation();
+        authorization.setScaStatus(ScaStatus.RECEIVED);
+
+        when(pisAuthorisationRepository.findOne(any())).thenReturn(Optional.of(authorization));
+
+        // when
+        boolean actualResult = cmsPsuPisServiceInternal.setScaAuthenticationData(AUTHORISATION_ID, AUTHENTICATION_DATA_HOLDER, DEFAULT_SERVICE_INSTANCE_ID);
+
+        // then
+        assertThat(actualResult).isFalse();
+        verify(pisAuthorisationRepository, times(0)).save(any());
+    }
+
     private PsuIdData buildPsuIdData() {
         return new PsuIdData(
             "psuId",
@@ -581,7 +665,7 @@ public class CmsPsuPisServiceInternalTest {
 
     private PisCommonPaymentData buildFinalisedPisCommonPaymentData() {
         PisCommonPaymentData pisCommonPaymentData = new PisCommonPaymentData();
-        pisCommonPaymentData.setTransactionStatus(TransactionStatus.RJCT);
+        pisCommonPaymentData.setTransactionStatus(RJCT);
         pisCommonPaymentData.setPsuDataList(Collections.singletonList(buildPsuData()));
         pisCommonPaymentData.setPaymentType(PaymentType.SINGLE);
         pisCommonPaymentData.setPaymentProduct(PAYMENT_PRODUCT);

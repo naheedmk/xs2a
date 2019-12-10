@@ -290,7 +290,12 @@ public class AisAuthorisationServiceInternal implements AisConsentAuthorisationS
             aisConsentAuthorisation.setAuthenticationMethodId(request.getAuthenticationMethodId());
         }
 
+        if (ScaStatus.FINALISED == request.getScaStatus()) {
+            aisConsentAuthorisation.setScaAuthenticationData(request.getScaAuthenticationData());
+        }
+
         aisConsentAuthorisation.setScaStatus(request.getScaStatus());
+
         aisConsentAuthorisation = aisConsentAuthorisationRepository.save(aisConsentAuthorisation);
 
         return CmsResponse.<Boolean>builder()

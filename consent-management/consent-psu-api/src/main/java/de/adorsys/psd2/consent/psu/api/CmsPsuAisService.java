@@ -150,4 +150,14 @@ public interface CmsPsuAisService {
      * @return <code>true</code> if consent was found and status was updated. <code>false</code> otherwise.
      */
     boolean authorisePartiallyConsent(@NotNull String consentId, @NotNull String instanceId);
+
+    /**
+     * Saves a scaAuthenticationData of AIS Consent Authorisation by its ID and Authorisation ID
+     *
+     * @param authorisationId ID of authorisation
+     * @param authenticationDataHolder chosen method ID and authentication data
+     * @param instanceId         optional ID of particular service instance
+     * @return <code>true</code> if authorisation was found and scaAuthenticationData was updated. <code>false</code> otherwise.
+     */
+    boolean setScaAuthenticationData(@NotNull String authorisationId, @NotNull  AuthenticationDataHolder authenticationDataHolder, @NotNull String instanceId) throws AuthorisationIsExpiredException;
 }

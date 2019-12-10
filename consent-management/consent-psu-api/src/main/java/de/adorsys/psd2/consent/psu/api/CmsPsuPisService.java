@@ -112,4 +112,14 @@ public interface CmsPsuPisService {
      * @return list of info objects about psu data and authorisation scaStatuses
      */
     Optional<List<CmsPisPsuDataAuthorisation>> getPsuDataAuthorisations(@NotNull String paymentId, @NotNull String instanceId);
+
+    /**
+     * Sets a scaAuthenticationData of PIS Authorisation by its ID and Authorisation ID
+     *
+     * @param authorisationId ID of authorisation
+     * @param authenticationDataHolder chosen method ID and authentication data
+     * @param instanceId         optional ID of particular service instance
+     * @return <code>true</code> if authorisation was found and scaAuthenticationData was updated. <code>false</code> otherwise.
+     */
+    boolean setScaAuthenticationData(@NotNull String authorisationId, @NotNull  AuthenticationDataHolder authenticationDataHolder, @NotNull String instanceId) throws AuthorisationIsExpiredException;
 }

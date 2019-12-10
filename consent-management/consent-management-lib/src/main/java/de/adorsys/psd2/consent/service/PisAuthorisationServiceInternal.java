@@ -567,6 +567,11 @@ public class PisAuthorisationServiceInternal implements PisAuthorisationService 
                 pisAuthorisation.setChosenScaMethod(chosenMethod);
             }
         }
+
+        if (ScaStatus.FINALISED == request.getScaStatus()) {
+            pisAuthorisation.setScaAuthenticationData(request.getScaAuthenticationData());
+        }
+
         pisAuthorisation.setScaStatus(request.getScaStatus());
         PisAuthorization saved = pisAuthorisationRepository.save(pisAuthorisation);
         return saved.getScaStatus();

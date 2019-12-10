@@ -220,6 +220,40 @@ public class CmsPsuPisServiceInternal implements CmsPsuPisService {
                    .map(this::getPsuDataAuthorisations);
     }
 
+    @Override
+    @Transactional
+    public boolean setScaAuthenticationData(@NotNull String authorisationId, @NotNull AuthenticationDataHolder authenticationDataHolder, @NotNull String instanceId) throws AuthorisationIsExpiredException {
+        Optional<PisAuthorization> pisAuthorisation = getAuthorisationByExternalId(authorisationId, instanceId);
+
+        if (!pisAuthorisation.isPresent()) {
+            log.info("Authorisation ID [{}], Instance ID: [{}]. Update authorisation status failed, because authorisation not found.",
+                     authorisationId, instanceId);
+            return false;
+        }
+
+        PisAuthorization authorisation = pisAuthorisation.get();
+
+        boolean paymentActual = Optional.ofNullable(authorisation.getPaymentData())
+                                    .map(PisCommonPaymentData::getTransactionStatus)
+                                    .map(st -> !st.isFinalisedStatus())
+                                    .orElse(false);
+        if (!paymentActual) {
+            log.info("Setting of sca authentication data failed, because payment either has finalised status or not found.");
+            return false;
+        }
+
+        if (authorisation.getScaStatus() != ScaStatus.SCAMETHODSELECTED) {
+            log.info("Setting of sca authentication data failed, because authorisation has wrong status.");
+            return false;
+        }
+
+        authorisation.setScaAuthenticationData(authenticationDataHolder.getAuthenticationData());
+
+        pisAuthorisationRepository.save(authorisation);
+
+        return true;
+    }
+
     @NotNull
     private List<CmsPisPsuDataAuthorisation> getPsuDataAuthorisations(List<PisAuthorization> authorisations) {
         return authorisations.stream()
