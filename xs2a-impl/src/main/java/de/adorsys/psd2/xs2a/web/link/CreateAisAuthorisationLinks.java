@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.web.link;
 
 import de.adorsys.psd2.xs2a.core.profile.ScaRedirectFlow;
+import de.adorsys.psd2.xs2a.domain.HrefType;
 import de.adorsys.psd2.xs2a.domain.consent.CreateConsentAuthorizationResponse;
 import de.adorsys.psd2.xs2a.service.RedirectIdService;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
@@ -29,7 +30,8 @@ public class CreateAisAuthorisationLinks extends AbstractLinks {
 
     public CreateAisAuthorisationLinks(String httpUrl, CreateConsentAuthorizationResponse response,
                                        ScaApproachResolver scaApproachResolver, RedirectLinkBuilder redirectLinkBuilder,
-                                       RedirectIdService redirectIdService, ScaRedirectFlow scaRedirectFlow) {
+                                       RedirectIdService redirectIdService, ScaRedirectFlow scaRedirectFlow,
+                                       boolean authorisationConfirmationRequestMandated) {
         super(httpUrl);
 
         String consentId = response.getConsentId();
@@ -45,6 +47,11 @@ public class CreateAisAuthorisationLinks extends AbstractLinks {
                                           : redirectLinkBuilder.buildConsentScaRedirectLink(consentId, redirectId, response.getInternalRequestId());
 
             setScaRedirectOAuthLink(scaRedirectFlow, consentOauthLink);
+
+            if (authorisationConfirmationRequestMandated) {
+                setConfirmation(new HrefType(redirectLinkBuilder.buildAisConfirmationLink(consentId, redirectId)));
+            }
+
         } else {
             setUpdatePsuAuthentication(buildPath(UrlHolder.AIS_AUTHORISATION_URL, consentId, authorisationId));
         }
