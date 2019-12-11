@@ -30,6 +30,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.OffsetDateTime;
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -54,7 +55,7 @@ public class SpiToXs2aPaymentInfoMapperTest {
         spiPaymentInfo.setPaymentType(PaymentType.SINGLE);
         spiPaymentInfo.setStatus(TransactionStatus.ACSP);
         spiPaymentInfo.setStatusChangeTimestamp(OFFSET_DATE_TIME);
-        spiPaymentInfo.setPsuDataList(Collections.singletonList(new SpiPsuData("psuId", "", "", "", "")));
+        spiPaymentInfo.setPsuDataList(Collections.singletonList(new SpiPsuData("psuId", "", "", "", "", "", "", "", "", "", "", "", "", UUID.randomUUID())));
         spiPaymentInfo.setPaymentData(PAYMENT_DATA);
 
         CommonPayment commonPayment = mapper.mapToXs2aPaymentInfo(spiPaymentInfo);

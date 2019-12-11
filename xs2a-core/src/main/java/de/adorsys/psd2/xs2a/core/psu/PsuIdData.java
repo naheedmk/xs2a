@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.core.psu;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +42,25 @@ public class PsuIdData {
     @Nullable
     private String psuCorporateIdType;
 
+    @NonFinal
+    private AdditionalPsuIdData additionalPsuIdData;
+
+    public PsuIdData() {
+        this(null, null, null, null);
+    }
+
+    public PsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType) {
+        this.psuId = psuId;
+        this.psuIdType = psuIdType;
+        this.psuCorporateId = psuCorporateId;
+        this.psuCorporateIdType = psuCorporateIdType;
+    }
+
+    public PsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType, AdditionalPsuIdData additionalPsuIdData) {
+        this(psuId, psuIdType, psuCorporateId, psuCorporateIdType);
+        this.additionalPsuIdData = additionalPsuIdData;
+    }
+
     public boolean contentEquals(PsuIdData otherPsuIdData) {
         if (Objects.isNull(otherPsuIdData)) {
             return false;
@@ -50,6 +70,10 @@ public class PsuIdData {
                    && StringUtils.equals(this.getPsuCorporateId(), otherPsuIdData.getPsuCorporateId())
                    && StringUtils.equals(this.getPsuCorporateIdType(), otherPsuIdData.getPsuCorporateIdType())
                    && StringUtils.equals(this.getPsuIdType(), otherPsuIdData.getPsuIdType());
+    }
+
+    public void setAdditionalPsuIdData(AdditionalPsuIdData additionalPsuIdData) {
+        this.additionalPsuIdData = additionalPsuIdData;
     }
 
     @JsonIgnore

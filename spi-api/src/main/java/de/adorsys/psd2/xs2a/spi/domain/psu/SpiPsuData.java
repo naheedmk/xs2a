@@ -18,6 +18,8 @@ package de.adorsys.psd2.xs2a.spi.domain.psu;
 
 import lombok.Value;
 
+import java.util.UUID;
+
 /**
  * Contains data about PSU known in scope of the request
  */
@@ -28,4 +30,13 @@ public class SpiPsuData {
     private String psuCorporateId;
     private String psuCorporateIdType;
     private String psuIpAddress;
+    private String psuIpPort;
+    private String psuUserAgent;
+    private String psuGeoLocation;
+    private String psuAccept;
+    private String psuAcceptCharset;
+    private String psuAcceptEncoding;
+    private String psuAcceptLanguage;
+    private String psuHttpMethod;
+    private UUID psuDeviceId;
 }

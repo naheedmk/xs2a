@@ -19,6 +19,7 @@ package de.adorsys.psd2.xs2a.web.controller;
 import de.adorsys.psd2.api.ConsentApi;
 import de.adorsys.psd2.model.Consents;
 import de.adorsys.psd2.xs2a.core.profile.NotificationSupportedMode;
+import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
@@ -79,6 +80,12 @@ public class ConsentController implements ConsentApi {
         CreateConsentReq createConsent = consentModelMapper.mapToCreateConsentReq(body, tppRedirectUri, tpPNotificationURI, notificationModes);
 
         PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
+        AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(psUIPAddress, psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID);
+
+        if (!additionalPsuIdData.isEmpty()) {
+            psuData.setAdditionalPsuIdData(additionalPsuIdData);
+        }
+
         ResponseObject<CreateConsentResponse> createResponse =
             consentService.createAccountConsentsWithResponse(createConsent, psuData, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred));
 

@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.integration.builder;
 
+import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 
 public class PsuIdDataBuilder {
@@ -23,9 +24,12 @@ public class PsuIdDataBuilder {
     private static final String PSU_ID_TYPE = "Some type";
     private static final String PSU_CORPORATE_ID = "Some corporate id";
     private static final String PSU_CORPORATE_ID_TYPE = "Some corporate id type";
+    private static final String PSU_IP_ADDRESS = "1.1.1.1";
 
     public static PsuIdData buildPsuIdData() {
-        return new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE);
+        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE);
+        psuIdData.setAdditionalPsuIdData(new AdditionalPsuIdData(PSU_IP_ADDRESS, null, null, null, null, null, null, null, null, null));
+        return psuIdData;
     }
 
     public static PsuIdData buildPsuIdData(String psuId) {
@@ -33,6 +37,8 @@ public class PsuIdDataBuilder {
     }
 
     public static PsuIdData buildEmptyPsuIdData() {
-        return new PsuIdData(null, null, null, null);
+        PsuIdData psuIdData = new PsuIdData(null, null, null, null);
+        psuIdData.setAdditionalPsuIdData(new AdditionalPsuIdData(PSU_IP_ADDRESS, null, null, null, null, null, null, null, null, null));
+        return psuIdData;
     }
 }

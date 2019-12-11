@@ -60,7 +60,7 @@ public class FundsConfirmationServiceTest {
     private static final String AUTHORISATION = "Bearer 1111111";
 
     private static final SpiContextData SPI_CONTEXT_DATA =
-        new SpiContextData(new SpiPsuData(null, null, null, null, null), new TppInfo(), UUID.randomUUID(), UUID.randomUUID(), AUTHORISATION);
+        new SpiContextData(new SpiPsuData(null, null, null, null, null, null, null, null, null, null, null, null, null, null), new TppInfo(), UUID.randomUUID(), UUID.randomUUID(), AUTHORISATION);
 
     @Mock
     private AspspProfileServiceWrapper aspspProfileServiceWrapper;

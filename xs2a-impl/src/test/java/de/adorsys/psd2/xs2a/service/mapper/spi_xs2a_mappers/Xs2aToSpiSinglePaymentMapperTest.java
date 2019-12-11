@@ -210,6 +210,6 @@ public class Xs2aToSpiSinglePaymentMapperTest {
     }
 
     private SpiPsuData buildSpiPsu(String psuId) {
-        return new SpiPsuData(psuId, null, null, null, null);
+        return new SpiPsuData(psuId, null, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 }

@@ -38,6 +38,7 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -88,7 +89,7 @@ public class SpiToXs2aBulkPaymentMapperTest {
         payment.setRequestedExecutionTime(OFFSET_DATE_TIME);
         payment.setPaymentStatus(TransactionStatus.ACCP);
         payment.setPaymentProduct(PAYMENT_PRODUCT);
-        payment.setPsuDataList(Collections.singletonList(new SpiPsuData("psuId", "", "", "", "")));
+        payment.setPsuDataList(Collections.singletonList(new SpiPsuData("psuId", "", "", "", "", "", "", "", "", "", "", "", "", UUID.randomUUID())));
         payment.setStatusChangeTimestamp(OFFSET_DATE_TIME);
         payment.setPayments(buildSpiSinglePaymentList());
         return payment;
@@ -110,7 +111,7 @@ public class SpiToXs2aBulkPaymentMapperTest {
         payment.setRemittanceInformationUnstructured("Ref. Number TELEKOM-1222");
         payment.setRequestedExecutionDate(OFFSET_DATE_TIME.toLocalDate());
         payment.setRequestedExecutionTime(OFFSET_DATE_TIME);
-        payment.setPsuDataList(Collections.singletonList(new SpiPsuData("psuId", "", "", "", "")));
+        payment.setPsuDataList(Collections.singletonList(new SpiPsuData("psuId", "", "", "", "", "", "", "", "", "", "", "", "", UUID.randomUUID())));
         payment.setStatusChangeTimestamp(OFFSET_DATE_TIME);
         return Collections.singletonList(payment);
     }

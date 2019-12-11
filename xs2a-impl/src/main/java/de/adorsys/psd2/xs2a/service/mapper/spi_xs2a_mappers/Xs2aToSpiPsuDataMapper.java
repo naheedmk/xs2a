@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers;
 
+import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -39,13 +41,17 @@ public class Xs2aToSpiPsuDataMapper {
     }
 
     public SpiPsuData mapToSpiPsuData(PsuIdData psuIdData) {
-        return mapToSpiPsuData(psuIdData, null);
-    }
-
-    public SpiPsuData mapToSpiPsuData(PsuIdData psuIdData, String psuIpAddress) {
         return Optional.ofNullable(psuIdData)
-                   .map(psu -> new SpiPsuData(psu.getPsuId(), psu.getPsuIdType(), psu.getPsuCorporateId(), psu.getPsuCorporateIdType(), psuIpAddress))
-                   .orElseGet(() -> new SpiPsuData(null, null, null, null, psuIpAddress));
+                   .map(psu -> {
+                       if (psu.getAdditionalPsuIdData() == null) {
+                           return new SpiPsuData(psu.getPsuId(), psu.getPsuIdType(), psu.getPsuCorporateId(), psu.getPsuCorporateIdType(), null, null, null, null, null, null, null, null, null, null);
+                       }
+
+                       AdditionalPsuIdData additionalPsuIdData = psu.getAdditionalPsuIdData();
+                       String psuDeviceId = additionalPsuIdData.getPsuDeviceId();
+                       return new SpiPsuData(psu.getPsuId(), psu.getPsuIdType(), psu.getPsuCorporateId(), psu.getPsuCorporateIdType(), additionalPsuIdData.getPsuIpAddress(), additionalPsuIdData.getPsuIpPort(), additionalPsuIdData.getPsuUserAgent(), additionalPsuIdData.getPsuGeoLocation(), additionalPsuIdData.getPsuAccept(), additionalPsuIdData.getPsuAcceptCharset(), additionalPsuIdData.getPsuAcceptEncoding(), additionalPsuIdData.getPsuAcceptLanguage(), additionalPsuIdData.getPsuHttpMethod(), psuDeviceId == null ? null : UUID.fromString(psuDeviceId));
+                   })
+                   .orElseGet(() -> new SpiPsuData(null, null, null, null, null, null, null, null, null, null, null, null, null, null));
     }
 
 

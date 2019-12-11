@@ -16,7 +16,9 @@
 
 package de.adorsys.psd2.consent.service.mapper;
 
+import de.adorsys.psd2.consent.domain.AdditionalPsuData;
 import de.adorsys.psd2.consent.domain.PsuData;
+import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -48,7 +51,8 @@ public class PsuDataMapper {
                        psu.getPsuId(),
                        psu.getPsuIdType(),
                        psu.getPsuCorporateId(),
-                       psu.getPsuCorporateIdType()
+                       psu.getPsuCorporateIdType(),
+                       mapToAdditionalPsuData(psuIdData.getAdditionalPsuIdData())
                    ))
                    .orElse(null);
     }
@@ -56,13 +60,51 @@ public class PsuDataMapper {
     public PsuIdData mapToPsuIdData(PsuData psuData) {
         return Optional.ofNullable(psuData)
                    .filter(psu -> StringUtils.isNotBlank(psu.getPsuId()))
-                   .map(psu ->
-                            new PsuIdData(
-                                psu.getPsuId(),
-                                psu.getPsuIdType(),
-                                psu.getPsuCorporateId(),
-                                psu.getPsuCorporateIdType()
+                   .map(psu -> new PsuIdData(
+                       psu.getPsuId(),
+                       psu.getPsuIdType(),
+                       psu.getPsuCorporateId(),
+                       psu.getPsuCorporateIdType(),
+                       mapToAdditionalPsuIdData(psuData.getAdditionalPsuData())
+                   ))
+                   .orElse(null);
+    }
+
+    private AdditionalPsuData mapToAdditionalPsuData(AdditionalPsuIdData additionalPsuIdData) {
+        return Optional.ofNullable(additionalPsuIdData)
+                   .map(additionalData ->
+                            new AdditionalPsuData(
+                                additionalPsuIdData.getPsuIpAddress(),
+                                additionalPsuIdData.getPsuIpPort(),
+                                additionalPsuIdData.getPsuUserAgent(),
+                                additionalPsuIdData.getPsuGeoLocation(),
+                                additionalPsuIdData.getPsuAccept(),
+                                additionalPsuIdData.getPsuAcceptCharset(),
+                                additionalPsuIdData.getPsuAcceptEncoding(),
+                                additionalPsuIdData.getPsuAcceptLanguage(),
+                                additionalPsuIdData.getPsuHttpMethod(),
+                                additionalPsuIdData.getPsuDeviceId()
                             ))
                    .orElse(null);
+    }
+
+    private AdditionalPsuIdData mapToAdditionalPsuIdData(AdditionalPsuData additionalPsuData) {
+        return Optional.ofNullable(additionalPsuData)
+                   .map(additionalData -> {
+                            String psuDeviceId = additionalPsuData.getPsuDeviceId();
+                            AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(
+                                additionalPsuData.getPsuIpAddress(),
+                                additionalPsuData.getPsuIpPort(),
+                                additionalPsuData.getPsuUserAgent(),
+                                additionalPsuData.getPsuGeoLocation(),
+                                additionalPsuData.getPsuAccept(),
+                                additionalPsuData.getPsuAcceptCharset(),
+                                additionalPsuData.getPsuAcceptEncoding(),
+                                additionalPsuData.getPsuAcceptLanguage(),
+                                additionalPsuData.getPsuHttpMethod(),
+                                psuDeviceId == null ? null : UUID.fromString(additionalPsuData.getPsuDeviceId()));
+                            return additionalPsuIdData;
+                        }
+                   ).orElse(null);
     }
 }

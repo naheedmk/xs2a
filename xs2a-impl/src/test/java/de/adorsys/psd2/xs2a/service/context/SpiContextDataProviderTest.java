@@ -43,8 +43,17 @@ public class SpiContextDataProviderTest {
     private final static UUID X_REQUEST_ID = UUID.fromString("c818a31f-ccdd-4fff-a404-22ad15ba9754");
     private final static UUID INTERNAL_REQUEST_ID = UUID.fromString("b571c834-4eb1-468f-91b0-f5e83589bc22");
     private final static String PSU_IP_ADDRESS = "IP Address";
+    private static final String PSU_IP_PORT = "psuIpPort";
+    private static final String PSU_USER_AGENT = "psuUserAgent";
+    private static final String PSU_GEO_LOCATION = "psuGeoLocation";
+    private static final String PSU_ACCEPT = "psuAccept";
+    private static final String PSU_ACCEPT_CHARSET = "psuAcceptCharset";
+    private static final String PSU_ACCEPT_ENCODING = "psuAcceptEncoding";
+    private static final String PSU_ACCEPT_LANGUAGE = "psuAcceptLanguage";
+    private static final String PSU_HTTP_METHOD = "psuHttpMethod";
+    private static final UUID PSU_DEVICE_ID = UUID.randomUUID();
     private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType");
-    private static final SpiPsuData SPI_PSU_DATA = new SpiPsuData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType", PSU_IP_ADDRESS);
+    private static final SpiPsuData SPI_PSU_DATA = new SpiPsuData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType", PSU_IP_ADDRESS, PSU_IP_PORT, PSU_USER_AGENT, PSU_GEO_LOCATION, PSU_ACCEPT, PSU_ACCEPT_CHARSET, PSU_ACCEPT_ENCODING, PSU_ACCEPT_LANGUAGE, PSU_HTTP_METHOD, PSU_DEVICE_ID);
     private static final SpiContextData SPI_CONTEXT_DATA = buildSpiContextData(null);
     private static final SpiContextData SPI_CONTEXT_DATA_WITH_PSU_DATA = buildSpiContextData(SPI_PSU_DATA);
     private static final String AUTHORISATION = "Bearer 1111111";
@@ -97,7 +106,7 @@ public class SpiContextDataProviderTest {
     @Test
     public void provide_withParameters_success() {
         //Given
-        when(psuDataMapper.mapToSpiPsuData(PSU_DATA, null))
+        when(psuDataMapper.mapToSpiPsuData(PSU_DATA))
             .thenReturn(SPI_PSU_DATA);
 
         //When
@@ -111,9 +120,7 @@ public class SpiContextDataProviderTest {
     @Test
     public void provide_withPsuIpAddress_success() {
         //Given
-        when(requestProviderService.getPsuIpAddress())
-            .thenReturn(PSU_IP_ADDRESS);
-        when(psuDataMapper.mapToSpiPsuData(PSU_DATA, PSU_IP_ADDRESS))
+        when(psuDataMapper.mapToSpiPsuData(PSU_DATA))
             .thenReturn(SPI_PSU_DATA);
 
         //When

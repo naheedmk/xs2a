@@ -24,6 +24,7 @@ import de.adorsys.psd2.model.PeriodicPaymentInitiationXmlPart2StandingorderTypeJ
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.NotificationSupportedMode;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
+import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.HrefType;
@@ -151,6 +152,12 @@ public class PaymentController implements PaymentApi {
         }
 
         PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
+        AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(psUIPAddress, psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID );
+
+        if (!additionalPsuIdData.isEmpty()) {
+            psuData.setAdditionalPsuIdData(additionalPsuIdData);
+        }
+
         List<NotificationSupportedMode> notificationModes = notificationSupportedModeService.getProcessedNotificationModes(tpPNotificationContentPreferred);
         PaymentInitiationParameters paymentInitiationParameters = paymentModelMapperPsd2.mapToPaymentRequestParameters(paymentProduct, paymentService, tpPSignatureCertificate, tpPRedirectURI, tpPNokRedirectURI, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred), psuData, tpPNotificationURI, notificationModes);
         ResponseObject<PaymentInitiationResponse> serviceResponse =
@@ -193,6 +200,11 @@ public class PaymentController implements PaymentApi {
         }
 
         PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
+        AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(psUIPAddress, psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID );
+
+        if (!additionalPsuIdData.isEmpty()) {
+            psuData.setAdditionalPsuIdData(additionalPsuIdData);
+        }
         List<NotificationSupportedMode> notificationModes = notificationSupportedModeService.getProcessedNotificationModes(tpPNotificationContentPreferred);
 
         PaymentInitiationParameters paymentInitiationParameters = paymentModelMapperPsd2.mapToPaymentRequestParameters(paymentProduct, paymentService, tpPSignatureCertificate, tpPRedirectURI, tpPNokRedirectURI, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred), psuData, tpPNotificationURI, notificationModes);
@@ -235,6 +247,11 @@ public class PaymentController implements PaymentApi {
         }
 
         PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
+        AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(psUIPAddress, psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID );
+
+        if (!additionalPsuIdData.isEmpty()) {
+            psuData.setAdditionalPsuIdData(additionalPsuIdData);
+        }
         List<NotificationSupportedMode> notificationModes = notificationSupportedModeService.getProcessedNotificationModes(tpPNotificationContentPreferred);
 
         PaymentInitiationParameters paymentInitiationParameters = paymentModelMapperPsd2.mapToPaymentRequestParameters(paymentProduct, paymentService, tpPSignatureCertificate, tpPRedirectURI, tpPNokRedirectURI, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred), psuData, tpPNotificationURI, notificationModes);

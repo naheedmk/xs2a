@@ -56,7 +56,7 @@ public class Xs2aToSpiPaymentMapperTest {
     @Before
     public void setUp() {
         PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE);
-        SpiPsuData spiPsuData = new SpiPsuData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, null);
+        SpiPsuData spiPsuData = new SpiPsuData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, null, null, null, null, null, null, null, null, null, null);
         psuDataList.addAll(Arrays.asList(psuIdData));
         spiPsuDataList.addAll(Arrays.asList(spiPsuData));
         when(xs2aToSpiPsuDataMapper.mapToSpiPsuDataList(psuDataList)).thenReturn(spiPsuDataList);

@@ -43,7 +43,7 @@ public class Xs2aToSpiPaymentInfoMapperTest {
     private static final String PSU_CORPORATE_ID = "psu Corporate Id";
     private static final String PSU_CORPORATE_ID_TYPE = "psuCorporate Id Type";
     private static final List<PsuIdData> psuDataList = Arrays.asList(new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE));
-    private static final List<SpiPsuData> spiPsuDataList = Arrays.asList(new SpiPsuData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, null));
+    private static final List<SpiPsuData> spiPsuDataList = Arrays.asList(new SpiPsuData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, null,null,null,null,null,null,null,null,null,null));
 
     @InjectMocks
     private Xs2aToSpiPaymentInfoMapper xs2aToSpiPaymentInfoMapper;
