@@ -115,7 +115,7 @@ public class PaymentCancellationLinksTest {
         expectedLinks.setStatus(STATUS_LINK);
         expectedLinks.setScaRedirect(REDIRECT_LINK);
         expectedLinks.setScaStatus(PIS_CANCELLATION_AUTH_LINK_URL);
-        expectedLinks.setConfirmation(new HrefType(CONFIRMATION_LINK));
+        expectedLinks.setConfirmation(new HrefType("http://url/confirmation_link"));
 
         // Then
         assertEquals(expectedLinks, links);

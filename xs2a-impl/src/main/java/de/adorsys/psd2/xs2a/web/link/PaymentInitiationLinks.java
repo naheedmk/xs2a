@@ -113,7 +113,7 @@ public class PaymentInitiationLinks extends AbstractLinks {
                 buildPath(UrlHolder.PIS_AUTHORISATION_LINK_URL, paymentService, paymentProduct, paymentId, authorisationId));
 
             if (authorisationConfirmationRequestMandated) {
-                setConfirmation(new HrefType(redirectLinkBuilder.buildPisConfirmationLink(paymentService, paymentProduct, paymentId, redirectId)));
+                setConfirmation(buildPath(redirectLinkBuilder.buildPisConfirmationLink(paymentService, paymentProduct, paymentId, redirectId)));
             }
         }
     }

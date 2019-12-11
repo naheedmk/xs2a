@@ -32,6 +32,7 @@ public class RedirectLinkBuilder {
     private static final String PAYMENT_PRODUCT = "{payment-product}";
     private static final String PAYMENT_ID = "{payment-id}";
     private static final String CONSENT_ID = "{consentId}";
+    private static final String AUTHORISATION_ID = "{authorisation-id}";
 
     private final AspspProfileServiceWrapper aspspProfileService;
 
@@ -134,7 +135,10 @@ public class RedirectLinkBuilder {
     /**
      * Builds confirmation link for payments.
      *
-     * @param redirectId - Redirect ID
+     * @param paymentService     - Payment service (ex. "payments")
+     * @param paymentProduct     - Payment product (ex. "sepa-credit-transfers")
+     * @param encryptedPaymentId - Encrypted Payment ID provided to TPP
+     * @param redirectId         - Redirect ID
      * @return confirmation link
      */
     public String buildPisConfirmationLink(String paymentService, String paymentProduct, String encryptedPaymentId, String redirectId) {
@@ -142,13 +146,16 @@ public class RedirectLinkBuilder {
                    .replace(PAYMENT_SERVICE, paymentService)
                    .replace(PAYMENT_PRODUCT, paymentProduct)
                    .replace(PAYMENT_ID, encryptedPaymentId)
-                   .replace(REDIRECT_URL, redirectId);
+                   .replace(AUTHORISATION_ID, redirectId);
     }
 
     /**
      * Builds confirmation link for payment cancellations.
      *
-     * @param redirectId - Redirect ID
+     * @param paymentService     - Payment service (ex. "payments")
+     * @param paymentProduct     - Payment product (ex. "sepa-credit-transfers")
+     * @param encryptedPaymentId - Encrypted Payment ID provided to TPP
+     * @param redirectId         - Redirect ID
      * @return confirmation link
      */
     public String buildPisCancellationConfirmationLink(String paymentService, String paymentProduct, String encryptedPaymentId, String redirectId) {
@@ -156,7 +163,7 @@ public class RedirectLinkBuilder {
                    .replace(PAYMENT_SERVICE, paymentService)
                    .replace(PAYMENT_PRODUCT, paymentProduct)
                    .replace(PAYMENT_ID, encryptedPaymentId)
-                   .replace(REDIRECT_URL, redirectId);
+                   .replace(AUTHORISATION_ID, redirectId);
     }
 
     /**
@@ -168,6 +175,6 @@ public class RedirectLinkBuilder {
     public String buildAisConfirmationLink(String consentId, String redirectId) {
         return UrlHolder.AIS_AUTHORISATION_URL
                    .replace(CONSENT_ID, consentId)
-                   .replace(REDIRECT_URL, redirectId);
+                   .replace(AUTHORISATION_ID, redirectId);
     }
 }

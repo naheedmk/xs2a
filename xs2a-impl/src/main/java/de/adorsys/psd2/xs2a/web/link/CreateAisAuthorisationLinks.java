@@ -17,7 +17,6 @@
 package de.adorsys.psd2.xs2a.web.link;
 
 import de.adorsys.psd2.xs2a.core.profile.ScaRedirectFlow;
-import de.adorsys.psd2.xs2a.domain.HrefType;
 import de.adorsys.psd2.xs2a.domain.consent.CreateConsentAuthorizationResponse;
 import de.adorsys.psd2.xs2a.service.RedirectIdService;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
@@ -49,7 +48,7 @@ public class CreateAisAuthorisationLinks extends AbstractLinks {
             setScaRedirectOAuthLink(scaRedirectFlow, consentOauthLink);
 
             if (authorisationConfirmationRequestMandated) {
-                setConfirmation(new HrefType(redirectLinkBuilder.buildAisConfirmationLink(consentId, redirectId)));
+                setConfirmation(buildPath(redirectLinkBuilder.buildAisConfirmationLink(consentId, redirectId)));
             }
 
         } else {

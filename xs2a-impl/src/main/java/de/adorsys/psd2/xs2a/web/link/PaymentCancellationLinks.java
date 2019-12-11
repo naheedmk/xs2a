@@ -104,7 +104,7 @@ public class PaymentCancellationLinks extends AbstractLinks {
                 buildPath(UrlHolder.PIS_CANCELLATION_AUTH_LINK_URL, paymentService, paymentProduct, paymentId, authorisationId));
 
             if (authorisationConfirmationRequestMandated) {
-                setConfirmation(new HrefType(redirectLinkBuilder.buildPisCancellationConfirmationLink(paymentService, paymentProduct, paymentId, redirectId)));
+                setConfirmation(buildPath(redirectLinkBuilder.buildPisCancellationConfirmationLink(paymentService, paymentProduct, paymentId, redirectId)));
             }
         }
     }

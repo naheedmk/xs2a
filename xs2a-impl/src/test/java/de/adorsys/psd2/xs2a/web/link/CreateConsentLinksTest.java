@@ -279,7 +279,7 @@ public class CreateConsentLinksTest {
         expectedLinks.setStatus(new HrefType("http://url/v1/consents/9mp1PaotpXSToNCi/status"));
         expectedLinks.setScaRedirect(new HrefType(REDIRECT_LINK));
         expectedLinks.setScaStatus(new HrefType("http://url/v1/consents/9mp1PaotpXSToNCi/authorisations/463318a0-1e33-45d8-8209-e16444b18dda"));
-        expectedLinks.setConfirmation(new HrefType(CONFIRMATION_LINK));
+        expectedLinks.setConfirmation(new HrefType("http://url/confirmation_link"));
 
         // Then
         assertEquals(expectedLinks, links);
