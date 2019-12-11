@@ -40,4 +40,8 @@ public class AdditionalPsuIdData {
                    && psuAcceptCharset == null && psuAcceptEncoding == null && psuAcceptLanguage == null && psuHttpMethod == null && psuDeviceId == null;
     }
 
+    public boolean isNotEmpty() {
+        return !isEmpty();
+    }
+
 }

@@ -19,16 +19,28 @@ package de.adorsys.psd2.xs2a.integration.builder;
 import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 
+import java.util.UUID;
+
 public class PsuIdDataBuilder {
     private static final String PSU_ID = "PSU-123";
     private static final String PSU_ID_TYPE = "Some type";
     private static final String PSU_CORPORATE_ID = "Some corporate id";
     private static final String PSU_CORPORATE_ID_TYPE = "Some corporate id type";
     private static final String PSU_IP_ADDRESS = "1.1.1.1";
+    private static final String PSU_IP_PORT = "1111";
+    private static final String PSU_USER_AGENT = "Some user agent";
+    private static final String PSU_GEO_LOCATION = "Some geo location";
+    private static final String PSU_ACCEPT = "Some accept";
+    private static final String PSU_ACCEPT_CHARSET = "Some accept-charset";
+    private static final String PSU_ACCEPT_ENCODING = "Some accept-encoding";
+    private static final String PSU_ACCEPT_LANGUAGE = "Some accept-language";
+    private static final String PSU_HTTP_METHOD = "Some http method";
+    private static final String PSU_DEVICE_ID = "d7d369a9-898d-4682-b586-0a63ffe43a2c";
+
 
     public static PsuIdData buildPsuIdData() {
         PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE);
-        psuIdData.setAdditionalPsuIdData(new AdditionalPsuIdData(PSU_IP_ADDRESS, null, null, null, null, null, null, null, null, null));
+        psuIdData.setAdditionalPsuIdData(buildAdditionalPsuIdData());
         return psuIdData;
     }
 
@@ -38,7 +50,10 @@ public class PsuIdDataBuilder {
 
     public static PsuIdData buildEmptyPsuIdData() {
         PsuIdData psuIdData = new PsuIdData(null, null, null, null);
-        psuIdData.setAdditionalPsuIdData(new AdditionalPsuIdData(PSU_IP_ADDRESS, null, null, null, null, null, null, null, null, null));
         return psuIdData;
+    }
+
+    private static AdditionalPsuIdData buildAdditionalPsuIdData() {
+        return new AdditionalPsuIdData(PSU_IP_ADDRESS, PSU_IP_PORT, PSU_USER_AGENT, PSU_GEO_LOCATION, PSU_ACCEPT, PSU_ACCEPT_CHARSET, PSU_ACCEPT_ENCODING, PSU_ACCEPT_LANGUAGE, PSU_HTTP_METHOD, UUID.fromString(PSU_DEVICE_ID));
     }
 }

@@ -82,7 +82,7 @@ public class ConsentController implements ConsentApi {
         PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
         AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(psUIPAddress, psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID);
 
-        if (!additionalPsuIdData.isEmpty()) {
+        if (psuData.isNotEmpty() && additionalPsuIdData.isNotEmpty()) {
             psuData.setAdditionalPsuIdData(additionalPsuIdData);
         }
 
