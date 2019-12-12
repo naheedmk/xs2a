@@ -21,8 +21,8 @@ import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationReque
 import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationResponse;
 import de.adorsys.psd2.consent.api.pis.authorisation.GetPisAuthorisationResponse;
 import de.adorsys.psd2.consent.api.pis.authorisation.UpdatePisCommonPaymentPsuDataRequest;
-import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.PisAuthorisationServiceEncrypted;
+import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
@@ -46,10 +46,13 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.web.mapper.TppRedirectUriMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.FINALISED;
 
 @Slf4j
 @Service
@@ -108,11 +111,40 @@ public class PisAuthorisationService {
 
         GetPisAuthorisationResponse response = pisAuthorisationResponse.getPayload();
 
+        if (response.getChosenScaApproach() == ScaApproach.REDIRECT) {
+            return processRedirect(request, response.getScaAuthenticationData());
+        }
+
         return (Xs2aUpdatePisCommonPaymentPsuDataResponse) authorisationChainResponsibilityService.apply(
             new PisAuthorisationProcessorRequest(scaApproach,
                                                  response.getScaStatus(),
                                                  request,
                                                  response));
+    }
+
+    private Xs2aUpdatePisCommonPaymentPsuDataResponse processRedirect(Xs2aUpdatePisCommonPaymentPsuDataRequest request, String confirmationCodeFromDb) {
+        String confirmationCodeReceived = request.getConfirmationCode();
+
+        if (!StringUtils.equals(confirmationCodeReceived, confirmationCodeFromDb)) {
+            ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_400)
+                                          .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR_SCA_STATUS))
+                                          .build();
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}]. Updating PIS authorisation PSU Data has failed: confirmation code is wrong.",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getPaymentId(), request.getAuthorisationId());
+            Xs2aUpdatePisCommonPaymentPsuDataResponse response =  new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
+
+            UpdatePisCommonPaymentPsuDataRequest updatePaymentRequest = pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(response);
+            doUpdatePisAuthorisation(updatePaymentRequest);
+
+            return response;
+        }
+
+        Xs2aUpdatePisCommonPaymentPsuDataResponse response = new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
+
+        UpdatePisCommonPaymentPsuDataRequest updatePaymentRequest = pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(response);
+        doUpdatePisAuthorisation(updatePaymentRequest);
+
+        return response;
     }
 
     /**

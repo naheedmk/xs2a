@@ -220,6 +220,11 @@ public class ConsentModelMapper {
             Optional.ofNullable(body.get("scaAuthenticationData"))
                 .map(o -> (String) o)
                 .ifPresent(updatePsuData::setScaAuthenticationData);
+
+            Optional.ofNullable(body.get("confirmationCode"))
+                .map(o -> (String) o)
+                .ifPresent(updatePsuData::setConfirmationCode);
+
         } else {
             updatePsuData.setUpdatePsuIdentification(true);
         }
@@ -251,6 +256,9 @@ public class ConsentModelMapper {
 
             Optional.ofNullable(body.get("scaAuthenticationData"))
                 .ifPresent(authData -> request.setScaAuthenticationData((String) authData));
+
+            Optional.ofNullable(body.get("confirmationCode"))
+                .ifPresent(code -> request.setConfirmationCode((String) code));
         } else {
             request.setUpdatePsuIdentification(true);
         }

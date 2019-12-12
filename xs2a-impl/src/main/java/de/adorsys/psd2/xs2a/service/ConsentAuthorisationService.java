@@ -177,8 +177,9 @@ public class ConsentAuthorisationService {
 
         String consentId = updatePsuData.getConsentId();
         String authorisationId = updatePsuData.getAuthorizationId();
+        boolean confirmationCodeReceived = StringUtils.isNotBlank(updatePsuData.getConfirmationCode());
 
-        if (!endpointAccessCheckerService.isEndpointAccessible(authorisationId, consentId)) {
+        if (!endpointAccessCheckerService.isEndpointAccessible(authorisationId, consentId ,confirmationCodeReceived)) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Consent-ID: [{}], Authorisation-ID [{}]. Update consent PSU data failed: update endpoint is blocked for current authorisation",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), consentId, authorisationId);
             return ResponseObject.<UpdateConsentPsuDataResponse>builder()
