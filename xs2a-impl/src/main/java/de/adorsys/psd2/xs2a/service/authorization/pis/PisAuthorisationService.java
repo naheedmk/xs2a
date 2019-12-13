@@ -140,6 +140,10 @@ public class PisAuthorisationService {
 
         GetPisAuthorisationResponse response = pisCancellationAuthorisationResponse.getPayload();
 
+        if (response.getChosenScaApproach() == ScaApproach.REDIRECT) {
+            return pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, response);
+        }
+
         return (Xs2aUpdatePisCommonPaymentPsuDataResponse) authorisationChainResponsibilityService.apply(
             new PisCancellationAuthorisationProcessorRequest(scaApproach,
                                                              response.getScaStatus(),

@@ -192,6 +192,12 @@ public class Xs2aAisConsentService {
             });
     }
 
+    /**
+     * Sends a PUT request to CMS to update status in consent authorization
+     *
+     * @param authorisationId String representation of authorisation identifier
+     * @param scaStatus Enum for status of the SCA method applied
+     */
     public void updateConsentAuthorisationStatus(String authorisationId, ScaStatus scaStatus) {
         aisConsentAuthorisationServiceEncrypted.updateConsentAuthorisationStatus(authorisationId, scaStatus);
     }
