@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.spi.domain.authorisation;
 
-import lombok.Data;
 import lombok.Value;
 
 /**
