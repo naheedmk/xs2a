@@ -22,7 +22,6 @@ import de.adorsys.psd2.consent.api.pis.authorisation.CreatePisAuthorisationRespo
 import de.adorsys.psd2.consent.api.pis.authorisation.GetPisAuthorisationResponse;
 import de.adorsys.psd2.consent.api.pis.authorisation.UpdatePisCommonPaymentPsuDataRequest;
 import de.adorsys.psd2.consent.api.service.PisAuthorisationServiceEncrypted;
-import de.adorsys.psd2.consent.api.service.PisCommonPaymentServiceEncrypted;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
@@ -46,26 +45,23 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType;
 import de.adorsys.psd2.xs2a.web.mapper.TppRedirectUriMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
-import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.FINALISED;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 // TODO this class takes low-level communication to Consent-management-system. Should be migrated to consent-services package. All XS2A business-logic should be removed from here to XS2A services. https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/332
 public class PisAuthorisationService {
-    private final PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
     private final PisAuthorisationServiceEncrypted pisAuthorisationServiceEncrypted;
     private final Xs2aPisCommonPaymentMapper pisCommonPaymentMapper;
     private final ScaApproachResolver scaApproachResolver;
     private final RequestProviderService requestProviderService;
     private final TppRedirectUriMapper tppRedirectUriMapper;
     private final AuthorisationChainResponsibilityService authorisationChainResponsibilityService;
+    private final PisAuthorisationConfirmationService pisAuthorisationConfirmationService;
 
     /**
      * Sends a POST request to CMS to store created pis authorisation
@@ -112,7 +108,7 @@ public class PisAuthorisationService {
         GetPisAuthorisationResponse response = pisAuthorisationResponse.getPayload();
 
         if (response.getChosenScaApproach() == ScaApproach.REDIRECT) {
-            return processRedirect(request, response.getScaAuthenticationData());
+            return pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, response);
         }
 
         return (Xs2aUpdatePisCommonPaymentPsuDataResponse) authorisationChainResponsibilityService.apply(
@@ -120,31 +116,6 @@ public class PisAuthorisationService {
                                                  response.getScaStatus(),
                                                  request,
                                                  response));
-    }
-
-    private Xs2aUpdatePisCommonPaymentPsuDataResponse processRedirect(Xs2aUpdatePisCommonPaymentPsuDataRequest request, String confirmationCodeFromDb) {
-        String confirmationCodeReceived = request.getConfirmationCode();
-
-        if (!StringUtils.equals(confirmationCodeReceived, confirmationCodeFromDb)) {
-            ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_400)
-                                          .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR_SCA_STATUS))
-                                          .build();
-            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}]. Updating PIS authorisation PSU Data has failed: confirmation code is wrong.",
-                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getPaymentId(), request.getAuthorisationId());
-            Xs2aUpdatePisCommonPaymentPsuDataResponse response =  new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
-
-            UpdatePisCommonPaymentPsuDataRequest updatePaymentRequest = pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(response);
-            doUpdatePisAuthorisation(updatePaymentRequest);
-
-            return response;
-        }
-
-        Xs2aUpdatePisCommonPaymentPsuDataResponse response = new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
-
-        UpdatePisCommonPaymentPsuDataRequest updatePaymentRequest = pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(response);
-        doUpdatePisAuthorisation(updatePaymentRequest);
-
-        return response;
     }
 
     /**
@@ -174,14 +145,6 @@ public class PisAuthorisationService {
                                                              response.getScaStatus(),
                                                              request,
                                                              response));
-    }
-
-    public void doUpdatePisAuthorisation(UpdatePisCommonPaymentPsuDataRequest request) {
-        pisAuthorisationServiceEncrypted.updatePisAuthorisation(request.getAuthorizationId(), request);
-    }
-
-    public void doUpdatePisCancellationAuthorisation(UpdatePisCommonPaymentPsuDataRequest request) {
-        pisAuthorisationServiceEncrypted.updatePisCancellationAuthorisation(request.getAuthorizationId(), request);
     }
 
     /**
@@ -307,5 +270,13 @@ public class PisAuthorisationService {
         } else {
             doUpdatePisCancellationAuthorisation(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(response));
         }
+    }
+
+    private void doUpdatePisAuthorisation(UpdatePisCommonPaymentPsuDataRequest request) {
+        pisAuthorisationServiceEncrypted.updatePisAuthorisation(request.getAuthorizationId(), request);
+    }
+
+    private void doUpdatePisCancellationAuthorisation(UpdatePisCommonPaymentPsuDataRequest request) {
+        pisAuthorisationServiceEncrypted.updatePisCancellationAuthorisation(request.getAuthorizationId(), request);
     }
 }
