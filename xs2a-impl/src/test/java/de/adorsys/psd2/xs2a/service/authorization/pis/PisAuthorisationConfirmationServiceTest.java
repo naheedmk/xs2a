@@ -63,7 +63,7 @@ public class PisAuthorisationConfirmationServiceTest {
     private static final String PAYMENT_ID = "c713a32c-15ff-4f90-afa0-34a500359844";
     private static final String AUTHORISATION_ID = "ad746cb3-a01b-4196-a6b9-40b0e4cd2350";
     private static final String CONFIRMATION_CODE = "123456";
-
+    private static final boolean IS_CANCELLATION = false;
     private final static JsonReader jsonReader = new JsonReader();
 
     @InjectMocks
@@ -126,7 +126,7 @@ public class PisAuthorisationConfirmationServiceTest {
         when(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(expectedResult)).thenReturn(buildUpdatePisCommonPaymentPsuDataRequest(psuIdData));
 
         // when
-        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request);
+        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
 
 
         // then
@@ -149,7 +149,7 @@ public class PisAuthorisationConfirmationServiceTest {
         when(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(expectedResult)).thenReturn(buildUpdatePisCommonPaymentPsuDataRequest(psuIdData));
 
         // when
-        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request);
+        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
 
 
         // then
@@ -173,7 +173,7 @@ public class PisAuthorisationConfirmationServiceTest {
                                                                                                         .build());
 
         // when
-        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request);
+        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
 
 
         // then
@@ -201,7 +201,7 @@ public class PisAuthorisationConfirmationServiceTest {
                                                                                                         .build());
 
         // when
-        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request);
+        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
 
 
         // then
@@ -231,7 +231,7 @@ public class PisAuthorisationConfirmationServiceTest {
         when(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(expectedResult)).thenReturn(buildUpdatePisCommonPaymentPsuDataRequest(psuIdData));
 
         // when
-        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request);
+        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
 
 
         // then
@@ -272,7 +272,7 @@ public class PisAuthorisationConfirmationServiceTest {
         when(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(expectedResult)).thenReturn(buildUpdatePisCommonPaymentPsuDataRequest(psuIdData));
 
         // when
-        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request);
+        Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
 
 
         // then
