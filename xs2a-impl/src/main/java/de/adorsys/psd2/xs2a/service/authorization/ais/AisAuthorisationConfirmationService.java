@@ -16,11 +16,13 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.ais;
 
+import de.adorsys.psd2.consent.api.CmsResponse;
+import de.adorsys.psd2.consent.api.ais.AisConsentAuthorizationResponse;
+import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsentAuthorization;
 import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataReq;
 import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataResponse;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
@@ -64,7 +66,7 @@ public class AisAuthorisationConfirmationService {
     private final AisConsentSpi aisConsentSpi;
     private final Xs2aAisConsentMapper aisConsentMapper;
     private final SpiErrorMapper spiErrorMapper;
-    private final AisScaAuthorisationServiceResolver aisScaAuthorisationServiceResolver;
+    private final AisConsentAuthorisationServiceEncrypted aisConsentAuthorisationServiceEncrypted;
 
     /**
      * Checks authorisation confirmation data. Has two possible flows:
@@ -78,25 +80,23 @@ public class AisAuthorisationConfirmationService {
         String consentId = request.getConsentId();
         String authorisationId = request.getAuthorisationId();
 
-        AisAuthorizationService service = aisScaAuthorisationServiceResolver.getServiceInitiation(authorisationId);
+        CmsResponse<AisConsentAuthorizationResponse> authorisation = aisConsentAuthorisationServiceEncrypted.getAccountConsentAuthorizationById(authorisationId, consentId);
 
-        Optional<AccountConsentAuthorization> authorization = service.getAccountConsentAuthorizationById(authorisationId, consentId);
-
-        if (!authorization.isPresent()) {
+        if (!authorisation.hasError()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Authorisation-ID: [{}]. Update consent PSU data failed: authorisation not found by ID",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getAuthorizationId());
             return ResponseObject.<UpdateConsentPsuDataResponse>builder()
                        .fail(AIS_403, of(CONSENT_UNKNOWN_403)).build();
         }
 
-        AccountConsentAuthorization consentAuthorization = authorization.get();
+        AisConsentAuthorizationResponse consentAuthorisation = authorisation.getPayload();
 
-        ScaStatus currentStatus = consentAuthorization.getScaStatus();
+        ScaStatus currentStatus = consentAuthorisation.getScaStatus();
 
         boolean processIsAllowed = currentStatus == ScaStatus.UNCONFIRMED;
 
         UpdateConsentPsuDataResponse response = processIsAllowed
-                                                    ? processAuthorisationConfirmationInternal(request, consentAuthorization.getScaAuthenticationData())
+                                                    ? processAuthorisationConfirmationInternal(request, consentAuthorisation.getScaAuthenticationData())
                                                     : buildFormatErrorResponse(consentId, authorisationId, currentStatus);
 
         return Optional.ofNullable(response.getErrorHolder())
