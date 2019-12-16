@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.pis;
 
+import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.pis.authorisation.GetPisAuthorisationResponse;
 import de.adorsys.psd2.consent.api.pis.authorisation.UpdatePisCommonPaymentPsuDataRequest;
 import de.adorsys.psd2.consent.api.service.PisAuthorisationServiceEncrypted;
@@ -48,8 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.FINALISED;
 
 @Slf4j
@@ -65,7 +64,6 @@ public class PisAuthorisationConfirmationService {
     private final SpiPaymentServiceResolver spiPaymentServiceResolver;
     private final SpiContextDataProvider spiContextDataProvider;
     private final SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory;
-    private final PisScaAuthorisationServiceResolver pisScaAuthorisationServiceResolver;
     private final SpiErrorMapper spiErrorMapper;
 
     /**
@@ -73,24 +71,33 @@ public class PisAuthorisationConfirmationService {
      * - data is checked at XS2A side, we compare the data from DB with the incoming data;
      * - data is transferred to SPI level and checking should be implemented at ASPSP side.
      *
-     * @param request                     {@link Xs2aUpdatePisCommonPaymentPsuDataRequest} with all payment information.
-     * @param getPisAuthorisationResponse (@link GetPisAuthorisationResponse) object from the DB.
+     * @param request {@link Xs2aUpdatePisCommonPaymentPsuDataRequest} with all payment information.
      * @return {@link Xs2aUpdatePisCommonPaymentPsuDataResponse} with new authorisation status.
      */
-    public Xs2aUpdatePisCommonPaymentPsuDataResponse processAuthorisationConfirmation(Xs2aUpdatePisCommonPaymentPsuDataRequest request, GetPisAuthorisationResponse getPisAuthorisationResponse) {
+    public Xs2aUpdatePisCommonPaymentPsuDataResponse processAuthorisationConfirmation(Xs2aUpdatePisCommonPaymentPsuDataRequest request) {
         String paymentId = request.getPaymentId();
         String authorisationId = request.getAuthorisationId();
 
-        PisScaAuthorisationService pisScaAuthorisationService = pisScaAuthorisationServiceResolver.getServiceInitiation(authorisationId);
-        Optional<ScaStatus> scaStatusOptional = pisScaAuthorisationService.getAuthorisationScaStatus(paymentId, authorisationId);
+        CmsResponse<GetPisAuthorisationResponse> pisAuthorisationResponse = pisAuthorisationServiceEncrypted.getPisAuthorisationById(authorisationId);
+        if (pisAuthorisationResponse.hasError()) {
+            ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_404)
+                                          .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404_NO_AUTHORISATION))
+                                          .build();
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}], Authorisation-ID [{}]. Updating PIS authorisation PSU Data has failed: authorisation is not found by id.",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), paymentId, authorisationId);
+            return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, request.getPsuData());
 
-        boolean processIsAllowed = scaStatusOptional
-                                       .map(st -> ScaStatus.UNCONFIRMED == st)
-                                       .orElse(false);
+        }
+
+        GetPisAuthorisationResponse authorisationResponse = pisAuthorisationResponse.getPayload();
+
+        ScaStatus status = authorisationResponse.getScaStatus();
+
+        boolean processIsAllowed = status == ScaStatus.UNCONFIRMED;
 
         return processIsAllowed
-                   ? processAuthorisationConfirmationInternal(request, getPisAuthorisationResponse)
-                   : buildFormatErrorResponse(paymentId, authorisationId, scaStatusOptional.orElse(null), request.getPsuData());
+                   ? processAuthorisationConfirmationInternal(request, pisAuthorisationResponse.getPayload())
+                   : buildFormatErrorResponse(paymentId, authorisationId, status, request.getPsuData());
     }
 
     private Xs2aUpdatePisCommonPaymentPsuDataResponse processAuthorisationConfirmationInternal(Xs2aUpdatePisCommonPaymentPsuDataRequest request, GetPisAuthorisationResponse getPisAuthorisationResponse) {
@@ -125,7 +132,7 @@ public class PisAuthorisationConfirmationService {
 
         Xs2aUpdatePisCommonPaymentPsuDataResponse response = spiResponse.hasError()
                                                                  ? buildConfirmationCodeSpiErrorResponse(spiResponse, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData())
-                                                                 : new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
+                                                                 : new Xs2aUpdatePisCommonPaymentPsuDataResponse(spiResponse.getPayload().getScaStatus(), request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
 
         UpdatePisCommonPaymentPsuDataRequest updatePaymentRequest = pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(response);
         pisAuthorisationServiceEncrypted.updatePisAuthorisation(updatePaymentRequest.getAuthorizationId(), updatePaymentRequest);

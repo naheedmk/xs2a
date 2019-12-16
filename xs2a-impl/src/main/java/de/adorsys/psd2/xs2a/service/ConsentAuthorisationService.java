@@ -18,14 +18,12 @@ package de.adorsys.psd2.xs2a.service;
 
 import de.adorsys.psd2.event.core.model.EventType;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
-import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.*;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationChainResponsibilityService;
-import de.adorsys.psd2.xs2a.service.authorization.ais.AisAuthorisationConfirmationService;
 import de.adorsys.psd2.xs2a.service.authorization.ais.AisAuthorizationService;
 import de.adorsys.psd2.xs2a.service.authorization.ais.AisScaAuthorisationServiceResolver;
 import de.adorsys.psd2.xs2a.service.authorization.processor.model.AisAuthorisationProcessorRequest;
@@ -60,7 +58,6 @@ public class ConsentAuthorisationService {
     private final RequestProviderService requestProviderService;
     private final AuthorisationChainResponsibilityService authorisationChainResponsibilityService;
     private final LoggingContextService loggingContextService;
-    private final AisAuthorisationConfirmationService aisAuthorisationConfirmationService;
 
     public ResponseObject<AuthorisationResponse> createAisAuthorisation(PsuIdData psuData, String consentId, String password) {
         ResponseObject<CreateConsentAuthorizationResponse> createAisAuthorizationResponse = createConsentAuthorizationWithResponse(psuData, consentId);
@@ -182,7 +179,7 @@ public class ConsentAuthorisationService {
         String authorisationId = updatePsuData.getAuthorizationId();
         boolean confirmationCodeReceived = StringUtils.isNotBlank(updatePsuData.getConfirmationCode());
 
-        if (!endpointAccessCheckerService.isEndpointAccessible(authorisationId, consentId ,confirmationCodeReceived)) {
+        if (!endpointAccessCheckerService.isEndpointAccessible(authorisationId, consentId, confirmationCodeReceived)) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Consent-ID: [{}], Authorisation-ID [{}]. Update consent PSU data failed: update endpoint is blocked for current authorisation",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), consentId, authorisationId);
             return ResponseObject.<UpdateConsentPsuDataResponse>builder()
@@ -241,10 +238,6 @@ public class ConsentAuthorisationService {
         }
 
         AccountConsentAuthorization consentAuthorization = authorization.get();
-
-        if (consentAuthorization.getChosenScaApproach() == ScaApproach.REDIRECT) {
-            return aisAuthorisationConfirmationService.processAuthorisationConfirmation(updatePsuData, consentAuthorization.getScaAuthenticationData());
-        }
 
         UpdateConsentPsuDataResponse response = (UpdateConsentPsuDataResponse) authorisationChainResponsibilityService.apply(
             new AisAuthorisationProcessorRequest(consentAuthorization.getChosenScaApproach(),

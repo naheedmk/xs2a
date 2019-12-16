@@ -24,6 +24,7 @@ import de.adorsys.psd2.xs2a.domain.consent.AccountConsentAuthorization;
 import de.adorsys.psd2.xs2a.domain.consent.CreateConsentAuthorizationResponse;
 import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorResponse;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aAisConsentService;
+import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aAisConsentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RedirectAisAuthorizationService implements AisAuthorizationService {
     private final Xs2aAisConsentService aisConsentService;
+    private final Xs2aAisConsentMapper xs2aAisConsentMapper;
+    private final AisAuthorisationConfirmationService aisAuthorisationConfirmationService;
 
     /**
      * Creates consent authorisation using provided psu id and consent id by invoking CMS through AisConsentService
@@ -62,7 +65,7 @@ public class RedirectAisAuthorizationService implements AisAuthorizationService 
 
     @Override
     public AuthorisationProcessorResponse updateConsentPsuData(UpdateAuthorisationRequest request, AuthorisationProcessorResponse response) {
-        return null;
+        return aisAuthorisationConfirmationService.processAuthorisationConfirmation(xs2aAisConsentMapper.mapToSpiUpdateConsentPsuDataReq(request, response)).getBody();
     }
 
     @Override

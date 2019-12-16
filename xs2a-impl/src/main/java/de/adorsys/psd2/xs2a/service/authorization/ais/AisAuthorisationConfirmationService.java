@@ -16,11 +16,11 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.ais;
 
-import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
+import de.adorsys.psd2.xs2a.domain.consent.AccountConsentAuthorization;
 import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataReq;
 import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataResponse;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
@@ -47,10 +47,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_UNKNOWN_403;
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.ERROR_SCA_CONFIRMATION_CODE;
-import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.FINALISED;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
+import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.AIS_403;
 
 @Slf4j
 @Component
@@ -65,28 +64,40 @@ public class AisAuthorisationConfirmationService {
     private final AisConsentSpi aisConsentSpi;
     private final Xs2aAisConsentMapper aisConsentMapper;
     private final SpiErrorMapper spiErrorMapper;
+    private final AisScaAuthorisationServiceResolver aisScaAuthorisationServiceResolver;
 
     /**
      * Checks authorisation confirmation data. Has two possible flows:
      * - data is checked at XS2A side, we compare the data from DB with the incoming data;
      * - data is transferred to SPI level and checking should be implemented at ASPSP side.
      *
-     * @param request                {@link UpdateConsentPsuDataReq} with all consent information.
-     * @param confirmationCodeFromDb confirmation code from stored in DB.
+     * @param request {@link UpdateConsentPsuDataReq} with all consent information.
      * @return {@link Xs2aUpdatePisCommonPaymentPsuDataResponse} with new authorisation status.
      */
-    public ResponseObject<UpdateConsentPsuDataResponse> processAuthorisationConfirmation(UpdateConsentPsuDataReq request, String confirmationCodeFromDb) {
+    public ResponseObject<UpdateConsentPsuDataResponse> processAuthorisationConfirmation(UpdateConsentPsuDataReq request) {
         String consentId = request.getConsentId();
         String authorisationId = request.getAuthorisationId();
 
-        Optional<ScaStatus> currentStatus = aisConsentService.getAuthorisationScaStatus(consentId, authorisationId);
-        boolean processIsAllowed = currentStatus
-                                       .map(st -> ScaStatus.UNCONFIRMED == st)
-                                       .orElse(false);
+        AisAuthorizationService service = aisScaAuthorisationServiceResolver.getServiceInitiation(authorisationId);
+
+        Optional<AccountConsentAuthorization> authorization = service.getAccountConsentAuthorizationById(authorisationId, consentId);
+
+        if (!authorization.isPresent()) {
+            log.info("InR-ID: [{}], X-Request-ID: [{}], Authorisation-ID: [{}]. Update consent PSU data failed: authorisation not found by ID",
+                     requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getAuthorizationId());
+            return ResponseObject.<UpdateConsentPsuDataResponse>builder()
+                       .fail(AIS_403, of(CONSENT_UNKNOWN_403)).build();
+        }
+
+        AccountConsentAuthorization consentAuthorization = authorization.get();
+
+        ScaStatus currentStatus = consentAuthorization.getScaStatus();
+
+        boolean processIsAllowed = currentStatus == ScaStatus.UNCONFIRMED;
 
         UpdateConsentPsuDataResponse response = processIsAllowed
-                                                    ? processAuthorisationConfirmationInternal(request, confirmationCodeFromDb)
-                                                    : buildFormatErrorResponse(request.getConsentId(), request.getAuthorisationId(), currentStatus.orElse(null));
+                                                    ? processAuthorisationConfirmationInternal(request, consentAuthorization.getScaAuthenticationData())
+                                                    : buildFormatErrorResponse(consentId, authorisationId, currentStatus);
 
         return Optional.ofNullable(response.getErrorHolder())
                    .map(e -> ResponseObject.<UpdateConsentPsuDataResponse>builder()
@@ -107,7 +118,7 @@ public class AisAuthorisationConfirmationService {
         boolean codeCorrect = StringUtils.equals(confirmationCodeReceived, confirmationCodeFromDb);
 
         UpdateConsentPsuDataResponse response = codeCorrect
-                                                    ? new UpdateConsentPsuDataResponse(FINALISED, request.getConsentId(), request.getAuthorisationId())
+                                                    ? new UpdateConsentPsuDataResponse(ScaStatus.FINALISED, request.getConsentId(), request.getAuthorisationId())
                                                     : buildScaConfirmationCodeErrorResponse(request.getConsentId(), request.getAuthorisationId());
 
         aisConsentService.updateConsentAuthorisationStatus(request.getAuthorisationId(), response.getScaStatus());
@@ -134,7 +145,7 @@ public class AisAuthorisationConfirmationService {
 
         UpdateConsentPsuDataResponse response = spiResponse.hasError()
                                                     ? buildConfirmationCodeSpiErrorResponse(spiResponse, consentId, authorisationId)
-                                                    : new UpdateConsentPsuDataResponse(FINALISED, consentId, authorisationId);
+                                                    : new UpdateConsentPsuDataResponse(spiResponse.getPayload().getScaStatus(), consentId, authorisationId);
 
         aisConsentService.updateConsentAuthorisationStatus(authorisationId, response.getScaStatus());
 
@@ -144,7 +155,7 @@ public class AisAuthorisationConfirmationService {
     private UpdateConsentPsuDataResponse buildFormatErrorResponse(String consentId, String authorisationId, ScaStatus currentStatus) {
 
         ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.AIS_400)
-                                      .tppMessages(of(MessageErrorCode.FORMAT_ERROR_SCA_STATUS, ScaStatus.FINALISED.name(), ScaStatus.UNCONFIRMED.name(), currentStatus))
+                                      .tppMessages(of(FORMAT_ERROR_SCA_STATUS, ScaStatus.FINALISED.name(), ScaStatus.UNCONFIRMED.name(), currentStatus))
                                       .build();
 
         log.info("InR-ID: [{}], X-Request-ID: [{}], Authorisation-ID: [{}]. Update consent PSU data failed: SCA status is invalid.",
@@ -175,7 +186,7 @@ public class AisAuthorisationConfirmationService {
     }
 
     private UpdateConsentPsuDataResponse buildConsentNotFoundErrorResponse(String consentId, String authorisationId) {
-        ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.AIS_403)
+        ErrorHolder errorHolder = ErrorHolder.builder(AIS_403)
                                       .tppMessages(of(CONSENT_UNKNOWN_403))
                                       .build();
 

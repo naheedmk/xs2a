@@ -61,7 +61,6 @@ public class PisAuthorisationService {
     private final RequestProviderService requestProviderService;
     private final TppRedirectUriMapper tppRedirectUriMapper;
     private final AuthorisationChainResponsibilityService authorisationChainResponsibilityService;
-    private final PisAuthorisationConfirmationService pisAuthorisationConfirmationService;
 
     /**
      * Sends a POST request to CMS to store created pis authorisation
@@ -107,10 +106,6 @@ public class PisAuthorisationService {
 
         GetPisAuthorisationResponse response = pisAuthorisationResponse.getPayload();
 
-        if (response.getChosenScaApproach() == ScaApproach.REDIRECT) {
-            return pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, response);
-        }
-
         return (Xs2aUpdatePisCommonPaymentPsuDataResponse) authorisationChainResponsibilityService.apply(
             new PisAuthorisationProcessorRequest(scaApproach,
                                                  response.getScaStatus(),
@@ -139,10 +134,6 @@ public class PisAuthorisationService {
         }
 
         GetPisAuthorisationResponse response = pisCancellationAuthorisationResponse.getPayload();
-
-        if (response.getChosenScaApproach() == ScaApproach.REDIRECT) {
-            return pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, response);
-        }
 
         return (Xs2aUpdatePisCommonPaymentPsuDataResponse) authorisationChainResponsibilityService.apply(
             new PisCancellationAuthorisationProcessorRequest(scaApproach,
