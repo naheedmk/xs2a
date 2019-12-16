@@ -111,7 +111,7 @@ public class RedirectPisScaAuthorisationServiceTest {
     @Test
     public void updateCommonPaymentPsuData_success() {
         // Given
-        when(pisAuthorisationConfirmationService.processAuthorisationConfirmation(XS2A_UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST))
+        when(pisAuthorisationConfirmationService.processAuthorisationConfirmation(XS2A_UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST, false))
             .thenReturn(XS2A_UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_RESPONSE);
         // When
         Xs2aUpdatePisCommonPaymentPsuDataResponse actualResponse = redirectPisScaAuthorisationService.updateCommonPaymentPsuData(XS2A_UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST);
@@ -124,7 +124,7 @@ public class RedirectPisScaAuthorisationServiceTest {
     public void updateCommonPaymentPsuData_fail() {
         // Given
         Xs2aUpdatePisCommonPaymentPsuDataResponse errorResponse = buildErrorXs2aUpdatePisCommonPaymentPsuDataResponse();
-        when(pisAuthorisationConfirmationService.processAuthorisationConfirmation(XS2A_UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST))
+        when(pisAuthorisationConfirmationService.processAuthorisationConfirmation(XS2A_UPDATE_PIS_COMMON_PAYMENT_PSU_DATA_REQUEST, false))
             .thenReturn(errorResponse);
 
         // When
