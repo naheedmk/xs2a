@@ -71,14 +71,18 @@ public class PisAuthorisationConfirmationService {
      * - data is checked at XS2A side, we compare the data from DB with the incoming data;
      * - data is transferred to SPI level and checking should be implemented at ASPSP side.
      *
-     * @param request {@link Xs2aUpdatePisCommonPaymentPsuDataRequest} with all payment information.
+     * @param request        {@link Xs2aUpdatePisCommonPaymentPsuDataRequest} with all payment information.
+     * @param isCancellation boolean flag: true in case of cancellation flow, false in case of initiation.
      * @return {@link Xs2aUpdatePisCommonPaymentPsuDataResponse} with new authorisation status.
      */
-    public Xs2aUpdatePisCommonPaymentPsuDataResponse processAuthorisationConfirmation(Xs2aUpdatePisCommonPaymentPsuDataRequest request) {
+    public Xs2aUpdatePisCommonPaymentPsuDataResponse processAuthorisationConfirmation(Xs2aUpdatePisCommonPaymentPsuDataRequest request,
+                                                                                      boolean isCancellation) {
         String paymentId = request.getPaymentId();
         String authorisationId = request.getAuthorisationId();
 
-        CmsResponse<GetPisAuthorisationResponse> pisAuthorisationResponse = pisAuthorisationServiceEncrypted.getPisAuthorisationById(authorisationId);
+        CmsResponse<GetPisAuthorisationResponse> pisAuthorisationResponse = isCancellation
+                                                                                ? pisAuthorisationServiceEncrypted.getPisCancellationAuthorisationById(authorisationId)
+                                                                                : pisAuthorisationServiceEncrypted.getPisAuthorisationById(authorisationId);
         if (pisAuthorisationResponse.hasError()) {
             ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_404)
                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404_NO_AUTHORISATION))

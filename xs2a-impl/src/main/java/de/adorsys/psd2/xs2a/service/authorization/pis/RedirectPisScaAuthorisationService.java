@@ -50,7 +50,7 @@ public class RedirectPisScaAuthorisationService implements PisScaAuthorisationSe
 
     @Override
     public Xs2aUpdatePisCommonPaymentPsuDataResponse updateCommonPaymentPsuData(Xs2aUpdatePisCommonPaymentPsuDataRequest request) {
-        return pisAuthorisationConfirmationService.processAuthorisationConfirmation(request);
+        return pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, false);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class RedirectPisScaAuthorisationService implements PisScaAuthorisationSe
 
     @Override
     public Xs2aUpdatePisCommonPaymentPsuDataResponse updateCommonPaymentCancellationPsuData(Xs2aUpdatePisCommonPaymentPsuDataRequest request) {
-        return pisAuthorisationConfirmationService.processAuthorisationConfirmation(request);
+        return pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, true);
     }
 
     @Override
