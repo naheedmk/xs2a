@@ -16,93 +16,33 @@
 
 package de.adorsys.psd2.consent.service.mapper;
 
-import de.adorsys.psd2.consent.domain.AdditionalPsuData;
 import de.adorsys.psd2.consent.domain.PsuData;
-import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-@Component
-public class PsuDataMapper {
-    public List<PsuData> mapToPsuDataList(List<PsuIdData> psuIdDataList) {
-        List<PsuData> psuDataListResult = psuIdDataList.stream()
-                                              .map(this::mapToPsuData)
-                                              .filter(Objects::nonNull)
-                                              .collect(Collectors.toList());
-        return psuDataListResult;
+@Mapper(injectionStrategy = InjectionStrategy.CONSTRUCTOR, componentModel = "spring")
+public interface PsuDataMapper {
+    List<PsuData> mapToPsuDataList(List<PsuIdData> psuIdDataList);
+
+    List<PsuIdData> mapToPsuIdDataList(List<PsuData> psuIdDataList);
+
+    @Mapping(source = "additionalPsuIdData", target = "additionalPsuData")
+    PsuData mapToPsuData(PsuIdData psuIdData);
+
+    @Mapping(source = "additionalPsuData", target = "additionalPsuIdData")
+    PsuIdData mapToPsuIdData(PsuData psuData);
+
+    default String mapToStringFromUUID(UUID value) {
+        return Optional.ofNullable(value).map(UUID::toString).orElse(null);
     }
 
-    public List<PsuIdData> mapToPsuIdDataList(List<PsuData> psuIdDataList) {
-        return psuIdDataList.stream()
-                   .map(this::mapToPsuIdData)
-                   .collect(Collectors.toList());
-    }
-
-    public PsuData mapToPsuData(PsuIdData psuIdData) {
-        return Optional.ofNullable(psuIdData)
-                   .filter(psu -> StringUtils.isNotBlank(psu.getPsuId()))
-                   .map(psu -> new PsuData(
-                       psu.getPsuId(),
-                       psu.getPsuIdType(),
-                       psu.getPsuCorporateId(),
-                       psu.getPsuCorporateIdType(),
-                       psu.getPsuIpAddress(),
-                       mapToAdditionalPsuData(psu.getAdditionalPsuIdData())
-                   ))
-                   .orElse(null);
-    }
-
-    public PsuIdData mapToPsuIdData(PsuData psuData) {
-        return Optional.ofNullable(psuData)
-                   .filter(psu -> StringUtils.isNotBlank(psu.getPsuId()))
-                   .map(psu -> new PsuIdData(
-                       psu.getPsuId(),
-                       psu.getPsuIdType(),
-                       psu.getPsuCorporateId(),
-                       psu.getPsuCorporateIdType(),
-                       psu.getPsuIpAddress(),
-                       mapToAdditionalPsuIdData(psu.getAdditionalPsuData())
-                   ))
-                   .orElse(null);
-    }
-
-    private AdditionalPsuData mapToAdditionalPsuData(AdditionalPsuIdData additionalPsuIdData) {
-        return Optional.ofNullable(additionalPsuIdData)
-                   .map(dta ->
-                            new AdditionalPsuData(
-                                dta.getPsuIpPort(),
-                                dta.getPsuUserAgent(),
-                                dta.getPsuGeoLocation(),
-                                dta.getPsuAccept(),
-                                dta.getPsuAcceptCharset(),
-                                dta.getPsuAcceptEncoding(),
-                                dta.getPsuAcceptLanguage(),
-                                dta.getPsuHttpMethod(),
-                                Optional.ofNullable(dta.getPsuDeviceId()).map(UUID::toString).orElse(null)
-                            ))
-                   .orElse(null);
-    }
-
-    private AdditionalPsuIdData mapToAdditionalPsuIdData(AdditionalPsuData additionalPsuData) {
-        return Optional.ofNullable(additionalPsuData)
-                   .map(dta -> new AdditionalPsuIdData(
-                            dta.getPsuIpPort(),
-                            dta.getPsuUserAgent(),
-                            dta.getPsuGeoLocation(),
-                            dta.getPsuAccept(),
-                            dta.getPsuAcceptCharset(),
-                            dta.getPsuAcceptEncoding(),
-                            dta.getPsuAcceptLanguage(),
-                            dta.getPsuHttpMethod(),
-                            Optional.ofNullable(dta.getPsuDeviceId()).map(UUID::fromString).orElse(null)
-                        )
-                   ).orElse(null);
+    default UUID mapToUUIDFromString(String value) {
+        return Optional.ofNullable(value).map(UUID::fromString).orElse(null);
     }
 }

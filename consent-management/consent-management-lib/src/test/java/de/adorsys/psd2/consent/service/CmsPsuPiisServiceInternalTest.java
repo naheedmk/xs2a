@@ -22,6 +22,7 @@ import de.adorsys.psd2.consent.repository.PiisConsentRepository;
 import de.adorsys.psd2.consent.repository.specification.PiisConsentEntitySpecification;
 import de.adorsys.psd2.consent.service.mapper.PiisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
+import de.adorsys.psd2.consent.service.mapper.PsuDataMapperImpl;
 import de.adorsys.psd2.consent.service.psu.CmsPsuPiisServiceInternal;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.piis.PiisConsent;
@@ -64,7 +65,7 @@ public class CmsPsuPiisServiceInternalTest {
     @Mock
     private PiisConsentEntitySpecification piisConsentEntitySpecification;
     @Spy
-    private PsuDataMapper psuDataMapper;
+    private PsuDataMapperImpl psuDataMapper;
 
 
     @Before

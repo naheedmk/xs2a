@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {PiisConsentMapper.class, PsuDataMapper.class, TppInfoMapperImpl.class,
+@ContextConfiguration(classes = {PiisConsentMapper.class, PsuDataMapperImpl.class, TppInfoMapperImpl.class,
     AccountReferenceMapper.class})
 public class PiisConsentMapperTest {
     @Autowired
