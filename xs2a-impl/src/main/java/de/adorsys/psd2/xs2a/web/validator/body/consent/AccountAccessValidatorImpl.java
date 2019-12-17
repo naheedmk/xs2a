@@ -92,9 +92,8 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
                                                          .flatMap(Collection::stream);
 
             Stream<AccountReference> additionalReferences = Optional.ofNullable(accountAccess.getAdditionalInformation())
-                                                                .map(info -> Stream.of(info.getOwnerName())
-                                                                                 .filter(Objects::nonNull)
-                                                                                 .flatMap(Collection::stream))
+                                                                .map(de.adorsys.psd2.model.AdditionalInformationAccess::getOwnerName)
+                                                                .map(Collection::stream)
                                                                 .orElseGet(Stream::empty);
 
             Stream.concat(allReferences, additionalReferences)

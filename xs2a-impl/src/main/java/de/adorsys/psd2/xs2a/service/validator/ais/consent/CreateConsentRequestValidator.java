@@ -149,19 +149,18 @@ public class CreateConsentRequestValidator implements BusinessValidator<CreateCo
         Xs2aAccountAccess access = request.getAccess();
 
         AccountAccessType allAccountsWithOwnerName = AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME;
-        boolean isConsentWithAdditionalInformation = Stream.of(isConsentWithAdditionalInformationAccess(access), access.getAvailableAccounts() == allAccountsWithOwnerName,
-                                                               access.getAvailableAccountsWithBalance() == allAccountsWithOwnerName, access.getAllPsd2() == allAccountsWithOwnerName)
+        boolean isConsentWithAdditionalInformation = Stream.of(isConsentWithAdditionalInformationAccess(access),
+                                                               access.getAvailableAccounts() == allAccountsWithOwnerName,
+                                                               access.getAvailableAccountsWithBalance() == allAccountsWithOwnerName,
+                                                               access.getAllPsd2() == allAccountsWithOwnerName)
                                                          .anyMatch(BooleanUtils::isTrue);
 
         return isConsentWithAdditionalInformation && !aspspProfileService.isAccountOwnerInformationSupported();
     }
 
     private boolean isConsentWithAdditionalInformationAccess(Xs2aAccountAccess access) {
-        AdditionalInformationAccess additionalInformationAccess = access.getAdditionalInformationAccess();
-        if (additionalInformationAccess == null) {
-            return false;
-        }
-
-        return additionalInformationAccess.getOwnerName() != null;
+        return Optional.ofNullable(access.getAdditionalInformationAccess())
+                   .map(AdditionalInformationAccess::getOwnerName)
+                   .isPresent();
     }
 }

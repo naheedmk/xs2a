@@ -268,6 +268,6 @@ public class AisConsent extends InstanceDependableEntity {
     }
 
     public boolean checkNoneAdditionalAccountInformation() {
-        return getOwnerNameType().equals(AdditionalAccountInformationType.NONE);
+        return getOwnerNameType() == AdditionalAccountInformationType.NONE;
     }
 }
