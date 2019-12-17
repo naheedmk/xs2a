@@ -128,7 +128,6 @@ public class PisAuthorisationConfirmationServiceTest {
         // when
         Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
 
-
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
     }
@@ -151,7 +150,6 @@ public class PisAuthorisationConfirmationServiceTest {
         // when
         Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
 
-
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
     }
@@ -159,7 +157,6 @@ public class PisAuthorisationConfirmationServiceTest {
     @Test
     public void processAuthorisationConfirmation_failed_NoAuthorisation() {
         // given
-        PsuIdData psuIdData = buildPsuIdData();
         Xs2aUpdatePisCommonPaymentPsuDataRequest request = buildUpdatePisCommonPaymentPsuDataRequest();
 
         ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_404)
@@ -175,7 +172,6 @@ public class PisAuthorisationConfirmationServiceTest {
         // when
         Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
 
-
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
     }
@@ -183,11 +179,10 @@ public class PisAuthorisationConfirmationServiceTest {
     @Test
     public void processAuthorisationConfirmation_failed_WrongScaStatus() {
         // given
-        PsuIdData psuIdData = buildPsuIdData();
         Xs2aUpdatePisCommonPaymentPsuDataRequest request = buildUpdatePisCommonPaymentPsuDataRequest();
 
-        ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_404)
-                                      .tppMessages(TppMessageInformation.of(MessageErrorCode.RESOURCE_UNKNOWN_404_NO_AUTHORISATION))
+        ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_400)
+                                      .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR_SCA_STATUS, ScaStatus.FINALISED.name(), ScaStatus.UNCONFIRMED.name(), ScaStatus.PSUAUTHENTICATED))
                                       .build();
         Xs2aUpdatePisCommonPaymentPsuDataResponse expectedResult = new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
 
@@ -202,7 +197,6 @@ public class PisAuthorisationConfirmationServiceTest {
 
         // when
         Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
-
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
@@ -233,7 +227,6 @@ public class PisAuthorisationConfirmationServiceTest {
         // when
         Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
 
-
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
     }
@@ -247,7 +240,9 @@ public class PisAuthorisationConfirmationServiceTest {
                                                                            .error(new TppMessage(PSU_CREDENTIALS_INVALID))
                                                                            .build();
 
-        ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
+        ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_400)
+                                      .tppMessages(TppMessageInformation.of(MessageErrorCode.ERROR_SCA_CONFIRMATION_CODE))
+                                      .build();
         Xs2aUpdatePisCommonPaymentPsuDataResponse expectedResult = new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
         GetPisAuthorisationResponse authorisationResponse = buildGetPisAuthorisationResponse();
 
@@ -268,12 +263,11 @@ public class PisAuthorisationConfirmationServiceTest {
             .thenReturn(aspspConsentDataProvider);
         when(paymentSpi.checkConfirmationCode(contextData, spiConfirmationCode, payment, aspspConsentDataProvider))
             .thenReturn(spiResponse);
-
+        when(spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS)).thenReturn(errorHolder);
         when(pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(expectedResult)).thenReturn(buildUpdatePisCommonPaymentPsuDataRequest(psuIdData));
 
         // when
         Xs2aUpdatePisCommonPaymentPsuDataResponse actualResult = pisAuthorisationConfirmationService.processAuthorisationConfirmation(request, IS_CANCELLATION);
-
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);

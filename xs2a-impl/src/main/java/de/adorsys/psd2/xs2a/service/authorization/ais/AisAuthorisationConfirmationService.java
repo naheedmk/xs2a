@@ -82,7 +82,7 @@ public class AisAuthorisationConfirmationService {
 
         CmsResponse<AisConsentAuthorizationResponse> authorisation = aisConsentAuthorisationServiceEncrypted.getAccountConsentAuthorizationById(authorisationId, consentId);
 
-        if (!authorisation.hasError()) {
+        if (authorisation.hasError()) {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Authorisation-ID: [{}]. Update consent PSU data failed: authorisation not found by ID",
                      requestProviderService.getInternalRequestId(), requestProviderService.getRequestId(), request.getAuthorizationId());
             return ResponseObject.<UpdateConsentPsuDataResponse>builder()
