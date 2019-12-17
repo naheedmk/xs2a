@@ -32,10 +32,11 @@ import java.util.stream.Collectors;
 @Component
 public class PsuDataMapper {
     public List<PsuData> mapToPsuDataList(List<PsuIdData> psuIdDataList) {
-        return psuIdDataList.stream()
-                   .map(this::mapToPsuData)
-                   .filter(Objects::nonNull)
-                   .collect(Collectors.toList());
+        List<PsuData> psuDataListResult = psuIdDataList.stream()
+                                              .map(this::mapToPsuData)
+                                              .filter(Objects::nonNull)
+                                              .collect(Collectors.toList());
+        return psuDataListResult;
     }
 
     public List<PsuIdData> mapToPsuIdDataList(List<PsuData> psuIdDataList) {
@@ -52,7 +53,8 @@ public class PsuDataMapper {
                        psu.getPsuIdType(),
                        psu.getPsuCorporateId(),
                        psu.getPsuCorporateIdType(),
-                       mapToAdditionalPsuData(psuIdData.getAdditionalPsuIdData())
+                       psu.getPsuIpAddress(),
+                       mapToAdditionalPsuData(psu.getAdditionalPsuIdData())
                    ))
                    .orElse(null);
     }
@@ -65,46 +67,42 @@ public class PsuDataMapper {
                        psu.getPsuIdType(),
                        psu.getPsuCorporateId(),
                        psu.getPsuCorporateIdType(),
-                       mapToAdditionalPsuIdData(psuData.getAdditionalPsuData())
+                       psu.getPsuIpAddress(),
+                       mapToAdditionalPsuIdData(psu.getAdditionalPsuData())
                    ))
                    .orElse(null);
     }
 
     private AdditionalPsuData mapToAdditionalPsuData(AdditionalPsuIdData additionalPsuIdData) {
         return Optional.ofNullable(additionalPsuIdData)
-                   .map(additionalData ->
+                   .map(dta ->
                             new AdditionalPsuData(
-                                additionalPsuIdData.getPsuIpAddress(),
-                                additionalPsuIdData.getPsuIpPort(),
-                                additionalPsuIdData.getPsuUserAgent(),
-                                additionalPsuIdData.getPsuGeoLocation(),
-                                additionalPsuIdData.getPsuAccept(),
-                                additionalPsuIdData.getPsuAcceptCharset(),
-                                additionalPsuIdData.getPsuAcceptEncoding(),
-                                additionalPsuIdData.getPsuAcceptLanguage(),
-                                additionalPsuIdData.getPsuHttpMethod(),
-                                additionalPsuIdData.getPsuDeviceId()
+                                dta.getPsuIpPort(),
+                                dta.getPsuUserAgent(),
+                                dta.getPsuGeoLocation(),
+                                dta.getPsuAccept(),
+                                dta.getPsuAcceptCharset(),
+                                dta.getPsuAcceptEncoding(),
+                                dta.getPsuAcceptLanguage(),
+                                dta.getPsuHttpMethod(),
+                                Optional.ofNullable(dta.getPsuDeviceId()).map(UUID::toString).orElse(null)
                             ))
                    .orElse(null);
     }
 
     private AdditionalPsuIdData mapToAdditionalPsuIdData(AdditionalPsuData additionalPsuData) {
         return Optional.ofNullable(additionalPsuData)
-                   .map(additionalData -> {
-                            String psuDeviceId = additionalPsuData.getPsuDeviceId();
-                            AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(
-                                additionalPsuData.getPsuIpAddress(),
-                                additionalPsuData.getPsuIpPort(),
-                                additionalPsuData.getPsuUserAgent(),
-                                additionalPsuData.getPsuGeoLocation(),
-                                additionalPsuData.getPsuAccept(),
-                                additionalPsuData.getPsuAcceptCharset(),
-                                additionalPsuData.getPsuAcceptEncoding(),
-                                additionalPsuData.getPsuAcceptLanguage(),
-                                additionalPsuData.getPsuHttpMethod(),
-                                psuDeviceId == null ? null : UUID.fromString(additionalPsuData.getPsuDeviceId()));
-                            return additionalPsuIdData;
-                        }
+                   .map(dta -> new AdditionalPsuIdData(
+                            dta.getPsuIpPort(),
+                            dta.getPsuUserAgent(),
+                            dta.getPsuGeoLocation(),
+                            dta.getPsuAccept(),
+                            dta.getPsuAcceptCharset(),
+                            dta.getPsuAcceptEncoding(),
+                            dta.getPsuAcceptLanguage(),
+                            dta.getPsuHttpMethod(),
+                            Optional.ofNullable(dta.getPsuDeviceId()).map(UUID::fromString).orElse(null)
+                        )
                    ).orElse(null);
     }
 }

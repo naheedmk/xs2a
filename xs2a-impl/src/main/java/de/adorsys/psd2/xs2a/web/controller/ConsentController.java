@@ -79,12 +79,8 @@ public class ConsentController implements ConsentApi {
 
         CreateConsentReq createConsent = consentModelMapper.mapToCreateConsentReq(body, tppRedirectUri, tpPNotificationURI, notificationModes);
 
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
-        AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(psUIPAddress, psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID);
-
-        if (psuData.isNotEmpty() && additionalPsuIdData.isNotEmpty()) {
-            psuData.setAdditionalPsuIdData(additionalPsuIdData);
-        }
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
+        psuData.setAdditionalPsuIdData(new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
 
         ResponseObject<CreateConsentResponse> createResponse =
             consentService.createAccountConsentsWithResponse(createConsent, psuData, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred));
@@ -130,7 +126,7 @@ public class ConsentController implements ConsentApi {
                                                     String psUAcceptLanguage, String psUUserAgent,
                                                     String psUHttpMethod, UUID psUDeviceID,
                                                     String psUGeoLocation) {
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
 
         String password = authorisationMapper.mapToPasswordFromBody((Map) body);
 
@@ -156,7 +152,7 @@ public class ConsentController implements ConsentApi {
                                                 String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage,
                                                 String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
 
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
 
         return updateAisAuthorisation(psuData, authorisationId, consentId, body);
     }

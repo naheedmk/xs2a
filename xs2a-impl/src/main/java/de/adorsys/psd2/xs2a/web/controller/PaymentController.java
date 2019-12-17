@@ -151,12 +151,8 @@ public class PaymentController implements PaymentApi {
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
 
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
-        AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(psUIPAddress, psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID);
-
-        if (psuData.isNotEmpty() && additionalPsuIdData.isNotEmpty()) {
-            psuData.setAdditionalPsuIdData(additionalPsuIdData);
-        }
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
+        psuData.setAdditionalPsuIdData(new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
 
         List<NotificationSupportedMode> notificationModes = notificationSupportedModeService.getProcessedNotificationModes(tpPNotificationContentPreferred);
         PaymentInitiationParameters paymentInitiationParameters = paymentModelMapperPsd2.mapToPaymentRequestParameters(paymentProduct, paymentService, tpPSignatureCertificate, tpPRedirectURI, tpPNokRedirectURI, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred), psuData, tpPNotificationURI, notificationModes);
@@ -199,12 +195,8 @@ public class PaymentController implements PaymentApi {
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
 
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
-        AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(psUIPAddress, psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID);
-
-        if (psuData.isNotEmpty() && additionalPsuIdData.isNotEmpty()) {
-            psuData.setAdditionalPsuIdData(additionalPsuIdData);
-        }
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
+        psuData.setAdditionalPsuIdData(new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
 
         List<NotificationSupportedMode> notificationModes = notificationSupportedModeService.getProcessedNotificationModes(tpPNotificationContentPreferred);
 
@@ -247,12 +239,8 @@ public class PaymentController implements PaymentApi {
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
 
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
-        AdditionalPsuIdData additionalPsuIdData = new AdditionalPsuIdData(psUIPAddress, psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID);
-
-        if (psuData.isNotEmpty() && additionalPsuIdData.isNotEmpty()) {
-            psuData.setAdditionalPsuIdData(additionalPsuIdData);
-        }
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
+        psuData.setAdditionalPsuIdData(new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
 
         List<NotificationSupportedMode> notificationModes = notificationSupportedModeService.getProcessedNotificationModes(tpPNotificationContentPreferred);
 
@@ -398,7 +386,7 @@ public class PaymentController implements PaymentApi {
                                                                    .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
 
         Xs2aCreatePisAuthorisationRequest createRequest = authorisationMapper.mapToXs2aCreatePisAuthorisationRequest(psuData, paymentId, paymentType.get(), paymentProduct, (Map) body);
 
@@ -436,7 +424,7 @@ public class PaymentController implements PaymentApi {
                                                                                    .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
         Xs2aCreatePisAuthorisationRequest createRequest = authorisationMapper.mapToXs2aCreatePisAuthorisationRequest(psuData, paymentId, paymentType.get(), paymentProduct, (Map) body);
 
         ResponseObject<CancellationAuthorisationResponse> serviceResponse = paymentCancellationAuthorisationService.createPisCancellationAuthorisation(createRequest);
@@ -465,7 +453,7 @@ public class PaymentController implements PaymentApi {
                                                                                            .fail(ErrorType.PIS_404, TppMessageInformation.of(RESOURCE_UNKNOWN_404)).build();
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
         ResponseObject<Xs2aUpdatePisCommonPaymentPsuDataResponse> serviceResponse = paymentCancellationAuthorisationService.updatePisCancellationPsuData(consentModelMapper.mapToPisUpdatePsuData(psuData, paymentId, cancellationId, paymentType.get(), paymentProduct, (Map) body));
 
         if (serviceResponse.hasError()) {
@@ -485,7 +473,7 @@ public class PaymentController implements PaymentApi {
                                                String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod,
                                                UUID psUDeviceID, String psUGeoLocation) {
 
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType);
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
         return updatePisAuthorisation(psuData, authorisationId, paymentService, paymentProduct, paymentId, body);
     }
 

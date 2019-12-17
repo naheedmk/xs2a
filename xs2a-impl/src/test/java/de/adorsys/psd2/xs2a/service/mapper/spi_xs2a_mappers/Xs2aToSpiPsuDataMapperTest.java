@@ -48,7 +48,7 @@ public class Xs2aToSpiPsuDataMapperTest {
     @Test
     public void mapToSpiPsuData_WithAdditionalPsuData() {
         //Given
-        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE);
+        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE, PSU_IP_ADDRESS);
         psuIdData.setAdditionalPsuIdData(buildAdditionalPsuData());
         SpiPsuData spiPsuDataExpected = buildSpiPsuDataWithAdditionalPsuData();
         //When
@@ -61,7 +61,7 @@ public class Xs2aToSpiPsuDataMapperTest {
     @Test
     public void mapToSpiPsuData_WithoutAdditionalPsuData() {
         //Given
-        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE);
+        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE, PSU_IP_ADDRESS);
         SpiPsuData spiPsuDataExpected = buildSpiPsuDataWithoutAdditionalPsuData();
         //When
         SpiPsuData spiPsuDataActual = xs2aToSpiPsuDataMapper.mapToSpiPsuData(psuIdData);
@@ -84,7 +84,7 @@ public class Xs2aToSpiPsuDataMapperTest {
     @Test
     public void mapToSpiPsuDataList() {
         //Given
-        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE);
+        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE, PSU_IP_ADDRESS);
         SpiPsuData spiPsuDataExpected = buildSpiPsuDataWithoutAdditionalPsuData();
         //When
         List<SpiPsuData> spiPsuDataListActual = xs2aToSpiPsuDataMapper.mapToSpiPsuDataList(Collections.singletonList(psuIdData));
@@ -107,7 +107,7 @@ public class Xs2aToSpiPsuDataMapperTest {
 
 
     private AdditionalPsuIdData buildAdditionalPsuData() {
-        return new AdditionalPsuIdData(PSU_IP_ADDRESS, PSU_IP_PORT, PSU_USER_AGENT, PSU_GEO_LOCATION, PSU_ACCEPT, PSU_ACCEPT_CHARSET, PSU_ACCEPT_ENCODING, PSU_ACCEPT_LANGUAGE, PSU_HTTP_METHOD, PSU_DEVICE_ID);
+        return new AdditionalPsuIdData(PSU_IP_PORT, PSU_USER_AGENT, PSU_GEO_LOCATION, PSU_ACCEPT, PSU_ACCEPT_CHARSET, PSU_ACCEPT_ENCODING, PSU_ACCEPT_LANGUAGE, PSU_HTTP_METHOD, PSU_DEVICE_ID);
     }
 
     private SpiPsuData buildEmptySpiPsuData() {
@@ -115,7 +115,7 @@ public class Xs2aToSpiPsuDataMapperTest {
     }
 
     private SpiPsuData buildSpiPsuDataWithoutAdditionalPsuData() {
-        return new SpiPsuData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE, null, null, null, null, null, null, null, null, null, null);
+        return new SpiPsuData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE, PSU_IP_ADDRESS, null, null, null, null, null, null, null, null, null);
     }
 
     private SpiPsuData buildSpiPsuDataWithAdditionalPsuData() {

@@ -39,4 +39,99 @@ public class SpiPsuData {
     private String psuAcceptLanguage;
     private String psuHttpMethod;
     private UUID psuDeviceId;
+
+    public static SpiPsuDataBuilder builder() {
+        return new SpiPsuDataBuilder();
+    }
+
+    public static class SpiPsuDataBuilder {
+        private String psuId;
+        private String psuIdType;
+        private String psuCorporateId;
+        private String psuCorporateIdType;
+        private String psuIpAddress;
+        private String psuIpPort;
+        private String psuUserAgent;
+        private String psuGeoLocation;
+        private String psuAccept;
+        private String psuAcceptCharset;
+        private String psuAcceptEncoding;
+        private String psuAcceptLanguage;
+        private String psuHttpMethod;
+        private UUID psuDeviceId;
+
+        public SpiPsuDataBuilder psuId(String psuId) {
+            this.psuId = psuId;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuIdType(String psuIdType) {
+            this.psuIdType = psuIdType;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuCorporateId(String psuCorporateId) {
+            this.psuCorporateId = psuCorporateId;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuCorporateIdType(String psuCorporateIdType) {
+            this.psuCorporateIdType = psuCorporateIdType;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuIpAddress(String psuIpAddress) {
+            this.psuIpAddress = psuIpAddress;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuIpPort(String psuIpPort) {
+            this.psuIpPort = psuIpPort;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuUserAgent(String psuUserAgent) {
+            this.psuUserAgent = psuUserAgent;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuGeoLocation(String psuGeoLocation) {
+            this.psuGeoLocation = psuGeoLocation;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuAccept(String psuAccept) {
+            this.psuAccept = psuAccept;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuAcceptCharset(String psuAcceptCharset) {
+            this.psuAcceptCharset = psuAcceptCharset;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuAcceptEncoding(String psuAcceptEncoding) {
+            this.psuAcceptEncoding = psuAcceptEncoding;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuAcceptLanguage(String psuAcceptLanguage) {
+            this.psuAcceptLanguage = psuAcceptLanguage;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuHttpMethod(String psuHttpMethod) {
+            this.psuHttpMethod = psuHttpMethod;
+            return this;
+        }
+
+        public SpiPsuDataBuilder psuDeviceId(UUID psuDeviceId) {
+            this.psuDeviceId = psuDeviceId;
+            return this;
+        }
+
+        public SpiPsuData build() {
+            return new SpiPsuData(psuId, psuIdType, psuCorporateId, psuCorporateIdType, psuIpAddress, psuIpPort, psuUserAgent, psuGeoLocation, psuAccept, psuAcceptCharset, psuAcceptEncoding, psuAcceptLanguage, psuHttpMethod, psuDeviceId);
+        }
+    }
 }

@@ -148,7 +148,7 @@ public class Xs2aToSpiBulkPaymentMapperTest {
     }
 
     private PsuIdData buildPsu(String psuId) {
-        return new PsuIdData(psuId, null, null, null);
+        return new PsuIdData(psuId, null, null, null, null);
     }
 
     private SpiPsuData buildSpiPsu(String psuId) {

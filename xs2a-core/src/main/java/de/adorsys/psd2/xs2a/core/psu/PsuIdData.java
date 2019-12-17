@@ -42,22 +42,25 @@ public class PsuIdData {
     @Nullable
     private String psuCorporateIdType;
 
+    private String psuIpAddress;
+
     @NonFinal
     private AdditionalPsuIdData additionalPsuIdData;
 
     public PsuIdData() {
-        this(null, null, null, null);
+        this(null, null, null, null, null);
     }
 
-    public PsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType) {
+    public PsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType, String psuIpAddress) {
         this.psuId = psuId;
         this.psuIdType = psuIdType;
         this.psuCorporateId = psuCorporateId;
         this.psuCorporateIdType = psuCorporateIdType;
+        this.psuIpAddress = psuIpAddress;
     }
 
-    public PsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType, AdditionalPsuIdData additionalPsuIdData) {
-        this(psuId, psuIdType, psuCorporateId, psuCorporateIdType);
+    public PsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType, String psuIpAddress, AdditionalPsuIdData additionalPsuIdData) {
+        this(psuId, psuIdType, psuCorporateId, psuCorporateIdType, psuIpAddress);
         this.additionalPsuIdData = additionalPsuIdData;
     }
 
@@ -73,7 +76,9 @@ public class PsuIdData {
     }
 
     public void setAdditionalPsuIdData(AdditionalPsuIdData additionalPsuIdData) {
-        this.additionalPsuIdData = additionalPsuIdData;
+        if(additionalPsuIdData.isNotEmpty()){
+            this.additionalPsuIdData = additionalPsuIdData;
+        }
     }
 
     @JsonIgnore

@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Data
 @NoArgsConstructor
 public class AdditionalPsuIdData {
-    private String psuIpAddress;
     private String psuIpPort;
     private String psuUserAgent;
     private String psuGeoLocation;
@@ -18,11 +19,10 @@ public class AdditionalPsuIdData {
     private String psuAcceptEncoding;
     private String psuAcceptLanguage;
     private String psuHttpMethod;
-    private String psuDeviceId;
+    private UUID psuDeviceId;
 
-    public AdditionalPsuIdData(String psuIpAddress, String psuIpPort, String psuUserAgent, String psuGeoLocation, String psuAccept, String psuAcceptCharset,
+    public AdditionalPsuIdData( String psuIpPort, String psuUserAgent, String psuGeoLocation, String psuAccept, String psuAcceptCharset,
                                String psuAcceptEncoding, String psuAcceptLanguage, String psuHttpMethod, UUID psuDeviceId) {
-        this.psuIpAddress = psuIpAddress;
         this.psuIpPort = psuIpPort;
         this.psuUserAgent = psuUserAgent;
         this.psuGeoLocation = psuGeoLocation;
@@ -31,15 +31,15 @@ public class AdditionalPsuIdData {
         this.psuAcceptEncoding = psuAcceptEncoding;
         this.psuAcceptLanguage = psuAcceptLanguage;
         this.psuHttpMethod = psuHttpMethod;
-        this.psuDeviceId = psuDeviceId == null ? null : psuDeviceId.toString();
+        this.psuDeviceId = psuDeviceId;
     }
 
     @JsonIgnore
     public boolean isEmpty() {
-        return psuIpAddress == null && psuIpPort == null && psuUserAgent == null && psuGeoLocation == null && psuAccept == null
-                   && psuAcceptCharset == null && psuAcceptEncoding == null && psuAcceptLanguage == null && psuHttpMethod == null && psuDeviceId == null;
+        return Stream.of(psuIpPort, psuUserAgent, psuGeoLocation, psuAccept, psuAcceptCharset, psuAcceptEncoding, psuAcceptLanguage, psuHttpMethod, psuDeviceId).allMatch(Objects::isNull);
     }
 
+    @JsonIgnore
     public boolean isNotEmpty() {
         return !isEmpty();
     }

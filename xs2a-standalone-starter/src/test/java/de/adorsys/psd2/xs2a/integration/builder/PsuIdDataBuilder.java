@@ -39,21 +39,24 @@ public class PsuIdDataBuilder {
 
 
     public static PsuIdData buildPsuIdData() {
-        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE);
+        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, PSU_IP_ADDRESS);
         psuIdData.setAdditionalPsuIdData(buildAdditionalPsuIdData());
         return psuIdData;
     }
 
     public static PsuIdData buildPsuIdData(String psuId) {
-        return new PsuIdData(psuId, null, null, null);
+        return new PsuIdData(psuId, null, null, null, null);
     }
 
     public static PsuIdData buildEmptyPsuIdData() {
-        PsuIdData psuIdData = new PsuIdData(null, null, null, null);
-        return psuIdData;
+        return new PsuIdData(null, null, null, null, null);
+    }
+
+    public static PsuIdData buildPsuIdDataWithIpAddress() {
+        return new PsuIdData(null, null, null, null, PSU_IP_ADDRESS);
     }
 
     private static AdditionalPsuIdData buildAdditionalPsuIdData() {
-        return new AdditionalPsuIdData(PSU_IP_ADDRESS, PSU_IP_PORT, PSU_USER_AGENT, PSU_GEO_LOCATION, PSU_ACCEPT, PSU_ACCEPT_CHARSET, PSU_ACCEPT_ENCODING, PSU_ACCEPT_LANGUAGE, PSU_HTTP_METHOD, UUID.fromString(PSU_DEVICE_ID));
+        return new AdditionalPsuIdData(PSU_IP_PORT, PSU_USER_AGENT, PSU_GEO_LOCATION, PSU_ACCEPT, PSU_ACCEPT_CHARSET, PSU_ACCEPT_ENCODING, PSU_ACCEPT_LANGUAGE, PSU_HTTP_METHOD, UUID.fromString(PSU_DEVICE_ID));
     }
 }

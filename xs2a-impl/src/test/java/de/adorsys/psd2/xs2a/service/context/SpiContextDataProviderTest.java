@@ -52,7 +52,7 @@ public class SpiContextDataProviderTest {
     private static final String PSU_ACCEPT_LANGUAGE = "psuAcceptLanguage";
     private static final String PSU_HTTP_METHOD = "psuHttpMethod";
     private static final UUID PSU_DEVICE_ID = UUID.randomUUID();
-    private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType");
+    private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType","psuIpAddress");
     private static final SpiPsuData SPI_PSU_DATA = new SpiPsuData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType", PSU_IP_ADDRESS, PSU_IP_PORT, PSU_USER_AGENT, PSU_GEO_LOCATION, PSU_ACCEPT, PSU_ACCEPT_CHARSET, PSU_ACCEPT_ENCODING, PSU_ACCEPT_LANGUAGE, PSU_HTTP_METHOD, PSU_DEVICE_ID);
     private static final SpiContextData SPI_CONTEXT_DATA = buildSpiContextData(null);
     private static final SpiContextData SPI_CONTEXT_DATA_WITH_PSU_DATA = buildSpiContextData(SPI_PSU_DATA);

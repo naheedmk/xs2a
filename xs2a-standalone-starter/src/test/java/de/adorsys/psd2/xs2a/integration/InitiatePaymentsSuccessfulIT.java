@@ -190,6 +190,15 @@ public class InitiatePaymentsSuccessfulIT {
         httpHeadersImplicitNoPsuData.remove("PSU-ID-Type");
         httpHeadersImplicitNoPsuData.remove("PSU-Corporate-ID");
         httpHeadersImplicitNoPsuData.remove("PSU-Corporate-ID-Type");
+        httpHeadersImplicitNoPsuData.remove("PSU-IP-Port");
+        httpHeadersImplicitNoPsuData.remove("PSU-User-Agent");
+        httpHeadersImplicitNoPsuData.remove("PSU-Geo-Location");
+        httpHeadersImplicitNoPsuData.remove("PSU-Accept");
+        httpHeadersImplicitNoPsuData.remove("PSU-Accept-Charset");
+        httpHeadersImplicitNoPsuData.remove("PSU-Accept-Encoding");
+        httpHeadersImplicitNoPsuData.remove("PSU-Accept-Language");
+        httpHeadersImplicitNoPsuData.remove("PSU-Http-Method");
+        httpHeadersImplicitNoPsuData.remove("PSU-Device-ID");
 
         httpHeadersExplicit.setAll(headerMap);
         // when we use Explicit auth mode we need to set 'true' and value 'signingBasketSupported' in profile also should be 'true'
@@ -200,6 +209,15 @@ public class InitiatePaymentsSuccessfulIT {
         httpHeadersExplicitNoPsuData.remove("PSU-ID-Type");
         httpHeadersExplicitNoPsuData.remove("PSU-Corporate-ID");
         httpHeadersExplicitNoPsuData.remove("PSU-Corporate-ID-Type");
+        httpHeadersExplicitNoPsuData.remove("PSU-IP-Port");
+        httpHeadersExplicitNoPsuData.remove("PSU-User-Agent");
+        httpHeadersExplicitNoPsuData.remove("PSU-Geo-Location");
+        httpHeadersExplicitNoPsuData.remove("PSU-Accept");
+        httpHeadersExplicitNoPsuData.remove("PSU-Accept-Charset");
+        httpHeadersExplicitNoPsuData.remove("PSU-Accept-Encoding");
+        httpHeadersExplicitNoPsuData.remove("PSU-Accept-Language");
+        httpHeadersExplicitNoPsuData.remove("PSU-Http-Method");
+        httpHeadersExplicitNoPsuData.remove("PSU-Device-ID");
 
         responseMap.put(false, PaymentType.SINGLE, ScaApproach.REDIRECT, "", "", "/json/payment/res/implicit/SinglePaymentInitiate_redirect_implicit_response.json");
         responseMap.put(false, PaymentType.SINGLE, ScaApproach.REDIRECT, "", "psuIdDataIsEmpty", "/json/payment/res/implicit/SinglePaymentInitiate_redirect_implicit_psuIdDataIsEmpty_response.json");
@@ -461,7 +479,7 @@ public class InitiatePaymentsSuccessfulIT {
     }
 
     private CreatePisAuthorisationRequest getPisAuthorisationRequestWithEmptyPsuIdData(ScaApproach scaApproach) {
-        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PsuIdDataBuilder.buildEmptyPsuIdData(), scaApproach, TPP_REDIRECT_URIs);
+        return new CreatePisAuthorisationRequest(PaymentAuthorisationType.CREATED, PsuIdDataBuilder.buildPsuIdDataWithIpAddress(), scaApproach, TPP_REDIRECT_URIs);
     }
 
     private void initiateSinglePayment_successful(HttpHeaders headers, ScaApproach scaApproach, boolean multilevelSca, boolean isPsuIdDataEmpty) throws Exception {
@@ -489,6 +507,7 @@ public class InitiatePaymentsSuccessfulIT {
                               ? (String) responseMapSigningBasketMode.get(isExplicitMethod(headers, multilevelSca), PaymentType.SINGLE, scaApproach, multilevelScaKey(multilevelSca), psuIdDataEmptyKey(isPsuIdDataEmpty))
                               : (String) responseMap.get(isExplicitMethod(headers, multilevelSca), PaymentType.SINGLE, scaApproach, multilevelScaKey(multilevelSca), psuIdDataEmptyKey(isPsuIdDataEmpty));
 
+        System.out.println(content());
         //Then
         resultActions.andExpect(status().isCreated())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))

@@ -15,8 +15,6 @@ public class AdditionalPsuData {
     @SequenceGenerator(name = "additional_psu_data_generator", sequenceName = "additional_psu_data_id_seq", allocationSize = 1)
     private Long id;
     @Column
-    private String psuIpAddress;
-    @Column
     private String psuIpPort;
     @Column
     private String psuUserAgent;
@@ -35,8 +33,7 @@ public class AdditionalPsuData {
     @Column
     private String psuDeviceId;
 
-    public AdditionalPsuData(String psuIpAddress, String psuIpPort, String psuUserAgent, String psuGeoLocation, String psuAccept, String psuAcceptCharset, String psuAcceptEncoding, String psuAcceptLanguage, String psuHttpMethod, String psuDeviceId) {
-        this.psuIpAddress = psuIpAddress;
+    public AdditionalPsuData(String psuIpPort, String psuUserAgent, String psuGeoLocation, String psuAccept, String psuAcceptCharset, String psuAcceptEncoding, String psuAcceptLanguage, String psuHttpMethod, String psuDeviceId) {
         this.psuIpPort = psuIpPort;
         this.psuUserAgent = psuUserAgent;
         this.psuGeoLocation = psuGeoLocation;

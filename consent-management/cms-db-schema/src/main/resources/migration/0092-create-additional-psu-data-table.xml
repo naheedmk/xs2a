@@ -33,9 +33,8 @@
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="psu_ip_address" type="VARCHAR(50)"/>
             <column name="psu_ip_port" type="VARCHAR(50)"/>
-            <column name="psu_user_agent" type="VARCHAR(50)"/>
+            <column name="psu_user_agent" type="VARCHAR(200)"/>
             <column name="psu_geo_location" type="VARCHAR(50)"/>
             <column name="psu_accept" type="VARCHAR(50)"/>
             <column name="psu_accept_charset" type="VARCHAR(50)"/>
@@ -50,6 +49,7 @@
         <comment>Modify psu_data table</comment>
 
         <addColumn tableName="psu_data">
+            <column name="psu_ip_address" type="VARCHAR(50)"/>
             <column name="additional_psu_data_id" type="BIGINT"/>
         </addColumn>
         <addForeignKeyConstraint baseTableName="psu_data" baseColumnNames="additional_psu_data_id"
