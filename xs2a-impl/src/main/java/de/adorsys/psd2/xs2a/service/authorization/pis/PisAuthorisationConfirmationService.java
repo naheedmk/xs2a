@@ -100,17 +100,19 @@ public class PisAuthorisationConfirmationService {
         boolean processIsAllowed = status == ScaStatus.UNCONFIRMED;
 
         return processIsAllowed
-                   ? processAuthorisationConfirmationInternal(request, pisAuthorisationResponse.getPayload())
+                   ? processAuthorisationConfirmationInternal(request, pisAuthorisationResponse.getPayload(), isCancellation)
                    : buildFormatErrorResponse(paymentId, authorisationId, status, request.getPsuData());
     }
 
-    private Xs2aUpdatePisCommonPaymentPsuDataResponse processAuthorisationConfirmationInternal(Xs2aUpdatePisCommonPaymentPsuDataRequest request, GetPisAuthorisationResponse getPisAuthorisationResponse) {
+    private Xs2aUpdatePisCommonPaymentPsuDataResponse processAuthorisationConfirmationInternal(Xs2aUpdatePisCommonPaymentPsuDataRequest request,
+                                                                                               GetPisAuthorisationResponse getPisAuthorisationResponse,
+                                                                                               boolean isCancellation) {
         return aspspProfileServiceWrapper.isAuthorisationConfirmationCheckByXs2a()
-                   ? checkAuthorisationConfirmationXs2a(request, getPisAuthorisationResponse)
+                   ? checkAuthorisationConfirmationXs2a(request, getPisAuthorisationResponse, isCancellation)
                    : checkAuthorisationConfirmationOnSpi(request, getPisAuthorisationResponse);
     }
 
-    private Xs2aUpdatePisCommonPaymentPsuDataResponse checkAuthorisationConfirmationXs2a(Xs2aUpdatePisCommonPaymentPsuDataRequest request, GetPisAuthorisationResponse pisAuthorisationResponse) {
+    private Xs2aUpdatePisCommonPaymentPsuDataResponse checkAuthorisationConfirmationXs2a(Xs2aUpdatePisCommonPaymentPsuDataRequest request, GetPisAuthorisationResponse pisAuthorisationResponse, boolean isCancellation) {
         boolean codeCorrect = StringUtils.equals(request.getConfirmationCode(), pisAuthorisationResponse.getScaAuthenticationData());
 
         Xs2aUpdatePisCommonPaymentPsuDataResponse response = codeCorrect
@@ -118,7 +120,12 @@ public class PisAuthorisationConfirmationService {
                                                                  : buildScaConfirmationCodeErrorResponse(request);
 
         UpdatePisCommonPaymentPsuDataRequest updatePaymentRequest = pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(response);
-        pisAuthorisationServiceEncrypted.updatePisAuthorisation(updatePaymentRequest.getAuthorizationId(), updatePaymentRequest);
+
+        if (isCancellation) {
+            pisAuthorisationServiceEncrypted.updatePisCancellationAuthorisation(updatePaymentRequest.getAuthorizationId(), updatePaymentRequest);
+        } else {
+            pisAuthorisationServiceEncrypted.updatePisAuthorisation(updatePaymentRequest.getAuthorizationId(), updatePaymentRequest);
+        }
 
         return response;
     }
