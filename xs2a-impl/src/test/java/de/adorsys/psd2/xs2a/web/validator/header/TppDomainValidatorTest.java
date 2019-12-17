@@ -117,8 +117,6 @@ public class TppDomainValidatorTest {
     @Test
     public void validate_UrlHeaderCorrect_withPage_Valid() {
         //Given
-        when(scaApproachResolver.resolveScaApproach())
-            .thenReturn(ScaApproach.REDIRECT);
         when(tppService.getTppInfo())
             .thenReturn(buildTppInfo(TPP_NAME_DOMAIN, TPP_DNS_DOMAIN));
         //When
