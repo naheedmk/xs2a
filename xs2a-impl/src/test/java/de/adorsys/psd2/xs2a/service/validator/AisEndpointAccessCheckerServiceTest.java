@@ -38,8 +38,6 @@ public class AisEndpointAccessCheckerServiceTest {
 
     private static final String AUTHORISATION_ID = "11111111";
     private static final String CONSENT_ID = "22222222";
-    private static final AccountConsentAuthorization CONSENT_AUTHORISATION_RECEIVED = buildAccountConsentAuthorization(ScaStatus.RECEIVED);
-    private static final AccountConsentAuthorization CONSENT_AUTHORISATION_UNCONFIRMED = buildAccountConsentAuthorization(ScaStatus.UNCONFIRMED);
 
     @InjectMocks
     private AisEndpointAccessCheckerService aisEndpointAccessCheckerService;
@@ -57,7 +55,7 @@ public class AisEndpointAccessCheckerServiceTest {
             .thenReturn(true);
 
         when(aisConsentService.getAccountConsentAuthorizationById(AUTHORISATION_ID, CONSENT_ID))
-            .thenReturn(Optional.of(CONSENT_AUTHORISATION_RECEIVED));
+            .thenReturn(Optional.of(buildAccountConsentAuthorization(ScaStatus.RECEIVED, ScaApproach.REDIRECT)));
 
         boolean actual = aisEndpointAccessCheckerService.isEndpointAccessible(AUTHORISATION_ID, CONSENT_ID, true);
 
@@ -71,16 +69,44 @@ public class AisEndpointAccessCheckerServiceTest {
             .thenReturn(true);
 
         when(aisConsentService.getAccountConsentAuthorizationById(AUTHORISATION_ID, CONSENT_ID))
-            .thenReturn(Optional.of(CONSENT_AUTHORISATION_UNCONFIRMED));
+            .thenReturn(Optional.of(buildAccountConsentAuthorization(ScaStatus.UNCONFIRMED, ScaApproach.REDIRECT)));
 
         boolean actual = aisEndpointAccessCheckerService.isEndpointAccessible(AUTHORISATION_ID, CONSENT_ID, true);
 
         assertTrue(actual);
     }
 
-    private static AccountConsentAuthorization buildAccountConsentAuthorization(ScaStatus scaStatus) {
+    @Test
+    public void isEndpointAccessible_Unconfirmed_Decoupled_true() {
+
+        when(aspspProfileService.isAuthorisationConfirmationRequestMandated())
+            .thenReturn(true);
+
+        when(aisConsentService.getAccountConsentAuthorizationById(AUTHORISATION_ID, CONSENT_ID))
+            .thenReturn(Optional.of(buildAccountConsentAuthorization(ScaStatus.UNCONFIRMED, ScaApproach.DECOUPLED)));
+
+        boolean actual = aisEndpointAccessCheckerService.isEndpointAccessible(AUTHORISATION_ID, CONSENT_ID, true);
+
+        assertTrue(actual);
+    }
+
+    @Test
+    public void isEndpointAccessible_Unconfirmed_Embedded_true() {
+
+        when(aspspProfileService.isAuthorisationConfirmationRequestMandated())
+            .thenReturn(true);
+
+        when(aisConsentService.getAccountConsentAuthorizationById(AUTHORISATION_ID, CONSENT_ID))
+            .thenReturn(Optional.of(buildAccountConsentAuthorization(ScaStatus.UNCONFIRMED, ScaApproach.EMBEDDED)));
+
+        boolean actual = aisEndpointAccessCheckerService.isEndpointAccessible(AUTHORISATION_ID, CONSENT_ID, true);
+
+        assertTrue(actual);
+    }
+
+    private AccountConsentAuthorization buildAccountConsentAuthorization(ScaStatus scaStatus, ScaApproach scaApproach) {
         AccountConsentAuthorization accountConsentAuthorization = new AccountConsentAuthorization();
-        accountConsentAuthorization.setChosenScaApproach(ScaApproach.REDIRECT);
+        accountConsentAuthorization.setChosenScaApproach(scaApproach);
         accountConsentAuthorization.setScaStatus(scaStatus);
         return accountConsentAuthorization;
     }
