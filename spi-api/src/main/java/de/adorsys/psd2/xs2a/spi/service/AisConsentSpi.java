@@ -82,13 +82,12 @@ public interface AisConsentSpi extends AuthorisationSpi<SpiAccountConsent> {
     SpiResponse<SpiVerifyScaAuthorisationResponse> verifyScaAuthorisation(@NotNull SpiContextData contextData, @NotNull SpiScaConfirmation spiScaConfirmation, @NotNull SpiAccountConsent accountConsent, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider);
 
     /**
-     * Checks confirmation data at the ASPSP side in case of XS2A doesn't support validation of this data. Used only with redirect SCA Approach.
+     * Checks confirmation data at the ASPSP side in case of XS2A not supporting validation of this data. Used only with redirect SCA Approach.
      *
      * @param contextData              holder of call's context data (e.g. about PSU and TPP)
      * @param spiConfirmationCode      object with confirmation code
      * @param accountConsent           Account consent
      * @param aspspConsentDataProvider Provides access to read/write encrypted data to be stored in the consent management system
-     *                                 May be null if consent does not contain such data, or request isn't done from a workflow with a consent
      * @return Returns a response object, which contains checking result - if the confirmation data was correct or not
      */
     @NotNull
