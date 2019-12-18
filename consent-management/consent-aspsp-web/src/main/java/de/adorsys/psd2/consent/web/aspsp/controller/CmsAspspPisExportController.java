@@ -63,7 +63,6 @@ public class CmsAspspPisExportController {
         @ApiParam(value = "ID of the particular service instance")
         @RequestHeader(value = "instance-id", required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId) {
         PsuIdData psuIdData = new PsuIdData(psuId, psuIdType, psuCorporateId, psuCorporateIdType, null);
-        //TODO: #1115 Ask team what to do
         Collection<CmsPayment> payments = cmsAspspPisExportService.exportPaymentsByTpp(tppId, start, end, psuIdData, instanceId);
         return new ResponseEntity<>(payments, HttpStatus.OK);
     }
@@ -90,7 +89,6 @@ public class CmsAspspPisExportController {
         @ApiParam(value = "ID of the particular service instance")
         @RequestHeader(value = "instance-id", required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId) {
         PsuIdData psuIdData = new PsuIdData(psuId, psuIdType, psuCorporateId, psuCorporateIdType, null);
-        //TODO: #1115 Ask team what to do
         Collection<CmsPayment> payments = cmsAspspPisExportService.exportPaymentsByPsu(psuIdData, start, end, instanceId);
         return new ResponseEntity<>(payments, HttpStatus.OK);
     }

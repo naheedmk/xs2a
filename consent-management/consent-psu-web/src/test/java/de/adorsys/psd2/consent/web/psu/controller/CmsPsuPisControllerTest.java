@@ -79,7 +79,6 @@ public class CmsPsuPisControllerTest {
     @Test
     public void updateAuthorisationStatus_withValidRequest_shouldReturnOk() throws AuthorisationIsExpiredException {
         // Given
-        //TODO: #1115 Ask team what to do
         PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, null);
         when(cmsPsuPisService.updateAuthorisationStatus(psuIdData, PAYMENT_ID, AUTHORISATION_ID, ScaStatus.RECEIVED, INSTANCE_ID, authenticationDataHolder))
             .thenReturn(true);
@@ -96,7 +95,6 @@ public class CmsPsuPisControllerTest {
     @Test
     public void updateAuthorisationStatus_withValidRequestAndLowercaseScaStatus_shouldReturnOk() throws AuthorisationIsExpiredException {
         // Given
-        //TODO: #1115 Ask team what to do
         PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, null);
         when(cmsPsuPisService.updateAuthorisationStatus(psuIdData, PAYMENT_ID, AUTHORISATION_ID, ScaStatus.RECEIVED, INSTANCE_ID, authenticationDataHolder))
             .thenReturn(true);
@@ -114,7 +112,6 @@ public class CmsPsuPisControllerTest {
     @Test
     public void updateAuthorisationStatus_withFalseFromService_shouldReturnBadRequest() throws AuthorisationIsExpiredException {
         // Given
-        //TODO: #1115 Ask team what to do
         PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, null);
         when(cmsPsuPisService.updateAuthorisationStatus(psuIdData, PAYMENT_ID, AUTHORISATION_ID, ScaStatus.RECEIVED, INSTANCE_ID, authenticationDataHolder))
             .thenReturn(false);
@@ -131,7 +128,6 @@ public class CmsPsuPisControllerTest {
     @Test
     public void updateAuthorisationStatus_AuthorisationIsExpired_requestTimeout() throws AuthorisationIsExpiredException {
         // Given
-        //TODO: #1115 Ask team what to do
         PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, null);
         when(cmsPsuPisService.updateAuthorisationStatus(psuIdData, PAYMENT_ID, AUTHORISATION_ID, ScaStatus.RECEIVED, INSTANCE_ID, authenticationDataHolder))
             .thenThrow(new AuthorisationIsExpiredException(TPP_NOK_REDIRECT_URI));

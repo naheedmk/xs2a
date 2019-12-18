@@ -282,7 +282,6 @@ public class CmsPsuAisController {
     }
 
     private PsuIdData getPsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType) {
-        //TODO: #1115 Ask team what to do
         return new PsuIdData(psuId, psuIdType, psuCorporateId, psuCorporateIdType, null);
     }
 
