@@ -42,7 +42,7 @@ public class PsuDeviceIdHeaderValidatorImpl extends AbstractHeaderValidatorImpl
     }
 
     @Override
-    protected String gitgetHeaderName() {
+    protected String getHeaderName() {
         return PSU_DEVICE_ID;
     }
 

@@ -18,7 +18,6 @@ package de.adorsys.psd2.xs2a.core.psu;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Value;
-import lombok.experimental.NonFinal;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,9 +41,10 @@ public class PsuIdData {
     @Nullable
     private String psuCorporateIdType;
 
+    @Nullable
     private String psuIpAddress;
 
-    @NonFinal
+    @Nullable
     private AdditionalPsuIdData additionalPsuIdData;
 
     public PsuIdData() {
@@ -52,15 +52,15 @@ public class PsuIdData {
     }
 
     public PsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType, String psuIpAddress) {
+        this(psuId, psuIdType, psuCorporateId, psuCorporateIdType, psuIpAddress, null);
+    }
+
+    public PsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType, String psuIpAddress, AdditionalPsuIdData additionalPsuIdData) {
         this.psuId = psuId;
         this.psuIdType = psuIdType;
         this.psuCorporateId = psuCorporateId;
         this.psuCorporateIdType = psuCorporateIdType;
         this.psuIpAddress = psuIpAddress;
-    }
-
-    public PsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType, String psuIpAddress, AdditionalPsuIdData additionalPsuIdData) {
-        this(psuId, psuIdType, psuCorporateId, psuCorporateIdType, psuIpAddress);
         this.additionalPsuIdData = additionalPsuIdData;
     }
 
