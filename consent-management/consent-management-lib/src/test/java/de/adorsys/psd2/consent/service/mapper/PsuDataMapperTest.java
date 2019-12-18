@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
 public class PsuDataMapperTest {
     private final static JsonReader jsonReader = new JsonReader();
     @Spy
-    private PsuDataMapperImpl psuDataMapper;
+    private PsuDataMapper psuDataMapper;
 
     @Test
     public void mapToPsuDataList(){

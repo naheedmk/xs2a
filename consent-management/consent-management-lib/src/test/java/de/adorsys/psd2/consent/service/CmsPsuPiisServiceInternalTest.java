@@ -22,7 +22,6 @@ import de.adorsys.psd2.consent.repository.PiisConsentRepository;
 import de.adorsys.psd2.consent.repository.specification.PiisConsentEntitySpecification;
 import de.adorsys.psd2.consent.service.mapper.PiisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
-import de.adorsys.psd2.consent.service.mapper.PsuDataMapperImpl;
 import de.adorsys.psd2.consent.service.psu.CmsPsuPiisServiceInternal;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.piis.PiisConsent;
@@ -57,7 +56,7 @@ public class CmsPsuPiisServiceInternalTest {
     private static final String DEFAULT_SERVICE_INSTANCE_ID = "UNDEFINED";
 
     @InjectMocks
-    CmsPsuPiisServiceInternal cmsPsuPiisServiceInternal;
+    private CmsPsuPiisServiceInternal cmsPsuPiisServiceInternal;
     @Mock
     private PiisConsentRepository piisConsentRepository;
     @Mock
@@ -65,7 +64,7 @@ public class CmsPsuPiisServiceInternalTest {
     @Mock
     private PiisConsentEntitySpecification piisConsentEntitySpecification;
     @Spy
-    private PsuDataMapperImpl psuDataMapper;
+    private PsuDataMapper psuDataMapper;
 
 
     @Before

@@ -32,7 +32,6 @@ import de.adorsys.psd2.consent.repository.PisCommonPaymentDataRepository;
 import de.adorsys.psd2.consent.repository.PisPaymentDataRepository;
 import de.adorsys.psd2.consent.service.mapper.PisCommonPaymentMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
-import de.adorsys.psd2.consent.service.mapper.PsuDataMapperImpl;
 import de.adorsys.psd2.consent.service.mapper.ScaMethodMapper;
 import de.adorsys.psd2.consent.service.psu.CmsPsuService;
 import de.adorsys.psd2.xs2a.core.pis.PaymentAuthorisationType;
@@ -74,7 +73,7 @@ public class PisAuthorisationServiceInternalTest {
     @Mock
     private PisCommonPaymentDataRepository pisCommonPaymentDataRepository;
     @Spy
-    private PsuDataMapperImpl psuDataMapper;
+    private PsuDataMapper psuDataMapper;
     @Mock
     private AspspProfileService aspspProfileService;
     @Mock

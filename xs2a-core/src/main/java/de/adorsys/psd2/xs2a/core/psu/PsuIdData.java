@@ -17,7 +17,6 @@
 package de.adorsys.psd2.xs2a.core.psu;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +29,6 @@ import java.util.Objects;
  * Normally it comes with the TPP request header.
  */
 @Value
-@Builder
 public class PsuIdData {
     @Nullable
     private String psuId;
