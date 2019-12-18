@@ -79,8 +79,7 @@ public class ConsentController implements ConsentApi {
 
         CreateConsentReq createConsent = consentModelMapper.mapToCreateConsentReq(body, tppRedirectUri, tpPNotificationURI, notificationModes);
 
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
-        psuData.setAdditionalPsuIdData(new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress, new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
 
         ResponseObject<CreateConsentResponse> createResponse =
             consentService.createAccountConsentsWithResponse(createConsent, psuData, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred));

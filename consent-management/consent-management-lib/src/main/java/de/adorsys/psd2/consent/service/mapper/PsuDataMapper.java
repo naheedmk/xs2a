@@ -46,7 +46,7 @@ public class PsuDataMapper {
 
     public PsuData mapToPsuData(PsuIdData psuIdData) {
         return Optional.ofNullable(psuIdData)
-                   .filter(psu -> StringUtils.isNotBlank(psu.getPsuId()))
+                   .filter(PsuIdData::isNotEmpty)
                    .map(psu -> new PsuData(
                        psu.getPsuId(),
                        psu.getPsuIdType(),
@@ -60,7 +60,7 @@ public class PsuDataMapper {
 
     public PsuIdData mapToPsuIdData(PsuData psuData) {
         return Optional.ofNullable(psuData)
-                   .filter(psu -> StringUtils.isNotBlank(psu.getPsuId()))
+                   .filter(PsuData::isNotEmpty)
                    .map(psu -> new PsuIdData(
                        psu.getPsuId(),
                        psu.getPsuIdType(),
@@ -74,6 +74,7 @@ public class PsuDataMapper {
 
     private AdditionalPsuData mapToAdditionalPsuData(AdditionalPsuIdData additionalPsuIdData) {
         return Optional.ofNullable(additionalPsuIdData)
+                   .filter(AdditionalPsuIdData::isNotEmpty)
                    .map(dta ->
                             new AdditionalPsuData(
                                 dta.getPsuIpPort(),

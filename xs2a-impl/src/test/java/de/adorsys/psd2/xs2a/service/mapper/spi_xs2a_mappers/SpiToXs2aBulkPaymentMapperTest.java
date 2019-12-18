@@ -89,7 +89,21 @@ public class SpiToXs2aBulkPaymentMapperTest {
         payment.setRequestedExecutionTime(OFFSET_DATE_TIME);
         payment.setPaymentStatus(TransactionStatus.ACCP);
         payment.setPaymentProduct(PAYMENT_PRODUCT);
-        payment.setPsuDataList(Collections.singletonList(new SpiPsuData("psuId", "", "", "", "", "", "", "", "", "", "", "", "", UUID.randomUUID())));
+        payment.setPsuDataList(Collections.singletonList(SpiPsuData.builder()
+                                                             .psuId("psuId")
+                                                             .psuIdType("")
+                                                             .psuCorporateId("")
+                                                             .psuCorporateIdType("")
+                                                             .psuIpAddress("").psuIpPort("")
+                                                             .psuUserAgent("")
+                                                             .psuGeoLocation("")
+                                                             .psuAccept("")
+                                                             .psuAcceptCharset("")
+                                                             .psuAcceptEncoding("")
+                                                             .psuAcceptLanguage("")
+                                                             .psuHttpMethod("")
+                                                             .psuDeviceId(UUID.randomUUID())
+                                                             .build()));
         payment.setStatusChangeTimestamp(OFFSET_DATE_TIME);
         payment.setPayments(buildSpiSinglePaymentList());
         return payment;
@@ -111,7 +125,22 @@ public class SpiToXs2aBulkPaymentMapperTest {
         payment.setRemittanceInformationUnstructured("Ref. Number TELEKOM-1222");
         payment.setRequestedExecutionDate(OFFSET_DATE_TIME.toLocalDate());
         payment.setRequestedExecutionTime(OFFSET_DATE_TIME);
-        payment.setPsuDataList(Collections.singletonList(new SpiPsuData("psuId", "", "", "", "", "", "", "", "", "", "", "", "", UUID.randomUUID())));
+        payment.setPsuDataList(Collections.singletonList(SpiPsuData.builder()
+                                                             .psuId("psuId")
+                                                             .psuIdType("")
+                                                             .psuCorporateId("")
+                                                             .psuCorporateIdType("")
+                                                             .psuIpAddress("")
+                                                             .psuIpPort("")
+                                                             .psuUserAgent("")
+                                                             .psuGeoLocation("")
+                                                             .psuAccept("")
+                                                             .psuAcceptCharset("")
+                                                             .psuAcceptEncoding("")
+                                                             .psuAcceptLanguage("")
+                                                             .psuHttpMethod("")
+                                                             .psuDeviceId(UUID.randomUUID())
+                                                             .build()));
         payment.setStatusChangeTimestamp(OFFSET_DATE_TIME);
         return Collections.singletonList(payment);
     }

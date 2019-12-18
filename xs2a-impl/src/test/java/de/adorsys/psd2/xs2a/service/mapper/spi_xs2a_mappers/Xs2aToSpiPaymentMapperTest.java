@@ -23,6 +23,7 @@ import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPaymentInfo;
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.spi.service.SpiPayment;
 import de.adorsys.xs2a.reader.JsonReader;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +58,13 @@ public class Xs2aToSpiPaymentMapperTest {
     @Before
     public void setUp() {
         PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, PSU_IP_ADDRESS);
-        SpiPsuData spiPsuData = new SpiPsuData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, PSU_IP_ADDRESS, null, null, null, null, null, null, null, null, null);
+        SpiPsuData spiPsuData = SpiPsuData.builder()
+                                    .psuId(PSU_ID)
+                                    .psuIdType(PSU_ID_TYPE)
+                                    .psuCorporateId(PSU_CORPORATE_ID)
+                                    .psuCorporateIdType(PSU_CORPORATE_ID_TYPE)
+                                    .psuIpAddress(PSU_IP_ADDRESS)
+                                    .build();
         psuDataList.addAll(Arrays.asList(psuIdData));
         spiPsuDataList.addAll(Arrays.asList(spiPsuData));
         when(xs2aToSpiPsuDataMapper.mapToSpiPsuDataList(psuDataList)).thenReturn(spiPsuDataList);
@@ -73,6 +80,6 @@ public class Xs2aToSpiPaymentMapperTest {
         SpiPayment spiPayment = xs2aToSpiPaymentMapper.mapToSpiPayment(getPisAuthorisationResponse, null, null);
         SpiPaymentInfo spiPaymentInfo = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/spi-payment-info.json", SpiPaymentInfo.class);
         //Then
-        assertEquals(spiPaymentInfo, spiPayment);
+        Assertions.assertThat(spiPaymentInfo).isEqualToComparingFieldByFieldRecursively(spiPayment);
     }
 }

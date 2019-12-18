@@ -38,7 +38,7 @@ public class PsuDataMapperTest {
     private PsuDataMapper psuDataMapper;
 
     @Test
-    public void mapToPsuDataList(){
+    public void mapToPsuDataList() {
         PsuIdData psuIdData = jsonReader.getObjectFromFile("json/service/mapper/psu-id-data.json", PsuIdData.class);
         PsuData expected = jsonReader.getObjectFromFile("json/service/mapper/psu-data.json", PsuData.class);
         List<PsuData> expectedList = Collections.singletonList(expected);
@@ -50,7 +50,7 @@ public class PsuDataMapperTest {
     }
 
     @Test
-    public void mapToPsuIdDataList(){
+    public void mapToPsuIdDataList() {
         PsuData psuData = jsonReader.getObjectFromFile("json/service/mapper/psu-data.json", PsuData.class);
         PsuIdData expected = jsonReader.getObjectFromFile("json/service/mapper/psu-id-data.json", PsuIdData.class);
         List<PsuIdData> expectedList = Collections.singletonList(expected);
@@ -82,7 +82,7 @@ public class PsuDataMapperTest {
     }
 
     @Test
-    public void mapToPsuData_WitouthAdditionalPsuIdData() {
+    public void mapToPsuData_WithoutAdditionalPsuIdData() {
         PsuIdData psuIdData = jsonReader.getObjectFromFile("json/service/mapper/psu-id-data-with-additional-psu-id-data.json", PsuIdData.class);
         PsuData expected = jsonReader.getObjectFromFile("json/service/mapper/psu-data-with-additional-psu-data.json", PsuData.class);
 

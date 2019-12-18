@@ -151,9 +151,7 @@ public class PaymentController implements PaymentApi {
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
 
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
-        psuData.setAdditionalPsuIdData(new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
-
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress, new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
         List<NotificationSupportedMode> notificationModes = notificationSupportedModeService.getProcessedNotificationModes(tpPNotificationContentPreferred);
         PaymentInitiationParameters paymentInitiationParameters = paymentModelMapperPsd2.mapToPaymentRequestParameters(paymentProduct, paymentService, tpPSignatureCertificate, tpPRedirectURI, tpPNokRedirectURI, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred), psuData, tpPNotificationURI, notificationModes);
         ResponseObject<PaymentInitiationResponse> serviceResponse =
@@ -195,9 +193,7 @@ public class PaymentController implements PaymentApi {
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
 
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
-        psuData.setAdditionalPsuIdData(new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
-
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress, new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
         List<NotificationSupportedMode> notificationModes = notificationSupportedModeService.getProcessedNotificationModes(tpPNotificationContentPreferred);
 
         PaymentInitiationParameters paymentInitiationParameters = paymentModelMapperPsd2.mapToPaymentRequestParameters(paymentProduct, paymentService, tpPSignatureCertificate, tpPRedirectURI, tpPNokRedirectURI, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred), psuData, tpPNotificationURI, notificationModes);
@@ -239,9 +235,7 @@ public class PaymentController implements PaymentApi {
             return responseErrorMapper.generateErrorResponse(responseObject.getError());
         }
 
-        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress);
-        psuData.setAdditionalPsuIdData(new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
-
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress, new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
         List<NotificationSupportedMode> notificationModes = notificationSupportedModeService.getProcessedNotificationModes(tpPNotificationContentPreferred);
 
         PaymentInitiationParameters paymentInitiationParameters = paymentModelMapperPsd2.mapToPaymentRequestParameters(paymentProduct, paymentService, tpPSignatureCertificate, tpPRedirectURI, tpPNokRedirectURI, BooleanUtils.isTrue(tpPExplicitAuthorisationPreferred), psuData, tpPNotificationURI, notificationModes);

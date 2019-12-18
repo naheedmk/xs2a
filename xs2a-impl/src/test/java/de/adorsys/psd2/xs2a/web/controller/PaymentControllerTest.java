@@ -24,6 +24,7 @@ import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.profile.NotificationSupportedMode;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
+import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.domain.HrefType;
 import de.adorsys.psd2.xs2a.domain.*;
@@ -1457,7 +1458,11 @@ public class PaymentControllerTest {
     }
 
     private PsuIdData buildPsuIdData() {
-        return new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, PSU_IP_ADDRESS);
+        return new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, PSU_IP_ADDRESS, buildEmptyAdditionalPsuIdData());
+    }
+
+    private AdditionalPsuIdData buildEmptyAdditionalPsuIdData() {
+        return new AdditionalPsuIdData(null, null, null, null, null, null, null, null, null);
     }
 
     private ResponseObject buildFailResponseObject() {

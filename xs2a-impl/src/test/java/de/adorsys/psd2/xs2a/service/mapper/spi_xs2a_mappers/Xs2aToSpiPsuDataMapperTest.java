@@ -19,6 +19,7 @@ package de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers;
 import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -48,14 +49,13 @@ public class Xs2aToSpiPsuDataMapperTest {
     @Test
     public void mapToSpiPsuData_WithAdditionalPsuData() {
         //Given
-        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE, PSU_IP_ADDRESS);
-        psuIdData.setAdditionalPsuIdData(buildAdditionalPsuData());
+        PsuIdData psuIdData = new PsuIdData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE, PSU_IP_ADDRESS, buildAdditionalPsuData());
         SpiPsuData spiPsuDataExpected = buildSpiPsuDataWithAdditionalPsuData();
         //When
         SpiPsuData spiPsuDataActual = xs2aToSpiPsuDataMapper.mapToSpiPsuData(psuIdData);
         //Then
         assertNotNull(spiPsuDataActual);
-        assertEquals(spiPsuDataExpected, spiPsuDataActual);
+        Assertions.assertThat(spiPsuDataExpected).isEqualToComparingFieldByFieldRecursively(spiPsuDataActual);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class Xs2aToSpiPsuDataMapperTest {
         SpiPsuData spiPsuDataActual = xs2aToSpiPsuDataMapper.mapToSpiPsuData(psuIdData);
         //Then
         assertNotNull(spiPsuDataActual);
-        assertEquals(spiPsuDataExpected, spiPsuDataActual);
+        Assertions.assertThat(spiPsuDataExpected).isEqualToComparingFieldByFieldRecursively(spiPsuDataActual);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class Xs2aToSpiPsuDataMapperTest {
         SpiPsuData spiPsuDataActual = xs2aToSpiPsuDataMapper.mapToSpiPsuData(null);
         //Then
         assertNotNull(spiPsuDataActual);
-        assertEquals(spiPsuDataExpected, spiPsuDataActual);
+        Assertions.assertThat(spiPsuDataExpected).isEqualToComparingFieldByFieldRecursively(spiPsuDataActual);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class Xs2aToSpiPsuDataMapperTest {
         //Then
         assertNotNull(spiPsuDataListActual);
         assertFalse(spiPsuDataListActual.isEmpty());
-        assertEquals(spiPsuDataExpected, spiPsuDataListActual.get(0));
+        Assertions.assertThat(spiPsuDataExpected).isEqualToComparingFieldByFieldRecursively(spiPsuDataListActual.get(0));
     }
 
     @Test
@@ -111,14 +111,35 @@ public class Xs2aToSpiPsuDataMapperTest {
     }
 
     private SpiPsuData buildEmptySpiPsuData() {
-        return new SpiPsuData(null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        return SpiPsuData.builder().build();
     }
 
     private SpiPsuData buildSpiPsuDataWithoutAdditionalPsuData() {
-        return new SpiPsuData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE, PSU_IP_ADDRESS, null, null, null, null, null, null, null, null, null);
+        return SpiPsuData.builder()
+                   .psuId(PSU_ID)
+                   .psuIdType(PSU_ID_TYPE)
+                   .psuCorporateId(PSU_CORPORATE_ID)
+                   .psuCorporateIdType(PSU_CORPORATE_TYPE)
+                   .psuIpAddress(PSU_IP_ADDRESS)
+                   .build();
     }
 
     private SpiPsuData buildSpiPsuDataWithAdditionalPsuData() {
-        return new SpiPsuData(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_TYPE, PSU_IP_ADDRESS, PSU_IP_PORT, PSU_USER_AGENT, PSU_GEO_LOCATION, PSU_ACCEPT, PSU_ACCEPT_CHARSET, PSU_ACCEPT_ENCODING, PSU_ACCEPT_LANGUAGE, PSU_HTTP_METHOD, PSU_DEVICE_ID);
+        return SpiPsuData.builder()
+                   .psuId(PSU_ID)
+                   .psuIdType(PSU_ID_TYPE)
+                   .psuCorporateId(PSU_CORPORATE_ID)
+                   .psuCorporateIdType(PSU_CORPORATE_TYPE)
+                   .psuIpAddress(PSU_IP_ADDRESS)
+                   .psuIpPort(PSU_IP_PORT)
+                   .psuUserAgent(PSU_USER_AGENT)
+                   .psuGeoLocation(PSU_GEO_LOCATION)
+                   .psuAccept(PSU_ACCEPT)
+                   .psuAcceptCharset(PSU_ACCEPT_CHARSET)
+                   .psuAcceptEncoding(PSU_ACCEPT_ENCODING)
+                   .psuAcceptLanguage(PSU_ACCEPT_LANGUAGE)
+                   .psuHttpMethod(PSU_HTTP_METHOD)
+                   .psuDeviceId(PSU_DEVICE_ID)
+                   .build();
     }
 }

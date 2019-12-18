@@ -52,8 +52,23 @@ public class SpiContextDataProviderTest {
     private static final String PSU_ACCEPT_LANGUAGE = "psuAcceptLanguage";
     private static final String PSU_HTTP_METHOD = "psuHttpMethod";
     private static final UUID PSU_DEVICE_ID = UUID.randomUUID();
-    private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType","psuIpAddress");
-    private static final SpiPsuData SPI_PSU_DATA = new SpiPsuData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType", PSU_IP_ADDRESS, PSU_IP_PORT, PSU_USER_AGENT, PSU_GEO_LOCATION, PSU_ACCEPT, PSU_ACCEPT_CHARSET, PSU_ACCEPT_ENCODING, PSU_ACCEPT_LANGUAGE, PSU_HTTP_METHOD, PSU_DEVICE_ID);
+    private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType", "psuIpAddress");
+    private static final SpiPsuData SPI_PSU_DATA = SpiPsuData.builder()
+                                                       .psuId("psuId")
+                                                       .psuIdType("psuIdType")
+                                                       .psuCorporateId("psuCorporateId")
+                                                       .psuCorporateIdType("psuCorporateIdType")
+                                                       .psuIpAddress(PSU_IP_ADDRESS)
+                                                       .psuIpPort(PSU_IP_PORT)
+                                                       .psuUserAgent(PSU_USER_AGENT)
+                                                       .psuGeoLocation(PSU_GEO_LOCATION)
+                                                       .psuAccept(PSU_ACCEPT)
+                                                       .psuAcceptCharset(PSU_ACCEPT_CHARSET)
+                                                       .psuAcceptEncoding(PSU_ACCEPT_ENCODING)
+                                                       .psuAcceptLanguage(PSU_ACCEPT_LANGUAGE)
+                                                       .psuHttpMethod(PSU_HTTP_METHOD)
+                                                       .psuDeviceId(PSU_DEVICE_ID)
+                                                       .build();
     private static final SpiContextData SPI_CONTEXT_DATA = buildSpiContextData(null);
     private static final SpiContextData SPI_CONTEXT_DATA_WITH_PSU_DATA = buildSpiContextData(SPI_PSU_DATA);
     private static final String AUTHORISATION = "Bearer 1111111";

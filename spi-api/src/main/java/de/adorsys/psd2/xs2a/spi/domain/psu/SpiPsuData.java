@@ -16,18 +16,16 @@
 
 package de.adorsys.psd2.xs2a.spi.domain.psu;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Getter;
 
 import java.util.UUID;
 
 /**
  * Contains data about PSU known in scope of the request
  */
-@Value
 @Builder
-@AllArgsConstructor
+@Getter
 public class SpiPsuData {
     private String psuId;
     private String psuIdType;

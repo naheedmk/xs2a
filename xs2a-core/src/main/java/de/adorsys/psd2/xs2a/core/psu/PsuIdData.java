@@ -75,12 +75,6 @@ public class PsuIdData {
                    && StringUtils.equals(this.getPsuIdType(), otherPsuIdData.getPsuIdType());
     }
 
-    public void setAdditionalPsuIdData(AdditionalPsuIdData additionalPsuIdData) {
-        if(isNotEmpty() && additionalPsuIdData != null && additionalPsuIdData.isNotEmpty()){
-            this.additionalPsuIdData = additionalPsuIdData;
-        }
-    }
-
     @JsonIgnore
     public boolean isEmpty() {
         return StringUtils.isBlank(this.getPsuId());
