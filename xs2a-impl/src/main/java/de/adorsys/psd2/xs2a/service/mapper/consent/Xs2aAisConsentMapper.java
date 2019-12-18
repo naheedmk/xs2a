@@ -279,9 +279,9 @@ public class Xs2aAisConsentMapper {
     }
 
     private AdditionalInformationAccess mapToAdditionalInformationAccess(AdditionalInformationAccess accountAdditionalInformationAccess) {
-        return Optional.ofNullable(accountAdditionalInformationAccess)
-                   .map(info -> new AdditionalInformationAccess(info.getOwnerName(), info.getOwnerAddress()))
-                   .orElse(null);
+        return  Optional.ofNullable(accountAdditionalInformationAccess)
+                       .map(info -> new AdditionalInformationAccess(info.getOwnerName()))
+                       .orElse(null);
     }
 
     private AccountAccessType getAccessType(String type) {
