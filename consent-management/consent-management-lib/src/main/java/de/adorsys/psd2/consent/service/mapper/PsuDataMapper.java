@@ -32,11 +32,10 @@ import java.util.stream.Collectors;
 @Component
 public class PsuDataMapper {
     public List<PsuData> mapToPsuDataList(List<PsuIdData> psuIdDataList) {
-        List<PsuData> psuDataListResult = psuIdDataList.stream()
-                                              .map(this::mapToPsuData)
-                                              .filter(Objects::nonNull)
-                                              .collect(Collectors.toList());
-        return psuDataListResult;
+        return psuIdDataList.stream()
+                   .map(this::mapToPsuData)
+                   .filter(Objects::nonNull)
+                   .collect(Collectors.toList());
     }
 
     public List<PsuIdData> mapToPsuIdDataList(List<PsuData> psuIdDataList) {
