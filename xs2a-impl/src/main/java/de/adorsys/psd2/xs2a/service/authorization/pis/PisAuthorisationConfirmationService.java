@@ -109,7 +109,7 @@ public class PisAuthorisationConfirmationService {
                                                                                                boolean isCancellation) {
         return aspspProfileServiceWrapper.isAuthorisationConfirmationCheckByXs2a()
                    ? checkAuthorisationConfirmationXs2a(request, getPisAuthorisationResponse, isCancellation)
-                   : checkAuthorisationConfirmationOnSpi(request, getPisAuthorisationResponse);
+                   : checkAuthorisationConfirmationOnSpi(request, getPisAuthorisationResponse, isCancellation);
     }
 
     private Xs2aUpdatePisCommonPaymentPsuDataResponse checkAuthorisationConfirmationXs2a(Xs2aUpdatePisCommonPaymentPsuDataRequest request, GetPisAuthorisationResponse pisAuthorisationResponse, boolean isCancellation) {
@@ -121,17 +121,14 @@ public class PisAuthorisationConfirmationService {
 
         UpdatePisCommonPaymentPsuDataRequest updatePaymentRequest = pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(response);
 
-        if (isCancellation) {
-            pisAuthorisationServiceEncrypted.updatePisCancellationAuthorisation(updatePaymentRequest.getAuthorizationId(), updatePaymentRequest);
-        } else {
-            pisAuthorisationServiceEncrypted.updatePisAuthorisation(updatePaymentRequest.getAuthorizationId(), updatePaymentRequest);
-        }
+        updateAuthorisationInDb(isCancellation, updatePaymentRequest);
 
         return response;
     }
 
     private Xs2aUpdatePisCommonPaymentPsuDataResponse checkAuthorisationConfirmationOnSpi(Xs2aUpdatePisCommonPaymentPsuDataRequest request,
-                                                                                          GetPisAuthorisationResponse pisAuthorisationResponse) {
+                                                                                          GetPisAuthorisationResponse pisAuthorisationResponse,
+                                                                                          boolean isCancellation) {
         PaymentSpi paymentSpi = spiPaymentServiceResolver.getPaymentService(pisAuthorisationResponse, pisAuthorisationResponse.getPaymentType());
 
         SpiContextData contextData = spiContextDataProvider.provideWithPsuIdData(request.getPsuData());
@@ -146,9 +143,18 @@ public class PisAuthorisationConfirmationService {
                                                                  : new Xs2aUpdatePisCommonPaymentPsuDataResponse(spiResponse.getPayload().getScaStatus(), request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
 
         UpdatePisCommonPaymentPsuDataRequest updatePaymentRequest = pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(response);
-        pisAuthorisationServiceEncrypted.updatePisAuthorisation(updatePaymentRequest.getAuthorizationId(), updatePaymentRequest);
+
+        updateAuthorisationInDb(isCancellation, updatePaymentRequest);
 
         return response;
+    }
+
+    private void updateAuthorisationInDb(boolean isCancellation, UpdatePisCommonPaymentPsuDataRequest updatePaymentRequest) {
+        if (isCancellation) {
+            pisAuthorisationServiceEncrypted.updatePisCancellationAuthorisation(updatePaymentRequest.getAuthorizationId(), updatePaymentRequest);
+        } else {
+            pisAuthorisationServiceEncrypted.updatePisAuthorisation(updatePaymentRequest.getAuthorizationId(), updatePaymentRequest);
+        }
     }
 
     private Xs2aUpdatePisCommonPaymentPsuDataResponse buildConfirmationCodeSpiErrorResponse(SpiResponse<SpiConfirmationCodeCheckingResponse> spiResponse, String paymentId, String authorisationId, PsuIdData psuData) {
