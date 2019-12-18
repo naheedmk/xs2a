@@ -239,8 +239,12 @@ public class PisCommonPaymentServiceInternalTest {
     public void updateCommonPayment() {
         // Given
         PisCommonPaymentRequest request = new PisCommonPaymentRequest();
+        PisPaymentInfo pisPaymentInfo = new PisPaymentInfo();
+        request.setPaymentInfo(pisPaymentInfo);
         when(pisCommonPaymentDataRepository.findByPaymentId(PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentData));
-        when(pisCommonPaymentMapper.mapToPisPaymentDataList(request.getPayments(), pisCommonPaymentData)).thenReturn(Collections.emptyList());
+
+        PisCommonPaymentData updatedPisCommonPaymentData = new PisCommonPaymentData();
+        when(pisCommonPaymentMapper.mapToPisCommonPaymentData(pisPaymentInfo)).thenReturn(updatedPisCommonPaymentData);
 
         // When
         CmsResponse<CmsResponse.VoidResponse> actual = pisCommonPaymentService.updateCommonPayment(request, PAYMENT_ID);
@@ -249,7 +253,7 @@ public class PisCommonPaymentServiceInternalTest {
         assertTrue(actual.isSuccessful());
         assertEquals(CmsResponse.voidResponse(), actual.getPayload());
 
-        verify(pisPaymentDataRepository).saveAll(Collections.emptyList());
+        verify(pisCommonPaymentDataRepository).save(updatedPisCommonPaymentData);
     }
 
     @Test

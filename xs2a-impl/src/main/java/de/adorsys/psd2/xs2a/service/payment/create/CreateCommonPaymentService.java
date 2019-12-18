@@ -47,11 +47,11 @@ public class CreateCommonPaymentService extends AbstractCreatePaymentService<Com
     }
 
     @Override
-    protected CommonPayment getPaymentRequest(Object payment, PaymentInitiationParameters paymentInitiationParameters) {
+    protected CommonPayment getPaymentRequest(byte[] payment, PaymentInitiationParameters paymentInitiationParameters) {
         CommonPayment request = new CommonPayment();
         request.setPaymentType(paymentInitiationParameters.getPaymentType());
         request.setPaymentProduct(paymentInitiationParameters.getPaymentProduct());
-        request.setPaymentData((byte[]) payment);
+        request.setPaymentData(payment);
         request.setPsuDataList(Collections.singletonList(paymentInitiationParameters.getPsuData()));
         return request;
     }
