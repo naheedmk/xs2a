@@ -19,27 +19,30 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet author="hhe@adorsys.com.ua" id="2019-11-22-5">
-        <comment>Create table payment_tpp_ntfc</comment>
+    <changeSet author="hhe@adorsys.de" id="2019-12-21-1">
 
-        <createTable tableName="payment_tpp_ntfc">
-            <column name="id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+        <preConditions onFail="MARK_RAN" onSqlOutput="TEST">
+            <sequenceExists sequenceName="ais_consent_notification_id_seq" />
+        </preConditions>
 
-            <column name="notification_mode" type="VARCHAR(10)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+        <comment>Drop sequence for ais_consent_tpp_ntfc table</comment>
 
+        <dropSequence sequenceName="ais_consent_notification_id_seq"/>
+
+        <sql dbms="mariadb">DROP SEQUENCE IF EXISTS ais_consent_notification_id_seq</sql>
     </changeSet>
 
-    <changeSet author="hhe@adorsys.com.ua" id="2019-11-22-6">
-        <comment>Add column tpp_ntfc_uri to pis_common_payment</comment>
+    <changeSet author="hhe@adorsys.de" id="2019-12-21-2">
 
-        <addColumn tableName="pis_common_payment">
-            <column name="tpp_ntfc_uri" type="VARCHAR(100)"/>
-        </addColumn>
+        <preConditions onFail="MARK_RAN" onSqlOutput="TEST">
+            <sequenceExists sequenceName="pis_payment_notification_id_seq" />
+        </preConditions>
 
+        <comment>Drop sequence for payment_tpp_ntfc table</comment>
+
+        <dropSequence sequenceName="pis_payment_notification_id_seq"/>
+
+        <sql dbms="mariadb">DROP SEQUENCE IF EXISTS pis_payment_notification_id_seq</sql>
     </changeSet>
+
 </databaseChangeLog>
