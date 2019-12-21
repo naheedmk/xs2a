@@ -189,4 +189,7 @@ If parameter = FALSE then authorisation is supported by usual flow. if it is TRU
 
 If parameter = FALSE then it is SPI developer's duty to verify the authentication data. If it is TRUE then verification of this data is processed on XS2A side. |FALSE |TRUE, FALSE
 
+|checkUriComplianceToDomainSupported |This field indicates whether ASPSP supports validation of TPP URIs with domain from certificate for compliance.
+
+If parameter = FALSE then TPP URIs should not be checked for compliance. If it is TRUE then TPP URIs should be checked. |FALSE |TRUE, FALSE
 |===
