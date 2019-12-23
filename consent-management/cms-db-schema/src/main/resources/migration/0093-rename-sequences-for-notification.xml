@@ -22,7 +22,7 @@
     <changeSet author="hhe@adorsys.de" id="2019-12-21-1">
 
         <preConditions onFail="MARK_RAN" onSqlOutput="TEST">
-            <sequenceExists sequenceName="ais_consent_notification_id_seq" />
+            <sqlCheck expectedResult="1">select count(1) from information_schema.tables where TABLE_NAME like 'ais_consent_notification_id_seq'</sqlCheck>
         </preConditions>
 
         <comment>Drop sequence for ais_consent_tpp_ntfc table</comment>
@@ -35,7 +35,7 @@
     <changeSet author="hhe@adorsys.de" id="2019-12-21-2">
 
         <preConditions onFail="MARK_RAN" onSqlOutput="TEST">
-            <sequenceExists sequenceName="pis_payment_notification_id_seq" />
+            <sqlCheck expectedResult="1">select count(1) from information_schema.tables where TABLE_NAME like 'pis_payment_notification_id_seq'</sqlCheck>
         </preConditions>
 
         <comment>Drop sequence for payment_tpp_ntfc table</comment>
