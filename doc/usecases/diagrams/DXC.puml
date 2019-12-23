@@ -1,0 +1,65 @@
+@startuml
+actor PSU
+entity TPP
+entity XS2A
+entity Online_banking
+PSU->TPP: Initiate an Account information access
+activate TPP
+activate PSU
+TPP -> XS2A: REST Call Initiate Consent\nPOST "/v1/consents"
+activate XS2A
+|||
+XS2A-->TPP: Consent initiation Response
+deactivate XS2A
+|||
+TPP->XS2A: REST Call Initiate authorithation \nPOST"/v1/consents/{consentId}/authorisations"
+activate XS2A
+|||
+XS2A-->TPP: Start authorisation response\n"link_ScaRedirect "
+deactivate XS2A
+TPP-->PSU: Feedback to the customer\nAuthorise the access
+deactivate TPP
+|||
+PSU->Online_banking: PSU re-direct to an authorisation webpage of the ASPSP
+deactivate PSU
+|||
+Online_banking-->PSU: Authorisation Process Response
+|||
+deactivate Online_banking
+activate PSU
+|||
+PSU->Online_banking: The PSU Authorises the Consent
+activate Online_banking
+|||
+Online_banking-->PSU: Consent confirmed
+deactivate Online_banking
+|||
+PSU->TPP: Redirect back to TPP
+deactivate PSU
+activate TPP
+|||
+note right of TPP
+TPP may Post Requests without PSU involvement
+and has an access by **ConsentID** for 90 days
+end note
+|||
+TPP->XS2A: REST Call Get Consent status by **ConsentID**
+activate XS2A
+|||
+XS2A-->TPP: Consent Status Response
+|||
+TPP->XS2A: REST Call Get Consent Request by **ConsentID**
+|||
+XS2A-->TPP: Get Consent Response
+|||
+TPP->XS2A: REST Call Read Account List Request by **ConsentID**
+|||
+XS2A-->TPP: Read Account List Response with List of accounts
+|||
+TPP->XS2A: REST Call Read Transaction List by **ConsentID**
+|||
+XS2A-->TPP: Read Transaction List with List of Transactions
+deactivate XS2A
+deactivate TPP
+@enduml
+
