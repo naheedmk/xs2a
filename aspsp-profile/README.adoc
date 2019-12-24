@@ -161,7 +161,7 @@ The value for expiration time is counted with formula.
 |authorisationExpirationTimeMs |This field contains the limit of an expiration time of authorisation resource set in milliseconds |86 400 000 |milliseconds (1, 2,...)
 |authorisationConfirmationRequestMandated |This field indicates if the authorisation confirmation is mandated.
 
-If parameter = FALSE then authorisation confirmation is not supported.
+If parameter = FALSE, then authorisation confirmation is not supported.
 
 If parameter = TRUE, then each authorisation should be confirmed by Authorisation Confirmation Request. |FALSE |TRUE, FALSE
 
