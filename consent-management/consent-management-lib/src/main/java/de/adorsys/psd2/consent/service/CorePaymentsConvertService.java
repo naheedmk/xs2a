@@ -17,8 +17,11 @@
 package de.adorsys.psd2.consent.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import de.adorsys.psd2.consent.api.pis.CmsCommonPayment;
+import de.adorsys.psd2.consent.api.pis.CmsCommonPaymentMapper;
+import de.adorsys.psd2.consent.api.pis.CmsPayment;
 import de.adorsys.psd2.consent.api.pis.PisPayment;
-import de.adorsys.psd2.mapper.CmsCorePaymentMapper;
+import de.adorsys.psd2.consent.service.mapper.CmsCorePaymentMapper;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +36,7 @@ import java.util.List;
 public class CorePaymentsConvertService {
     private final CmsCorePaymentMapper cmsCorePaymentMapper;
     private final Xs2aObjectMapper xs2aObjectMapper;
+    private final CmsCommonPaymentMapper cmsCommonPaymentMapper;
 
     public byte[] buildPaymentData(List<PisPayment> pisPayments, PaymentType paymentType) {
         switch (paymentType) {
@@ -47,7 +51,24 @@ public class CorePaymentsConvertService {
         }
     }
 
+    public CmsPayment expandCommonPaymentWithCorePayment(CmsCommonPayment cmsCommonPayment) {
+        switch (cmsCommonPayment.getPaymentType()) {
+            case SINGLE:
+                return cmsCommonPaymentMapper.mapToCmsSinglePayment(cmsCommonPayment);
+            case BULK:
+                return cmsCommonPaymentMapper.mapToCmsBulkPayment(cmsCommonPayment);
+            case PERIODIC:
+                return cmsCommonPaymentMapper.mapToCmsPeriodicPayment(cmsCommonPayment);
+            default:
+                return cmsCommonPayment;
+        }
+    }
+
     private byte[] writeValueAsBytes(Object object) {
+        if (object == null) {
+            return null;
+        }
+
         try {
             return xs2aObjectMapper.writeValueAsBytes(object);
         } catch (JsonProcessingException e) {

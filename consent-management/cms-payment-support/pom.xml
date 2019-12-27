@@ -19,44 +19,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>xs2a</artifactId>
+        <artifactId>consent-management</artifactId>
         <groupId>de.adorsys.psd2</groupId>
         <version>5.8-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>consent-management</artifactId>
+    <artifactId>cms-payment-support</artifactId>
     <packaging>pom</packaging>
-
     <modules>
-        <!-- Database schema -->
-        <module>cms-db-schema</module>
-
-        <!-- API -->
-        <module>consent-core-api</module>
-        <module>consent-xs2a-api</module>
-        <module>consent-psu-api</module>
-        <module>consent-aspsp-api</module>
-
-        <!-- Remote clients -->
-        <module>consent-xs2a-client</module>
-
-        <!-- Main implementation -->
-        <module>consent-management-lib</module>
-
-        <!-- Web endpoints -->
-        <module>consent-core-web</module>
-        <module>consent-xs2a-web</module>
-        <module>consent-psu-web</module>
-        <module>consent-aspsp-web</module>
-
-        <!-- Scheduler -->
-        <module>cms-scheduler-service</module>
-
-        <!-- Standalone service -->
-        <module>cms-standalone-service</module>
-        <module>cms-payment-support</module>
+        <module>cms-payment-common-impl</module>
+        <module>cms-payment-support-impl</module>
     </modules>
 
 </project>
