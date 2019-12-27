@@ -53,7 +53,7 @@ import static org.junit.Assert.assertEquals;
 
 public class BulkPaymentTypeValidatorImplTest {
 
-   private static final String VALUE_36_LENGHT = "QWERTYUIOPQWERTYUIOPQWERTYUIOPDFGHJK";
+    private static final String VALUE_36_LENGHT = "QWERTYUIOPQWERTYUIOPQWERTYUIOPDFGHJK";
     private static final String VALUE_71_LENGHT = "QWERTYUIOPQWERTYUIOPQWERTYUIOPDFGHJKQWERTYUIOPQWERTYUIOPQWERTYUIOPDFGHJ";
     private final BulkPaymentInitiationJson BULK_PAYMENT_INITIATION_JSON = getBulkPaymentInitiationJson();
 
@@ -124,7 +124,7 @@ public class BulkPaymentTypeValidatorImplTest {
         PeriodicPayment body = new PeriodicPayment();
         validator.validate(body, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_EXTRA_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"paymentId"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"paymentId"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -139,7 +139,7 @@ public class BulkPaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"endToEndIdentification", 35}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"endToEndIdentification", 35}, messageError.getTppMessage().getTextParameters());
 
     }
 
@@ -149,7 +149,7 @@ public class BulkPaymentTypeValidatorImplTest {
 
         validator.doBulkValidation(bulkPayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_NULL_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"debtorAccount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"debtorAccount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -174,7 +174,7 @@ public class BulkPaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_NULL_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"debtorAccount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"debtorAccount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -183,7 +183,7 @@ public class BulkPaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_NULL_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"instructedAmount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"instructedAmount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class BulkPaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_WRONG_FORMAT_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"currency"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"currency"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class BulkPaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_NULL_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"amount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"amount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -213,7 +213,7 @@ public class BulkPaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_WRONG_FORMAT_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"amount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"amount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -222,7 +222,7 @@ public class BulkPaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_NULL_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"creditorAccount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"creditorAccount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -231,7 +231,7 @@ public class BulkPaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_EMPTY_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"creditorName"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"creditorName"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -240,7 +240,7 @@ public class BulkPaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"creditorName", 70}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"creditorName", 70}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test

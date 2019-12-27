@@ -48,7 +48,7 @@ import static org.junit.Assert.assertEquals;
 
 public class SinglePaymentTypeValidatorImplTest {
 
-   private static final String VALUE_36_LENGHT = "QWERTYUIOPQWERTYUIOPQWERTYUIOPDFGHJK";
+    private static final String VALUE_36_LENGHT = "QWERTYUIOPQWERTYUIOPQWERTYUIOPDFGHJK";
     private static final String VALUE_71_LENGHT = "QWERTYUIOPQWERTYUIOPQWERTYUIOPDFGHJKQWERTYUIOPQWERTYUIOPQWERTYUIOPDFGHJ";
     private SinglePaymentTypeValidatorImpl validator;
     private MessageError messageError;
@@ -97,7 +97,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"endToEndIdentification", 35}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"endToEndIdentification", 35}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_NULL_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"debtorAccount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"debtorAccount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_NULL_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"instructedAmount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"instructedAmount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_WRONG_FORMAT_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"currency"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"currency"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_NULL_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"amount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"amount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -145,7 +145,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_WRONG_FORMAT_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"amount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"amount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -154,7 +154,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_NULL_VALUE, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"creditorAccount"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"creditorAccount"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -163,7 +163,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_EMPTY_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"creditorName"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"creditorName"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_EXTRA_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"creditorId"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"creditorId"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -181,7 +181,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_EMPTY_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"creditorName"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"creditorName"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -190,7 +190,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"creditorName", 70}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"creditorName", 70}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -213,7 +213,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAccount(accountReference, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_INVALID_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"IBAN"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"IBAN"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -222,7 +222,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAccount(accountReference, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_INVALID_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"BBAN"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"BBAN"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -231,7 +231,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAccount(accountReference, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"PAN", 35}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"PAN", 35}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -240,7 +240,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAccount(accountReference, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"Masked PAN", 35}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"Masked PAN", 35}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -249,7 +249,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAccount(accountReference, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"MSISDN", 35}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"MSISDN", 35}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -264,7 +264,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAddress(address, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"streetName", 100} , messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"streetName", 100}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -273,7 +273,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAddress(address, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"buildingNumber", 20}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"buildingNumber", 20}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -282,7 +282,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAddress(address, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"townName", 100}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"townName", 100}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -291,7 +291,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAddress(address, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"postCode", 5}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"postCode", 5}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -300,7 +300,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAddress(address, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_VALUE_REQUIRED, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"address.country"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"address.country"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -309,7 +309,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.validateAddress(address, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_VALUE_REQUIRED, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"address.country"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"address.country"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -326,7 +326,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"ultimateDebtor", 70}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"ultimateDebtor", 70}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -335,7 +335,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"ultimateCreditor", 70}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"ultimateCreditor", 70}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -346,7 +346,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_EMPTY_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"reference"}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"reference"}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -357,7 +357,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"reference", 35}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"reference", 35}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -369,7 +369,7 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"referenceType", 35}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"referenceType", 35}, messageError.getTppMessage().getTextParameters());
     }
 
     @Test
@@ -381,6 +381,6 @@ public class SinglePaymentTypeValidatorImplTest {
 
         validator.doSingleValidation(singlePayment, messageError, validationConfig);
         assertEquals(MessageErrorCode.FORMAT_ERROR_OVERSIZE_FIELD, messageError.getTppMessage().getMessageErrorCode());
-        assertArrayEquals(new Object[] {"referenceIssuer", 35}, messageError.getTppMessage().getTextParameters());
+        assertArrayEquals(new Object[]{"referenceIssuer", 35}, messageError.getTppMessage().getTextParameters());
     }
 }

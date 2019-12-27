@@ -14,44 +14,42 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.xs2a.service.payment.create;
+package de.adorsys.psd2.xs2a.service.payment.support.create;
 
-import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
+import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationServiceResolver;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aPisCommonPaymentMapper;
 import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aToCmsPisCommonPaymentRequestMapper;
-import de.adorsys.psd2.xs2a.service.payment.create.spi.CommonPaymentInitiationService;
+import de.adorsys.psd2.xs2a.service.payment.create.AbstractCreatePaymentService;
+import de.adorsys.psd2.xs2a.service.payment.support.create.spi.SinglePaymentInitiationService;
+import de.adorsys.psd2.xs2a.service.payment.support.mapper.RawToXs2aPaymentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-
 @Service
-public class CreateCommonPaymentService extends AbstractCreatePaymentService<CommonPayment, CommonPaymentInitiationService> {
+public class CreateSinglePaymentService extends AbstractCreatePaymentService<SinglePayment, SinglePaymentInitiationService> {
+    private final RawToXs2aPaymentMapper rawToXs2aPaymentMapper;
 
     @Autowired
-    public CreateCommonPaymentService(Xs2aPisCommonPaymentService pisCommonPaymentService,
+    public CreateSinglePaymentService(Xs2aPisCommonPaymentService pisCommonPaymentService,
                                       PisScaAuthorisationServiceResolver pisScaAuthorisationServiceResolver,
                                       AuthorisationMethodDecider authorisationMethodDecider,
                                       Xs2aPisCommonPaymentMapper xs2aPisCommonPaymentMapper,
                                       Xs2aToCmsPisCommonPaymentRequestMapper xs2aToCmsPisCommonPaymentRequestMapper,
-                                      CommonPaymentInitiationService paymentInitiationService,
-                                      RequestProviderService requestProviderService) {
+                                      SinglePaymentInitiationService paymentInitiationService,
+                                      RequestProviderService requestProviderService,
+                                      RawToXs2aPaymentMapper rawToXs2aPaymentMapper) {
         super(pisCommonPaymentService, pisScaAuthorisationServiceResolver, authorisationMethodDecider,
               xs2aPisCommonPaymentMapper, xs2aToCmsPisCommonPaymentRequestMapper, paymentInitiationService, requestProviderService);
+        this.rawToXs2aPaymentMapper = rawToXs2aPaymentMapper;
     }
 
     @Override
-    protected CommonPayment getPaymentRequest(byte[] payment, PaymentInitiationParameters paymentInitiationParameters) {
-        CommonPayment request = new CommonPayment();
-        request.setPaymentType(paymentInitiationParameters.getPaymentType());
-        request.setPaymentProduct(paymentInitiationParameters.getPaymentProduct());
-        request.setPaymentData(payment);
-        request.setPsuDataList(Collections.singletonList(paymentInitiationParameters.getPsuData()));
-        return request;
+    protected SinglePayment getPaymentRequest(byte[] payment, PaymentInitiationParameters paymentInitiationParameters) {
+        return rawToXs2aPaymentMapper.mapToSinglePayment(payment);
     }
 }

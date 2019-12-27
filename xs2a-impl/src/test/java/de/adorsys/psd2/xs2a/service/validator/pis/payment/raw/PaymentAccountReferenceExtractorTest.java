@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.service.validator.pis.payment.raw;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.model.BulkPaymentInitiationJson;
 import de.adorsys.psd2.model.PaymentInitiationJson;
@@ -64,7 +63,7 @@ public class PaymentAccountReferenceExtractorTest {
 
     @Before
     public void setUp() {
-        xs2aObjectMapper.registerModule(new JavaTimeModule());
+        xs2aObjectMapper.findAndRegisterModules();
 
         paymentAccountReferenceExtractor = new PaymentAccountReferenceExtractor(xs2aObjectMapper, paymentModelMapper, requestProviderService);
     }

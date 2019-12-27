@@ -95,8 +95,6 @@ public abstract class AbstractCreatePaymentService<P extends CommonPayment, S ex
         InitialSpiAspspConsentDataProvider aspspConsentDataProvider = response.getAspspConsentDataProvider();
         aspspConsentDataProvider.saveWith(externalPaymentId);
 
-        updateCommonPayment(paymentRequest, paymentInitiationParameters, response, pisCommonPayment.getPaymentId());
-
         response.setPaymentId(externalPaymentId);
 
         boolean implicitMethod = authorisationMethodDecider.isImplicitMethod(paymentInitiationParameters.isTppExplicitAuthorisationPreferred(), response.isMultilevelScaRequired());
@@ -120,7 +118,4 @@ public abstract class AbstractCreatePaymentService<P extends CommonPayment, S ex
     }
 
     protected abstract P getPaymentRequest(byte[] payment, PaymentInitiationParameters paymentInitiationParameters);
-
-    protected abstract P updateCommonPayment(P paymentRequest, PaymentInitiationParameters paymentInitiationParameters,
-                                             PaymentInitiationResponse response, String paymentId);
 }

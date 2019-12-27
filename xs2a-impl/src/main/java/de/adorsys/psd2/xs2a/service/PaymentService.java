@@ -98,6 +98,10 @@ public class PaymentService {
 
         TppInfo tppInfo = tppService.getTppInfo();
 
+        if (isNotSupportedScaApproach(scaApproachResolver.resolveScaApproach())) {
+            throw new UnsupportedOperationException("Unsupported operation");
+        }
+
         CreatePaymentService createPaymentService = paymentServiceResolver.getCreatePaymentService(paymentInitiationParameters);
         ResponseObject<PaymentInitiationResponse> responseObject = createPaymentService.createPayment(payment, paymentInitiationParameters, tppInfo);
 
