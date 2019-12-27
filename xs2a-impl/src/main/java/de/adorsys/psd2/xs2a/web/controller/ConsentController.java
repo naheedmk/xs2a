@@ -18,10 +18,10 @@ package de.adorsys.psd2.xs2a.web.controller;
 
 import de.adorsys.psd2.api.ConsentApi;
 import de.adorsys.psd2.model.Consents;
-import de.adorsys.psd2.xs2a.core.profile.NotificationSupportedMode;
 import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
+import de.adorsys.psd2.xs2a.core.tpp.TppNotificationData;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import de.adorsys.psd2.xs2a.domain.HrefType;
 import de.adorsys.psd2.xs2a.domain.NotificationModeResponseHeaders;
@@ -44,7 +44,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,9 +74,9 @@ public class ConsentController implements ConsentApi {
                                         String psUGeoLocation) {
 
         TppRedirectUri tppRedirectUri = tppRedirectUriMapper.mapToTppRedirectUri(tpPRedirectURI, tpPNokRedirectURI);
-        List<NotificationSupportedMode> notificationModes = notificationSupportedModeService.getProcessedNotificationModes(tpPNotificationContentPreferred);
+        TppNotificationData tppNotificationData = notificationSupportedModeService.getTppNotificationData(tpPNotificationContentPreferred, tpPNotificationURI);
 
-        CreateConsentReq createConsent = consentModelMapper.mapToCreateConsentReq(body, tppRedirectUri, tpPNotificationURI, notificationModes);
+        CreateConsentReq createConsent = consentModelMapper.mapToCreateConsentReq(body, tppRedirectUri, tppNotificationData);
 
         PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress, new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
 
@@ -89,7 +88,7 @@ public class ConsentController implements ConsentApi {
         }
 
         CreateConsentResponse createConsentResponse = createResponse.getBody();
-        NotificationModeResponseHeaders notificationHeaders = notificationSupportedModeService.resolveNotificationHeaders(createConsentResponse.getTppNotificationContentPreferred(), tpPNotificationURI);
+        NotificationModeResponseHeaders notificationHeaders = notificationSupportedModeService.resolveNotificationHeaders(createConsentResponse.getTppNotificationContentPreferred());
 
         ResponseHeaders headers = consentHeadersBuilder.buildCreateConsentHeaders(createConsentResponse.getAuthorizationId(),
                                                                                   Optional.ofNullable(createConsentResponse.getLinks().getSelf())
