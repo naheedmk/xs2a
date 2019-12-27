@@ -27,6 +27,10 @@
 
     <artifactId>cms-payment-common-impl</artifactId>
 
+    <properties>
+        <ruleset.basedir>../../..</ruleset.basedir>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>de.adorsys.psd2</groupId>

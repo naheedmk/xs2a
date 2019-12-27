@@ -23,6 +23,7 @@ import de.adorsys.psd2.model.*;
 import de.adorsys.psd2.xs2a.core.pis.FrequencyCode;
 import de.adorsys.psd2.xs2a.core.pis.PisDayOfExecution;
 import de.adorsys.psd2.xs2a.core.pis.PisExecutionRule;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper {
     @Autowired
@@ -152,7 +154,7 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
         try {
             return xs2aObjectMapper.readValue(paymentData, tClass);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.warn("Can't convert byte[] to Object {}", e.getMessage());
             return null;
         }
     }
