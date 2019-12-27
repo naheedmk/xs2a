@@ -59,13 +59,13 @@ public class ConsentController implements ConsentApi {
     private final ConsentHeadersBuilder consentHeadersBuilder;
 
     @Override
-    public ResponseEntity createConsent(UUID xRequestID, Consents body, String digest, String signature,
+    public ResponseEntity createConsent(UUID xRequestID, String psUIPAddress, Consents body, String digest, String signature,
                                         byte[] tpPSignatureCertificate, String psuId, String psUIDType, String psUCorporateID,
-                                        String psUCorporateIDType, Boolean tpPRedirectPreferred, String tpPRedirectURI,
-                                        String tpPNokRedirectURI, Boolean tpPExplicitAuthorisationPreferred,
-                                        String tpPNotificationURI, String tpPNotificationContentPreferred, String psUIPAddress,
-                                        String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding,
-                                        String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID,
+                                        String psUCorporateIDType, Boolean tpPRedirectPreferred, String tpPRedirectURI, String tpPNokRedirectURI,
+                                        Boolean tpPExplicitAuthorisationPreferred, String tpPNotificationURI,
+                                        String tpPNotificationContentPreferred, String psUIPPort, String psUAccept,
+                                        String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage,
+                                        String psUUserAgent, String psUHttpMethod, UUID psUDeviceID,
                                         String psUGeoLocation) {
 
         TppRedirectUri tppRedirectUri = tppRedirectUriMapper.mapToTppRedirectUri(tpPRedirectURI, tpPNokRedirectURI);
