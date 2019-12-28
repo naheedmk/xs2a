@@ -21,15 +21,17 @@ import de.adorsys.psd2.consent.api.pis.CmsRemittance;
 import de.adorsys.psd2.consent.api.pis.PisPayment;
 import de.adorsys.psd2.core.payment.model.*;
 import org.springframework.stereotype.Component;
-
+import org.springframework.util.CollectionUtils;
+import java.util.Currency;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class CmsCorePaymentMapper {
 
     public PaymentInitiationJson mapToPaymentInitiationJson(List<PisPayment> payments) {
-        if (payments.isEmpty()) {
+        if (CollectionUtils.isEmpty(payments)) {
             return null;
         }
 
@@ -44,7 +46,7 @@ public class CmsCorePaymentMapper {
         payment.setEndToEndIdentification(pisPayment.getEndToEndIdentification());
         Amount amount = new Amount();
         amount.setAmount(pisPayment.getAmount().toPlainString());
-        amount.setCurrency(pisPayment.getCurrency().getCurrencyCode());
+        amount.setCurrency(mapToCurrency(pisPayment.getCurrency()));
         payment.setInstructedAmount(amount);
         payment.setPurposeCode(PurposeCode.fromValue(pisPayment.getPurposeCode()));
         payment.setRemittanceInformationUnstructured(pisPayment.getRemittanceInformationUnstructured());
@@ -56,7 +58,7 @@ public class CmsCorePaymentMapper {
     }
 
     public BulkPaymentInitiationJson mapToBulkPaymentInitiationJson(List<PisPayment> payments) {
-        if (payments.isEmpty()) {
+        if (CollectionUtils.isEmpty(payments)) {
             return null;
         }
 
@@ -74,7 +76,7 @@ public class CmsCorePaymentMapper {
     }
 
     public PeriodicPaymentInitiationJson mapToPeriodicPaymentInitiationJson(List<PisPayment> payments) {
-        if (payments.isEmpty()) {
+        if (CollectionUtils.isEmpty(payments)) {
             return null;
         }
 
@@ -90,7 +92,7 @@ public class CmsCorePaymentMapper {
         payment.setEndToEndIdentification(pisPayment.getEndToEndIdentification());
         Amount amount = new Amount();
         amount.setAmount(pisPayment.getAmount().toPlainString());
-        amount.setCurrency(pisPayment.getCurrency().getCurrencyCode());
+        amount.setCurrency(mapToCurrency(pisPayment.getCurrency()));
         payment.setInstructedAmount(amount);
         payment.setPurposeCode(PurposeCode.fromValue(pisPayment.getPurposeCode()));
         payment.setRemittanceInformationUnstructured(pisPayment.getRemittanceInformationUnstructured());
@@ -117,7 +119,7 @@ public class CmsCorePaymentMapper {
         payment.setEndToEndIdentification(pisPayment.getEndToEndIdentification());
         Amount amount = new Amount();
         amount.setAmount(pisPayment.getAmount().toPlainString());
-        amount.setCurrency(pisPayment.getCurrency().getCurrencyCode());
+        amount.setCurrency(mapToCurrency(pisPayment.getCurrency()));
         payment.setInstructedAmount(amount);
         payment.setPurposeCode(PurposeCode.fromValue(pisPayment.getPurposeCode()));
         payment.setRemittanceInformationUnstructured(pisPayment.getRemittanceInformationUnstructured());
@@ -165,9 +167,13 @@ public class CmsCorePaymentMapper {
         accountReference.setMaskedPan(reference.getMaskedPan());
         accountReference.setMsisdn(reference.getMsisdn());
         accountReference.setPan(reference.getPan());
-        accountReference.setCurrency(reference.getCurrency().getCurrencyCode());
+        accountReference.setCurrency(mapToCurrency(reference.getCurrency()));
 
         return accountReference;
+    }
+
+    private String mapToCurrency(Currency currency) {
+        return Optional.ofNullable(currency).map(Currency::getCurrencyCode).orElse(null);
     }
 }
 

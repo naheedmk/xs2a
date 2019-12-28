@@ -74,7 +74,7 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
         periodicPayment.setEndToEndIdentification(periodicPaymentInitiationJson.getEndToEndIdentification());
         periodicPayment.setDebtorAccount(mapToCmsAccountReference(periodicPaymentInitiationJson.getDebtorAccount()));
         Amount instructedAmount = periodicPaymentInitiationJson.getInstructedAmount();
-        periodicPayment.setInstructedAmount(new CmsAmount(Currency.getInstance(instructedAmount.getCurrency()), BigDecimal.valueOf(Double.parseDouble(instructedAmount.getAmount()))));
+        periodicPayment.setInstructedAmount(new CmsAmount(mapToCurrency(instructedAmount.getCurrency()), BigDecimal.valueOf(Double.parseDouble(instructedAmount.getAmount()))));
         periodicPayment.setCreditorAccount(mapToCmsAccountReference(periodicPaymentInitiationJson.getCreditorAccount()));
         periodicPayment.setCreditorAgent(periodicPaymentInitiationJson.getCreditorAgent());
         periodicPayment.setCreditorName(periodicPaymentInitiationJson.getCreditorName());
@@ -114,7 +114,7 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
         fillBasePaymentFields(singlePayment, cmsCommonPayment);
         singlePayment.setEndToEndIdentification(paymentInitiationBulkElementJson.getEndToEndIdentification());
         Amount instructedAmount = paymentInitiationBulkElementJson.getInstructedAmount();
-        singlePayment.setInstructedAmount(new CmsAmount(Currency.getInstance(instructedAmount.getCurrency()), BigDecimal.valueOf(Double.parseDouble(instructedAmount.getAmount()))));
+        singlePayment.setInstructedAmount(new CmsAmount(mapToCurrency(instructedAmount.getCurrency()), BigDecimal.valueOf(Double.parseDouble(instructedAmount.getAmount()))));
         singlePayment.setCreditorAccount(mapToCmsAccountReference(paymentInitiationBulkElementJson.getCreditorAccount()));
         singlePayment.setCreditorAgent(paymentInitiationBulkElementJson.getCreditorAgent());
         singlePayment.setCreditorName(paymentInitiationBulkElementJson.getCreditorName());
@@ -134,7 +134,7 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
         singlePayment.setEndToEndIdentification(paymentInitiationJson.getEndToEndIdentification());
         singlePayment.setDebtorAccount(mapToCmsAccountReference(paymentInitiationJson.getDebtorAccount()));
         Amount instructedAmount = paymentInitiationJson.getInstructedAmount();
-        singlePayment.setInstructedAmount(new CmsAmount(Currency.getInstance(instructedAmount.getCurrency()), BigDecimal.valueOf(Double.parseDouble(instructedAmount.getAmount()))));
+        singlePayment.setInstructedAmount(new CmsAmount(mapToCurrency(instructedAmount.getCurrency()), BigDecimal.valueOf(Double.parseDouble(instructedAmount.getAmount()))));
         singlePayment.setCreditorAccount(mapToCmsAccountReference(paymentInitiationJson.getCreditorAccount()));
         singlePayment.setCreditorAgent(paymentInitiationJson.getCreditorAgent());
         singlePayment.setCreditorName(paymentInitiationJson.getCreditorName());
@@ -201,7 +201,7 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
                                                        ref.getPan(),
                                                        ref.getMaskedPan(),
                                                        ref.getMsisdn(),
-                                                       Currency.getInstance(ref.getCurrency()))
+                                                       mapToCurrency(ref.getCurrency()))
                    ).orElse(null);
     }
 
@@ -219,5 +219,9 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
 
     private String mapToPurposeCode(PurposeCode purposeCode) {
         return Optional.ofNullable(purposeCode).map(PurposeCode::toString).orElse(null);
+    }
+
+    private Currency mapToCurrency(String currency) {
+        return Optional.ofNullable(currency).map(Currency::getInstance).orElse(null);
     }
 }
