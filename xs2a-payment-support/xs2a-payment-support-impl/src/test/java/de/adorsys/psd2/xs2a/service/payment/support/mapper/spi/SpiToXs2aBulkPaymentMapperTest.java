@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.payment.support.mapper.spi;
 
+import de.adorsys.psd2.xs2a.core.pis.PurposeCode;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
@@ -26,6 +27,7 @@ import de.adorsys.psd2.xs2a.spi.domain.account.SpiAccountReference;
 import de.adorsys.psd2.xs2a.spi.domain.common.SpiAmount;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiAddress;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiBulkPayment;
+import de.adorsys.psd2.xs2a.spi.domain.payment.SpiRemittance;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiSinglePayment;
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.web.mapper.RemittanceMapperImpl;
@@ -86,7 +88,7 @@ public class SpiToXs2aBulkPaymentMapperTest {
         SpiBulkPayment payment = new SpiBulkPayment();
         payment.setPaymentId(PAYMENT_ID);
         payment.setBatchBookingPreferred(Boolean.TRUE);
-        SpiAccountReference accountReference = jsonReader.getObjectFromFile("json/support/mapper/spi/spi-account-reference.json", SpiAccountReference.class);
+        SpiAccountReference accountReference = jsonReader.getObjectFromFile("json/support/mapper/spi/spi-account-reference-debtor.json", SpiAccountReference.class);
         payment.setDebtorAccount(accountReference);
         payment.setRequestedExecutionDate(OFFSET_DATE_TIME.toLocalDate());
         payment.setRequestedExecutionTime(OFFSET_DATE_TIME);
@@ -116,16 +118,22 @@ public class SpiToXs2aBulkPaymentMapperTest {
         SpiSinglePayment payment = new SpiSinglePayment(PAYMENT_PRODUCT);
         payment.setPaymentId(PAYMENT_ID);
         payment.setPaymentStatus(TransactionStatus.ACCP);
-        SpiAccountReference accountReference = jsonReader.getObjectFromFile("json/support/mapper/spi/spi-account-reference.json", SpiAccountReference.class);
-        payment.setCreditorAccount(accountReference);
+        SpiAccountReference accountReferenceCreditor = jsonReader.getObjectFromFile("json/support/mapper/spi/spi-account-reference-creditor.json", SpiAccountReference.class);
+        payment.setCreditorAccount(accountReferenceCreditor);
         payment.setCreditorAgent("BCENECEQ");
         payment.setCreditorId("27ad-46db-8491-71e629d82baa");
         payment.setCreditorName("Telekom");
         payment.setCreditorAddress(jsonReader.getObjectFromFile("json/support/mapper/spi/spi-address.json", SpiAddress.class));
-        payment.setDebtorAccount(accountReference);
+        SpiAccountReference accountReferenceDebtor = jsonReader.getObjectFromFile("json/support/mapper/spi/spi-account-reference-debtor.json", SpiAccountReference.class);
+        payment.setDebtorAccount(accountReferenceDebtor);
         payment.setEndToEndIdentification("RI-123456789");
         payment.setInstructedAmount(new SpiAmount(Currency.getInstance("EUR"), new BigDecimal("1000.00")));
         payment.setRemittanceInformationUnstructured("Ref. Number TELEKOM-1222");
+        SpiRemittance remittanceInformationStructured = new SpiRemittance();
+        remittanceInformationStructured.setReference("reference");
+        remittanceInformationStructured.setReferenceType("referenceType");
+        remittanceInformationStructured.setReferenceIssuer("referenceIssuer");
+        payment.setRemittanceInformationStructured(remittanceInformationStructured);
         payment.setRequestedExecutionDate(OFFSET_DATE_TIME.toLocalDate());
         payment.setRequestedExecutionTime(OFFSET_DATE_TIME);
         payment.setPsuDataList(Collections.singletonList(SpiPsuData.builder()
@@ -144,7 +152,10 @@ public class SpiToXs2aBulkPaymentMapperTest {
                                                              .psuHttpMethod("")
                                                              .psuDeviceId(UUID.randomUUID())
                                                              .build()));
+        payment.setPurposeCode(PurposeCode.CDQC);
         payment.setStatusChangeTimestamp(OFFSET_DATE_TIME);
+        payment.setUltimateCreditor("ultimateCreditor");
+        payment.setUltimateDebtor("ultimateDebtor");
         return Collections.singletonList(payment);
     }
 }

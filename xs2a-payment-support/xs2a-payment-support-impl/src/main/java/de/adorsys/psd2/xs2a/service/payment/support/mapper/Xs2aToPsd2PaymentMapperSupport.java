@@ -18,12 +18,14 @@ package de.adorsys.psd2.xs2a.service.payment.support.mapper;
 
 import de.adorsys.psd2.model.*;
 import de.adorsys.psd2.xs2a.core.domain.address.Xs2aAddress;
+import de.adorsys.psd2.xs2a.core.pis.PisDayOfExecution;
 import de.adorsys.psd2.xs2a.core.pis.PisExecutionRule;
 import de.adorsys.psd2.xs2a.core.pis.Remittance;
 import de.adorsys.psd2.xs2a.core.pis.Xs2aAmount;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Currency;
@@ -46,40 +48,12 @@ public class Xs2aToPsd2PaymentMapperSupport {
         payment.setCreditorAccount(mapToAccountReference(singlePayment.getCreditorAccount()));
         payment.setDebtorAccount(mapToAccountReference(singlePayment.getDebtorAccount()));
         payment.setEndToEndIdentification(singlePayment.getEndToEndIdentification());
-        Amount amount = new Amount();
-        amount.setAmount(singlePayment.getInstructedAmount().getAmount());
-        amount.setCurrency(mapToCurrency(singlePayment.getInstructedAmount().getCurrency()));
-        payment.setInstructedAmount(amount);
+        payment.setInstructedAmount(mapToAmount(singlePayment.getInstructedAmount()));
         payment.setPurposeCode(mapToPurposeCode(singlePayment.getPurposeCode()));
         payment.setRemittanceInformationUnstructured(singlePayment.getRemittanceInformationUnstructured());
         payment.setRequestedExecutionDate(singlePayment.getRequestedExecutionDate());
         payment.setUltimateCreditor(singlePayment.getUltimateCreditor());
         payment.setUltimateDebtor(singlePayment.getUltimateDebtor());
-
-        return payment;
-    }
-
-    private PurposeCode mapToPurposeCode(de.adorsys.psd2.xs2a.core.pis.PurposeCode xs2aPurposeCode) {
-        if (xs2aPurposeCode == null) {
-            return null;
-        }
-        return PurposeCode.fromValue(xs2aPurposeCode.toString());
-    }
-
-    public BulkPaymentInitiationJson mapToBulkPaymentInitiationJson(BulkPayment xs2aBulkPayment) {
-        if (xs2aBulkPayment == null) {
-            return null;
-        }
-
-        BulkPaymentInitiationJson payment = new BulkPaymentInitiationJson();
-        List<SinglePayment> payments = xs2aBulkPayment.getPayments();
-        payment.setPayments(payments.stream().map(this::mapToPaymentInitiationBulkElementJson).collect(Collectors.toList()));
-
-        //Bulk
-        payment.setBatchBookingPreferred(xs2aBulkPayment.getBatchBookingPreferred());
-        payment.setDebtorAccount(mapToAccountReference(xs2aBulkPayment.getDebtorAccount()));
-        payment.setRequestedExecutionDate(xs2aBulkPayment.getRequestedExecutionDate());
-        payment.setRequestedExecutionTime(xs2aBulkPayment.getRequestedExecutionTime());
 
         return payment;
     }
@@ -109,16 +83,39 @@ public class Xs2aToPsd2PaymentMapperSupport {
         payment.setEndDate(xs2aPeriodicPayment.getEndDate());
         payment.setExecutionRule(mapToExecutionRule(xs2aPeriodicPayment.getExecutionRule()));
         payment.setFrequency(mapToFrequencyCode(xs2aPeriodicPayment.getFrequency()));
-        payment.setDayOfExecution(DayOfExecution.fromValue(xs2aPeriodicPayment.getDayOfExecution().getValue()));
+        payment.setDayOfExecution(mapToDayOfExecution(xs2aPeriodicPayment.getDayOfExecution()));
 
         return payment;
     }
 
-    private ExecutionRule mapToExecutionRule(PisExecutionRule pisExecutionRule) {
-        return Optional.ofNullable(pisExecutionRule)
-                   .map(PisExecutionRule::getValue)
-                   .map(ExecutionRule::fromValue)
-                   .orElse(null);
+    public BulkPaymentInitiationJson mapToBulkPaymentInitiationJson(BulkPayment xs2aBulkPayment) {
+        if (xs2aBulkPayment == null) {
+            return null;
+        }
+
+        BulkPaymentInitiationJson payment = new BulkPaymentInitiationJson();
+        List<SinglePayment> payments = xs2aBulkPayment.getPayments();
+
+        if (CollectionUtils.isNotEmpty(payments)) {
+            payment.setPayments(payments.stream()
+                                    .map(this::mapToPaymentInitiationBulkElementJson)
+                                    .collect(Collectors.toList()));
+        }
+
+        //Bulk
+        payment.setBatchBookingPreferred(xs2aBulkPayment.getBatchBookingPreferred());
+        payment.setDebtorAccount(mapToAccountReference(xs2aBulkPayment.getDebtorAccount()));
+        payment.setRequestedExecutionDate(xs2aBulkPayment.getRequestedExecutionDate());
+        payment.setRequestedExecutionTime(xs2aBulkPayment.getRequestedExecutionTime());
+
+        return payment;
+    }
+
+    private PurposeCode mapToPurposeCode(de.adorsys.psd2.xs2a.core.pis.PurposeCode xs2aPurposeCode) {
+        if (xs2aPurposeCode == null) {
+            return null;
+        }
+        return PurposeCode.fromValue(xs2aPurposeCode.toString());
     }
 
     private PaymentInitiationBulkElementJson mapToPaymentInitiationBulkElementJson(SinglePayment singlePayment) {
@@ -197,7 +194,22 @@ public class Xs2aToPsd2PaymentMapperSupport {
             return null;
         }
 
-        return FrequencyCode.fromValue(xs2aFrequency.toString());
+        return FrequencyCode.valueOf(xs2aFrequency.name());
+    }
+
+    private ExecutionRule mapToExecutionRule(PisExecutionRule pisExecutionRule) {
+        return Optional.ofNullable(pisExecutionRule)
+                   .map(PisExecutionRule::getValue)
+                   .map(ExecutionRule::fromValue)
+                   .orElse(null);
+    }
+
+    private DayOfExecution mapToDayOfExecution(PisDayOfExecution xs2aDayOfExecution) {
+        if (xs2aDayOfExecution == null) {
+            return null;
+        }
+
+        return DayOfExecution.fromValue(xs2aDayOfExecution.getValue());
     }
 
     private String mapToCurrency(Currency currency) {

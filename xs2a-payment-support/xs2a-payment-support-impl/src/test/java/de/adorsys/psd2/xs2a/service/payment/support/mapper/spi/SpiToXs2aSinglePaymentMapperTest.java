@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.payment.support.mapper.spi;
 
+import de.adorsys.psd2.xs2a.core.pis.PurposeCode;
 import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiToXs2aAccountReferenceMapperImpl;
@@ -24,6 +25,7 @@ import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiToXs2aAmountMappe
 import de.adorsys.psd2.xs2a.spi.domain.account.SpiAccountReference;
 import de.adorsys.psd2.xs2a.spi.domain.common.SpiAmount;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiAddress;
+import de.adorsys.psd2.xs2a.spi.domain.payment.SpiRemittance;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiSinglePayment;
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.web.mapper.RemittanceMapperImpl;
@@ -100,16 +102,22 @@ public class SpiToXs2aSinglePaymentMapperTest {
         SpiSinglePayment payment = new SpiSinglePayment(PAYMENT_PRODUCT);
         payment.setPaymentId(PAYMENT_ID);
         payment.setPaymentStatus(TransactionStatus.ACCP);
-        SpiAccountReference accountReference = jsonReader.getObjectFromFile("json/support/mapper/spi/spi-account-reference.json", SpiAccountReference.class);
-        payment.setCreditorAccount(accountReference);
+        SpiAccountReference creditorAccountReference = jsonReader.getObjectFromFile("json/support/mapper/spi/spi-account-reference-creditor.json", SpiAccountReference.class);
+        payment.setCreditorAccount(creditorAccountReference);
         payment.setCreditorAgent("BCENECEQ");
         payment.setCreditorId("27ad-46db-8491-71e629d82baa");
         payment.setCreditorName("Telekom");
         payment.setCreditorAddress(jsonReader.getObjectFromFile("json/support/mapper/spi/spi-address.json", SpiAddress.class));
-        payment.setDebtorAccount(accountReference);
+        SpiAccountReference debtorAccountReference = jsonReader.getObjectFromFile("json/support/mapper/spi/spi-account-reference-debtor.json", SpiAccountReference.class);
+        payment.setDebtorAccount(debtorAccountReference);
         payment.setEndToEndIdentification("RI-123456789");
         payment.setInstructedAmount(new SpiAmount(Currency.getInstance("EUR"), new BigDecimal("1000.00")));
         payment.setRemittanceInformationUnstructured("Ref. Number TELEKOM-1222");
+        SpiRemittance remittanceInformationStructured = new SpiRemittance();
+        remittanceInformationStructured.setReference("reference");
+        remittanceInformationStructured.setReferenceType("referenceType");
+        remittanceInformationStructured.setReferenceIssuer("referenceIssuer");
+        payment.setRemittanceInformationStructured(remittanceInformationStructured);
         payment.setRequestedExecutionDate(OFFSET_DATE_TIME.toLocalDate());
         payment.setRequestedExecutionTime(OFFSET_DATE_TIME);
         payment.setPsuDataList(Collections.singletonList(SpiPsuData.builder()
@@ -128,7 +136,10 @@ public class SpiToXs2aSinglePaymentMapperTest {
                                                              .psuHttpMethod("")
                                                              .psuDeviceId(UUID.randomUUID())
                                                              .build()));
+        payment.setPurposeCode(PurposeCode.CDQC);
         payment.setStatusChangeTimestamp(OFFSET_DATE_TIME);
+        payment.setUltimateCreditor("ultimateCreditor");
+        payment.setUltimateDebtor("ultimateDebtor");
         return payment;
     }
 }
