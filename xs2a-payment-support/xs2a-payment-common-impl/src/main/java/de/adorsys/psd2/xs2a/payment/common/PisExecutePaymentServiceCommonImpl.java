@@ -35,8 +35,8 @@ public class PisExecutePaymentServiceCommonImpl implements PisExecutePaymentServ
 
     @Override
     public SpiResponse<SpiPaymentExecutionResponse> verifyScaAuthorisationAndExecutePayment(SpiContextData contextData,
-                                                                                            SpiPayment payment,
                                                                                             SpiScaConfirmation spiScaConfirmation,
+                                                                                            SpiPayment payment,
                                                                                             SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
         return commonPaymentSpi.verifyScaAuthorisationAndExecutePayment(contextData,
                                                                         spiScaConfirmation,

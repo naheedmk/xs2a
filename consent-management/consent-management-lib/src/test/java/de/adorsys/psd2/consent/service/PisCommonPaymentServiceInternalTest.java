@@ -300,6 +300,7 @@ public class PisCommonPaymentServiceInternalTest {
         PisCommonPaymentResponse pisCommonPaymentResponse = new PisCommonPaymentResponse();
         PisPaymentData pisPaymentData = new PisPaymentData();
         pisCommonPaymentData.setPayments(Collections.singletonList(pisPaymentData));
+        pisCommonPaymentData.setPayment(null);
 
         PisPayment pisPayment = new PisPayment();
         when(pisCommonPaymentMapper.mapToPisPayment(pisPaymentData)).thenReturn(pisPayment);

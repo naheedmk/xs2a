@@ -25,8 +25,8 @@ import de.adorsys.psd2.xs2a.spi.service.SpiPayment;
 
 public interface PisExecutePaymentService {
     SpiResponse<SpiPaymentExecutionResponse> verifyScaAuthorisationAndExecutePayment(SpiContextData contextData,
-                                                                                     SpiPayment payment,
                                                                                      SpiScaConfirmation spiScaConfirmation,
+                                                                                     SpiPayment payment,
                                                                                      SpiAspspConsentDataProvider spiAspspConsentDataProvider);
 
     SpiResponse<SpiPaymentExecutionResponse> executePaymentWithoutSca(SpiContextData contextData,

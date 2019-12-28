@@ -109,8 +109,8 @@ public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisati
                                                                                      SpiPayment payment, SpiScaConfirmation spiScaConfirmation,
                                                                                      SpiContextData contextData, SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
         return pisExecutePaymentService.verifyScaAuthorisationAndExecutePayment(contextData,
-                                                                                payment,
                                                                                 spiScaConfirmation,
+                                                                                payment,
                                                                                 spiAspspConsentDataProvider);
     }
 

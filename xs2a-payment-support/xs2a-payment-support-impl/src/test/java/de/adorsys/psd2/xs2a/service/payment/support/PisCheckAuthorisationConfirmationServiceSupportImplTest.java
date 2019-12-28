@@ -48,7 +48,6 @@ import static org.mockito.Mockito.*;
 public class PisCheckAuthorisationConfirmationServiceSupportImplTest {
     private static final String STANDARD_PAYMENT_PRODUCT = "sepa-credit-transfers";
     private static final String RAW_PAYMENT_PRODUCT = "raw-product";
-
     private static final SpiContextData SPI_CONTEXT_DATA = new SpiContextData(null, null, null, null, null);
     private static final SpiConfirmationCode SPI_CONFIRMATION_CODE = new SpiConfirmationCode(null);
     private static final SpiSinglePayment SPI_SINGLE_PAYMENT = new SpiSinglePayment(STANDARD_PAYMENT_PRODUCT);
