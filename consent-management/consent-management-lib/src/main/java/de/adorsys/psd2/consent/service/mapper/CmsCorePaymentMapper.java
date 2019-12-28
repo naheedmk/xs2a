@@ -19,7 +19,7 @@ package de.adorsys.psd2.consent.service.mapper;
 import de.adorsys.psd2.consent.api.CmsAddress;
 import de.adorsys.psd2.consent.api.pis.CmsRemittance;
 import de.adorsys.psd2.consent.api.pis.PisPayment;
-import de.adorsys.psd2.model.*;
+import de.adorsys.psd2.core.payment.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

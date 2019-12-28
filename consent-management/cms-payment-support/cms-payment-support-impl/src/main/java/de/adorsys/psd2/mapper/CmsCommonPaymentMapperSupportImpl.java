@@ -19,8 +19,7 @@ package de.adorsys.psd2.mapper;
 import de.adorsys.psd2.consent.api.CmsAddress;
 import de.adorsys.psd2.consent.api.ais.CmsAccountReference;
 import de.adorsys.psd2.consent.api.pis.*;
-import de.adorsys.psd2.model.*;
-import de.adorsys.psd2.xs2a.core.pis.FrequencyCode;
+import de.adorsys.psd2.core.payment.model.*;
 import de.adorsys.psd2.xs2a.core.pis.PisDayOfExecution;
 import de.adorsys.psd2.xs2a.core.pis.PisExecutionRule;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +84,7 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
         periodicPayment.setStartDate(periodicPaymentInitiationJson.getStartDate());
         periodicPayment.setEndDate(periodicPaymentInitiationJson.getEndDate());
         periodicPayment.setExecutionRule(mapToPisExecutionRule(periodicPaymentInitiationJson.getExecutionRule()));
-        periodicPayment.setFrequency(mapToPisDayOfExecution(periodicPaymentInitiationJson.getFrequency()));
+        periodicPayment.setFrequency(mapToFrequencyCode(periodicPaymentInitiationJson.getFrequency()));
         periodicPayment.setUltimateDebtor(periodicPaymentInitiationJson.getUltimateDebtor());
         periodicPayment.setUltimateCreditor(periodicPaymentInitiationJson.getUltimateCreditor());
         periodicPayment.setPurposeCode(mapToPurposeCode(periodicPaymentInitiationJson.getPurposeCode()));
@@ -206,8 +205,8 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
                    ).orElse(null);
     }
 
-    private FrequencyCode mapToPisDayOfExecution(de.adorsys.psd2.model.FrequencyCode frequencyCode) {
-        return Optional.ofNullable(frequencyCode).map(de.adorsys.psd2.model.FrequencyCode::toString).map(FrequencyCode::valueOf).orElse(null);
+    private de.adorsys.psd2.xs2a.core.pis.FrequencyCode mapToFrequencyCode(FrequencyCode frequencyCode) {
+        return Optional.ofNullable(frequencyCode).map(FrequencyCode::toString).map(de.adorsys.psd2.xs2a.core.pis.FrequencyCode::valueOf).orElse(null);
     }
 
     private PisDayOfExecution mapToPisDayOfExecution(DayOfExecution dayOfExecution) {

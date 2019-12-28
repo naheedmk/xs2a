@@ -129,7 +129,7 @@ public class ErrorMapperContainer {
         Psd2ErrorMapper psd2ErrorMapper = mapperContainer.get(error.getErrorType());
 
         return new ErrorBody(psd2ErrorMapper.getMapper()
-            .apply(error), psd2ErrorMapper.getErrorStatus());
+                                 .apply(error), psd2ErrorMapper.getErrorStatus());
     }
 
     @Value

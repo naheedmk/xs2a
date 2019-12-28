@@ -17,10 +17,10 @@
 package de.adorsys.psd2.xs2a.service.payment.support.mapper.spi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import de.adorsys.psd2.core.payment.model.BulkPaymentInitiationJson;
-import de.adorsys.psd2.core.payment.model.PaymentInitiationJson;
-import de.adorsys.psd2.core.payment.model.PeriodicPaymentInitiationJson;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
+import de.adorsys.psd2.model.BulkPaymentInitiationJson;
+import de.adorsys.psd2.model.PaymentInitiationJson;
+import de.adorsys.psd2.model.PeriodicPaymentInitiationJson;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
