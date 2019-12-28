@@ -20,8 +20,9 @@ import de.adorsys.psd2.consent.api.CmsAddress;
 import de.adorsys.psd2.consent.api.pis.CmsRemittance;
 import de.adorsys.psd2.consent.api.pis.PisPayment;
 import de.adorsys.psd2.core.payment.model.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
+
 import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
@@ -30,31 +31,36 @@ import java.util.stream.Collectors;
 @Component
 public class CmsCorePaymentMapper {
 
+    public PaymentInitiationJson mapToPaymentInitiationJson(PisPayment pisPayment) {
+        return Optional.ofNullable(pisPayment)
+                   .map(ref -> {
+                       PaymentInitiationJson payment = new PaymentInitiationJson();
+                       payment.setCreditorAddress(mapToAddress(pisPayment.getCreditorAddress()));
+                       payment.setRemittanceInformationStructured(mapToRemittanceInformationStructured(pisPayment.getRemittanceInformationStructured()));
+                       payment.setCreditorAgent(pisPayment.getCreditorAgent());
+                       payment.setCreditorName(pisPayment.getCreditorName());
+                       payment.setCreditorAccount(mapToAccountReference(pisPayment.getCreditorAccount()));
+                       payment.setDebtorAccount(mapToAccountReference(pisPayment.getDebtorAccount()));
+                       payment.setEndToEndIdentification(pisPayment.getEndToEndIdentification());
+                       Amount amount = new Amount();
+                       amount.setAmount(pisPayment.getAmount().toPlainString());
+                       amount.setCurrency(mapToCurrency(pisPayment.getCurrency()));
+                       payment.setInstructedAmount(amount);
+                       payment.setPurposeCode(PurposeCode.fromValue(pisPayment.getPurposeCode()));
+                       payment.setRemittanceInformationUnstructured(pisPayment.getRemittanceInformationUnstructured());
+                       payment.setRequestedExecutionDate(pisPayment.getRequestedExecutionDate());
+                       payment.setUltimateCreditor(pisPayment.getUltimateCreditor());
+                       payment.setUltimateDebtor(pisPayment.getUltimateDebtor());
+
+                       return payment;
+                   }).orElse(null);
+    }
+
     public PaymentInitiationJson mapToPaymentInitiationJson(List<PisPayment> payments) {
         if (CollectionUtils.isEmpty(payments)) {
             return null;
         }
-
-        PisPayment pisPayment = payments.get(0);
-        PaymentInitiationJson payment = new PaymentInitiationJson();
-        payment.setCreditorAddress(mapToAddress(pisPayment.getCreditorAddress()));
-        payment.setRemittanceInformationStructured(mapToRemittanceInformationStructured(pisPayment.getRemittanceInformationStructured()));
-        payment.setCreditorAgent(pisPayment.getCreditorAgent());
-        payment.setCreditorName(pisPayment.getCreditorName());
-        payment.setCreditorAccount(mapToAccountReference(pisPayment.getCreditorAccount()));
-        payment.setDebtorAccount(mapToAccountReference(pisPayment.getDebtorAccount()));
-        payment.setEndToEndIdentification(pisPayment.getEndToEndIdentification());
-        Amount amount = new Amount();
-        amount.setAmount(pisPayment.getAmount().toPlainString());
-        amount.setCurrency(mapToCurrency(pisPayment.getCurrency()));
-        payment.setInstructedAmount(amount);
-        payment.setPurposeCode(PurposeCode.fromValue(pisPayment.getPurposeCode()));
-        payment.setRemittanceInformationUnstructured(pisPayment.getRemittanceInformationUnstructured());
-        payment.setRequestedExecutionDate(pisPayment.getRequestedExecutionDate());
-        payment.setUltimateCreditor(pisPayment.getUltimateCreditor());
-        payment.setUltimateDebtor(pisPayment.getUltimateDebtor());
-
-        return payment;
+        return mapToPaymentInitiationJson(payments.get(0));
     }
 
     public BulkPaymentInitiationJson mapToBulkPaymentInitiationJson(List<PisPayment> payments) {
@@ -130,46 +136,44 @@ public class CmsCorePaymentMapper {
     }
 
     private Address mapToAddress(CmsAddress creditorAddress) {
-        if (creditorAddress == null) {
-            return null;
-        }
+        return Optional.ofNullable(creditorAddress)
+                   .map(ref -> {
+                       Address address = new Address();
+                       address.setBuildingNumber(ref.getBuildingNumber());
+                       address.setCountry(ref.getCountry());
+                       address.setPostCode(ref.getPostalCode());
+                       address.setStreetName(ref.getStreet());
+                       address.setTownName(ref.getCity());
 
-        Address address = new Address();
-        address.setBuildingNumber(creditorAddress.getBuildingNumber());
-        address.setCountry(creditorAddress.getCountry());
-        address.setPostCode(creditorAddress.getPostalCode());
-        address.setStreetName(creditorAddress.getStreet());
-        address.setTownName(creditorAddress.getCity());
-
-        return address;
+                       return address;
+                   }).orElse(null);
     }
 
     private RemittanceInformationStructured mapToRemittanceInformationStructured(CmsRemittance remittanceInformationStructured) {
-        if (remittanceInformationStructured == null) {
-            return null;
-        }
-        RemittanceInformationStructured informationStructured = new RemittanceInformationStructured();
-        informationStructured.setReference(remittanceInformationStructured.getReference());
-        informationStructured.setReferenceIssuer(remittanceInformationStructured.getReferenceIssuer());
-        informationStructured.setReferenceType(remittanceInformationStructured.getReferenceType());
+        return Optional.ofNullable(remittanceInformationStructured)
+                   .map(ref -> {
+                       RemittanceInformationStructured informationStructured = new RemittanceInformationStructured();
+                       informationStructured.setReference(ref.getReference());
+                       informationStructured.setReferenceIssuer(ref.getReferenceIssuer());
+                       informationStructured.setReferenceType(ref.getReferenceType());
 
-        return informationStructured;
+                       return informationStructured;
+                   }).orElse(null);
     }
 
     private AccountReference mapToAccountReference(de.adorsys.psd2.xs2a.core.profile.AccountReference reference) {
-        if (reference == null) {
-            return null;
-        }
+        return Optional.ofNullable(reference)
+                   .map(ref -> {
+                       AccountReference accountReference = new AccountReference();
+                       accountReference.setIban(ref.getIban());
+                       accountReference.setBban(ref.getBban());
+                       accountReference.setMaskedPan(ref.getMaskedPan());
+                       accountReference.setMsisdn(ref.getMsisdn());
+                       accountReference.setPan(ref.getPan());
+                       accountReference.setCurrency(mapToCurrency(ref.getCurrency()));
 
-        AccountReference accountReference = new AccountReference();
-        accountReference.setIban(reference.getIban());
-        accountReference.setBban(reference.getBban());
-        accountReference.setMaskedPan(reference.getMaskedPan());
-        accountReference.setMsisdn(reference.getMsisdn());
-        accountReference.setPan(reference.getPan());
-        accountReference.setCurrency(mapToCurrency(reference.getCurrency()));
-
-        return accountReference;
+                       return accountReference;
+                   }).orElse(null);
     }
 
     private String mapToCurrency(Currency currency) {

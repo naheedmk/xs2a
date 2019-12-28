@@ -47,7 +47,7 @@ public class CorePaymentsConvertService {
             case PERIODIC:
                 return writeValueAsBytes(cmsCorePaymentMapper.mapToPeriodicPaymentInitiationJson(pisPayments));
             default:
-                return null;
+                return new byte[0];
         }
     }
 
@@ -66,14 +66,14 @@ public class CorePaymentsConvertService {
 
     private byte[] writeValueAsBytes(Object object) {
         if (object == null) {
-            return null;
+            return new byte[0];
         }
 
         try {
             return xs2aObjectMapper.writeValueAsBytes(object);
         } catch (JsonProcessingException e) {
             log.warn("Can't convert object to byte[] : {}", e.getMessage());
-            return null;
+            return new byte[0];
         }
     }
 }

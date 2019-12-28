@@ -239,7 +239,7 @@ public class PisAuthorisationServiceInternal implements PisAuthorisationService 
                    .build();
     }
 
-    private void transferCorePaymentToCommonPayment(PisAuthorization pisAuthorization) {
+    void transferCorePaymentToCommonPayment(PisAuthorization pisAuthorization) {
         PisCommonPaymentData pisCommonPaymentData = pisAuthorization.getPaymentData();
         if (convertCorePaymentToCommonPayment && pisCommonPaymentData.getPayment() == null) {
             List<PisPayment> pisPayments = pisCommonPaymentData.getPayments().stream()

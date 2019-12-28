@@ -143,7 +143,7 @@ public class PisCommonPaymentServiceInternal implements PisCommonPaymentService 
                    .build();
     }
 
-    private void transferCorePaymentToCommonPayment(PisCommonPaymentResponse pisCommonPaymentResponse, PisCommonPaymentData pisCommonPaymentData) {
+    void transferCorePaymentToCommonPayment(PisCommonPaymentResponse pisCommonPaymentResponse, PisCommonPaymentData pisCommonPaymentData) {
         if (convertCorePaymentToCommonPayment && pisCommonPaymentData.getPayment() == null) {
             List<PisPayment> pisPayments = pisCommonPaymentData.getPayments().stream()
                                                .map(pisCommonPaymentMapper::mapToPisPayment)

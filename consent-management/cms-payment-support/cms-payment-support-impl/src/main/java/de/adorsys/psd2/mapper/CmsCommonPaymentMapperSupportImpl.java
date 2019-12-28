@@ -83,7 +83,7 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
         periodicPayment.setDayOfExecution(mapToPisDayOfExecution(periodicPaymentInitiationJson.getDayOfExecution()));
         periodicPayment.setStartDate(periodicPaymentInitiationJson.getStartDate());
         periodicPayment.setEndDate(periodicPaymentInitiationJson.getEndDate());
-        periodicPayment.setExecutionRule(mapToPisExecutionRule(periodicPaymentInitiationJson.getExecutionRule()));
+        periodicPayment.setExecutionRule(mapToPisExecutionRule(periodicPaymentInitiationJson.getExecutionRule()).orElse(null));
         periodicPayment.setFrequency(mapToFrequencyCode(periodicPaymentInitiationJson.getFrequency()));
         periodicPayment.setUltimateDebtor(periodicPaymentInitiationJson.getUltimateDebtor());
         periodicPayment.setUltimateCreditor(periodicPaymentInitiationJson.getUltimateCreditor());
@@ -151,7 +151,7 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
 
     private <T> T convert(byte[] paymentData, Class<T> tClass) {
         try {
-            return xs2aObjectMapper.readValue(paymentData, tClass);
+            return paymentData != null ? xs2aObjectMapper.readValue(paymentData, tClass) : null;
         } catch (IOException e) {
             log.warn("Can't convert byte[] to Object {}", e.getMessage());
             return null;
@@ -205,16 +205,18 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
                    ).orElse(null);
     }
 
-    private de.adorsys.psd2.xs2a.core.pis.FrequencyCode mapToFrequencyCode(FrequencyCode frequencyCode) {
-        return Optional.ofNullable(frequencyCode).map(FrequencyCode::toString).map(de.adorsys.psd2.xs2a.core.pis.FrequencyCode::fromValue).orElse(null);
+    private de.adorsys.psd2.xs2a.core.pis.FrequencyCode mapToFrequencyCode(FrequencyCode frequency) {
+        return de.adorsys.psd2.xs2a.core.pis.FrequencyCode.valueOf(frequency.name());
     }
 
     private PisDayOfExecution mapToPisDayOfExecution(DayOfExecution dayOfExecution) {
         return Optional.ofNullable(dayOfExecution).map(DayOfExecution::toString).map(PisDayOfExecution::fromValue).orElse(null);
     }
 
-    private PisExecutionRule mapToPisExecutionRule(ExecutionRule executionRule) {
-        return Optional.ofNullable(executionRule).map(ExecutionRule::toString).flatMap(PisExecutionRule::getByValue).orElse(null);
+    private Optional<PisExecutionRule> mapToPisExecutionRule(ExecutionRule executionRule) {
+        return Optional.ofNullable(executionRule)
+                             .map(ExecutionRule::toString)
+                             .flatMap(PisExecutionRule::getByValue);
     }
 
     private String mapToPurposeCode(PurposeCode purposeCode) {
