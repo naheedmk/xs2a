@@ -206,7 +206,7 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
     }
 
     private de.adorsys.psd2.xs2a.core.pis.FrequencyCode mapToFrequencyCode(FrequencyCode frequencyCode) {
-        return Optional.ofNullable(frequencyCode).map(FrequencyCode::toString).map(de.adorsys.psd2.xs2a.core.pis.FrequencyCode::valueOf).orElse(null);
+        return Optional.ofNullable(frequencyCode).map(FrequencyCode::toString).map(de.adorsys.psd2.xs2a.core.pis.FrequencyCode::fromValue).orElse(null);
     }
 
     private PisDayOfExecution mapToPisDayOfExecution(DayOfExecution dayOfExecution) {
