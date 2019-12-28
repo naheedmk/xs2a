@@ -214,7 +214,7 @@ public class CmsCommonPaymentMapperSupportImpl implements CmsCommonPaymentMapper
     }
 
     private PisExecutionRule mapToPisExecutionRule(ExecutionRule executionRule) {
-        return Optional.ofNullable(executionRule).map(ExecutionRule::toString).map(PisExecutionRule::valueOf).orElse(null);
+        return Optional.ofNullable(executionRule).map(ExecutionRule::toString).flatMap(PisExecutionRule::getByValue).orElse(null);
     }
 
     private String mapToPurposeCode(PurposeCode purposeCode) {
