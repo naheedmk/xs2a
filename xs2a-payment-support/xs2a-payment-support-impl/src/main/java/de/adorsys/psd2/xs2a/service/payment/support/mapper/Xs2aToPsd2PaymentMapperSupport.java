@@ -26,6 +26,7 @@ import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import org.springframework.stereotype.Component;
 
+import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class Xs2aToPsd2PaymentMapperSupport {
         payment.setEndToEndIdentification(singlePayment.getEndToEndIdentification());
         Amount amount = new Amount();
         amount.setAmount(singlePayment.getInstructedAmount().getAmount());
-        amount.setCurrency(singlePayment.getInstructedAmount().getCurrency().getCurrencyCode());
+        amount.setCurrency(mapToCurrency(singlePayment.getInstructedAmount().getCurrency()));
         payment.setInstructedAmount(amount);
         payment.setPurposeCode(mapToPurposeCode(singlePayment.getPurposeCode()));
         payment.setRemittanceInformationUnstructured(singlePayment.getRemittanceInformationUnstructured());
@@ -175,7 +176,7 @@ public class Xs2aToPsd2PaymentMapperSupport {
         accountReference.setMaskedPan(reference.getMaskedPan());
         accountReference.setMsisdn(reference.getMsisdn());
         accountReference.setPan(reference.getPan());
-        accountReference.setCurrency(reference.getCurrency().getCurrencyCode());
+        accountReference.setCurrency(mapToCurrency(reference.getCurrency()));
 
         return accountReference;
     }
@@ -187,7 +188,7 @@ public class Xs2aToPsd2PaymentMapperSupport {
 
         Amount amount = new Amount();
         amount.setAmount(xs2aAmount.getAmount());
-        amount.setCurrency(xs2aAmount.getCurrency().getCurrencyCode());
+        amount.setCurrency(mapToCurrency(xs2aAmount.getCurrency()));
         return amount;
     }
 
@@ -197,5 +198,11 @@ public class Xs2aToPsd2PaymentMapperSupport {
         }
 
         return FrequencyCode.fromValue(xs2aFrequency.toString());
+    }
+
+    private String mapToCurrency(Currency currency) {
+        return Optional.ofNullable(currency)
+                   .map(Currency::getCurrencyCode)
+                   .orElse(null);
     }
 }
