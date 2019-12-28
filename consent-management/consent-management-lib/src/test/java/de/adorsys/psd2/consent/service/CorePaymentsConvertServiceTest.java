@@ -24,7 +24,6 @@ import de.adorsys.psd2.consent.service.mapper.CmsCorePaymentMapper;
 import de.adorsys.psd2.core.payment.model.BulkPaymentInitiationJson;
 import de.adorsys.psd2.core.payment.model.PaymentInitiationJson;
 import de.adorsys.psd2.core.payment.model.PeriodicPaymentInitiationJson;
-import de.adorsys.psd2.mapper.CmsCommonPaymentMapperSupportImpl;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.xs2a.reader.JsonReader;
@@ -41,12 +40,13 @@ import java.util.Collections;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {CorePaymentsConvertService.class, CmsCorePaymentMapper.class, Xs2aObjectMapper.class,
-    CmsCommonPaymentMapperSupportImpl.class})
+@ContextConfiguration(classes = {CmsCorePaymentMapper.class, Xs2aObjectMapper.class})
 public class CorePaymentsConvertServiceTest {
+    private CorePaymentsConvertService corePaymentsConvertService;
 
     @Autowired
-    private CorePaymentsConvertService corePaymentsConvertService;
+    private CmsCorePaymentMapper cmsCorePaymentMapper;
+
     @Autowired
     private Xs2aObjectMapper xs2aObjectMapper;
 
@@ -62,6 +62,7 @@ public class CorePaymentsConvertServiceTest {
         cmsCommonPayment = new CmsCommonPayment("payments");
 
         cmsCommonPaymentMapper = mock(CmsCommonPaymentMapper.class);
+        corePaymentsConvertService = new CorePaymentsConvertService(cmsCorePaymentMapper, xs2aObjectMapper, cmsCommonPaymentMapper);
     }
 
     @Test
@@ -103,7 +104,6 @@ public class CorePaymentsConvertServiceTest {
 
     @Test
     public void expandCommonPaymentWithCorePayment_periodicPayment() {
-        corePaymentsConvertService = new CorePaymentsConvertService(null, null, cmsCommonPaymentMapper);
         cmsCommonPayment.setPaymentType(PaymentType.PERIODIC);
 
         corePaymentsConvertService.expandCommonPaymentWithCorePayment(cmsCommonPayment);
@@ -113,7 +113,6 @@ public class CorePaymentsConvertServiceTest {
 
     @Test
     public void expandCommonPaymentWithCorePayment_bulkPayment() {
-        corePaymentsConvertService = new CorePaymentsConvertService(null, null, cmsCommonPaymentMapper);
         cmsCommonPayment.setPaymentType(PaymentType.BULK);
 
         corePaymentsConvertService.expandCommonPaymentWithCorePayment(cmsCommonPayment);
