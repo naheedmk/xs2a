@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.service.payment.support.mapper;
 
 import de.adorsys.psd2.model.*;
 import de.adorsys.psd2.xs2a.core.domain.address.Xs2aAddress;
+import de.adorsys.psd2.xs2a.core.pis.PisExecutionRule;
 import de.adorsys.psd2.xs2a.core.pis.Remittance;
 import de.adorsys.psd2.xs2a.core.pis.Xs2aAmount;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
@@ -26,6 +27,7 @@ import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -104,11 +106,18 @@ public class Xs2aToPsd2PaymentMapperSupport {
         //Periodic
         payment.setStartDate(xs2aPeriodicPayment.getStartDate());
         payment.setEndDate(xs2aPeriodicPayment.getEndDate());
-        payment.setExecutionRule(ExecutionRule.fromValue(xs2aPeriodicPayment.getExecutionRule().getValue()));
+        payment.setExecutionRule(mapToExecutionRule(xs2aPeriodicPayment.getExecutionRule()));
         payment.setFrequency(mapToFrequencyCode(xs2aPeriodicPayment.getFrequency()));
         payment.setDayOfExecution(DayOfExecution.fromValue(xs2aPeriodicPayment.getDayOfExecution().getValue()));
 
         return payment;
+    }
+
+    private ExecutionRule mapToExecutionRule(PisExecutionRule pisExecutionRule) {
+        return Optional.ofNullable(pisExecutionRule)
+                   .map(PisExecutionRule::getValue)
+                   .map(ExecutionRule::fromValue)
+                   .orElse(null);
     }
 
     private PaymentInitiationBulkElementJson mapToPaymentInitiationBulkElementJson(SinglePayment singlePayment) {
