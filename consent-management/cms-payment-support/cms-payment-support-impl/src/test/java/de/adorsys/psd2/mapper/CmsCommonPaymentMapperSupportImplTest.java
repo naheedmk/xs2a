@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,6 +111,22 @@ public class CmsCommonPaymentMapperSupportImplTest {
     public void mapToCmsPeriodicPayment_payDataIsNull() {
         cmsCommonPayment.setPaymentData(null);
         assertNull(mapper.mapToCmsPeriodicPayment(cmsCommonPayment));
+    }
+
+    @Test
+    public void mapToCmsPeriodicPayment_remittanceIsNull() throws JsonProcessingException {
+        // Given
+        PeriodicPaymentInitiationJson paymentInitiationJson = jsonReader.getObjectFromFile("json/periodic-payment-initiation-resp.json", PeriodicPaymentInitiationJson.class);
+        paymentInitiationJson.setRemittanceInformationStructured(null);
+        cmsCommonPayment.setPaymentData(xs2aObjectMapper.writeValueAsBytes(paymentInitiationJson));
+
+        // When
+        CmsPayment actual = mapper.mapToCmsPeriodicPayment(cmsCommonPayment);
+
+        // Then
+        CmsPeriodicPayment expected = getCmsPeriodicPayment(paymentInitiationJson);
+        expected.setRemittanceInformationStructured(null);
+        assertEquals(expected, actual);
     }
 
     private CmsPeriodicPayment getCmsPeriodicPayment(PeriodicPaymentInitiationJson paymentInitiationJson) {
