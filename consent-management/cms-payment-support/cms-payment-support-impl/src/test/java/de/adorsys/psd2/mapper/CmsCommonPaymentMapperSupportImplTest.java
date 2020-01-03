@@ -29,7 +29,6 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.core.tpp.TppRole;
 import de.adorsys.xs2a.reader.JsonReader;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -231,8 +230,11 @@ public class CmsCommonPaymentMapperSupportImplTest {
         return payment;
     }
 
-    @NotNull
     private CmsRemittance getRemittanceInformationStructured(RemittanceInformationStructured informationStructured) {
+        if (informationStructured == null) {
+            return null;
+        }
+
         CmsRemittance remittanceInformationStructured = new CmsRemittance();
         remittanceInformationStructured.setReference(informationStructured.getReference());
         remittanceInformationStructured.setReferenceType(informationStructured.getReferenceType());
