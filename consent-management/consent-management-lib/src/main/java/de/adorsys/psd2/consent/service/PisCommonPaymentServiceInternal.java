@@ -141,16 +141,18 @@ public class PisCommonPaymentServiceInternal implements PisCommonPaymentService 
     }
 
     void transferCorePaymentToCommonPayment(PisCommonPaymentResponse pisCommonPaymentResponse, PisCommonPaymentData pisCommonPaymentData) {
-        if (pisCommonPaymentData.getPayment() == null) {
-            List<PisPayment> pisPayments = pisCommonPaymentData.getPayments().stream()
-                                               .map(pisCommonPaymentMapper::mapToPisPayment)
-                                               .collect(Collectors.toList());
-            byte[] paymentData = corePaymentsConvertService.buildPaymentData(pisPayments, pisCommonPaymentData.getPaymentType());
-            if (paymentData != null) {
-                pisCommonPaymentData.setPayment(paymentData);
-                pisCommonPaymentDataRepository.save(pisCommonPaymentData);
-                pisCommonPaymentResponse.setPaymentData(paymentData);
-            }
+        if (pisCommonPaymentData.getPayment() != null) {
+            return;
+        }
+
+        List<PisPayment> pisPayments = pisCommonPaymentData.getPayments().stream()
+                                           .map(pisCommonPaymentMapper::mapToPisPayment)
+                                           .collect(Collectors.toList());
+        byte[] paymentData = corePaymentsConvertService.buildPaymentData(pisPayments, pisCommonPaymentData.getPaymentType());
+        if (paymentData != null) {
+            pisCommonPaymentData.setPayment(paymentData);
+            pisCommonPaymentDataRepository.save(pisCommonPaymentData);
+            pisCommonPaymentResponse.setPaymentData(paymentData);
         }
     }
 

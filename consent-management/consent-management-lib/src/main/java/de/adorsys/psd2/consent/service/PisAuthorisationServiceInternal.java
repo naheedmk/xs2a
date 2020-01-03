@@ -238,15 +238,17 @@ public class PisAuthorisationServiceInternal implements PisAuthorisationService 
 
     void transferCorePaymentToCommonPayment(PisAuthorization pisAuthorization) {
         PisCommonPaymentData pisCommonPaymentData = pisAuthorization.getPaymentData();
-        if (pisCommonPaymentData.getPayment() == null) {
-            List<PisPayment> pisPayments = pisCommonPaymentData.getPayments().stream()
-                                               .map(pisCommonPaymentMapper::mapToPisPayment)
-                                               .collect(Collectors.toList());
-            byte[] paymentData = corePaymentsConvertService.buildPaymentData(pisPayments, pisCommonPaymentData.getPaymentType());
-            if (paymentData != null) {
-                pisCommonPaymentData.setPayment(paymentData);
-                pisCommonPaymentDataRepository.save(pisCommonPaymentData);
-            }
+        if (pisCommonPaymentData == null || pisCommonPaymentData.getPayment() != null) {
+            return;
+        }
+
+        List<PisPayment> pisPayments = pisCommonPaymentData.getPayments().stream()
+                                           .map(pisCommonPaymentMapper::mapToPisPayment)
+                                           .collect(Collectors.toList());
+        byte[] paymentData = corePaymentsConvertService.buildPaymentData(pisPayments, pisCommonPaymentData.getPaymentType());
+        if (paymentData != null) {
+            pisCommonPaymentData.setPayment(paymentData);
+            pisCommonPaymentDataRepository.save(pisCommonPaymentData);
         }
     }
 
