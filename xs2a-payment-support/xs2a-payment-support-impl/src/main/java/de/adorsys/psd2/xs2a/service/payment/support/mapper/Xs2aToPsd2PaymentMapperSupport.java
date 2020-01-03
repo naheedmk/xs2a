@@ -26,7 +26,7 @@ import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface Xs2aToPsd2PaymentMapperSupport {
     @Mapping(target = "creditorAgentName", ignore = true)
     PaymentInitiationJson mapToPaymentInitiationJson(SinglePayment singlePayment);
