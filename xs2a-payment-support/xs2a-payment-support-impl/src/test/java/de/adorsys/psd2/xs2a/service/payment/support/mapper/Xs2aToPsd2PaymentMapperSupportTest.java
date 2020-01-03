@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,21 @@ import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = Xs2aToPsd2PaymentMapperSupportImpl.class)
 public class Xs2aToPsd2PaymentMapperSupportTest {
-    private Xs2aToPsd2PaymentMapperSupport xs2aToPsd2PaymentMapperSupport = new Xs2aToPsd2PaymentMapperSupport();
+    @Autowired
+    private Xs2aToPsd2PaymentMapperSupport xs2aToPsd2PaymentMapperSupport;
 
     private JsonReader jsonReader = new JsonReader();
 
@@ -117,9 +126,24 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
     }
 
     @Test
+    public void mapToBulkPaymentInitiationJson_nullPaymentPart() {
+        // Given
+        BulkPaymentInitiationJson expectedPaymentInitiation = jsonReader.getObjectFromFile("json/support/mapper/bulk-payment-initiation-null-payment.json", BulkPaymentInitiationJson.class);
+        BulkPayment xs2aPayment = jsonReader.getObjectFromFile("json/support/mapper/xs2a-bulk-payment.json", BulkPayment.class);
+        xs2aPayment.setPayments(Collections.singletonList(null));
+
+        // When
+        BulkPaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToBulkPaymentInitiationJson(xs2aPayment);
+
+        // Then
+        assertEquals(expectedPaymentInitiation, actual);
+    }
+
+    @Test
     public void mapToBulkPaymentInitiationJson_emptyObject() {
         // Given
         BulkPaymentInitiationJson expectedPaymentInitiation = new BulkPaymentInitiationJson();
+        expectedPaymentInitiation.setPayments(null);
         BulkPayment xs2aPayment = new BulkPayment();
 
         // When
