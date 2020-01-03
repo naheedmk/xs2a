@@ -15,3 +15,12 @@ This configuration redirects messages from *access-log* and *request-log* logger
 If the change of logging configuration is needed, custom logback file (*logback.xml* or *logback.groovy* if Groovy is on the classpath) should be created in the root of the classpath with appropriate configurations.
 
 Although XS2A provides configuration file for *Logback*, it's possible to configure and use any logging framework that's compatible with *SLF4J*.
+
+[#configuring-payment-validation]
+=== Configuring payment validation
+
+XS2A provides an opportunity to change the validation rules for payment body during payment initiation request by providing custom country-specific rules.
+
+To configure custom validation rules, new implementation of `de.adorsys.psd2.validator.payment.CountryValidatorHolder` interface should be provided as a Spring bean in the application with appropriate country identifier.
+During the payment initiation request XS2A will try to find and execute implementation of `CountryValidatorHolder` with country identifier matching to the value of `countryValidationSupported` property in the ASPSP profile.
+If there is no custom implementation for the country identifier specified in ASPSP profile, XS2A will default to validation rules for Germany.
