@@ -35,10 +35,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = Xs2aToPsd2PaymentMapperSupportImpl.class)
-public class Xs2aToPsd2PaymentMapperSupportTest {
+@ContextConfiguration(classes = Xs2aToPsd2PaymentSupportMapperImpl.class)
+public class Xs2AToPsd2PaymentSupportMapperTest {
     @Autowired
-    private Xs2aToPsd2PaymentMapperSupport xs2aToPsd2PaymentMapperSupport;
+    private Xs2aToPsd2PaymentSupportMapper xs2AToPsd2PaymentSupportMapper;
 
     private JsonReader jsonReader = new JsonReader();
 
@@ -49,7 +49,7 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
         SinglePayment xs2aPayment = jsonReader.getObjectFromFile("json/support/mapper/xs2a-single-payment.json", SinglePayment.class);
 
         // When
-        PaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToPaymentInitiationJson(xs2aPayment);
+        PaymentInitiationJson actual = xs2AToPsd2PaymentSupportMapper.mapToPaymentInitiationJson(xs2aPayment);
 
         // Then
         assertEquals(expectedPaymentInitiation, actual);
@@ -62,7 +62,7 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
         SinglePayment xs2aPayment = new SinglePayment();
 
         // When
-        PaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToPaymentInitiationJson(xs2aPayment);
+        PaymentInitiationJson actual = xs2AToPsd2PaymentSupportMapper.mapToPaymentInitiationJson(xs2aPayment);
 
         // Then
         assertEquals(expectedPaymentInitiation, actual);
@@ -71,7 +71,7 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
     @Test
     public void mapToPaymentInitiationJson_null() {
         // When
-        PaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToPaymentInitiationJson(null);
+        PaymentInitiationJson actual = xs2AToPsd2PaymentSupportMapper.mapToPaymentInitiationJson(null);
 
         // Then
         assertNull(actual);
@@ -84,7 +84,7 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
         PeriodicPayment xs2aPayment = jsonReader.getObjectFromFile("json/support/mapper/xs2a-periodic-payment.json", PeriodicPayment.class);
 
         // When
-        PeriodicPaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToPeriodicPaymentInitiationJson(xs2aPayment);
+        PeriodicPaymentInitiationJson actual = xs2AToPsd2PaymentSupportMapper.mapToPeriodicPaymentInitiationJson(xs2aPayment);
 
         // Then
         assertEquals(expectedPaymentInitiation, actual);
@@ -97,7 +97,7 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
         PeriodicPayment xs2aPayment = new PeriodicPayment();
 
         // When
-        PeriodicPaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToPeriodicPaymentInitiationJson(xs2aPayment);
+        PeriodicPaymentInitiationJson actual = xs2AToPsd2PaymentSupportMapper.mapToPeriodicPaymentInitiationJson(xs2aPayment);
 
         // Then
         assertEquals(expectedPaymentInitiation, actual);
@@ -106,7 +106,7 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
     @Test
     public void mapToPeriodicPaymentInitiationJson_null() {
         // When
-        PeriodicPaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToPeriodicPaymentInitiationJson(null);
+        PeriodicPaymentInitiationJson actual = xs2AToPsd2PaymentSupportMapper.mapToPeriodicPaymentInitiationJson(null);
 
         // Then
         assertNull(actual);
@@ -119,7 +119,7 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
         BulkPayment xs2aPayment = jsonReader.getObjectFromFile("json/support/mapper/xs2a-bulk-payment.json", BulkPayment.class);
 
         // When
-        BulkPaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToBulkPaymentInitiationJson(xs2aPayment);
+        BulkPaymentInitiationJson actual = xs2AToPsd2PaymentSupportMapper.mapToBulkPaymentInitiationJson(xs2aPayment);
 
         // Then
         assertEquals(expectedPaymentInitiation, actual);
@@ -133,7 +133,7 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
         xs2aPayment.setPayments(Collections.singletonList(null));
 
         // When
-        BulkPaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToBulkPaymentInitiationJson(xs2aPayment);
+        BulkPaymentInitiationJson actual = xs2AToPsd2PaymentSupportMapper.mapToBulkPaymentInitiationJson(xs2aPayment);
 
         // Then
         assertEquals(expectedPaymentInitiation, actual);
@@ -147,7 +147,7 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
         BulkPayment xs2aPayment = new BulkPayment();
 
         // When
-        BulkPaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToBulkPaymentInitiationJson(xs2aPayment);
+        BulkPaymentInitiationJson actual = xs2AToPsd2PaymentSupportMapper.mapToBulkPaymentInitiationJson(xs2aPayment);
 
         // Then
         assertEquals(expectedPaymentInitiation, actual);
@@ -156,7 +156,7 @@ public class Xs2aToPsd2PaymentMapperSupportTest {
     @Test
     public void mapToBulkPaymentInitiationJson_null() {
         // When
-        BulkPaymentInitiationJson actual = xs2aToPsd2PaymentMapperSupport.mapToBulkPaymentInitiationJson(null);
+        BulkPaymentInitiationJson actual = xs2AToPsd2PaymentSupportMapper.mapToBulkPaymentInitiationJson(null);
 
         // Then
         assertNull(actual);

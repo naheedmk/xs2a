@@ -27,7 +27,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface Xs2aToPsd2PaymentMapperSupport {
+public interface Xs2aToPsd2PaymentSupportMapper {
     @Mapping(target = "creditorAgentName", ignore = true)
     PaymentInitiationJson mapToPaymentInitiationJson(SinglePayment singlePayment);
 
