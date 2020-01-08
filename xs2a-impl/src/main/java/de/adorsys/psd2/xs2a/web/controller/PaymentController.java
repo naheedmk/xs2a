@@ -84,13 +84,13 @@ public class PaymentController implements PaymentApi {
 
     @Override
     public ResponseEntity getPaymentInitiationStatus(String paymentService, String paymentProduct,
-                                                     String paymentId, UUID xRequestID, String digest,
-                                                     String signature, byte[] tpPSignatureCertificate,
-                                                     Boolean tpPRedirectPreferred, String tpPRedirectURI,
-                                                     String tpPNokRedirectURI, String psUIPAddress, String psUIPPort,
-                                                     String psUAccept, String psUAcceptCharset, String psUAcceptEncoding,
-                                                     String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod,
-                                                     UUID psUDeviceID, String psUGeoLocation) {
+                                                     String paymentId, UUID xRequestId, String digest,
+                                                     String signature, byte[] tppSignatureCertificate,
+                                                     Boolean tppRedirectPreferred, String tppRedirectUri,
+                                                     String tppNokRedirectUri, String psuIpAddress, String psuIpPort,
+                                                     String psuAccept, String psuAcceptCharset, String psuAcceptEncoding,
+                                                     String psuAcceptLanguage, String psuUserAgent, String psuHttpMethod,
+                                                     UUID psuDeviceId, String psuGeoLocation) {
 
         ResponseObject<GetPaymentStatusResponse> serviceResponse = PaymentType.getByValue(paymentService)
                                                                        .map(pt -> xs2aPaymentService.getPaymentStatusById(pt, paymentProduct, paymentId))
