@@ -40,7 +40,7 @@ public class BankProfileService implements ResourceLoaderAware {
         this.resourceLoader = resourceLoader;
     }
 
-    @Scheduled(fixedDelay = 180000)
+    @Scheduled(fixedDelay = 500)
     public void updateProfileConfiguration() {
         ProfileConfiguration newProfileConfiguration = getProfileConfiguration();
         oldProfileConfiguration.setSetting(newProfileConfiguration.getSetting());
