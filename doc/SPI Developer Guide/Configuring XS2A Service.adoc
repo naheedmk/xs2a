@@ -23,4 +23,4 @@ XS2A provides an opportunity to change the validation rules for payment body dur
 
 To configure custom validation rules, new implementation of `de.adorsys.psd2.validator.payment.CountryValidatorHolder` interface should be provided as a Spring bean in the application with appropriate country identifier.
 During the payment initiation request XS2A will try to find and execute implementation of `CountryValidatorHolder` with country identifier matching to the value of `countryValidationSupported` property in the ASPSP profile.
-If there is no custom implementation for the country identifier specified in ASPSP profile, XS2A will default to validation rules for Germany.
+If there is no custom implementation for the country identifier specified in ASPSP profile, XS2A will use validation rules for Germany by default.
