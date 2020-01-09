@@ -37,16 +37,16 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class BankProfileReaderConfigurationTest {
     @Mock
-    private BankProfileReadingService bankProfileService;
+    private BankProfileReadingService bankProfileReadingService;
 
     private BankProfileReaderConfiguration bankProfileReaderConfiguration;
 
     @Before
     public void setUp() {
-        bankProfileReaderConfiguration = new BankProfileReaderConfiguration(bankProfileService);
+        bankProfileReaderConfiguration = new BankProfileReaderConfiguration(bankProfileReadingService);
         ProfileConfiguration profileConfiguration = buildProfileConfiguration();
         profileConfiguration.afterPropertiesSet();
-        when(bankProfileService.getProfileConfiguration())
+        when(bankProfileReadingService.getProfileConfiguration())
             .thenReturn(profileConfiguration);
     }
 

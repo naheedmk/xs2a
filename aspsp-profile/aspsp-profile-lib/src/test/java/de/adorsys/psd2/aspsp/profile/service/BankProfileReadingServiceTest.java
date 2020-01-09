@@ -10,25 +10,25 @@ import org.springframework.core.io.DefaultResourceLoader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-public class BankProfileServiceTest {
-    private BankProfileReadingService bankProfileService;
+public class BankProfileReadingServiceTest {
+    private BankProfileReadingService bankProfileReadingService;
 
     @Before
     public void setUp(){
-        bankProfileService = new BankProfileReadingService();
-        bankProfileService.setResourceLoader(new DefaultResourceLoader());
+        bankProfileReadingService = new BankProfileReadingService();
+        bankProfileReadingService.setResourceLoader(new DefaultResourceLoader());
     }
 
     @Test
     public void profileConfigurationWithAdditionalFields() {
-        ProfileConfiguration defaultConfiguration = bankProfileService.getProfileConfiguration();
+        ProfileConfiguration defaultConfiguration = bankProfileReadingService.getProfileConfiguration();
 
-        Whitebox.setInternalState(bankProfileService,
+        Whitebox.setInternalState(bankProfileReadingService,
                                   "customBankProfile",
                                   "classpath:bank_profile_additional_fields.yml");
 
 
-        ProfileConfiguration configurationWithCustomProfile = bankProfileService.getProfileConfiguration();
+        ProfileConfiguration configurationWithCustomProfile = bankProfileReadingService.getProfileConfiguration();
 
 
         assertEquals(defaultConfiguration.getSetting(), configurationWithCustomProfile.getSetting());
@@ -36,13 +36,13 @@ public class BankProfileServiceTest {
 
     @Test
     public void profileConfigurationWithoutUsualFields() {
-        ProfileConfiguration defaultConfiguration = bankProfileService.getProfileConfiguration();
+        ProfileConfiguration defaultConfiguration = bankProfileReadingService.getProfileConfiguration();
 
-        Whitebox.setInternalState(bankProfileService,
+        Whitebox.setInternalState(bankProfileReadingService,
                                   "customBankProfile",
                                   "classpath:bank_profile_missing_fields.yml");
 
-        ProfileConfiguration configurationWithCustomProfile = bankProfileService.getProfileConfiguration();
+        ProfileConfiguration configurationWithCustomProfile = bankProfileReadingService.getProfileConfiguration();
 
 
         assertNotEquals(defaultConfiguration.getSetting(), configurationWithCustomProfile.getSetting());
@@ -52,11 +52,11 @@ public class BankProfileServiceTest {
     public void profileConfigurationScaRedirectFlowOAUTH() {
         //Given
         //When
-        Whitebox.setInternalState(bankProfileService,
+        Whitebox.setInternalState(bankProfileReadingService,
                                   "customBankProfile",
                                   "classpath:bank_profile_sca_redirect_flow_oauth.yml");
 
-        ProfileConfiguration configurationWithCustomProfile = bankProfileService.getProfileConfiguration();
+        ProfileConfiguration configurationWithCustomProfile = bankProfileReadingService.getProfileConfiguration();
         //Then
         assertEquals(ScaRedirectFlow.OAUTH, configurationWithCustomProfile.getSetting().getCommon().getScaRedirectFlow());
     }
@@ -65,11 +65,11 @@ public class BankProfileServiceTest {
     public void profileConfigurationScaRedirectFlowRedirect() {
         //Given
         //When
-        Whitebox.setInternalState(bankProfileService,
+        Whitebox.setInternalState(bankProfileReadingService,
                                   "customBankProfile",
                                   "classpath:bank_profile_sca_redirect_flow_redirect.yml");
 
-        ProfileConfiguration configurationWithCustomProfile = bankProfileService.getProfileConfiguration();
+        ProfileConfiguration configurationWithCustomProfile = bankProfileReadingService.getProfileConfiguration();
         //Then
         assertEquals(ScaRedirectFlow.REDIRECT, configurationWithCustomProfile.getSetting().getCommon().getScaRedirectFlow());
     }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BankProfileReloadScheduleTask {
+public class BankProfileReloadingScheduleTask {
     private final BankProfileReadingService bankProfileReadingService;
     private final ProfileConfiguration profileConfiguration;
 
