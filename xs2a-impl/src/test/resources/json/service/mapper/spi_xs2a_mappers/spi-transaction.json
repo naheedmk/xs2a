@@ -53,5 +53,14 @@
   "bankTransactionCodeCode": "DE52500105173911841934",
   "proprietaryBankTransactionCode": "DE52500105173911841934",
   "balanceAfterTransaction": {
+    "spiBalanceAmount": {
+      "currency": "EUR",
+      "amount": 100000
+    },
+    "spiBalanceType": "OPENING_BOOKED",
+    "lastChangeDateTime": "2018-03-31T15:16:16.37Z",
+    "referenceDate": "2018-03-29",
+    "lastCommittedTransaction": "abc",
+    "creditLimitIncluded" : true
   }
 }
