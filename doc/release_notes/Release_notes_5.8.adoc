@@ -54,6 +54,6 @@ In case of using common implementations, all payments will be forwarded to `Comm
 
 == Implement auto reloading for profile
 
-From now on, by default, the profile gets reloaded every 60 seconds.
-The amount of time passed between each reload is customizable in the `application.properties` via
-`reload-interval` (in ms).
+From now on, there is the possibility of auto reloading the profile. By default, the profile isn't reloaded.
+The exact specification about needed timeframes, between each reload, is customizable in the `application.properties` via
+`aspsp-profile-reload.cron.expression` (as cron expression).
