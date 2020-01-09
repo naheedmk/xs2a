@@ -20,7 +20,7 @@ import de.adorsys.psd2.aspsp.profile.domain.ais.*;
 import de.adorsys.psd2.aspsp.profile.domain.common.CommonAspspProfileBankSetting;
 import de.adorsys.psd2.aspsp.profile.domain.piis.PiisAspspProfileBankSetting;
 import de.adorsys.psd2.aspsp.profile.domain.pis.PisAspspProfileBankSetting;
-import de.adorsys.psd2.aspsp.profile.service.BankProfileService;
+import de.adorsys.psd2.aspsp.profile.service.BankProfileReadingService;
 import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.profile.ScaRedirectFlow;
@@ -29,7 +29,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
@@ -38,7 +37,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class BankProfileReaderConfigurationTest {
     @Mock
-    private BankProfileService bankProfileService;
+    private BankProfileReadingService bankProfileService;
 
     private BankProfileReaderConfiguration bankProfileReaderConfiguration;
 

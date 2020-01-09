@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -18,7 +17,7 @@ import java.io.InputStream;
 
 @Service
 @Slf4j
-public class BankProfileService implements ResourceLoaderAware {
+public class BankProfileReadingService implements ResourceLoaderAware {
     private static final String DEFAULT_BANK_PROFILE = "classpath:bank_profile.yml";
     private static final String CLASSPATH_PREFIX = "classpath:";
     private static final String FILE_PREFIX = "file:";
@@ -29,26 +28,13 @@ public class BankProfileService implements ResourceLoaderAware {
     private ResourceLoader resourceLoader;
     private Yaml yaml;
 
-    private ProfileConfiguration oldProfileConfiguration;
-
-    public BankProfileService() {
+    public BankProfileReadingService() {
         this.yaml = new Yaml(createRepresenter(), createDumperOptions());
     }
 
     @Override
     public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
-    }
-
-    @Scheduled(fixedDelayString = "${reload-interval:60000}")
-    public void updateProfileConfiguration() {
-        ProfileConfiguration newProfileConfiguration = getProfileConfiguration();
-        oldProfileConfiguration.setSetting(newProfileConfiguration.getSetting());
-        oldProfileConfiguration.setDefaultProperties();
-    }
-
-    public void setOldProfileConfiguration(ProfileConfiguration oldProfileConfiguration) {
-        this.oldProfileConfiguration = oldProfileConfiguration;
     }
 
     public ProfileConfiguration getProfileConfiguration() {

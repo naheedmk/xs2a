@@ -11,11 +11,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class BankProfileServiceTest {
-    private BankProfileService bankProfileService;
+    private BankProfileReadingService bankProfileService;
 
     @Before
     public void setUp(){
-        bankProfileService = new BankProfileService();
+        bankProfileService = new BankProfileReadingService();
         bankProfileService.setResourceLoader(new DefaultResourceLoader());
     }
 

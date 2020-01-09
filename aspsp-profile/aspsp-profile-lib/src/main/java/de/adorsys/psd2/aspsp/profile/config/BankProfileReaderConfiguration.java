@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.aspsp.profile.config;
 
-import de.adorsys.psd2.aspsp.profile.service.BankProfileService;
+import de.adorsys.psd2.aspsp.profile.service.BankProfileReadingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -26,12 +26,10 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 @Configuration
 public class BankProfileReaderConfiguration {
-    private final BankProfileService bankProfileService;
+    private final BankProfileReadingService bankProfileReadingService;
 
     @Bean
     public ProfileConfiguration profileConfiguration() {
-        ProfileConfiguration profileConfiguration = bankProfileService.getProfileConfiguration();
-        bankProfileService.setOldProfileConfiguration(profileConfiguration);
-        return profileConfiguration;
+        return bankProfileReadingService.getProfileConfiguration();
     }
 }

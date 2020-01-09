@@ -55,4 +55,5 @@ In case of using common implementations, all payments will be forwarded to `Comm
 == Implement auto reloading for profile
 
 From now on, by default, the profile gets reloaded every 60 seconds.
-The amount of time passed between each reload is customizable in the `application.properties` via `reload-interval`.
+The amount of time passed between each reload is customizable in the `application.properties` via
+`reload-interval` (in ms).
