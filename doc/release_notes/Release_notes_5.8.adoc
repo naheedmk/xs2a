@@ -4,7 +4,7 @@
 
 * Allow custom payment validation
 * Migrate to common payment object
-* Allow auto reloading of profile
+* Implement auto reloading for profile
 
 == Allow custom payment validation
 
