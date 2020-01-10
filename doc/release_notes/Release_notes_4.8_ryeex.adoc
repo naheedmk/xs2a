@@ -13,4 +13,4 @@ If TPP URIs are not compliant, then request is not rejected and response has tpp
 
 == Adopt data type Max512Text to Max500Text
 
-From now on, length of data in class fields was changed form 512 characters to 500 (In accordance with Errata for BG specification)
+From now on, length of text fields in some TppMessage classes was changed form 512 characters to 500 (In accordance with Errata for BG specification)
