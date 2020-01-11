@@ -45,13 +45,17 @@ public class PsuApiSwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                    .groupName("CMS-PSU-API")
                    .apiInfo(getApiInfo())
-                   .tags(new Tag("PSU PIIS, Consents", "Provides access to consent management system for PSU PIIS"))
+                   .tags(buildTag(CmsPsuApiTag.PSU_PIIS_CONSENTS))
                    .select()
                    .apis(RequestHandlerSelectors.basePackage("de.adorsys.psd2.consent.web.psu"))
                    .paths(Predicates.not(PathSelectors.regex("/error.*?")))
                    .paths(Predicates.not(PathSelectors.regex("/connect.*")))
                    .paths(Predicates.not(PathSelectors.regex("/management.*")))
                    .build();
+    }
+
+    private Tag buildTag(CmsPsuApiTag tag) {
+        return new Tag(tag.getTagName(), tag.getTagDescription());
     }
 
     private ApiInfo getApiInfo() {

@@ -45,21 +45,27 @@ public class Xs2aApiSwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                    .groupName("Internal CMS-XS2A-API")
                    .apiInfo(getApiInfo())
-                   .tags(new Tag("AIS, Consents", "Provides access to consent management system for AIS"),
-                         new Tag("AIS, PSU Data", "Provides access to consent management system for PSU Data"),
-                         new Tag("Aspsp Consent Data", "Provides access to consent management system for AspspDataConsent"),
-                         new Tag("Events", "Provides access to the consent management system for Events"),
-                         new Tag("PIIS, Consents", "Provides access to consent management system for PIIS"),
-                         new Tag("PIS, Common Payment", "Provides access to common payment system for PIS"),
-                         new Tag("PIS, Payments", "Provides access to consent management system for PIS"),
-                         new Tag("PIS, PSU Data", "Provides access to consent management system for PSU Data"),
-                         new Tag("TPP", "Provides access to the TPP"))
+                   .tags(
+                       buildTag(InternalCmsXs2aApiTag.AIS_CONSENTS),
+                       buildTag(InternalCmsXs2aApiTag.AIS_PSU_DATA),
+                       buildTag(InternalCmsXs2aApiTag.ASPSP_CONSENT_DATA),
+                       buildTag(InternalCmsXs2aApiTag.EVENTS),
+                       buildTag(InternalCmsXs2aApiTag.PIIS_CONSENTS),
+                       buildTag(InternalCmsXs2aApiTag.PIS_COMMON_PAYMENT),
+                       buildTag(InternalCmsXs2aApiTag.PIS_PAYMENTS),
+                       buildTag(InternalCmsXs2aApiTag.PIS_PSU_DATA),
+                       buildTag(InternalCmsXs2aApiTag.TPP)
+                   )
                    .select()
                    .apis(RequestHandlerSelectors.basePackage("de.adorsys.psd2.consent.web.xs2a"))
                    .paths(Predicates.not(PathSelectors.regex("/error.*?")))
                    .paths(Predicates.not(PathSelectors.regex("/connect.*")))
                    .paths(Predicates.not(PathSelectors.regex("/management.*")))
                    .build();
+    }
+
+    private Tag buildTag(InternalCmsXs2aApiTag tag) {
+        return new Tag(tag.getTagName(), tag.getTagDescription());
     }
 
     private ApiInfo getApiInfo() {

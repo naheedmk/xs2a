@@ -47,14 +47,20 @@ public class AspspProfileApiSwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                    .groupName("ASPSP-PROFILE-API")
                    .apiInfo(getApiInfo())
-                   .tags(new Tag("Aspsp profile", "Provides access to aspsp profile"),
-                         new Tag("Update aspsp profile.  Only for DEBUG!", "Provides access to update aspsp profile"))
+                   .tags(
+                       buildTag(AspspProfileApiTag.ASPSP_PROFILE),
+                       buildTag(AspspProfileApiTag.UPDATE_ASPSP_PROFILE)
+                   )
                    .select()
                    .apis(RequestHandlerSelectors.basePackage("de.adorsys.psd2.aspsp.profile"))
                    .paths(Predicates.not(PathSelectors.regex("/error.*?")))
                    .paths(Predicates.not(PathSelectors.regex("/connect.*")))
                    .paths(Predicates.not(PathSelectors.regex("/management.*")))
                    .build();
+    }
+
+    private Tag buildTag(AspspProfileApiTag tag) {
+        return new Tag(tag.getTagName(), tag.getTagDescription());
     }
 
     private ApiInfo getApiInfo() {

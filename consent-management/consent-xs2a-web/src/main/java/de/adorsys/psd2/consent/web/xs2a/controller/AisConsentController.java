@@ -23,6 +23,7 @@ import de.adorsys.psd2.consent.api.ais.*;
 import de.adorsys.psd2.consent.api.service.AccountServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
+import de.adorsys.psd2.consent.web.xs2a.config.InternalCmsXs2aApiTag;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;

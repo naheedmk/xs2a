@@ -45,19 +45,25 @@ public class AspspApiSwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                    .groupName("CMS-ASPSP-API")
                    .apiInfo(getApiInfo())
-                   .tags(new Tag("ASPSP Export AIS Consents", "Provides access to the consent management system for exporting AIS consents by ASPSP"),
-                         new Tag("ASPSP Events", "Provides access to the consent management system for ASPSP Events"),
-                         new Tag("ASPSP PIIS, Consents", "Controller for CMS-ASPSP-API providing access to PIIS consents"),
-                         new Tag("ASPSP PIIS Consents Export", "Provides access to the consent management system for exporting PIIS consents by ASPSP"),
-                         new Tag("ASPSP Export Payments", "Provides access to the consent management system for exporting PIS payments by ASPSP"),
-                         new Tag("ASPSP TPP Stop List", "Provides access to the consent management system TPP Stop List"),
-                         new Tag("ASPSP TPP Info", "Provides access to the consent management system TPP Info"))
+                   .tags(
+                       buildTag(CmsAspspApiTag.ASPSP_EXPORT_AIS_CONSENTS),
+                       buildTag(CmsAspspApiTag.ASPSP_EVENTS),
+                       buildTag(CmsAspspApiTag.ASPSP_PIIS_CONSENTS),
+                       buildTag(CmsAspspApiTag.ASPSP_PIIS_CONSENTS_EXPORT),
+                       buildTag(CmsAspspApiTag.ASPSP_EXPORT_PAYMENTS),
+                       buildTag(CmsAspspApiTag.ASPSP_TPP_STOP_LIST),
+                       buildTag(CmsAspspApiTag.ASPSP_TPP_INFO)
+                   )
                    .select()
                    .apis(RequestHandlerSelectors.basePackage("de.adorsys.psd2.consent.web.aspsp"))
                    .paths(Predicates.not(PathSelectors.regex("/error.*?")))
                    .paths(Predicates.not(PathSelectors.regex("/connect.*")))
                    .paths(Predicates.not(PathSelectors.regex("/management.*")))
                    .build();
+    }
+
+    private Tag buildTag(CmsAspspApiTag tag) {
+        return new Tag(tag.getTagName(), tag.getTagDescription());
     }
 
     private ApiInfo getApiInfo() {
