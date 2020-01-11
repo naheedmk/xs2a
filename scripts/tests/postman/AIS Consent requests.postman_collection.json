@@ -5964,8 +5964,6 @@
 											"        pm.expect(jsonData).to.have.property('transactionsDetails');",
 											"        pm.expect(jsonData.transactionsDetails).to.have.property('transactionAmount');",
 											"        pm.expect(jsonData.transactionsDetails).to.have.property('transactionId');",
-											"        pm.expect(jsonData.transactionsDetails).to.have.property('debtorAccount');",
-											"        pm.expect(jsonData.transactionsDetails).to.have.property('creditorAccount');",
 											"    }",
 											"});"
 										],

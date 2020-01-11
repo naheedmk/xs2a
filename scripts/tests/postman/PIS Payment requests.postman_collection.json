@@ -10278,8 +10278,8 @@
 											"script": {
 												"id": "b891d5cb-5fba-410f-9793-cc40df8bb179",
 												"exec": [
-													"pm.test(\"Status code is 202\", function () {",
-													"    pm.response.to.have.status(202);",
+													"pm.test(\"Status code is 204\", function () {",
+													"    pm.response.to.have.status(204);",
 													"});",
 													"",
 													""
