@@ -40,7 +40,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "psu-api/v1/payment")
-@Api(value = "psu-api/v1/payment", tags = {"PSU PIS Payment"})
+@Api(value = "psu-api/v1/payment", tags = "PSU PIS Payment")
 public class CmsPsuPisController {
     private static final String DEFAULT_SERVICE_INSTANCE_ID = "UNDEFINED";
 

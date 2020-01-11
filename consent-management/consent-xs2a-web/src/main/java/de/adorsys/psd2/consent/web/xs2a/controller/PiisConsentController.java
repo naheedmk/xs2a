@@ -34,7 +34,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "api/v1/piis/consent")
-@Api(value = "api/v1/piis/consent", tags = "PIIS, Consents", description = "Provides access to consent management system for PIIS")
+@Api(value = "api/v1/piis/consent", tags = "PIIS, Consents")
 public class PiisConsentController {
     private final PiisConsentService piisConsentService;
 

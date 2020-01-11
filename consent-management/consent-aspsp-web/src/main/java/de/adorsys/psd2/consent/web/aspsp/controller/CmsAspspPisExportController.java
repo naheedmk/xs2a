@@ -32,7 +32,7 @@ import java.util.Collection;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "aspsp-api/v1/pis/payments")
-@Api(value = "aspsp-api/v1/pis/payments", tags = "ASPSP Export Payments", description = "Provides access to the consent management system for exporting PIS payments by ASPSP")
+@Api(value = "aspsp-api/v1/pis/payments", tags = "ASPSP Export Payments")
 public class CmsAspspPisExportController {
     private static final String DEFAULT_SERVICE_INSTANCE_ID = "UNDEFINED";
 

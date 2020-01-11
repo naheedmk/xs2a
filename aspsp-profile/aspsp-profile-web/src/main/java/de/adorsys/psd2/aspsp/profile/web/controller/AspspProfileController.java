@@ -34,7 +34,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/aspsp-profile")
-@Api(value = "Aspsp profile", tags = "Aspsp profile", description = "Provides access to aspsp profile")
+@Api(value = "Aspsp profile", tags = "Aspsp profile")
 public class AspspProfileController {
 
     private final AspspProfileService aspspProfileService;

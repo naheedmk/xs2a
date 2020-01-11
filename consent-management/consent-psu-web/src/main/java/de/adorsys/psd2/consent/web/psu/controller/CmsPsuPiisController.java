@@ -30,7 +30,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "psu-api/v1/piis/consents")
-@Api(value = "psu-api/v1/piis/consents", tags = "PSU PIIS, Consents", description = "Provides access to consent management system for PSU PIIS")
+@Api(value = "psu-api/v1/piis/consents", tags = "PSU PIIS, Consents")
 public class CmsPsuPiisController {
     private static final String DEFAULT_SERVICE_INSTANCE_ID = "UNDEFINED";
 

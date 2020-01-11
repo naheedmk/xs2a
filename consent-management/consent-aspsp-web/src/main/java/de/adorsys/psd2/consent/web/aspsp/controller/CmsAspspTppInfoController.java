@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "aspsp-api/v1/tpp")
-@Api(value = "aspsp-api/v1/tpp", tags = "ASPSP TPP Info", description = "Provides access to the consent management system TPP Info")
+@Api(value = "aspsp-api/v1/tpp", tags = "ASPSP TPP Info")
 public class CmsAspspTppInfoController {
     private final CmsAspspTppService cmsAspspTppService;
 

@@ -31,7 +31,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "api/v1/aspsp-consent-data/consents/{consent-id}")
-@Api(value = "api/v1/aspsp-consent-data", tags = "Aspsp Consent Data", description = "Provides access to consent management system for AspspDataConsent")
+@Api(value = "api/v1/aspsp-consent-data", tags = "Aspsp Consent Data")
 public class AspspConsentDataController {
     private final AspspDataService aspspDataService;
 

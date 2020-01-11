@@ -26,6 +26,7 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -44,6 +45,15 @@ public class Xs2aApiSwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                    .groupName("Internal CMS-XS2A-API")
                    .apiInfo(getApiInfo())
+                   .tags(new Tag("AIS, Consents", "Provides access to consent management system for AIS"),
+                         new Tag("AIS, PSU Data", "Provides access to consent management system for PSU Data"),
+                         new Tag("Aspsp Consent Data", "Provides access to consent management system for AspspDataConsent"),
+                         new Tag("Events", "Provides access to the consent management system for Events"),
+                         new Tag("PIIS, Consents", "Provides access to consent management system for PIIS"),
+                         new Tag("PIS, Common Payment", "Provides access to common payment system for PIS"),
+                         new Tag("PIS, Payments", "Provides access to consent management system for PIS"),
+                         new Tag("PIS, PSU Data", "Provides access to consent management system for PSU Data"),
+                         new Tag("TPP", "Provides access to the TPP"))
                    .select()
                    .apis(RequestHandlerSelectors.basePackage("de.adorsys.psd2.consent.web.xs2a"))
                    .paths(Predicates.not(PathSelectors.regex("/error.*?")))

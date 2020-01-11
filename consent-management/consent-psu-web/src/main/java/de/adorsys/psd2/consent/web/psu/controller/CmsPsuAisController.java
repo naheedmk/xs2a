@@ -42,7 +42,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "psu-api/v1/ais/consent")
-@Api(value = "psu-api/v1/ais/consent", tags = {"PSU AIS Consents"})
+@Api(value = "psu-api/v1/ais/consent", tags = "PSU AIS Consents")
 public class CmsPsuAisController {
     private static final String DEFAULT_SERVICE_INSTANCE_ID = "UNDEFINED";
 

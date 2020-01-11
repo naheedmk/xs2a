@@ -32,7 +32,7 @@ import java.util.Collection;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "aspsp-api/v1/ais/consents")
-@Api(value = "aspsp-api/v1/ais/consents", tags = "ASPSP Export AIS Consents", description = "Provides access to the consent management system for exporting AIS consents by ASPSP")
+@Api(value = "aspsp-api/v1/ais/consents", tags = "ASPSP Export AIS Consents")
 public class CmsAspspAisExportController {
     private static final String DEFAULT_SERVICE_INSTANCE_ID = "UNDEFINED";
 

@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "api/v1/tpp")
-@Api(value = "api/v1/tpp", tags = "TPP", description = "Provides access to the TPP")
+@Api(value = "api/v1/tpp", tags = "TPP")
 public class TppController {
     private final TppService tppService;
     private final TppStopListService tppStopListService;

@@ -33,7 +33,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "api/v1/pis")
-@Api(value = "api/v1/pis", tags = "PIS, PSU Data", description = "Provides access to consent management system for PSU Data")
+@Api(value = "api/v1/pis", tags = "PIS, PSU Data")
 public class PisPsuDataController {
     private final PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
 

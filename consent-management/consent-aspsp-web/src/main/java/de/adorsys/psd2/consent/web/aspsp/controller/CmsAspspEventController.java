@@ -34,7 +34,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "aspsp-api/v1/events")
-@Api(value = "aspsp-api/v1/events", tags = "ASPSP Events", description = "Provides access to the consent management system for ASPSP Events")
+@Api(value = "aspsp-api/v1/events", tags = "ASPSP Events")
 public class CmsAspspEventController {
     private final AspspEventService aspspEventService;
 

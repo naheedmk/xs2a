@@ -32,7 +32,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "aspsp-api/v1/piis/consents")
-@Api(value = "aspsp-api/v1/piis/consents", tags = "ASPSP PIIS, Consents", description = "Controller for CMS-ASPSP-API providing access to PIIS consents")
+@Api(value = "aspsp-api/v1/piis/consents", tags = "ASPSP PIIS, Consents")
 public class CmsAspspPiisController {
     private static final String DEFAULT_SERVICE_INSTANCE_ID = "UNDEFINED";
 

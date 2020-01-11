@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "api/v1/pis")
-@Api(value = "api/v1/pis", tags = "PIS, Payments", description = "Provides access to consent management system for PIS")
+@Api(value = "api/v1/pis", tags = "PIS, Payments")
 public class PisPaymentController {
     private final PisCommonPaymentServiceEncrypted pisCommonPaymentService;
     private final UpdatePaymentAfterSpiServiceEncrypted updatePaymentStatusAfterSpiService;

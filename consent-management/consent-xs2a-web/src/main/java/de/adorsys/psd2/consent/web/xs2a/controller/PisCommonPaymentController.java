@@ -42,7 +42,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "api/v1/pis/common-payments")
-@Api(value = "api/v1/pis/common-payments", tags = "PIS, Common Payment", description = "Provides access to common payment system for PIS")
+@Api(value = "api/v1/pis/common-payments", tags = "PIS, Common Payment")
 public class PisCommonPaymentController {
     private final PisCommonPaymentServiceEncrypted pisCommonPaymentServiceEncrypted;
     private final PisAuthorisationServiceEncrypted pisAuthorisationServiceEncrypted;

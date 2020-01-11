@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "api/v1/events")
-@Api(value = "api/v1/events", tags = "Events", description = "Provides access to the consent management system for Events")
+@Api(value = "api/v1/events", tags = "Events")
 public class EventController {
     private final Xs2aEventServiceEncrypted eventService;
 

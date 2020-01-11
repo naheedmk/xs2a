@@ -33,7 +33,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "api/v1/ais")
-@Api(value = "api/v1/ais", tags = "AIS, PSU Data", description = "Provides access to consent management system for PSU Data")
+@Api(value = "api/v1/ais", tags = "AIS, PSU Data")
 public class AisPsuDataController {
     private final AisConsentServiceEncrypted aisConsentService;
 

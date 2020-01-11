@@ -32,7 +32,7 @@ import java.util.Collection;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "aspsp-api/v1/piis/consents")
-@Api(value = "aspsp-api/v1/piis/consents", tags = "ASPSP PIIS Consents Export", description = "Provides access to the consent management system for exporting PIIS consents by ASPSP")
+@Api(value = "aspsp-api/v1/piis/consents", tags = "ASPSP PIIS Consents Export")
 public class CmsAspspPiisExportController {
     private final CmsAspspPiisFundsExportService cmsAspspPiisExportService;
 

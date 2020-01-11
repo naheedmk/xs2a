@@ -39,8 +39,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/aspsp-profile/for-debug")
-@Api(value = "Update aspsp profile ", tags = "Update aspsp profile.  Only for DEBUG!",
-    description = "Provides access to update aspsp profile")
+@Api(value = "Update aspsp profile ", tags = "Update aspsp profile.  Only for DEBUG!")
 public class AspspProfileUpdateController {
     private final AspspProfileUpdateService aspspProfileService;
 

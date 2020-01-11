@@ -39,7 +39,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "api/v1/ais/consent")
-@Api(value = "api/v1/ais/consent", tags = "AIS, Consents", description = "Provides access to consent management system for AIS")
+@Api(value = "api/v1/ais/consent", tags = "AIS, Consents")
 public class AisConsentController {
     private final AisConsentAuthorisationServiceEncrypted aisConsentAuthorisationServiceEncrypted;
     private final AisConsentServiceEncrypted aisConsentService;
