@@ -16,17 +16,9 @@
 
 package de.adorsys.psd2.consent.web.psu.config;
 
-import lombok.Getter;
-
-@Getter
-public enum CmsPsuApiTag {
-    PSU_PIIS_CONSENTS(CmsPsuApiTagName.PSU_PIIS_CONSENTS, "Provides access to consent management system for PSU PIIS");
-
-    private final String tagName;
-    private final String tagDescription;
-
-    CmsPsuApiTag(String tagName, String tagDescription) {
-        this.tagName = tagName;
-        this.tagDescription = tagDescription;
-    }
+public class CmsPsuApiTagName {
+    public static final String ASPSP_CONSENT_DATA = "Aspsp Consent Data";
+    public static final String PSU_AIS_CONSENTS = "PSU AIS Consents";
+    public static final String PSU_PIIS_CONSENTS = "PSU PIIS, Consents";
+    public static final String PSU_PIS_PAYMENT = "PSU PIS Payment";
 }

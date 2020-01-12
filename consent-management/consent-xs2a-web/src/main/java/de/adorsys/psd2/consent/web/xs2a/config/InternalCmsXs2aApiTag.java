@@ -20,15 +20,15 @@ import lombok.Getter;
 
 @Getter
 public enum InternalCmsXs2aApiTag {
-    AIS_CONSENTS("AIS, Consents", "Provides access to consent management system for AIS"),
-    AIS_PSU_DATA("AIS, PSU Data", "Provides access to consent management system for PSU Data"),
-    ASPSP_CONSENT_DATA("Aspsp Consent Data", "Provides access to consent management system for AspspDataConsent"),
-    EVENTS("Events", "Provides access to the consent management system for Events"),
-    PIIS_CONSENTS("PIIS, Consents", "Provides access to consent management system for PIIS"),
-    PIS_COMMON_PAYMENT("PIS, Common Payment", "Provides access to common payment system for PIS"),
-    PIS_PAYMENTS("PIS, Payments", "Provides access to consent management system for PIS"),
-    PIS_PSU_DATA("PIS, PSU Data", "Provides access to consent management system for PSU Data"),
-    TPP("TPP", "Provides access to the TPP");
+    AIS_CONSENTS(InternalCmsXs2aApiTagName.AIS_CONSENTS, "Provides access to consent management system for AIS"),
+    AIS_PSU_DATA(InternalCmsXs2aApiTagName.AIS_PSU_DATA, "Provides access to consent management system for PSU Data"),
+    ASPSP_CONSENT_DATA(InternalCmsXs2aApiTagName.ASPSP_CONSENT_DATA, "Provides access to consent management system for AspspDataConsent"),
+    EVENTS(InternalCmsXs2aApiTagName.EVENTS, "Provides access to the consent management system for Events"),
+    PIIS_CONSENTS(InternalCmsXs2aApiTagName.PIIS_CONSENTS, "Provides access to consent management system for PIIS"),
+    PIS_COMMON_PAYMENT(InternalCmsXs2aApiTagName.PIS_COMMON_PAYMENT, "Provides access to common payment system for PIS"),
+    PIS_PAYMENTS(InternalCmsXs2aApiTagName.PIS_PAYMENTS, "Provides access to consent management system for PIS"),
+    PIS_PSU_DATA(InternalCmsXs2aApiTagName.PIS_PSU_DATA, "Provides access to consent management system for PSU Data"),
+    TPP(InternalCmsXs2aApiTagName.TPP, "Provides access to the TPP");
 
     private final String tagName;
     private final String tagDescription;

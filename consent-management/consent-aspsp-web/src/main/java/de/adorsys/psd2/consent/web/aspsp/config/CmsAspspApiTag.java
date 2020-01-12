@@ -20,13 +20,13 @@ import lombok.Getter;
 
 @Getter
 public enum CmsAspspApiTag {
-    ASPSP_EXPORT_AIS_CONSENTS("ASPSP Export AIS Consents", "Provides access to the consent management system for exporting AIS consents by ASPSP"),
-    ASPSP_EVENTS("ASPSP Events", "Provides access to the consent management system for ASPSP Events"),
-    ASPSP_PIIS_CONSENTS("ASPSP PIIS, Consents", "Controller for CMS-ASPSP-API providing access to PIIS consents"),
-    ASPSP_PIIS_CONSENTS_EXPORT("ASPSP PIIS Consents Export", "Provides access to the consent management system for exporting PIIS consents by ASPSP"),
-    ASPSP_EXPORT_PAYMENTS("ASPSP Export Payments", "Provides access to the consent management system for exporting PIS payments by ASPSP"),
-    ASPSP_TPP_STOP_LIST("ASPSP TPP Stop List", "Provides access to the consent management system TPP Stop List"),
-    ASPSP_TPP_INFO("ASPSP TPP Info", "Provides access to the consent management system TPP Info");
+    ASPSP_EXPORT_AIS_CONSENTS(CmsAspspApiTagName.ASPSP_EXPORT_AIS_CONSENTS, "Provides access to the consent management system for exporting AIS consents by ASPSP"),
+    ASPSP_EVENTS(CmsAspspApiTagName.ASPSP_EVENTS, "Provides access to the consent management system for ASPSP Events"),
+    ASPSP_PIIS_CONSENTS(CmsAspspApiTagName.ASPSP_PIIS_CONSENTS, "Controller for CMS-ASPSP-API providing access to PIIS consents"),
+    ASPSP_PIIS_CONSENTS_EXPORT(CmsAspspApiTagName.ASPSP_PIIS_CONSENTS_EXPORT, "Provides access to the consent management system for exporting PIIS consents by ASPSP"),
+    ASPSP_EXPORT_PAYMENTS(CmsAspspApiTagName.ASPSP_EXPORT_PAYMENTS, "Provides access to the consent management system for exporting PIS payments by ASPSP"),
+    ASPSP_TPP_STOP_LIST(CmsAspspApiTagName.ASPSP_TPP_STOP_LIST, "Provides access to the consent management system TPP Stop List"),
+    ASPSP_TPP_INFO(CmsAspspApiTagName.ASPSP_TPP_INFO, "Provides access to the consent management system TPP Info");
 
     private final String tagName;
     private final String tagDescription;

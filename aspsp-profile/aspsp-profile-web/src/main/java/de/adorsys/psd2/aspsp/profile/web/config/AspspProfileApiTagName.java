@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.consent.web.psu.config;
+package de.adorsys.psd2.aspsp.profile.web.config;
 
-import lombok.Getter;
-
-@Getter
-public enum CmsPsuApiTag {
-    PSU_PIIS_CONSENTS(CmsPsuApiTagName.PSU_PIIS_CONSENTS, "Provides access to consent management system for PSU PIIS");
-
-    private final String tagName;
-    private final String tagDescription;
-
-    CmsPsuApiTag(String tagName, String tagDescription) {
-        this.tagName = tagName;
-        this.tagDescription = tagDescription;
-    }
+public class AspspProfileApiTagName {
+    public static final String ASPSP_PROFILE = "Aspsp profile";
+    public static final String CONVERT_OLD_ASPSP_PROFILE = "Convert old aspsp profile to the new";
+    public static final String UPDATE_ASPSP_PROFILE = "Update aspsp profile. Only for DEBUG!";
 }

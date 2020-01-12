@@ -20,8 +20,8 @@ import lombok.Getter;
 
 @Getter
 public enum AspspProfileApiTag {
-    ASPSP_PROFILE("Aspsp profile", "Provides access to aspsp profile"),
-    UPDATE_ASPSP_PROFILE("Update aspsp profile.  Only for DEBUG!", "Provides access to update aspsp profile");
+    ASPSP_PROFILE(AspspProfileApiTagName.ASPSP_PROFILE, "Provides access to aspsp profile"),
+    UPDATE_ASPSP_PROFILE(AspspProfileApiTagName.UPDATE_ASPSP_PROFILE, "Provides access to update aspsp profile");
 
     private final String tagName;
     private final String tagDescription;
