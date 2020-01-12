@@ -26,7 +26,6 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
-import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -46,13 +45,13 @@ public class AspspApiSwaggerConfig {
                    .groupName("CMS-ASPSP-API")
                    .apiInfo(getApiInfo())
                    .tags(
-                       buildTag(CmsAspspApiTag.ASPSP_EXPORT_AIS_CONSENTS),
-                       buildTag(CmsAspspApiTag.ASPSP_EVENTS),
-                       buildTag(CmsAspspApiTag.ASPSP_PIIS_CONSENTS),
-                       buildTag(CmsAspspApiTag.ASPSP_PIIS_CONSENTS_EXPORT),
-                       buildTag(CmsAspspApiTag.ASPSP_EXPORT_PAYMENTS),
-                       buildTag(CmsAspspApiTag.ASPSP_TPP_STOP_LIST),
-                       buildTag(CmsAspspApiTag.ASPSP_TPP_INFO)
+                       CmsAspspApiTagHolder.ASPSP_EXPORT_AIS_CONSENTS,
+                       CmsAspspApiTagHolder.ASPSP_EVENTS,
+                       CmsAspspApiTagHolder.ASPSP_PIIS_CONSENTS,
+                       CmsAspspApiTagHolder.ASPSP_PIIS_CONSENTS_EXPORT,
+                       CmsAspspApiTagHolder.ASPSP_EXPORT_PAYMENTS,
+                       CmsAspspApiTagHolder.ASPSP_TPP_STOP_LIST,
+                       CmsAspspApiTagHolder.ASPSP_TPP_INFO
                    )
                    .select()
                    .apis(RequestHandlerSelectors.basePackage("de.adorsys.psd2.consent.web.aspsp"))
@@ -60,10 +59,6 @@ public class AspspApiSwaggerConfig {
                    .paths(Predicates.not(PathSelectors.regex("/connect.*")))
                    .paths(Predicates.not(PathSelectors.regex("/management.*")))
                    .build();
-    }
-
-    private Tag buildTag(CmsAspspApiTag tag) {
-        return new Tag(tag.getTagName(), tag.getTagDescription());
     }
 
     private ApiInfo getApiInfo() {

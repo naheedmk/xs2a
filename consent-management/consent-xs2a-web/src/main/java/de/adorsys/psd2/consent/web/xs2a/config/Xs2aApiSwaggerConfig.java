@@ -26,7 +26,6 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
-import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -46,15 +45,15 @@ public class Xs2aApiSwaggerConfig {
                    .groupName("Internal CMS-XS2A-API")
                    .apiInfo(getApiInfo())
                    .tags(
-                       buildTag(InternalCmsXs2aApiTag.AIS_CONSENTS),
-                       buildTag(InternalCmsXs2aApiTag.AIS_PSU_DATA),
-                       buildTag(InternalCmsXs2aApiTag.ASPSP_CONSENT_DATA),
-                       buildTag(InternalCmsXs2aApiTag.EVENTS),
-                       buildTag(InternalCmsXs2aApiTag.PIIS_CONSENTS),
-                       buildTag(InternalCmsXs2aApiTag.PIS_COMMON_PAYMENT),
-                       buildTag(InternalCmsXs2aApiTag.PIS_PAYMENTS),
-                       buildTag(InternalCmsXs2aApiTag.PIS_PSU_DATA),
-                       buildTag(InternalCmsXs2aApiTag.TPP)
+                       InternalCmsXs2aApiTagHolder.AIS_CONSENTS,
+                       InternalCmsXs2aApiTagHolder.AIS_PSU_DATA,
+                       InternalCmsXs2aApiTagHolder.ASPSP_CONSENT_DATA,
+                       InternalCmsXs2aApiTagHolder.EVENTS,
+                       InternalCmsXs2aApiTagHolder.PIIS_CONSENTS,
+                       InternalCmsXs2aApiTagHolder.PIS_COMMON_PAYMENT,
+                       InternalCmsXs2aApiTagHolder.PIS_PAYMENTS,
+                       InternalCmsXs2aApiTagHolder.PIS_PSU_DATA,
+                       InternalCmsXs2aApiTagHolder.TPP
                    )
                    .select()
                    .apis(RequestHandlerSelectors.basePackage("de.adorsys.psd2.consent.web.xs2a"))
@@ -62,10 +61,6 @@ public class Xs2aApiSwaggerConfig {
                    .paths(Predicates.not(PathSelectors.regex("/connect.*")))
                    .paths(Predicates.not(PathSelectors.regex("/management.*")))
                    .build();
-    }
-
-    private Tag buildTag(InternalCmsXs2aApiTag tag) {
-        return new Tag(tag.getTagName(), tag.getTagDescription());
     }
 
     private ApiInfo getApiInfo() {

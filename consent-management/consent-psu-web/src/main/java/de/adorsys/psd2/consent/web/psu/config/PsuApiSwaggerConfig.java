@@ -26,7 +26,6 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
-import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -45,17 +44,13 @@ public class PsuApiSwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                    .groupName("CMS-PSU-API")
                    .apiInfo(getApiInfo())
-                   .tags(buildTag(CmsPsuApiTag.PSU_PIIS_CONSENTS))
+                   .tags(CmsPsuApiTagHolder.PSU_PIIS_CONSENTS)
                    .select()
                    .apis(RequestHandlerSelectors.basePackage("de.adorsys.psd2.consent.web.psu"))
                    .paths(Predicates.not(PathSelectors.regex("/error.*?")))
                    .paths(Predicates.not(PathSelectors.regex("/connect.*")))
                    .paths(Predicates.not(PathSelectors.regex("/management.*")))
                    .build();
-    }
-
-    private Tag buildTag(CmsPsuApiTag tag) {
-        return new Tag(tag.getTagName(), tag.getTagDescription());
     }
 
     private ApiInfo getApiInfo() {

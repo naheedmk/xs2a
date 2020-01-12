@@ -16,17 +16,8 @@
 
 package de.adorsys.psd2.consent.web.psu.config;
 
-import lombok.Getter;
+import springfox.documentation.service.Tag;
 
-@Getter
-public enum CmsPsuApiTag {
-    PSU_PIIS_CONSENTS(CmsPsuApiTagName.PSU_PIIS_CONSENTS, "Provides access to consent management system for PSU PIIS");
-
-    private final String tagName;
-    private final String tagDescription;
-
-    CmsPsuApiTag(String tagName, String tagDescription) {
-        this.tagName = tagName;
-        this.tagDescription = tagDescription;
-    }
+public class CmsPsuApiTagHolder {
+    public static final Tag PSU_PIIS_CONSENTS = new Tag(CmsPsuApiTagName.PSU_PIIS_CONSENTS, "Provides access to consent management system for PSU PIIS");
 }

@@ -27,7 +27,6 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
-import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -48,8 +47,8 @@ public class AspspProfileApiSwaggerConfig {
                    .groupName("ASPSP-PROFILE-API")
                    .apiInfo(getApiInfo())
                    .tags(
-                       buildTag(AspspProfileApiTag.ASPSP_PROFILE),
-                       buildTag(AspspProfileApiTag.UPDATE_ASPSP_PROFILE)
+                       AspspProfileApiTagHolder.ASPSP_PROFILE,
+                       AspspProfileApiTagHolder.UPDATE_ASPSP_PROFILE
                    )
                    .select()
                    .apis(RequestHandlerSelectors.basePackage("de.adorsys.psd2.aspsp.profile"))
@@ -57,10 +56,6 @@ public class AspspProfileApiSwaggerConfig {
                    .paths(Predicates.not(PathSelectors.regex("/connect.*")))
                    .paths(Predicates.not(PathSelectors.regex("/management.*")))
                    .build();
-    }
-
-    private Tag buildTag(AspspProfileApiTag tag) {
-        return new Tag(tag.getTagName(), tag.getTagDescription());
     }
 
     private ApiInfo getApiInfo() {

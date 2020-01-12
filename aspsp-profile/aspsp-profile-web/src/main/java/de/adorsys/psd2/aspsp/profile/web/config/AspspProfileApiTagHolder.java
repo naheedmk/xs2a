@@ -16,18 +16,9 @@
 
 package de.adorsys.psd2.aspsp.profile.web.config;
 
-import lombok.Getter;
+import springfox.documentation.service.Tag;
 
-@Getter
-public enum AspspProfileApiTag {
-    ASPSP_PROFILE(AspspProfileApiTagName.ASPSP_PROFILE, "Provides access to aspsp profile"),
-    UPDATE_ASPSP_PROFILE(AspspProfileApiTagName.UPDATE_ASPSP_PROFILE, "Provides access to update aspsp profile");
-
-    private final String tagName;
-    private final String tagDescription;
-
-    AspspProfileApiTag(String tagName, String tagDescription) {
-        this.tagName = tagName;
-        this.tagDescription = tagDescription;
-    }
+public class AspspProfileApiTagHolder {
+    public static final Tag ASPSP_PROFILE = new Tag(AspspProfileApiTagName.ASPSP_PROFILE, "Provides access to aspsp profile");
+    public static final Tag UPDATE_ASPSP_PROFILE = new Tag(AspspProfileApiTagName.UPDATE_ASPSP_PROFILE, "Provides access to update aspsp profile");
 }
