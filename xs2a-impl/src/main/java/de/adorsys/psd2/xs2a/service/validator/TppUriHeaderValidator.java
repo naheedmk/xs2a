@@ -22,6 +22,7 @@ import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.validator.tpp.TppDomainValidator;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
@@ -45,7 +46,7 @@ public class TppUriHeaderValidator implements BusinessValidator<TppRedirectUri> 
 
         if (isRedirectScaApproach()) {
             warnings.addAll(tppDomainValidator.buildWarningMessages(tppRedirectUri.getUri()));
-            if (tppRedirectUri.getNokUri() != null) {
+            if (StringUtils.isNotBlank(tppRedirectUri.getNokUri())) {
                 warnings.addAll(tppDomainValidator.buildWarningMessages(tppRedirectUri.getNokUri()));
             }
         }
