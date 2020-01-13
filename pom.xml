@@ -831,6 +831,8 @@ Use it manually to generate javadocs. Don't commit it
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
+                    <detectOfflineLinks>false</detectOfflineLinks>
+<!--                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>-->
                     <additionalOptions>-Xdoclint:none</additionalOptions>
                 </configuration>
                 <executions>
