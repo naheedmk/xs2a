@@ -81,11 +81,11 @@ is present, XS2A responds with error `403 FORBIDDEN` with text `Token is not val
 === Using debug interface
 
 The debug interface of the ASPSP profile enables the developer to update the list of supported SCA approaches and/or
-ASPSP profile settings, temporarily during runtime. The changes won't be persisted, and only stored in the local application
-cache. Thus, these endpoints are unviable for a production environment and should only be used for debugging, as a more
-convenient way of changing the SCA approaches and/or the ASPSP profile settings.
+ASPSP profile settings, temporarily during runtime. The changes won't be persisted, and only stored in the local
+application cache. Thus, these endpoints are unviable for a production environment and should only be used for
+debugging, as a more convenient way of changing the SCA approaches and/or the ASPSP profile settings.
 
-The debug interface is enabled via configuring Spring Profiles. The according profiles name is `debug_mode`.
+The debug interface is enabled via configuring Spring Profiles. The according profile name is `debug_mode`.
 
 The endpoints provided are the following:
 
@@ -101,4 +101,4 @@ structures the settings more rigorously.
 The endpoint containing this behavior is accesible via:
 
 - `POST /api/v1/aspsp-profile/convert-profile/aspsp-settings` - Converts old aspsp profile to the new format
-    * Requires the, v.4.x. and prior, ASPSP profile settings, in JSON format
+    * Requires the, v.4.x. and prior, ASPSP profile settings, in YAML format
