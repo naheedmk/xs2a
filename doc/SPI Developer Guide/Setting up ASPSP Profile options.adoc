@@ -59,7 +59,7 @@ ASPSP profile settings, temporarily during runtime. The changes won't be persist
 application cache. Thus, these endpoints are unviable for a production environment and should only be used for debugging,
 as a more convenient way of changing the SCA approaches and/or the ASPSP profile settings.
 
-The debug interface is enabled via configuring Spring Profile. The according profiles name is `debug_mode`.
+The debug interface is enabled via configuring Spring Profiles. The according profile name is `debug_mode`.
 
 The endpoints provided are the following:
 
