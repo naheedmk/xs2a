@@ -3,8 +3,15 @@
 == Table of Contents
 
 * Fixing acceptance of past validUntil date provided through CMS-PSU-API
+* Fixing that expiration of an AIS consent changes its validUntil date
 
 == Fixing acceptance of past validUntil date provided through CMS-PSU-API
 
 From now on, providing a validUntil date, that is prior to the current date gets rejected on
 calling `PUT /psu-api/v1/ais/consent/{consent-id}/save-access`.
+
+== Fixing that expiration of an AIS consent changes its validUntil date
+
+From now on, expiration of an AIS consent does not change its `validUntil` date. A second value
+`expireDate` has been introduced, which indicates the date of expiration. The `expireDate` is properly
+propagated to SPI, CMS-PSU and CMS-ASPSP APIs.
