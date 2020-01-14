@@ -231,6 +231,11 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     }
 
     private boolean updateAccountAccessInConsent(AisConsent consent, CmsAisConsentAccessRequest request) {
+        LocalDate validUntil = request.getValidUntil();
+        if (validUntil != null && validUntil.isBefore(LocalDate.now())) {
+            return false;
+        }
+
         AisAccountAccess accountAccess = request.getAccountAccess();
         if (accountAccess == null) {
             log.info("Consent ID [{}]. Update account access in consent failed, because AIS Account Access is null",
