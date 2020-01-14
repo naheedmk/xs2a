@@ -35,7 +35,7 @@ xref:./Implementing SPI-API.adoc[here].
 This controller has endpoints for working with AIS consent entities and their attributes.
 
 * *GET /psu-api/v1/ais/consent/{consent-id}* - returns AIS consent object by provided ID (ID should be internal). Corresponding java method is `getConsentByConsentId`;
-* *PUT /psu-api/v1/ais/consent/{consent-id}/authorisation/{authorisation-id}/psu-data* - updates PSU data for definite consent Java - `updatePsuDataInConsent`;
+* *PUT /psu-api/v1/ais/consent/{consent-id}/authorisation/{authorisation-id}/psu-data* - updates PSU data for definite consent. Java - `updatePsuDataInConsent`;
 * *PUT /psu-api/v1/ais/consent/{consent-id}/authorisation/{authorisation-id}/status/{status}* - updates status of AIS consent authorisation. Java - `updateAuthorisationStatus`;
 * *GET /psu-api/v1/ais/consent/{consent-id}/authorisation/psus* - returns map consisting of PSU data IDs (keys) and statuses of their authorisations for the given consent (values). Method - `psuDataAuthorisations`;
 * *PUT /psu-api/v1/ais/consent/{consent-id}/confirm-consent* - switches the AIS consent status to `VALID`. Method name - `confirmConsent`;
