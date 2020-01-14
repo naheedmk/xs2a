@@ -300,7 +300,7 @@ public class AisConsentServiceInternal implements AisConsentService {
         consent.setAllowedFrequencyPerDay(request.getAllowedFrequencyPerDay());
         consent.setTppFrequencyPerDay(request.getRequestedFrequencyPerDay());
         consent.setRequestDateTime(LocalDateTime.now());
-        consent.setExpireDate(adjustExpireDate(request.getValidUntil()));
+        consent.setValidUntil(adjustExpireDate(request.getValidUntil()));
         consent.setPsuDataList(psuDataMapper.mapToPsuDataList(Collections.singletonList(request.getPsuData())));
         consent.setTppInfo(tppInfoMapper.mapToTppInfoEntity(request.getTppInfo()));
         AuthorisationTemplateEntity authorisationTemplate = new AuthorisationTemplateEntity();
@@ -360,9 +360,10 @@ public class AisConsentServiceInternal implements AisConsentService {
     }
 
     private AisConsent checkAndUpdateOnExpiration(AisConsent consent) {
-        if (aisConsentConfirmationExpirationService.isConsentExpiredOrFinalised(consent)) {
-            aisConsentConfirmationExpirationService.expireConsent(consent);
+        if (consent != null && consent.shouldConsentBeExpired()) {
+            return aisConsentConfirmationExpirationService.expireConsent(consent);
         }
+
         return consent;
     }
 
