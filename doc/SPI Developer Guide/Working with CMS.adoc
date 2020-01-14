@@ -120,7 +120,7 @@ In order to do it, you can use several `CMS-ASPSP-API` REST controllers. They ar
 ==== Using the Funds Confirmation Consent interface
 
 Funds Confirmation Consent interface (PIIS consent interface) allows ASPSP to manage consents for accessing Confirmation of Funds Service.
-It should be used only if ASPSP supports PIIS consents by ASPSP.
+It should be used only if ASPSP supports PIIS consents created by the ASPSP.
 This interface can be accessed either by REST endpoints in CMS or by Java methods in `de.adorsys.psd2.consent.aspsp.api.piis.CmsAspspPiisService` (in case of using CMS in embedded mode).
 
 * `POST aspsp-api/v1/piis/consents` (or `CmsAspspPiisService#createConsent`) - creates new PIIS consent for given PSU.
