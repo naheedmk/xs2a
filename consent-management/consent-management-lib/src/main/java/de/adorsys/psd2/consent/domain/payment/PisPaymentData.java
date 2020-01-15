@@ -50,7 +50,6 @@ public class PisPaymentData extends InstanceDependableEntity {
     private String endToEndIdentification;
 
     @Column(name = "instruction_identification")
-    @ApiModelProperty(value = "Instruction identification", example = "ABC/4562/2020-01-10")
     private String instructionIdentification;
 
     @JoinColumn(name = "debtor_acc_reference_id")
