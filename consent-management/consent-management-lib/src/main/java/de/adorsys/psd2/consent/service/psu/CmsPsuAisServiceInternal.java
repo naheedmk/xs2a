@@ -233,7 +233,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     private boolean updateAccountAccessInConsent(AisConsent consent, CmsAisConsentAccessRequest request) {
         LocalDate validUntil = request.getValidUntil();
         if (validUntil != null && validUntil.isBefore(LocalDate.now())) {
-            log.error("Valid Until: [{}] is in the past!", validUntil);
+            log.info("Consent property validUntil: [{}] is in the past!", validUntil);
             return false;
         }
 
