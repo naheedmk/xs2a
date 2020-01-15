@@ -46,7 +46,9 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CANCELLATION_INVALID;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.RESOURCE_BLOCKED;
 import static de.adorsys.psd2.xs2a.domain.TppMessageInformation.of;
+import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.PIS_400;
 import static de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorType.PIS_CANC_405;
 
 @Slf4j
@@ -121,7 +123,7 @@ public class CancelPaymentService {
             log.info("InR-ID: [{}], X-Request-ID: [{}], Payment-ID [{}]. Initiate Payment Cancellation has failed. Payment has finalised status",
                      internalRequestId, xRequestId, encryptedPaymentId);
             return ResponseObject.<CancelPaymentResponse>builder()
-                       .fail(PIS_CANC_405, of(CANCELLATION_INVALID))
+                       .fail(PIS_400, of(RESOURCE_BLOCKED))
                        .build();
         }
 
