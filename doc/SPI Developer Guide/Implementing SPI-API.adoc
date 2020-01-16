@@ -516,8 +516,8 @@ any redirect to the online banking. For this purposes, XS2A interface provides t
 
 After the successful authorisation start(either explicit or implicit), TPP should update the authorisation with data, provided by PSU.
 Depending on the amount of SCA methods the PSU has, the amount of PSU data, needed to be provided, differs. In case when PSU
-has zero SCA methods, only password should be provided. In case when PSU has one SCA methods, the password should be provided
-as well as authentication data(e.g. TAN received be email or SMS). In case when PSU has more than one SCA method,
+has zero SCA method, only password should be provided. In case when PSU has one SCA methods, the password should be provided
+as well as authentication data (e.g. TAN received be email or SMS). In case when PSU has more than one SCA method,
 PSU should first provide password, then select the preferred SCA method and then - the authentication data.
 For each PSU data update, the same update endpoint should be called, but with corresponding body.
 
@@ -565,5 +565,5 @@ of Embedded SCA approach. After TPP updates PSU password via
 * `PUT /v1/{payment-service}/{payment-product}/{paymentId}/cancellation-authorisations/{cancellationId}` or
 * `PUT /v1/consents/{consentId}/authorisations/{authorisationId}`
 
-endpoints, the response form ASPSP asks PSU to proceed authorisation in dedicated device. No further authorisation from
-TPP is needed. PSU uses the dedicated device and finished authorisation process there.
+endpoints, the response from ASPSP asks PSU to proceed authorisation in dedicated device. No further authorisation calls
+from TPP is needed. PSU uses the dedicated device and finishes authorisation process there.
