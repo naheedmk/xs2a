@@ -521,7 +521,7 @@ as well as authentication data (e.g. TAN received by email or SMS). In case when
 PSU should first provide password, then select the preferred SCA method and then - the authentication data.
 For each PSU data update, the same update endpoint should be called, but with corresponding body.
 
-For example, PSU with two SCA methods initiates a payment. Assume that, the payment was created and the authorisation has started.
+For example, PSU with two SCA methods initiates a payment. Assume that the payment was created and the authorisation has started.
 Now TPP should update PSU data three times:
 
 * first `PUT /v1/{payment-service}/{payment-product}/{paymentId}/authorisations/{authorisationId}` call with PSU password
