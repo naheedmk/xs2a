@@ -538,6 +538,14 @@ in HTTP body
 * second `PUT /v1/{payment-service}/{payment-product}/{paymentId}/authorisations/{authorisationId}` call with selected SCA
 method in HTTP body
 
+Embedded SCA Approach uses the same list of methods as Redirect SCA Approach:
+
+* *createCommonPaymentAuthorisation*;
+* *updateCommonPaymentPsuData*;
+* *getAuthorisationSubResources*;
+* *getAuthorisationScaStatus*;
+* *getScaApproachServiceTypeProvider*.
+
 ----
 {
     "authenticationMethodId": "selectedSCAMethod"
@@ -567,3 +575,11 @@ of Embedded SCA approach. After TPP updates PSU password via
 
 endpoints, the response from ASPSP asks PSU to proceed authorisation in dedicated device. No further authorisation calls
 from TPP is needed. PSU uses the dedicated device and finishes authorisation process there.
+
+Decoupled SCA Approach uses the same list of methods as Redirect SCA Approach:
+
+* *createCommonPaymentAuthorisation*;
+* *updateCommonPaymentPsuData*;
+* *getAuthorisationSubResources*;
+* *getAuthorisationScaStatus*;
+* *getScaApproachServiceTypeProvider*.
