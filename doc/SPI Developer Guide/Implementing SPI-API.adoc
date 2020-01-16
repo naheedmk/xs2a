@@ -514,6 +514,14 @@ any redirect to the online banking. For this purposes, XS2A interface provides t
 * `PUT /v1/{payment-service}/{payment-product}/{paymentId}/cancellation-authorisations/{cancellationId}` for payment cancellation flow;
 * `PUT /v1/consents/{consentId}/authorisations/{authorisationId}` for consent initiation flow.
 
+Embedded SCA Approach uses the same list of methods as Redirect SCA Approach:
+
+* *createCommonPaymentAuthorisation*;
+* *updateCommonPaymentPsuData*;
+* *getAuthorisationSubResources*;
+* *getAuthorisationScaStatus*;
+* *getScaApproachServiceTypeProvider*.
+
 After the successful authorisation start (either explicit or implicit), TPP should update the authorisation with data, provided by PSU.
 Depending on the amount of SCA methods PSU has, the amount of PSU data, has to be provided, differs. In case when PSU
 has zero SCA methods, only password should be provided. In case when PSU has one SCA method, the password should be provided
@@ -537,14 +545,6 @@ in HTTP body
 
 * second `PUT /v1/{payment-service}/{payment-product}/{paymentId}/authorisations/{authorisationId}` call with selected SCA
 method in HTTP body
-
-Embedded SCA Approach uses the same list of methods as Redirect SCA Approach:
-
-* *createCommonPaymentAuthorisation*;
-* *updateCommonPaymentPsuData*;
-* *getAuthorisationSubResources*;
-* *getAuthorisationScaStatus*;
-* *getScaApproachServiceTypeProvider*.
 
 ----
 {
