@@ -516,7 +516,7 @@ any redirect to the online banking. For this purposes, XS2A interface provides t
 
 After the successful authorisation starts (either explicit or implicit), TPP should update the authorisation with data, provided by PSU.
 Depending on the amount of SCA methods the PSU has, the amount of PSU data, needed to be provided, differs. In case when PSU
-has zero SCA method, only password should be provided. In case when PSU has one SCA method, the password should be provided
+has zero SCA methods, only password should be provided. In case when PSU has one SCA method, the password should be provided
 as well as authentication data (e.g. TAN received by email or SMS). In case when PSU has more than one SCA method,
 PSU should first provide password, then select the preferred SCA method and then - the authentication data.
 For each PSU data update, the same update endpoint should be called, but with corresponding body.
