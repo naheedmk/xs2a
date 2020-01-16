@@ -574,7 +574,7 @@ of Embedded SCA approach. After TPP updates PSU password via
 * `PUT /v1/consents/{consentId}/authorisations/{authorisationId}`
 
 endpoints, the response from ASPSP asks PSU to proceed authorisation in dedicated device. No further authorisation calls
-from TPP is needed. PSU uses the dedicated device and finishes authorisation process there.
+from TPP are needed. PSU uses the dedicated device and finishes authorisation process there.
 
 Decoupled SCA Approach uses the same list of methods as Redirect SCA Approach:
 
