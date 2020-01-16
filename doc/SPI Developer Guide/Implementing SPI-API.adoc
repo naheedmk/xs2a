@@ -514,15 +514,15 @@ any redirect to the online banking. For this purposes, XS2A interface provides t
 * `PUT /v1/{payment-service}/{payment-product}/{paymentId}/cancellation-authorisations/{cancellationId}` for payment cancellation flow;
 * `PUT /v1/consents/{consentId}/authorisations/{authorisationId}` for consent initiation flow.
 
-After the successful authorisation start(either explicit or implicit), TPP should update the authorisation with data, provided by PSU.
+After the successful authorisation starts (either explicit or implicit), TPP should update the authorisation with data, provided by PSU.
 Depending on the amount of SCA methods the PSU has, the amount of PSU data, needed to be provided, differs. In case when PSU
-has zero SCA method, only password should be provided. In case when PSU has one SCA methods, the password should be provided
-as well as authentication data (e.g. TAN received be email or SMS). In case when PSU has more than one SCA method,
+has zero SCA method, only password should be provided. In case when PSU has one SCA method, the password should be provided
+as well as authentication data (e.g. TAN received by email or SMS). In case when PSU has more than one SCA method,
 PSU should first provide password, then select the preferred SCA method and then - the authentication data.
 For each PSU data update, the same update endpoint should be called, but with corresponding body.
 
-For example, PSU with two SCA methods initiates a payment. The payment was created and the authorisation started. Now TPP should update PSU data
-three times:
+For example, PSU with two SCA methods initiates a payment. Assume that, the payment was created and the authorisation has started.
+Now TPP should update PSU data three times:
 
 * first `PUT /v1/{payment-service}/{payment-product}/{paymentId}/authorisations/{authorisationId}` call with PSU password
 in HTTP body
