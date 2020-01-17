@@ -13,6 +13,7 @@
 * Adopt data type Max512Text to Max500Text
 * Fixing acceptance of past validUntil date provided through CMS-PSU-API
 * Log Request ID and Internal Request ID via SLF4J MDC
+* Updated Response Code And Message for cancellation already completed payment
 
 == Allow custom payment validation
 
@@ -109,4 +110,9 @@ In case of using custom logging configuration, SPI developer should adjust exist
 Internal Request ID(logged as InR-ID) and X-Request-ID are stored in the MDC under `internal-request-id` and `x-request-id` keys.
 
 These IDs are also propagated from XS2A to CMS and ASPSP profile services via `X-Request-ID` and `X-Internal-Request-ID` headers and can be retrieved from MDC using already mentioned keys.
+
+== Updated Response Code And Message for cancellation already completed payment
+
+From now on, when Cancellation request is sent for already completed payment, the response error will be
+`400 RESOURCE_BLOCKED`.
 
