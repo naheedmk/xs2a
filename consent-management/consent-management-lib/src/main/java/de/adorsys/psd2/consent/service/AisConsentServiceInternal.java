@@ -300,7 +300,7 @@ public class AisConsentServiceInternal implements AisConsentService {
         consent.setAllowedFrequencyPerDay(request.getAllowedFrequencyPerDay());
         consent.setTppFrequencyPerDay(request.getRequestedFrequencyPerDay());
         consent.setRequestDateTime(LocalDateTime.now());
-        consent.setValidUntil(adjustExpireDate(request.getValidUntil()));
+        consent.setValidUntil(adjustValidUntil(request.getValidUntil()));
         consent.setPsuDataList(psuDataMapper.mapToPsuDataList(Collections.singletonList(request.getPsuData())));
         consent.setTppInfo(tppInfoMapper.mapToTppInfoEntity(request.getTppInfo()));
         AuthorisationTemplateEntity authorisationTemplate = new AuthorisationTemplateEntity();
@@ -324,7 +324,7 @@ public class AisConsentServiceInternal implements AisConsentService {
         return consent;
     }
 
-    private LocalDate adjustExpireDate(LocalDate validUntil) {
+    private LocalDate adjustValidUntil(LocalDate validUntil) {
         int lifetime = aspspProfileService.getAspspSettings().getConsentLifetime();
         if (lifetime <= 0) {
             return validUntil;
