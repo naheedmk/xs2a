@@ -216,7 +216,7 @@ After setting finalised status for consent:
 
 === Revoke all consents when account is closed
 
-In case PSU decides to close an account in the bank - ASPSP enables to revoke all AIS and PIIS consents of account in one step. It can be performed via endpoint in the CMS.
+In case PSU decides to close an account in the bank - ASPSP enables to revoke all AIS and PIIS consents of account in one step. It can be performed via endpoint in the CMS-PSU-API.
 
 === Get consent Status Request
 Field *lastActionDate* - is containing the date of the last action on the consent object either through the XS2A interface or the PSU/ASPSP interface having an impact on the status:
@@ -235,7 +235,7 @@ ASPSP may decide whether to support additional account information or not, by se
 
 * *accountOwnerInformationSupported* (boolean, default value is FALSE).
 
-During Consent creation in request the additional account information for AIS as *owner name* can be asking.
+If additional account information is supported by ASPSP, then after authorisation of consent ASPSP will indicate additional account information in Account Details or empty array in Account Details (if consent right to have additional info is not confirmed for this PSU).
 
 Optional field *"additionalInformation"* of type *"Additional Information Access"* in the Consent Request:
 
@@ -245,12 +245,15 @@ then the Message Code *CONSENT_INVALID* is in response with text *"An explicit c
 ** The usage of this data element requires at least one of the entries "accounts", "transactions" or "balances" also to be contained in the object.
 ** If the array is empty, also the arrays for accounts, balances or transactions shall be empty if used. If the array is empty in the request, the TPP is asking for the account owner name of all accessible accounts.
 
-Fields *"availableAccounts"*, *"availableAccountsWithBalance"* and *"allPsd2"* may have values *"allAccounts"* and *"allAccountsWithOwnerName"*.
-So if any of these fields are present in consent request and ASPSP-Profile contains *accountOwnerInformationSupported=true*, new values should be stored in consent.
+In Consent Request body fields *"availableAccounts"*, *"availableAccountsWithBalance"* and *"allPsd2"* may have additional value *"allAccountsWithOwnerName"*.
+So if any of these fields are present in consent request and ASPSP-Profile contains *accountOwnerInformationSupported=true*, new values store in consent and pass to SPI together with consent object.
 
-This should be passed to SPI together with consent object. Get Consent of received consent should respond with created consent.
+On SPI Level there is new `SpiAdditionalInformationAccess` field In `SpiAccountConsent` object in `SpiAccountAccess` block which represents TPP desire
+to retrieve additional information (*ownerName*) about PSU by it's account reference.
 
-If additional account information is supported by ASPSP, then after authorisation of consent ASPSP will indicate additional account information in Account Details or empty array in Account Details (if consent right to have additional info is not confirmed for this PSU). And this state of consent should be responded on Get consent.
+This information ASPSP can provide through `ownerName` field in `SpiAccountDetails` object, during invoking `requestAccountList` or `requestAccountDetailForAccount` methods in AccountSpi.
+
+Get Consent of received consent responds with created consent.
 
 === Account Identifier
 *aspspAccountId* - This field is a specific unique identifier for bank accounts used in payments, AIS, and PIIS consents (known to bank and given by bank) instead of IBAN and to give all consents for account by this identifier.
