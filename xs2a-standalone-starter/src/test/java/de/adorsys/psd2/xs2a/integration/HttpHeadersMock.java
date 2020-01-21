@@ -18,8 +18,8 @@ package de.adorsys.psd2.xs2a.integration;
 
 import org.springframework.http.HttpHeaders;
 
-public class HttpHeadersIT extends HttpHeaders {
-    HttpHeadersIT addPsuIdHeader(String psuIdHeader) {
+public class HttpHeadersMock extends HttpHeaders {
+    HttpHeadersMock addPsuIdHeader(String psuIdHeader) {
         this.add("PSU-ID", psuIdHeader);
         return this;
     }

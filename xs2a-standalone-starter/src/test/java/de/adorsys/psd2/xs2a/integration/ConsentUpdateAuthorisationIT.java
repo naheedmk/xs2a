@@ -152,7 +152,7 @@ class ConsentUpdateAuthorisationIT {
         ScaApproach scaApproach = ScaApproach.EMBEDDED;
 
         PsuIdData psuIdDataAuthorisation = buildPsuIdDataAuthorisation(psuIdAuthorisation);
-        HttpHeadersIT httpHeaders = buildHttpHeaders(psuIdHeader);
+        HttpHeadersMock httpHeaders = buildHttpHeaders(psuIdHeader);
 
         AisAccountConsent aisAccountConsent = AisConsentBuilder.buildAisAccountConsent(CONSENT_PATH, scaApproach, CONSENT_ID, xs2aObjectMapper, new AisAccountConsentAuthorisation(AUTHORISATION_ID, psuIdDataAuthorisation, ScaStatus.RECEIVED));
 
@@ -177,8 +177,8 @@ class ConsentUpdateAuthorisationIT {
         return mockMvc.perform(requestBuilder);
     }
 
-    private HttpHeadersIT buildHttpHeaders(String psuIdHeader) {
-        HttpHeadersIT httpHeadersBase = HttpHeadersBuilder.buildHttpHeaders();
+    private HttpHeadersMock buildHttpHeaders(String psuIdHeader) {
+        HttpHeadersMock httpHeadersBase = HttpHeadersBuilder.buildHttpHeaders();
         return Optional.ofNullable(psuIdHeader)
                    .map(httpHeadersBase::addPsuIdHeader)
                    .orElse(httpHeadersBase);

@@ -147,14 +147,11 @@ public class PisCommonPaymentIT {
 
         // When
         // New status is null
-        assertThrows(
-            PersistenceException.class,
-            () -> pisCommonPaymentService.updateCommonPaymentStatusById(savedEntity.getPaymentId(), null)
-        );
+        pisCommonPaymentService.updateCommonPaymentStatusById(savedEntity.getPaymentId(), null);
 
-        // Then
-        // Here the exception should be thrown
-        flushAndClearPersistenceContext();
+        assertThrows(
+            PersistenceException.class, this::flushAndClearPersistenceContext
+        );
     }
 
     private PisPaymentInfo buildPisPaymentInfo() {

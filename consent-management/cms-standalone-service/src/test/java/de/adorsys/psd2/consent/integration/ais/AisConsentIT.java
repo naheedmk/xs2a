@@ -151,14 +151,11 @@ public class AisConsentIT {
 
         // When
         // New status is null
-        assertThrows(
-            PersistenceException.class,
-            () -> aisConsentService.updateConsentStatusById(savedEntity.getExternalId(), null)
-        );
+        aisConsentService.updateConsentStatusById(savedEntity.getExternalId(), null);
 
-        // Then
-        // Here the exception should be thrown
-        flushAndClearPersistenceContext();
+        assertThrows(
+            PersistenceException.class, this::flushAndClearPersistenceContext
+        );
     }
 
     @Test
