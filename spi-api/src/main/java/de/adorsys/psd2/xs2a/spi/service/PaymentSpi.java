@@ -112,5 +112,5 @@ public interface PaymentSpi<T extends SpiPayment, R> {
      * @return Returns a response object, which contains SCA status of authorisation and Transaction status of payment
      */
     @NotNull
-    SpiResponse<SpiPaymentConfirmationCodeValidationResponse> notifyConfirmationCodeValidation(@NotNull SpiContextData contextData, @NotNull boolean confirmationCodeValidationResult, @NotNull T payment, boolean isCancellation, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider);
+    SpiResponse<SpiPaymentConfirmationCodeValidationResponse> notifyConfirmationCodeValidation(@NotNull SpiContextData contextData, boolean confirmationCodeValidationResult, @NotNull T payment, boolean isCancellation, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider);
 }

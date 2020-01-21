@@ -118,11 +118,13 @@ public class PisAuthorisationConfirmationService {
 
         SpiResponse<SpiPaymentConfirmationCodeValidationResponse> spiResponse = pisCheckAuthorisationConfirmationService.notifyConfirmationCodeValidation(contextData, codeCorrect, payment, isCancellation, aspspConsentDataProvider);
 
-        Xs2aUpdatePisCommonPaymentPsuDataResponse response = spiResponse.hasError()
-                                                                 ? buildConfirmationCodeValidationResultSpiErrorResponse(spiResponse, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData())
-                                                                 : codeCorrect
-                                                                       ? new Xs2aUpdatePisCommonPaymentPsuDataResponse(spiResponse.getPayload().getScaStatus(), request.getPaymentId(), request.getAuthorisationId(), request.getPsuData())
-                                                                       : buildScaConfirmationCodeErrorResponse(request);
+        if (spiResponse.hasError()) {
+            return buildConfirmationCodeValidationResultSpiErrorResponse(spiResponse, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
+        }
+
+        Xs2aUpdatePisCommonPaymentPsuDataResponse response = codeCorrect
+                                                                 ? new Xs2aUpdatePisCommonPaymentPsuDataResponse(spiResponse.getPayload().getScaStatus(), request.getPaymentId(), request.getAuthorisationId(), request.getPsuData())
+                                                                 : buildScaConfirmationCodeErrorResponse(request);
 
         UpdatePisCommonPaymentPsuDataRequest updatePaymentRequest = pisCommonPaymentMapper.mapToCmsUpdateCommonPaymentPsuDataReq(response);
 

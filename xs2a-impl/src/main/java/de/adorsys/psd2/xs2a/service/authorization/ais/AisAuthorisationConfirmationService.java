@@ -126,11 +126,14 @@ public class AisAuthorisationConfirmationService {
 
         SpiResponse<SpiConsentConfirmationCodeValidationResponse> spiResponse = aisConsentSpi.notifyConfirmationCodeValidation(contextData, codeCorrect, spiAccountConsent, aspspDataProvider);
 
-        UpdateConsentPsuDataResponse response = spiResponse.hasError()
-                                                    ? buildConfirmationCodeValidationResultSpiErrorResponse(spiResponse, consentId, authorisationId)
-                                                    : codeCorrect
-                                                          ? new UpdateConsentPsuDataResponse(spiResponse.getPayload().getScaStatus(), consentId, authorisationId)
-                                                          : buildScaConfirmationCodeErrorResponse(consentId, authorisationId);
+        if (spiResponse.hasError()) {
+            return buildConfirmationCodeValidationResultSpiErrorResponse(spiResponse, consentId, authorisationId);
+        }
+
+        UpdateConsentPsuDataResponse response = codeCorrect
+                                                    ? new UpdateConsentPsuDataResponse(spiResponse.getPayload().getScaStatus(), consentId, authorisationId)
+                                                    : buildScaConfirmationCodeErrorResponse(consentId, authorisationId);
+
         if (spiResponse.isSuccessful()) {
             SpiConsentConfirmationCodeValidationResponse payload = spiResponse.getPayload();
             aisConsentService.updateConsentAuthorisationStatus(authorisationId, payload.getScaStatus());
