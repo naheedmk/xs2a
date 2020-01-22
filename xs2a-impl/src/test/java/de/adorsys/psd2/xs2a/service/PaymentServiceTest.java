@@ -67,7 +67,6 @@ import java.util.UUID;
 
 import static de.adorsys.psd2.xs2a.core.domain.TppMessageInformation.of;
 import static de.adorsys.psd2.xs2a.core.error.ErrorType.PIS_400;
-import static de.adorsys.psd2.xs2a.core.error.ErrorType.PIS_404;
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
 import static de.adorsys.psd2.xs2a.core.pis.TransactionStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -692,7 +691,7 @@ class PaymentServiceTest {
 
     private void assertThatPaymentHasWrongId403(ResponseObject actualResult) {
         assertThat(actualResult.hasError()).isTrue();
-        assertThat(actualResult.getError().getErrorType()).isEqualTo(PIS_403);
+        assertThat(actualResult.getError().getErrorType()).isEqualTo(ErrorType.PIS_403);
         assertThat(actualResult.getError().getTppMessages().contains(of(RESOURCE_UNKNOWN_403))).isTrue();
     }
 
