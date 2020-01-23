@@ -246,14 +246,14 @@ then the Message Code *CONSENT_INVALID* is in response with text *"An explicit c
 ** If the array is empty, also the arrays for accounts, balances or transactions shall be empty if used. If the array is empty in the request, the TPP is asking for the account owner name of all accessible accounts.
 
 In Consent Request body fields *"availableAccounts"*, *"availableAccountsWithBalance"* and *"allPsd2"* may have additional value *"allAccountsWithOwnerName"*.
-So if any of these fields are present in consent request and ASPSP-Profile contains *accountOwnerInformationSupported=true*, new values store in consent and pass to SPI together with consent object.
+So if any of these fields are present in consent request and ASPSP-Profile contains *accountOwnerInformationSupported=true*, new values are stored in consent and passed to SPI together with consent object.
 
 On SPI Level there is new `SpiAdditionalInformationAccess` field In `SpiAccountConsent` object in `SpiAccountAccess` block which represents TPP desire
 to retrieve additional information (*ownerName*) about PSU by it's account reference.
 
 This information ASPSP can provide through `ownerName` field in `SpiAccountDetails` object, during invoking `requestAccountList` or `requestAccountDetailForAccount` methods in AccountSpi.
 
-Get Consent of received consent responds with created consent.
+Get Consent Request returns created Consent.
 
 === Account Identifier
 *aspspAccountId* - This field is a specific unique identifier for bank accounts used in payments, AIS, and PIIS consents (known to bank and given by bank) instead of IBAN and to give all consents for account by this identifier.

@@ -13,7 +13,7 @@ include::Account Information Service.adoc[Account Information Service]
 
 include::Read Account Data Requests.adoc[Read Account Data Requests]
 
-include::Card Accounts.adoc[Card Account]
+include::Read Card Account Data Request.adoc[Card Account]
 
 include::Multicurrency Accounts.adoc[Multicurrency Accounts]
 

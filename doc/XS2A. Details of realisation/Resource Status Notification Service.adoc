@@ -19,7 +19,7 @@ There is a parameter in the ASPSP-profile "aspspNotificationsSupported", which d
 
 * *NONE*.
 
-It cab be set from 1 to 3 values simultaniously, or to set *NONE* if ASPSP doesn't support status notifications.
+It can be set from 1 to 3 values simultaniously, or set *NONE* if ASPSP doesn't support status notifications.
 
 In case of TPP requests content which is not supported by ASPSP, then response contains header *ASPSP-Notification-Support=FALSE* and *NO* header *ASPSP-Notification-Content*.
 

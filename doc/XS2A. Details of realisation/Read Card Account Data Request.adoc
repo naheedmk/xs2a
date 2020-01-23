@@ -1,5 +1,5 @@
 // toc-title definition MUST follow document title without blank line!
-== Card Account
+== Read Card Account Data
 :toc-title:
 :imagesdir: ../usecases/diagrams
 :toc: left

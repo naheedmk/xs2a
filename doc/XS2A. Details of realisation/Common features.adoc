@@ -68,12 +68,12 @@ If the Header is not defined, then XS2A checks preferences in the ASPSP-Profile.
 === Signature and digest verifier
 Requirement of Digital Signature for TPP is configured in ASPSP-Profile by parameter *"tppSignatureRequired"*.
 
-If an ASPSP requires the TPP to send a digital signature (*tppSignatureRequired = TRUE*), it can be validated in XS2A validator module, which contains validators for signature and digest Headers. A keyID check also added.
+If an ASPSP requires the TPP to send a digital signature (*tppSignatureRequired = TRUE*), it can be validated in XS2A validator module, which contains validators for signature and digest Headers. A keyID check is also added.
 
 === Validation of TPPs URIs
 Usage of redirection URI (TPP-Redirect-Uri/TPP-Nok-Redirect-URI/TPP- Notification-URI) in domains that are secured by the TPP QWAC is Optional (strong recommendation).
 
-Parameter *"checkUriComplianceToDomainSupported"* in ASPSP-Profile, deefines whether ASPSP supports validation of TPP URIs with domain from certificate for compliance or not.
+Parameter *"checkUriComplianceToDomainSupported"* in ASPSP-Profile, defines whether ASPSP supports validation of TPP URIs with domain from certificate for compliance or not.
 
 If parameter is set to *TRUE*, and TPP URIs are not compliant, then Response contains tppMessages with text "TPP URIs are not compliant with the domain secured by the eIDAS QWAC certificate of the TPP in the field CN or SubjectAltName of the certificate".
 And request is not rejected.

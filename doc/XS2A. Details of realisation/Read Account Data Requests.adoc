@@ -71,7 +71,7 @@ Might be ignored if a delta function is used or if bookingStatus equals "inform
 |If this data element is contained, the entries "dateFrom" and "dateTo" might be ignored by the ASPSP in case of a delta report is supported (ASPSP-profile contains parameter "entryReferenceFromSupported" = true).
 
  This delta indicator might be rejected by the ASPSP if this function is not supported (in ASPSP-profile "entryReferenceFromSupported" = false), and there are NO parameters "dateFrom" and "dateTo",
- in this case in response an error should be sent *"PARAMETER_NOT_SUPPORTED" HTTP code 400*
+ in this case in response an error will be sent *"PARAMETER_NOT_SUPPORTED" HTTP code 400*
 
  If query parameters "dateFrom" and "dateTo", and "entryReference" are present in request, but "entryReferenceFromSupported"=false - response should contain transaction list for period "dateFrom" and "dateTo".
 |deltaList

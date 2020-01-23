@@ -59,7 +59,7 @@ Resource Notification Push Service will be implemented in the future and will al
 xref:XS2A. Details of realisation/Common features.adoc[Signature and digest verifier]
 
 ASPSP can require the TPP to send a digital signature during initiation PIS or AIS requests.
-Digital signature can be validated in XS2A validator module, which contains validators for signature and digest Headers. A keyID check also added.
+Digital signature can be validated in XS2A validator module, which contains validators for signature and digest Headers. A keyID check is also added.
 
 xref:XS2A. Details of realisation/Strong customer authentication.adoc[Confirmation of authorisation]
 
@@ -71,6 +71,15 @@ xref:XS2A. Details of realisation/Common features.adoc[Validation of TPPs URIs]
 In accordance with new requirements of BG, usage of redirection URI in domains that are secured by the TPP QWAC is Optional (strong recommendation).
 Resulting from this the note was removed that ASPSPs may reject transactions if this requirement is not fulfilled.
 It is up to ASPSP to decide whether to validate TPP's URIs for compliance or not.
+
+xref:XS2A. Details of realisation/Read Card Account Data Request.adoc[Read Card Account Data]
+
+Functionality allows ASPSP to deliver Card accounts related information through XS2A interface (details, transactions, balances, etc.).
+This endpoint is not directly related to credit cards as such, but the financial account behind the related cards.
+
+xref:XS2A. Details of realisation/Funds Confirmation Service.adoc[PIIS Consent]
+
+Functionality allows PSU to Establish Funds Confirmation Consent to TPP throuhg XS2A interface.
 
 == For future
 === Create Resource Notification Push Service
@@ -87,7 +96,7 @@ architectural decisions which have been made on the system.
 
 == XS2A. Details of realisation
 xref:XS2A. Details of realisation/xs2a features description.adoc[This document] describes implementation details of XS2A Interface
-for Account Information Service, Payment Initiation Service, Payment Instrument Issuing Service, SCA Methods.
+for Account Information Service, Payment Initiation Service, Payment Instrument Issuing Service, SCA Methods. Include Use-cases diagrams.
 
 == SPI Developer Guide
 xref:SPI Developer Guide/SPI_Developer_Guide.adoc[SPI Developer Guide] provides instructions for implementing the Interfaces on the SPI level,
