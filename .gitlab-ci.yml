@@ -296,6 +296,7 @@ Deploy to Openshift (develop):
   <<: *deploy_openshift
 
 Notify Slack channel (develop):
+  image: "bash:4"
   stage: "Notification"
   only:
     -  KOA_test_notification_script
@@ -309,6 +310,7 @@ Notify Slack channel (develop):
     ENV_JSON_FILE: psd2-env.json
     SLACK_CHANNEL: ${SLACK_PSD2_DEVELOP_CHANNEL}
   script:
+    - apk update && apk add jq
     - scripts/notifications/./webhook_slack.sh xs2a cms aspspprofile ledgers 
 
 # Build SUPPORT image and deploy to SUPPORT
