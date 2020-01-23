@@ -26,13 +26,10 @@ Parameter *"piisConsentSupported"* in the ASPSP-Profile, defines which model of 
 
 There is no information about expiration of Funds Confirmation Consent, so it stays *VALID* until TPP or ASPSP revokes it.
 
-
 * If TPP have no Valid PIIS Consent and try to requests Funds Confirmation, then response contains *HTTP code  400 "NO_PIIS_ACTIVATION"*;
-* If PIIS Consent is stored in CMS without TPP-Authorisation-Number , this PIIS consent can be used by any TPP;
-* If TPP-Authorisation-Number is set in consent - PIIS consent is for particular TPP;
-* Funds Confirmation should be requested by the same TPP which is written in Consent. In case when validation is *unsuccessful*, XS2A sends the response with *HTTP code 400 CONSENT_UNKNOWN*;
-
-image::PIIS.png[Confirmation of Funds Service (Establish PIIS Consent, Perform Funds Confirmation Request), title='Confirmation of Funds Service (Establish PIIS Consent, Perform Funds Confirmation Request)', align='center']
+* When parameter *"piisConsentSupported"* in the ASPSP-Profile set to *ASPSP_CONSENT_SUPPORTED* and PIIS Consent is stored in CMS without TPP-Authorisation-Number,
+this PIIS consent can be used by any TPP. If TPP-Authorisation-Number is set in consent - PIIS consent is for particular TPP;
+* Funds Confirmation should be requested by the same TPP which is written in Consent. In case when validation is *unsuccessful*, XS2A sends the response with *HTTP code 400 CONSENT_UNKNOWN*.
 
 === PIIS Consent Statuses:
 * While creating PIIS consent, In case of existing old valid consent for TPP, one PSU and one account (Mandatory)-its consent status becomes *"RevokedByPSU"* as soon as new one for the same TPP, the same PSU and the same account is created with status Valid.
