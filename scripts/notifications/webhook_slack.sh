@@ -1,5 +1,5 @@
 #!/usr/local/bin/bash
-set -e
+set -eu
 # Env variables
 ##LEDGERS_LINK="https://dev-psd2-ledgers.cloud.adorsys.de/actuator/info"
 ##CMS_LINK="https://dev-psd2-cms.cloud.adorsys.de/actuator/info"
@@ -57,6 +57,6 @@ done
 
 #post to slack
 echo "curl -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL""
-curl -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL"
+curl -sS -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL"
 
 exit 0
