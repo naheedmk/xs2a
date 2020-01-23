@@ -28,5 +28,6 @@ public class CmsPisPsuDataAuthorisation {
     private PsuIdData psu;
     private String authorisationId;
     private ScaStatus scaStatus;
+    @Deprecated // TODO: #1152 replace by de.adorsys.psd2.consent.api.authorisation.AuthorisationType
     private PaymentAuthorisationType authorisationType;
 }
