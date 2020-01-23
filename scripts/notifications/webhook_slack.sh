@@ -1,13 +1,16 @@
 #!/usr/local/bin/bash
 set -e
 # Env variables
-LEDGERS_LINK="https://dev-psd2-ledgers.cloud.adorsys.de/actuator/info"
-CMS_LINK="https://dev-psd2-cms.cloud.adorsys.de/actuator/info"
-CONNECTOR_LINK="https://dev-psd2-xs2a.cloud.adorsys.de/actuator/info"
-ASPSP_PROFILE_LINK="https://dev-psd2-aspspprofile.cloud.adorsys.de/actuator/info"
-HELM_RELEASE="dev-psd2"
-ENV_JSON_FILE="psd2-env.json"
-SLACK_CHANNEL="https://hooks.slack.com/services/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"
+##LEDGERS_LINK="https://dev-psd2-ledgers.cloud.adorsys.de/actuator/info"
+##CMS_LINK="https://dev-psd2-cms.cloud.adorsys.de/actuator/info"
+##CONNECTOR_LINK="https://dev-psd2-xs2a.cloud.adorsys.de/actuator/info"
+##ASPSP_PROFILE_LINK="https://dev-psd2-aspspprofile.cloud.adorsys.de/actuator/info"
+##HELM_RELEASE="dev-psd2"
+##ENV_JSON_FILE="psd2-env.json"
+##SLACK_CHANNEL="https://hooks.slack.com/services/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"
+##PRINT VARS
+echo $LEDGERS_LINK\n$CMS_LINK\n$CONNECTOR_LINK\n$ASPSP_PROFILE_LINK\n$ENV_JSON_FILE
+
 # Define array of arguments
 myArray=( "$@" )
 #define associative array to map args to repository

@@ -198,7 +198,7 @@ DOCKER test image build:
     - master-2.x
     - support-2.x
     -  KOA_test_notification_script
-    
+
 PMD Check Java8:
   except:
     -  KOA_test_notification_script
@@ -327,7 +327,6 @@ Notify Slack channel (develop):
   only:
     -  KOA_test_notification_script
   variables:
-    DOCKER_TAG: develop
     LEDGERS_LINK: https://dev-psd2-ledgers.cloud.adorsys.de/actuator/info
     CMS_LINK: https://dev-psd2-cms.cloud.adorsys.de/actuator/info
     CONNECTOR_LINK: https://dev-psd2-xs2a.cloud.adorsys.de/actuator/info
