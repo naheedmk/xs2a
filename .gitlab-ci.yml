@@ -324,6 +324,7 @@ Deploy to Openshift (develop):
 Notify Slack channel (develop):
   image: "bash:4"
   stage: "Notification"
+  cache: {}
   only:
     -  KOA_test_notification_script
   variables:
@@ -333,7 +334,7 @@ Notify Slack channel (develop):
     CONNECTOR_LINK: https://dev-psd2-xs2a.cloud.adorsys.de/actuator/info
     ASPSP_PROFILE_LINK: https://dev-psd2-aspspprofile.cloud.adorsys.de/actuator/info
     HELM_RELEASE: dev-psd2
-    ENV_JSON_FILE: psd2-env.json
+    ENV_JSON_FILE: scripts/notifications/psd2-env.json
     SLACK_CHANNEL: ${SLACK_PSD2_DEVELOP_CHANNEL}
   script:
     - apk update && apk add jq
