@@ -9,7 +9,7 @@ set -e
 ##ENV_JSON_FILE="psd2-env.json"
 ##SLACK_CHANNEL="https://hooks.slack.com/services/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"
 ##PRINT VARS
-echo $LEDGERS_LINK\n$CMS_LINK\n$CONNECTOR_LINK\n$ASPSP_PROFILE_LINK\n$ENV_JSON_FILE
+#echo $LEDGERS_LINK\n$CMS_LINK\n$CONNECTOR_LINK\n$ASPSP_PROFILE_LINK\n$ENV_JSON_FILE
 
 # Define array of arguments
 myArray=( "$@" )
@@ -41,11 +41,11 @@ do
   do
     if [[ $i == $item_from_array ]] && [ "$BUILD" != ""null ]; then 
       PIPELINE_LINK=${argsArray[$i]}
-      echo "$i and $item_from_array and $BUILD" 
+      #echo "$i and $item_from_array and $BUILD" 
       ONE_STRING_FIELD="{\"type\": \"mrkdwn\",\"text\": \"*$item_from_array:*\n Version: $VERSION \n build: $BUILD\n <$PIPELINE_LINK/pipelines/${BUILD}|Pipeline build link>\"}"
     fi
     if [[ $i == $item_from_array ]] && [[ "$BUILD" == "null" ]]; then
-      echo "ELSE $i and $item_from_array and $BUILD" 
+      #echo "ELSE $i and $item_from_array and $BUILD" 
       ONE_STRING_FIELD="{\"type\": \"mrkdwn\",\"text\": \"*$item_from_array:*\n Version: $VERSION \n build: $BUILD\n No Pipeline build link\"}"
     fi
   done
@@ -53,7 +53,9 @@ do
   #add to default json template into block.fields array one json element and use tmp file
   BASE_JSON=$(jq --argjson blockElement "$ONE_STRING_FIELD" '.blocks[2].fields += [$blockElement]' tmp.json)
 done
-echo $BASE_JSON
+#echo $BASE_JSON
 
 #post to slack
 curl -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL"
+
+exit 0

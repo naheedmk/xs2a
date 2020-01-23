@@ -333,7 +333,7 @@ Notify Slack channel (develop):
     ASPSP_PROFILE_LINK: https://dev-psd2-aspspprofile.cloud.adorsys.de/actuator/info
     HELM_RELEASE: dev-psd2
     ENV_JSON_FILE: scripts/notifications/psd2-env.json
-    SLACK_CHANNEL: ${SLACK_PSD2_DEVELOP_CHANNEL}
+    SLACK_CHANNEL: https://hooks.slack.com/services/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
   script:
     - apk update && apk add jq curl
     - scripts/notifications/./webhook_slack.sh xs2a cms aspspprofile ledgers 
