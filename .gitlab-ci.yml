@@ -297,7 +297,7 @@ Deploy to Openshift (develop):
 
 Notify Slack channel (develop):
   stage: "Notification"
-    only:
+  only:
     -  KOA_test_notification_script
   variables:
     DOCKER_TAG: develop
