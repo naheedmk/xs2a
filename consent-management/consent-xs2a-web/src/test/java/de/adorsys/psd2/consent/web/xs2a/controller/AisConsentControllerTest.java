@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,11 @@ import de.adorsys.psd2.consent.api.CmsError;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.WrongChecksumException;
 import de.adorsys.psd2.consent.api.ais.*;
-import de.adorsys.psd2.consent.api.ais.AisConsentAuthorizationRequest;
-import de.adorsys.psd2.consent.api.ais.AisConsentAuthorizationResponse;
-import de.adorsys.psd2.consent.api.ais.AisConsentStatusResponse;
-import de.adorsys.psd2.consent.api.ais.CreateAisConsentAuthorizationResponse;
 import de.adorsys.psd2.consent.api.service.AccountServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
+import de.adorsys.psd2.xs2a.core.profile.NotificationSupportedMode;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
@@ -41,12 +38,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AisConsentControllerTest {
-
     private static final String CONSENT_ID = "ed4190c7-64ee-42fb-b671-d62645f54672";
     private static final String ACCOUNT_ID = "testAccountId";
     private static final String WRONG_CONSENT_ID = "Wrong consent id";
@@ -73,7 +72,7 @@ class AisConsentControllerTest {
     private AisConsentAuthorisationServiceEncrypted aisAuthorisationServiceEncrypted;
 
     @Test
-    public void createConsent_success() throws WrongChecksumException {
+    void createConsent_success() throws WrongChecksumException {
         // Given
         CreateAisConsentRequest createRequest = new CreateAisConsentRequest();
         CreateAisConsentResponse serviceResponse = new CreateAisConsentResponse(CONSENT_ID, new AisAccountConsent(), Arrays.asList(NotificationSupportedMode.LAST, NotificationSupportedMode.SCA));
@@ -89,7 +88,7 @@ class AisConsentControllerTest {
     }
 
     @Test
-    public void createConsent_emptyServiceResponse() throws WrongChecksumException {
+    void createConsent_emptyServiceResponse() throws WrongChecksumException {
         // Given
         CreateAisConsentRequest createRequest = new CreateAisConsentRequest();
         when(aisConsentService.createConsent(createRequest))
@@ -104,7 +103,10 @@ class AisConsentControllerTest {
     }
 
     @Test
-    public void getConsentStatusById_Success() {
+    void getConsentStatusById_Success() {
+        // Given
+        when(aisConsentService.getConsentStatusById(eq(CONSENT_ID)))
+            .thenReturn(CmsResponse.<ConsentStatus>builder().payload(ConsentStatus.RECEIVED).build());
 
         //When:
         ResponseEntity<AisConsentStatusResponse> responseEntity = aisConsentController.getConsentStatusById(CONSENT_ID);
@@ -127,7 +129,7 @@ class AisConsentControllerTest {
     }
 
     @Test
-    void updateConsentStatus_Success() {
+    void updateConsentStatus_Success() throws WrongChecksumException {
         when(aisConsentService.updateConsentStatusById(eq(CONSENT_ID), eq(CONSENT_STATUS)))
             .thenReturn(CmsResponse.<Boolean>builder().payload(true).build());
 
@@ -139,7 +141,7 @@ class AisConsentControllerTest {
     }
 
     @Test
-    void updateConsentStatus_Fail() {
+    void updateConsentStatus_Fail() throws WrongChecksumException {
         when(aisConsentService.updateConsentStatusById(WRONG_CONSENT_ID, CONSENT_STATUS))
             .thenReturn(CmsResponse.<Boolean>builder().payload(false).build());
 
@@ -199,7 +201,7 @@ class AisConsentControllerTest {
     @Test
     void updateConsentAuthorization_Success() {
         when(aisAuthorisationServiceEncrypted.updateConsentAuthorization(anyString(), any(AisConsentAuthorizationRequest.class)))
-        .thenReturn(CmsResponse.<Boolean>builder().payload(true).build());
+            .thenReturn(CmsResponse.<Boolean>builder().payload(true).build());
 
         //Given:
         AisConsentAuthorizationRequest expectedRequest = getConsentAuthorisationRequest();

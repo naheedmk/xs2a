@@ -21,6 +21,7 @@ package de.adorsys.psd2.xs2a.integration;
 import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.AspspDataService;
 import de.adorsys.psd2.consent.api.CmsResponse;
+import de.adorsys.psd2.consent.api.WrongChecksumException;
 import de.adorsys.psd2.consent.api.ais.*;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
@@ -323,7 +324,7 @@ class ServiceUnavailableIT {
     }
 
     //Preparations
-    private void makePreparationsCms(boolean throwException) throws IOException {
+    private void makePreparationsCms(boolean throwException) throws IOException, WrongChecksumException {
         givenReturnOrThrowException(
             aisConsentAuthorisationServiceEncrypted.createAuthorizationWithResponse(any(String.class), any(AisConsentAuthorizationRequest.class)),
             buildCmsResponse(buildCmsResponse(buildCreateAisConsentAuthorizationResponse())),

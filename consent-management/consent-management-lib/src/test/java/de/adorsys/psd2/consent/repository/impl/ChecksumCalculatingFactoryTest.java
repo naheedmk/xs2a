@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.Base64;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ChecksumCalculatingFactoryTest {
@@ -42,7 +43,7 @@ class ChecksumCalculatingFactoryTest {
     private ChecksumCalculatingServiceV1 v001;
 
     @BeforeEach
-    public void init() {
+    void init() {
         when(v001.getVersion()).thenReturn("001");
         factory.init();
     }

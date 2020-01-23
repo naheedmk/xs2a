@@ -108,7 +108,7 @@ class Xs2aAisConsentServiceTest {
     private LoggingContextService loggingContextService;
 
     @Test
-    void createConsent_success() {
+    void createConsent_success() throws WrongChecksumException {
         //Given
         when(requestProviderService.getInternalRequestIdString()).thenReturn(INTERNAL_REQUEST_ID);
         when(frequencyPerDateCalculationService.getMinFrequencyPerDay(CREATE_CONSENT_REQ.getFrequencyPerDay()))
@@ -131,7 +131,7 @@ class Xs2aAisConsentServiceTest {
     }
 
     @Test
-    void createConsent_failed() {
+    void createConsent_failed() throws WrongChecksumException {
         //Given
         when(requestProviderService.getInternalRequestIdString()).thenReturn(INTERNAL_REQUEST_ID);
         when(frequencyPerDateCalculationService.getMinFrequencyPerDay(CREATE_CONSENT_REQ.getFrequencyPerDay()))
@@ -380,7 +380,7 @@ class Xs2aAisConsentServiceTest {
     }
 
     @Test
-    void updateConsentStatus_shouldStoreConsentStatusInLoggingContext() {
+    void updateConsentStatus_shouldStoreConsentStatusInLoggingContext() throws WrongChecksumException {
         // Given
         when(aisConsentServiceEncrypted.updateConsentStatusById(CONSENT_ID, CONSENT_STATUS))
             .thenReturn(CmsResponse.<Boolean>builder().payload(true).build());
@@ -394,7 +394,7 @@ class Xs2aAisConsentServiceTest {
     }
 
     @Test
-    void updateConsentStatus_failure_shouldNotStoreConsentStatusInLoggingContext() {
+    void updateConsentStatus_failure_shouldNotStoreConsentStatusInLoggingContext() throws WrongChecksumException {
         // Given
         when(aisConsentServiceEncrypted.updateConsentStatusById(CONSENT_ID, CONSENT_STATUS))
             .thenReturn(CmsResponse.<Boolean>builder().payload(false).build());
@@ -408,7 +408,7 @@ class Xs2aAisConsentServiceTest {
     }
 
     @Test
-    void consentActionLog() {
+    void consentActionLog() throws WrongChecksumException {
         //Given
         ActionStatus actionStatus = ActionStatus.SUCCESS;
         ArgumentCaptor<AisConsentActionRequest> argumentCaptor = ArgumentCaptor.forClass(AisConsentActionRequest.class);
