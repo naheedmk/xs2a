@@ -13,6 +13,7 @@ stages:
   - "Test"    # run tests and code quality checks
   - "Package" # dockerize jar and push to docker registry
   - "Deploy"  # push to openshift registry (snapshot deployment) or release registry
+  - "Notification" # Notify to specific channel about applications versions 
 
 # ------------------------------------------------------------------
 # variables
@@ -293,6 +294,22 @@ Deploy to Openshift (develop):
     DOCKER_TAG: develop # Dockerhub source tag
     OPENSHIFT_NAMESPACE: ${OPENSHIFT_NAMESPACE_DEV} # Openshift target namespace
   <<: *deploy_openshift
+
+Notify Slack channel (develop):
+  stage: "Notification"
+    only:
+    -  KOA_test_notification_script
+  variables:
+    DOCKER_TAG: develop
+    LEDGERS_LINK: https://dev-psd2-ledgers.cloud.adorsys.de/actuator/info
+    CMS_LINK: https://dev-psd2-cms.cloud.adorsys.de/actuator/info
+    CONNECTOR_LINK: https://dev-psd2-xs2a.cloud.adorsys.de/actuator/info
+    ASPSP_PROFILE_LINK: https://dev-psd2-aspspprofile.cloud.adorsys.de/actuator/info
+    HELM_RELEASE: dev-psd2
+    ENV_JSON_FILE: psd2-env.json
+    SLACK_CHANNEL: ${SLACK_PSD2_DEVELOP_CHANNEL}
+  script:
+    - scripts/notifications/./webhook_slack.sh xs2a cms aspspprofile ledgers 
 
 # Build SUPPORT image and deploy to SUPPORT
 
