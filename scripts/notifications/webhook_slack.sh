@@ -56,6 +56,7 @@ done
 #echo $BASE_JSON
 
 #post to slack
-curl -X POST -H 'Content-type: application/json' --data "$BASE_JSON" $SLACK_CHANNEL
+echo "curl -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL""
+curl -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL"
 
 exit 0
