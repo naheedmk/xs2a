@@ -30,6 +30,7 @@ There is no information about expiration of Funds Confirmation Consent created b
 * When parameter *"piisConsentSupported"* in the ASPSP-Profile set to *ASPSP_CONSENT_SUPPORTED* and PIIS Consent is stored in CMS without TPP-Authorisation-Number,
 this PIIS consent can be used by any TPP. If TPP-Authorisation-Number is set in consent - PIIS consent is for particular TPP;
 * Funds Confirmation should be requested by the same TPP which is written in Consent. In case when validation is *unsuccessful*, XS2A sends the response with *HTTP code 400 CONSENT_UNKNOWN*.
+* If Establish PIIS Consent through XS2A interface is not supported by ASPSP (parameter *"piisConsentSupported"* = *NOT_SUPPORTED* or *ASPSP_CONSENT_SUPPORTED*), then XS2A sends the response with *HTTP 405 SERVICE_INVALID*.
 
 === PIIS Consent Statuses:
 * While creating PIIS consent by ASPSP, in case of existing old valid consent for TPP, one PSU and one account (Mandatory)-its consent status becomes *"RevokedByPSU"* as soon as new one for the same TPP, the same PSU and the same account is created with status Valid.
