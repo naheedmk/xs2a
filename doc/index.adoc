@@ -14,11 +14,11 @@ During request of Transaction List, in case when transaction report has a huge s
 xref:XS2A. Details of realisation/Payment Initiation Service.adoc[Country validation]
 
 According to BG Specification every country can have their local requirements for information included in the Payment Request.
-Payment validation on XS2A side can support different countries.  It is up to ASPSP to decide the for which countries payment validation will be performed.
+Payment validation on XS2A side can support different countries.  It is up to ASPSP to decide for which countries payment validation will be performed.
 
 xref:XS2A. Details of realisation/Account Information Service.adoc[Account Owner Name Service]
 
-Service enables TPP asks for additional account information during the consent creation process. ASPSP can provide service with explicit consent from the client and
+Service enables TPP to ask for additional account information during the consent creation process. ASPSP can provide service with explicit consent from the client and
 can deliver the account owner name with related account information.
 
 xref:XS2A. Details of realisation/Strong customer authentication.adoc[OAuth Redirect SCA Approach]
@@ -87,7 +87,7 @@ Service will allow TPP to be informed e.g. about status changes of the resources
 notifications about every change of Transaction/Consent status, SCA statuses for all related authorisation processes
 
 === Signing Basket
-This optional function might be offered by the ASPSP, of grouping several transactions for authorising it with one SCA method. PIS or AIS transactions can be added to the Signing Basket.
+This optional function (grouping several transactions for authorising it with one SCA method) might be offered by the ASPSP. PIS or AIS transactions can be added to the Signing Basket.
 
 == Architecture
 xref:architecture/index.adoc[Architecture documentation] provides a comprehensive architectural overview of the system,
