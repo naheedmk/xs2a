@@ -49,7 +49,8 @@ done
 #post to slack and check of not ok message then exit with error
 STATUS_CODE=$(curl -sS -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL")
 echo $STATUS_CODE
-if [ "$STATUS_CODE" != "ok" ]; then exit 1
+if [ "$STATUS_CODE" != "ok" ]; then 
+  exit 1
 else
-exit 0
+  exit 0
 fi
