@@ -55,8 +55,7 @@ done
 #echo $BASE_JSON
 
 #post to slack
-echo "curl -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL""
 STATUS_CODE=$(curl -sS -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL")
-
+echo $STATUS_CODE
 
 exit 0
