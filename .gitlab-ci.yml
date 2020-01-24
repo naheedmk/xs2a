@@ -390,7 +390,7 @@ Deploy to Openshift (nightly):
     OPENSHIFT_NAMESPACE: ${OPENSHIFT_NAMESPACE_INTEG} # Openshift target namespace
   <<: *deploy_openshift
 
-  Notify Slack channel (Integ):
+Notify Slack channel (Integ):
   image: "bash:4"
   stage: "Notification"
   cache: {}
