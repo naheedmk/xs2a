@@ -103,8 +103,6 @@ variables:
 
 Compile Java8:
   stage: "Compile"
-  except:
-    -  KOA_test_notification_script
   variables:
     JAVA_VERSION: "system@1.8"
   <<: *build_java
@@ -118,8 +116,6 @@ Compile Java8:
 
 Compile Java11:
   stage: "Compile"
-  except:
-    -  KOA_test_notification_script
   variables:
     JAVA_VERSION: "system@1.11"
     JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStorePassword=changeit -XX:MaxRAM=3G"
@@ -139,8 +135,6 @@ Compile Java11:
 #-------------------
 IT Java8:
   stage: "Test"
-  except:
-    -  KOA_test_notification_script
   dependencies:
     - "Compile Java8"
   script:
@@ -153,8 +147,6 @@ IT Java8:
 
 IT Java11:
   stage: "Test"
-  except:
-    -  KOA_test_notification_script
   dependencies:
     - "Compile Java11"
   script:
@@ -168,8 +160,6 @@ IT Java11:
 
 PMD Report:
   stage: "Compile"
-  except:
-    -  KOA_test_notification_script
   script:
     - jabba use ${JAVA_VERSION}
     - cat /sys/fs/cgroup/memory/memory.limit_in_bytes
@@ -197,11 +187,8 @@ DOCKER test image build:
   except:
     - master-2.x
     - support-2.x
-    -  KOA_test_notification_script
 
 PMD Check Java8:
-  except:
-    -  KOA_test_notification_script
   stage: "Test"
   variables:
     JAVA_VERSION: "system@1.8"
@@ -212,8 +199,6 @@ PMD Check Java8:
     - mvn -ntp -Dmaven.test.skip=true package pmd:check
 
 PMD Check Java11:
-  except:
-    -  KOA_test_notification_script
   stage: "Test"
   variables:
     JAVA_VERSION: "system@1.11"
@@ -226,8 +211,6 @@ PMD Check Java11:
 
 Doc Check Java8:
   stage: "Test"
-  except:
-    -  KOA_test_notification_script
   variables:
     JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStorePassword=changeit -XX:MaxRAM=3G"
     JAVA_VERSION: "system@1.8"
@@ -244,8 +227,6 @@ Doc Check Java8:
 
 Doc Check Java11:
   stage: "Test"
-  except:
-    -  KOA_test_notification_script
   variables:
     JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStorePassword=changeit -XX:MaxRAM=3G"
     JAVA_VERSION: "system@1.11"
@@ -257,8 +238,6 @@ Doc Check Java11:
 
 Unit Tests Java8:
   stage: "Test"
-  except:
-    -  KOA_test_notification_script
   <<: *java_tests
   variables:
     JAVA_VERSION: "system@1.8"
@@ -270,8 +249,6 @@ Unit Tests Java8:
 
 Unit Tests Java11:
   stage: "Test"
-  except:
-    -  KOA_test_notification_script
   <<: *java_tests
   variables:
     JAVA_VERSION: "system@1.11"
@@ -325,7 +302,7 @@ Notify Slack channel (develop):
   stage: "Notification"
   cache: {}
   only:
-    -  KOA_test_notification_script
+    -  develop
   variables:
     HELM_RELEASE: dev-psd2
     ENV_JSON_FILE: scripts/notifications/psd2-dev.json
@@ -383,7 +360,7 @@ Deploy to Openshift (nightly):
   cache: {}
   dependencies: []
   only:
-  - schedules
+    - schedules
   variables:
     GIT_STRATEGY: none
     DOCKER_TAG: nightly # Dockerhub source tag
@@ -395,7 +372,7 @@ Notify Slack channel (Integ):
   stage: "Notification"
   cache: {}
   only:
-    -  KOA_test_notification_script
+    -  schedules
   variables:
     HELM_RELEASE: integ-psd2
     ENV_JSON_FILE: scripts/notifications/psd2-integ.json
