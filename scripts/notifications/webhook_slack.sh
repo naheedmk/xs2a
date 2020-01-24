@@ -7,7 +7,6 @@ set -eu
 ##ASPSP_PROFILE_LINK="https://dev-psd2-aspspprofile.cloud.adorsys.de/actuator/info"
 ##HELM_RELEASE="dev-psd2"
 ##ENV_JSON_FILE="psd2-env.json"
-##SLACK_CHANNEL="https://hooks.slack.com/services/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"
 ##PRINT VARS
 #echo $LEDGERS_LINK\n$CMS_LINK\n$CONNECTOR_LINK\n$ASPSP_PROFILE_LINK\n$ENV_JSON_FILE
 
@@ -57,6 +56,7 @@ done
 
 #post to slack
 echo "curl -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL""
-curl -sS -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL"
+STATUS_CODE=$(curl -sS -X POST -H 'Content-type: application/json' --data "$BASE_JSON" "$SLACK_CHANNEL")
+
 
 exit 0
