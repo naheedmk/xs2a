@@ -25,4 +25,4 @@ From now on, if TPP sends Consent initiation requests and ASPSP doesn't support 
 
 == Bugfix: Prevent OauthModeFilter from executing for non-XS2A endpoints
 
-From now on, OauthModeFilter is not executing for non-XS2A endpoints
+From now on, OauthModeFilter is not being executed for non-XS2A endpoints
