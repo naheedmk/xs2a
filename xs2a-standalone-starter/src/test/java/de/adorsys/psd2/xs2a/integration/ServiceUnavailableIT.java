@@ -89,6 +89,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.Filter;
 import java.io.IOException;
@@ -270,7 +271,9 @@ class ServiceUnavailableIT {
     @ResourceAvailable(profile = false)
     void aspsp_profile_not_accessible_in_interceptor_health_check() throws Exception {
         //Given
-        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = MockMvcRequestBuilders.get(UrlBuilder.buildHealthCheckUrl());
+        String HEALTH_CHECK_URL = "/actuator/health";
+        String uriString = UriComponentsBuilder.fromPath(HEALTH_CHECK_URL).toUriString();
+        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = MockMvcRequestBuilders.get(uriString);
         //When
         ResultActions resultActions = mockMvc.perform(mockHttpServletRequestBuilder);
         //Then

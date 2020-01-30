@@ -111,9 +111,4 @@ public class UrlBuilder {
                    .buildAndExpand(paymentType, paymentProduct, encryptedPaymentId)
                    .toUriString();
     }
-
-    public static String buildHealthCheckUrl() {
-        return UriComponentsBuilder.fromPath(UrlHolder.HEALTH_CHECK_URL)
-                   .toUriString();
-    }
 }
