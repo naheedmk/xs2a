@@ -85,6 +85,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.context.WebApplicationContext;
@@ -135,6 +136,7 @@ class ServiceUnavailableIT {
     private static final String ENCRYPT_CONSENT_ID = "DfLtDOgo1tTK6WQlHlb-TMPL2pkxRlhZ4feMa5F4tOWwNN45XLNAVfWwoZUKlQwb_=_bS6p6XvTWI";
     private static final String INTERNAL_REQUEST_ID = "5c2d5564-367f-4e03-a621-6bef76fa4208";
     private static final String SERVICE_UNAVAILABLE_ERROR_MESSAGE_JSON_PATH = "/json/account/res/ServiceUnavailableErrorMessage.json";
+    private static final String HEALTH_CHECK_JSON_PATH = "/json/health.json";
     private static final TppInfo TPP_INFO = TppInfoBuilder.buildTppInfo();
     private HttpHeaders httpHeadersImplicit = new HttpHeaders();
 
@@ -262,6 +264,18 @@ class ServiceUnavailableIT {
     void aspsp_profile_not_accessible_in_application() throws Exception {
         MockMvc mockMvc = buildMockMvcNoFiltersNoInterceptors();
         create_consent_service_unavailable_test(mockMvc);
+    }
+
+    @Test
+    @ResourceAvailable(profile = false)
+    void aspsp_profile_not_accessible_in_interceptor_health_check() throws Exception {
+        //Given
+        MockHttpServletRequestBuilder mockHttpServletRequestBuilder = MockMvcRequestBuilders.get(UrlBuilder.buildHealthCheckUrl());
+        //When
+        ResultActions resultActions = mockMvc.perform(mockHttpServletRequestBuilder);
+        //Then
+        resultActions.andExpect(status().isOk())
+            .andExpect(content().json(IOUtils.resourceToString(HEALTH_CHECK_JSON_PATH, UTF_8)));
     }
 
     @Test
