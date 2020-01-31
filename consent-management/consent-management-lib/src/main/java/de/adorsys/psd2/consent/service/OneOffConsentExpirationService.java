@@ -67,8 +67,8 @@ public class OneOffConsentExpirationService {
             Optional<AisConsentTransaction> transactionOptional = aisConsentTransactionRepository.findByConsentIdAndResourceId(consent, resourceId);
 
             int transactions = transactionOptional
-                                    .map(AisConsentTransaction::getNumberOfTransactions)
-                                    .orElse(0);
+                                   .map(AisConsentTransaction::getNumberOfTransactions)
+                                   .orElse(0);
 
             int maximumNumberOfGetRequestsForConsent = getMaximumNumberOfGetRequestsForConsentsAccount(consent, transactions);
             int numberOfUsedGetRequestsForConsent = aisConsentUsageRepository.countByConsentIdAndResourceId(consent.getId(), resourceId);
@@ -93,13 +93,10 @@ public class OneOffConsentExpirationService {
                 List<AspspAccountAccess> aspspAccountAccesses = consent.getAspspAccountAccesses();
 
                 // Consent was given only for accounts: readAccountDetails for each account.
-                if (aspspAccountAccesses.size() == 1) {
+                if (aspspAccountAccesses
+                        .stream()
+                        .allMatch(aspspAccountAccess -> aspspAccountAccess.getTypeAccess() == TypeAccess.ACCOUNT)) {
                     return 1;
-                }
-
-                // Consent was given for accounts, balances and transactions.
-                if (aspspAccountAccesses.size() == 3) {
-                    return 3 + numberOfTransactions;
                 }
 
                 // Consent was given for accounts and balances.
@@ -120,6 +117,8 @@ public class OneOffConsentExpirationService {
                     return 2 + numberOfTransactions;
                 }
 
+                // Consent was given for accounts, balances and transactions.
+                return 3 + numberOfTransactions;
             case GLOBAL:
                 // Value 3 corresponds to the number of static get requests in scope of each account: readAccountDetails,
                 // readBalances, readTransactionList.
