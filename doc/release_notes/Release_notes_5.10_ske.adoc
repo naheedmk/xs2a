@@ -14,6 +14,3 @@ A one off consent containing multiple accounts expires, if following requests ha
 transactions)
 * `GET /v1/accounts/{account-id}/transactions/{transactionId}` - `t` times, for each account, where `t` is the number of
 transactions attached to the account (only if the consent is permitted to get transactions)
-
-
-
