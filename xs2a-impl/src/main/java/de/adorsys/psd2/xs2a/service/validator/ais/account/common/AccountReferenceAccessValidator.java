@@ -37,7 +37,7 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 public class AccountReferenceAccessValidator {
 
     public ValidationResult validate(Xs2aAccountAccess accountAccess, List<AccountReference> references, String accountId, AisConsentRequestType consentRequestType) {
-        if (AisConsentRequestType.GLOBAL ==consentRequestType){
+        if (AisConsentRequestType.GLOBAL == consentRequestType) {
             return ValidationResult.valid();
         }
 
