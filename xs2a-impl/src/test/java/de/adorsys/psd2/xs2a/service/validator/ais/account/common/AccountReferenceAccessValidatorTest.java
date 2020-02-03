@@ -57,6 +57,13 @@ class AccountReferenceAccessValidatorTest {
     }
 
     @Test
+    void validate_success_global() {
+        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", Xs2aAccountAccess.class);
+        ValidationResult validationResult = validator.validate(accountAccess, Collections.singletonList(accountReference), ACCOUNT_ID, AisConsentRequestType.GLOBAL);
+        assertTrue(validationResult.isValid());
+    }
+
+    @Test
     void validate_notValidByAccountId() {
         accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", Xs2aAccountAccess.class);
         ValidationResult validationResult = validator.validate(accountAccess, Collections.singletonList(accountReference), WRONG_ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS);
