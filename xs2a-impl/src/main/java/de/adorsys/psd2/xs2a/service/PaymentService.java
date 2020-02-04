@@ -126,13 +126,13 @@ public class PaymentService {
      * @param encryptedPaymentId ASPSP identifier of the payment
      * @return Response containing information about payment or corresponding error
      */
-    public ResponseObject getPaymentById(PaymentType paymentType, String paymentProduct, String encryptedPaymentId) {
+    public ResponseObject<CommonPayment> getPaymentById(PaymentType paymentType, String paymentProduct, String encryptedPaymentId) {
         xs2aEventService.recordPisTppRequest(encryptedPaymentId, EventType.GET_PAYMENT_REQUEST_RECEIVED);
         Optional<PisCommonPaymentResponse> pisCommonPaymentOptional = pisCommonPaymentService.getPisCommonPaymentById(encryptedPaymentId);
 
         if (!pisCommonPaymentOptional.isPresent()) {
             log.info("Payment-ID [{}]. Get payment failed. PIS CommonPayment not found by ID", encryptedPaymentId);
-            return ResponseObject.builder()
+            return ResponseObject.<CommonPayment>builder()
                        .fail(PIS_403, of(RESOURCE_UNKNOWN_403))
                        .build();
         }
@@ -141,26 +141,33 @@ public class PaymentService {
         ValidationResult validationResult = getPaymentByIdValidator.validate(new GetPaymentByIdPO(commonPaymentResponse, paymentType, paymentProduct));
         if (validationResult.isNotValid()) {
             log.info("Payment-ID [{}]. Get payment - validation failed: {}", encryptedPaymentId, validationResult.getMessageError());
-            return ResponseObject.builder()
+            return ResponseObject.<CommonPayment>builder()
                        .fail(validationResult.getMessageError())
                        .build();
         }
 
         PsuIdData psuIdData = getPsuIdDataFromRequest();
         ReadPaymentService readPaymentService = paymentServiceResolver.getReadPaymentService(commonPaymentResponse);
-        PaymentInformationResponse response = readPaymentService.getPayment(commonPaymentResponse, psuIdData, encryptedPaymentId, requestProviderService.getAcceptHeader());
+        String contentType = Optional.ofNullable(commonPaymentResponse.getContentType()).orElseGet(requestProviderService::getAcceptHeader);
+        commonPaymentResponse.setContentType(contentType);
+        PaymentInformationResponse response = readPaymentService.getPayment(commonPaymentResponse, psuIdData, encryptedPaymentId, contentType);
 
         if (response.hasError()) {
             log.info("Payment-ID [{}]. Read Payment failed: {}", encryptedPaymentId, response.getErrorHolder());
-            return ResponseObject.builder()
+            return ResponseObject.<CommonPayment>builder()
                        .fail(response.getErrorHolder())
                        .build();
         }
 
         CommonPayment commonPayment = response.getPayment();
+        String responseContentType = Optional.ofNullable(commonPayment.getContentType()).orElse(contentType);
+        if (responseContentType.equals(MediaType.ALL_VALUE)) {
+            responseContentType = MediaType.APPLICATION_JSON_VALUE;
+        }
+        commonPayment.setContentType(responseContentType);
         loggingContextService.storeTransactionStatus(commonPayment.getTransactionStatus());
 
-        return ResponseObject.builder()
+        return ResponseObject.<CommonPayment>builder()
                    .body(commonPayment)
                    .build();
     }

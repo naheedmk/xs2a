@@ -67,26 +67,6 @@ public class Xs2aPisCommonPaymentService {
         return Optional.ofNullable(response.getPayload());
     }
 
-    public void updateCommonPayment(CommonPayment commonPayment, PaymentInitiationParameters paymentInitiationParameters, String paymentId) {
-        PisCommonPaymentRequest pisCommonPaymentRequest = xs2aToCmsPisCommonPaymentRequestMapper.mapToCmsCommonPaymentRequest(commonPayment, paymentInitiationParameters.getPaymentProduct());
-        pisCommonPaymentServiceEncrypted.updateCommonPayment(pisCommonPaymentRequest, paymentId);
-    }
-
-    public void updateSinglePaymentInCommonPayment(SinglePayment singlePayment, PaymentInitiationParameters paymentInitiationParameters, String paymentId) {
-        PisCommonPaymentRequest pisCommonPaymentRequest = xs2aToCmsPisCommonPaymentRequestMapper.mapToCmsSinglePisCommonPaymentRequest(singlePayment, paymentInitiationParameters.getPaymentProduct());
-        pisCommonPaymentServiceEncrypted.updateCommonPayment(pisCommonPaymentRequest, paymentId);
-    }
-
-    public void updatePeriodicPaymentInCommonPayment(PeriodicPayment periodicPayment, PaymentInitiationParameters paymentInitiationParameters, String paymentId) {
-        PisCommonPaymentRequest pisCommonPaymentRequest = xs2aToCmsPisCommonPaymentRequestMapper.mapToCmsPeriodicPisCommonPaymentRequest(periodicPayment, paymentInitiationParameters.getPaymentProduct());
-        pisCommonPaymentServiceEncrypted.updateCommonPayment(pisCommonPaymentRequest, paymentId);
-    }
-
-    public void updateBulkPaymentInCommonPayment(BulkPayment bulkPayment, PaymentInitiationParameters paymentInitiationParameters, String paymentId) {
-        PisCommonPaymentRequest pisCommonPaymentRequest = xs2aToCmsPisCommonPaymentRequestMapper.mapToCmsBulkPisCommonPaymentRequest(bulkPayment, paymentInitiationParameters.getPaymentProduct());
-        pisCommonPaymentServiceEncrypted.updateCommonPayment(pisCommonPaymentRequest, paymentId);
-    }
-
     public boolean updatePisAuthorisationStatus(String authorisationId, ScaStatus scaStatus) {
         CmsResponse<Boolean> response = authorisationServiceEncrypted.updateAuthorisationStatus(authorisationId, scaStatus);
         return response.isSuccessful() && response.getPayload();
