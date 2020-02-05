@@ -114,7 +114,7 @@ class AisAuthorisationConfirmationServiceTest {
             .thenReturn(spiAccountConsent);
         when(aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID))
             .thenReturn(aspspConsentDataProvider);
-        when(aisConsentSpi.checkConfirmationCode(contextData, spiConfirmationCode, spiAccountConsent, aspspConsentDataProvider))
+        when(aisConsentSpi.checkConfirmationCode(contextData, spiConfirmationCode, AUTHORISATION_ID, aspspConsentDataProvider))
             .thenReturn(SpiResponse.<SpiConfirmationCodeCheckingResponse>builder()
                             .payload(new SpiConfirmationCodeCheckingResponse(ScaStatus.FINALISED))
                             .build());
@@ -284,7 +284,7 @@ class AisAuthorisationConfirmationServiceTest {
             .thenReturn(spiAccountConsent);
         when(aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID))
             .thenReturn(aspspConsentDataProvider);
-        when(aisConsentSpi.checkConfirmationCode(contextData, spiConfirmationCode, spiAccountConsent, aspspConsentDataProvider))
+        when(aisConsentSpi.checkConfirmationCode(contextData, spiConfirmationCode, AUTHORISATION_ID, aspspConsentDataProvider))
             .thenReturn(spiResponse);
         when(spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS)).thenReturn(errorHolder);
 

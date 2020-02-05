@@ -158,7 +158,7 @@ public class AisAuthorisationConfirmationService {
         SpiAccountConsent spiAccountConsent = aisConsentMapper.mapToSpiAccountConsent(accountConsentOptional.get());
         SpiAspspConsentDataProvider aspspDataProvider = aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId);
 
-        SpiResponse<SpiConfirmationCodeCheckingResponse> spiResponse = aisConsentSpi.checkConfirmationCode(contextData, spiConfirmationCode, spiAccountConsent, aspspDataProvider);
+        SpiResponse<SpiConfirmationCodeCheckingResponse> spiResponse = aisConsentSpi.checkConfirmationCode(contextData, spiConfirmationCode, authorisationId, aspspDataProvider);
 
         UpdateConsentPsuDataResponse response = spiResponse.hasError()
                                                     ? buildConfirmationCodeSpiErrorResponse(spiResponse, consentId, authorisationId)

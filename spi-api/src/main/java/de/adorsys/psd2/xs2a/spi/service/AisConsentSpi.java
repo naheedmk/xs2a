@@ -87,12 +87,12 @@ public interface AisConsentSpi extends AuthorisationSpi<SpiAccountConsent> {
      *
      * @param contextData              holder of call's context data (e.g. about PSU and TPP)
      * @param spiConfirmationCode      object with confirmation code
-     * @param accountConsent           Account consent
+     * @param authorisationId          ID of authorisation
      * @param aspspConsentDataProvider Provides access to read/write encrypted data to be stored in the consent management system
      * @return Returns a response object, which contains checking result - if the confirmation data was correct or not
      */
     @NotNull
-    SpiResponse<SpiConfirmationCodeCheckingResponse> checkConfirmationCode(@NotNull SpiContextData contextData, @NotNull SpiConfirmationCode spiConfirmationCode, @NotNull SpiAccountConsent accountConsent, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider);
+    SpiResponse<SpiConfirmationCodeCheckingResponse> checkConfirmationCode(@NotNull SpiContextData contextData, @NotNull SpiConfirmationCode spiConfirmationCode, @NotNull String authorisationId, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider);
 
     /**
      * Notify ASPSP about validation result of confirmation code on XS2A side

@@ -84,8 +84,8 @@ public class AisConsentSpiMockImpl implements AisConsentSpi {
     }
 
     @Override
-    public @NotNull SpiResponse<SpiConfirmationCodeCheckingResponse> checkConfirmationCode(@NotNull SpiContextData contextData, @NotNull SpiConfirmationCode spiConfirmationCode, @NotNull SpiAccountConsent accountConsent, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider) {
-        log.info("AisConsentSpi#checkConfirmationCode: contextData {}, spiConfirmationCode{}, accountConsent-id {}", contextData, spiConfirmationCode.getConfirmationCode(), accountConsent.getId());
+    public @NotNull SpiResponse<SpiConfirmationCodeCheckingResponse> checkConfirmationCode(@NotNull SpiContextData contextData, @NotNull SpiConfirmationCode spiConfirmationCode, @NotNull String authorisationId, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider) {
+        log.info("AisConsentSpi#checkConfirmationCode: contextData {}, spiConfirmationCode{}, authorisation ID {}", contextData, spiConfirmationCode.getConfirmationCode(), authorisationId);
 
         return SpiResponse.<SpiConfirmationCodeCheckingResponse>builder()
                    .payload(new SpiConfirmationCodeCheckingResponse(ScaStatus.FINALISED))
