@@ -90,7 +90,7 @@ public class Xs2aAisConsentService {
         }
 
         CreateConsentResponse createAisConsentResponse = response.getPayload();
-        de.adorsys.psd2.xs2a.domain.consent.AccountConsent accountConsent = aisConsentMapper.mapToAccountConsent(createAisConsentResponse.getAisAccountConsent());
+        de.adorsys.psd2.xs2a.domain.consent.AccountConsent accountConsent = aisConsentMapper.mapToAccountConsent(createAisConsentResponse.getAccountConsent());
         return Optional.of(new Xs2aCreateAisConsentResponse(createAisConsentResponse.getConsentId(), accountConsent, createAisConsentRequest.getNotificationSupportedModes()));
     }
 

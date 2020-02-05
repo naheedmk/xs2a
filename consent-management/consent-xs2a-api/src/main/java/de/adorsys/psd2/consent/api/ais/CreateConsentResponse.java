@@ -26,6 +26,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateConsentResponse {
     private String consentId;
-    private CmsAccountConsent aisAccountConsent;
+    private CmsAccountConsent accountConsent;
     private List<NotificationSupportedMode> tppNotificationContentPreferred;
 }

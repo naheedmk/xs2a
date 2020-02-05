@@ -73,7 +73,7 @@ class ConsentModelMapperTest {
     private static final String INVALID_DOMAIN_MESSAGE = "TPP URIs are not compliant with the domain secured by the eIDAS QWAC certificate of the TPP in the field CN or SubjectAltName of the certificate";
 
     @InjectMocks
-    private ConsentModelMapper consentModelMapper;
+    private ConsentModelMapperXs2a consentModelMapper;
 
     @Mock
     private HrefLinkMapper hrefLinkMapper;

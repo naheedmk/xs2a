@@ -121,7 +121,7 @@ class PaymentControllerTest {
     @Mock
     private PaymentModelMapperXs2a paymentModelMapperXs2a;
     @Mock
-    private ConsentModelMapper consentModelMapper;
+    private ConsentModelMapperXs2a consentModelMapper;
     @Mock
     private PaymentAuthorisationService paymentAuthorisationService;
     @Mock

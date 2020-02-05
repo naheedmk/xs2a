@@ -38,7 +38,7 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ResponseErrorMapper;
 import de.adorsys.psd2.xs2a.web.header.ConsentHeadersBuilder;
 import de.adorsys.psd2.xs2a.web.header.ResponseHeaders;
 import de.adorsys.psd2.xs2a.web.mapper.AuthorisationMapper;
-import de.adorsys.psd2.xs2a.web.mapper.ConsentModelMapper;
+import de.adorsys.psd2.xs2a.web.mapper.ConsentModelMapperXs2a;
 import de.adorsys.psd2.xs2a.web.mapper.TppRedirectUriMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -89,7 +89,7 @@ class ConsentControllerTest {
     @Mock
     private ResponseMapper responseMapper;
     @Mock
-    private ConsentModelMapper consentModelMapper;
+    private ConsentModelMapperXs2a consentModelMapper;
     @Mock
     private AuthorisationMapper authorisationMapper;
     @Mock

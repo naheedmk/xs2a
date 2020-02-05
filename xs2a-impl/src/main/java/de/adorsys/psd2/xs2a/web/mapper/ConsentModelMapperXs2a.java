@@ -30,22 +30,28 @@ import de.adorsys.psd2.xs2a.domain.consent.*;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
 import de.adorsys.psd2.xs2a.service.mapper.AccountModelMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-public class ConsentModelMapper {
+public class ConsentModelMapperXs2a {
     private final Xs2aObjectMapper xs2aObjectMapper;
     public final AccountModelMapper accountModelMapper;
     private final HrefLinkMapper hrefLinkMapper;
     private final ScaMethodsMapper scaMethodsMapper;
+    private final HttpServletRequest httpServletRequest;
 
-    public CreateConsentReq mapToCreateConsentReq(Consents consent, TppRedirectUri tppRedirectUri, TppNotificationData tppNotificationData) {
+    public CreateConsentReq mapToCreateConsentReq(byte[] body, Consents consent, TppRedirectUri tppRedirectUri, TppNotificationData tppNotificationData) {
         return Optional.ofNullable(consent)
                    .map(cnst -> {
                        CreateConsentReq createAisConsentRequest = new CreateConsentReq();
@@ -56,9 +62,23 @@ public class ConsentModelMapper {
                        createAisConsentRequest.setCombinedServiceIndicator(BooleanUtils.toBoolean(cnst.isCombinedServiceIndicator()));
                        createAisConsentRequest.setTppRedirectUri(tppRedirectUri);
                        createAisConsentRequest.setTppNotificationData(tppNotificationData);
+                       createAisConsentRequest.setBody(body);
                        return createAisConsentRequest;
                    })
                    .orElse(null);
+    }
+
+    public byte[] mapToXs2aConsent() {
+        return buildBinaryBodyData(httpServletRequest);
+    }
+
+    private byte[] buildBinaryBodyData(HttpServletRequest httpServletRequest) {
+        try {
+            return IOUtils.toByteArray(httpServletRequest.getInputStream());
+        } catch (IOException e) {
+            log.warn("Cannot deserialize httpServletRequest body!", e);
+            return new byte[0];
+        }
     }
 
     public ConsentStatusResponse200 mapToConsentStatusResponse200(ConsentStatusResponse consentStatusResponse) {

@@ -75,7 +75,7 @@ public class PaymentController implements PaymentApi {
     private final ResponseErrorMapper responseErrorMapper;
     private final PaymentModelMapperPsd2 paymentModelMapperPsd2;
     private final PaymentModelMapperXs2a paymentModelMapperXs2a;
-    private final ConsentModelMapper consentModelMapper;
+    private final ConsentModelMapperXs2a consentModelMapper;
     private final PaymentAuthorisationService paymentAuthorisationService;
     private final PaymentCancellationAuthorisationService paymentCancellationAuthorisationService;
     private final AuthorisationMapper authorisationMapper;

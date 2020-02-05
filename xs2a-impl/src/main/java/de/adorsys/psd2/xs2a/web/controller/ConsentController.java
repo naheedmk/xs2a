@@ -35,7 +35,7 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ResponseErrorMapper;
 import de.adorsys.psd2.xs2a.web.header.ConsentHeadersBuilder;
 import de.adorsys.psd2.xs2a.web.header.ResponseHeaders;
 import de.adorsys.psd2.xs2a.web.mapper.AuthorisationMapper;
-import de.adorsys.psd2.xs2a.web.mapper.ConsentModelMapper;
+import de.adorsys.psd2.xs2a.web.mapper.ConsentModelMapperXs2a;
 import de.adorsys.psd2.xs2a.web.mapper.TppRedirectUriMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +54,7 @@ import java.util.UUID;
 public class ConsentController implements ConsentApi {
     private final ConsentService consentService;
     private final ResponseMapper responseMapper;
-    private final ConsentModelMapper consentModelMapper;
+    private final ConsentModelMapperXs2a consentModelMapper;
     private final AuthorisationMapper authorisationMapper;
     private final TppRedirectUriMapper tppRedirectUriMapper;
     private final ResponseErrorMapper responseErrorMapper;
@@ -74,10 +74,11 @@ public class ConsentController implements ConsentApi {
         TppRedirectUri tppRedirectUri = tppRedirectUriMapper.mapToTppRedirectUri(tppRedirectUriString, tppNokRedirectUriString);
         TppNotificationData tppNotificationData = notificationSupportedModeService.getTppNotificationData(tppNotificationContentPreferred, tppNotificationUri);
 
-        CreateConsentReq createConsent = consentModelMapper.mapToCreateConsentReq(body, tppRedirectUri, tppNotificationData);
+        CreateConsentReq createConsent = consentModelMapper.mapToCreateConsentReq(consentModelMapper.mapToXs2aConsent(), body, tppRedirectUri, tppNotificationData);
 
         PsuIdData psuData = new PsuIdData(psuId, psuIdType, psuCorporateId, psuCorporateIdType, psuIpAddress,
                                           new AdditionalPsuIdData(psuIpPort, psuUserAgent, psuGeoLocation, psuAccept, psuAcceptCharset, psuAcceptEncoding, psuAcceptLanguage, psuHttpMethod, psuDeviceId));
+
 
         ResponseObject<CreateConsentResponse> createResponse =
             consentService.createAccountConsentsWithResponse(createConsent, psuData, BooleanUtils.isTrue(tppExplicitAuthorisationPreferred));

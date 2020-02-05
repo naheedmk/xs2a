@@ -69,6 +69,7 @@ public class Xs2aAisConsentMapper {
                        aisRequest.setInternalRequestId(internalRequestId);
                        aisRequest.setTppNotificationUri(Optional.ofNullable(req.getTppNotificationData()).map(TppNotificationData::getTppNotificationUri).orElse(null));
                        aisRequest.setNotificationSupportedModes(Optional.ofNullable(req.getTppNotificationData()).map(TppNotificationData::getNotificationModes).orElse(null));
+                       aisRequest.setBody(r.getBody());
                        return aisRequest;
                    })
                    .orElse(null);

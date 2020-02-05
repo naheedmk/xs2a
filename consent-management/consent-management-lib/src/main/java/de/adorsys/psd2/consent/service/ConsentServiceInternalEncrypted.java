@@ -62,7 +62,7 @@ public class ConsentServiceInternalEncrypted implements ConsentServiceEncrypted 
         }
 
         return CmsResponse.<CreateConsentResponse>builder()
-                   .payload(new CreateConsentResponse(encryptIdOptional.get(), createAisConsentResponse.getAisAccountConsent(), createAisConsentResponse.getTppNotificationContentPreferred()))
+                   .payload(new CreateConsentResponse(encryptIdOptional.get(), createAisConsentResponse.getAccountConsent(), createAisConsentResponse.getTppNotificationContentPreferred()))
                    .build();
     }
 

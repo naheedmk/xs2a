@@ -190,7 +190,7 @@ public class ConsentServiceInternal implements ConsentService {
             return;
         }
 
-        byte[] consentBody = coreConsentsConvertService.consentBody(consent, consent.getConsentType());
+        byte[] consentBody = coreConsentsConvertService.data(consent, consent.getConsentType());
         if (ArrayUtils.isNotEmpty(consentBody)) {
             consent.setBody(consentBody);
             consentJpaRepository.save(consent);
