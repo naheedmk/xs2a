@@ -17,9 +17,9 @@
 package de.adorsys.psd2.consent.repository.impl;
 
 import de.adorsys.psd2.consent.api.WrongChecksumException;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
-import de.adorsys.psd2.consent.repository.AisConsentVerifyingRepository;
+import de.adorsys.psd2.consent.domain.account.Consent;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
+import de.adorsys.psd2.consent.repository.ConsentVerifyingRepository;
 import de.adorsys.psd2.consent.service.sha.ChecksumCalculatingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,29 +36,29 @@ import static de.adorsys.psd2.xs2a.core.consent.ConsentStatus.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AisConsentRepositoryImpl implements AisConsentVerifyingRepository {
-    private final AisConsentJpaRepository aisConsentRepository;
+public class AisConsentRepositoryImpl implements ConsentVerifyingRepository {
+    private final ConsentJpaRepository aisConsentRepository;
     private final ChecksumCalculatingFactory calculatingFactory;
 
     @Override
     @Transactional(rollbackFor = WrongChecksumException.class)
-    public AisConsent verifyAndSave(AisConsent entity) throws WrongChecksumException {
+    public Consent verifyAndSave(Consent entity) throws WrongChecksumException {
         return verifyAndSaveInternal(entity);
     }
 
     @Override
     @Transactional(rollbackFor = WrongChecksumException.class)
-    public AisConsent verifyAndUpdate(AisConsent entity) throws WrongChecksumException {
+    public Consent verifyAndUpdate(Consent entity) throws WrongChecksumException {
         return verifyAndUpdateInternal(entity);
     }
 
     @Override
     @Transactional(rollbackFor = WrongChecksumException.class)
-    public List<AisConsent> verifyAndSaveAll(List<AisConsent> consents) throws WrongChecksumException {
-        List<AisConsent> consentList = new ArrayList<>();
+    public List<Consent> verifyAndSaveAll(List<Consent> consents) throws WrongChecksumException {
+        List<Consent> consentList = new ArrayList<>();
 
-        for (AisConsent aisConsent : consents) {
-            AisConsent consent = verifyAndSaveInternal(aisConsent);
+        for (Consent aisConsent : consents) {
+            Consent consent = verifyAndSaveInternal(aisConsent);
             consentList.add(consent);
         }
         return consentList;
@@ -66,12 +66,12 @@ public class AisConsentRepositoryImpl implements AisConsentVerifyingRepository {
 
     @Override
     @Transactional
-    public Optional<AisConsent> getActualAisConsent(String consentId) {
+    public Optional<Consent> getActualAisConsent(String consentId) {
         return aisConsentRepository.findByExternalId(consentId)
                    .filter(c -> !c.getConsentStatus().isFinalisedStatus());
     }
 
-    private AisConsent verifyAndSaveInternal(AisConsent entity) throws WrongChecksumException {
+    private Consent verifyAndSaveInternal(Consent entity) throws WrongChecksumException {
         Optional<ChecksumCalculatingService> calculatingServiceOptional = calculatingFactory.getServiceByChecksum(entity.getChecksum());
 
         if (calculatingServiceOptional.isPresent()) {
@@ -90,7 +90,7 @@ public class AisConsentRepositoryImpl implements AisConsentVerifyingRepository {
         return aisConsentRepository.save(entity);
     }
 
-    private AisConsent verifyAndUpdateInternal(AisConsent entity) throws WrongChecksumException {
+    private Consent verifyAndUpdateInternal(Consent entity) throws WrongChecksumException {
         Optional<ChecksumCalculatingService> calculatingServiceOptional = calculatingFactory.getServiceByChecksum(entity.getChecksum());
 
         if (calculatingServiceOptional.isPresent()) {
@@ -109,7 +109,7 @@ public class AisConsentRepositoryImpl implements AisConsentVerifyingRepository {
         return aisConsentRepository.save(entity);
     }
 
-    private boolean isAisConsentChecksumCorrect(AisConsent entity, ChecksumCalculatingService calculatingService) {
+    private boolean isAisConsentChecksumCorrect(Consent entity, ChecksumCalculatingService calculatingService) {
         byte[] checksumFromDb = entity.getChecksum();
 
         if (checksumFromDb != null
@@ -121,12 +121,12 @@ public class AisConsentRepositoryImpl implements AisConsentVerifyingRepository {
         return true;
     }
 
-    private boolean wasStatusSwitchedToValid(AisConsent entity) {
+    private boolean wasStatusSwitchedToValid(Consent entity) {
         return entity.getConsentStatus() == VALID
                    && EnumSet.of(RECEIVED, PARTIALLY_AUTHORISED).contains(entity.getPreviousConsentStatus());
     }
 
-    private boolean wasStatusHoldBefore(AisConsent entity) {
+    private boolean wasStatusHoldBefore(Consent entity) {
         return entity.getPreviousConsentStatus() == VALID
                    || entity.getPreviousConsentStatus().isFinalisedStatus();
     }

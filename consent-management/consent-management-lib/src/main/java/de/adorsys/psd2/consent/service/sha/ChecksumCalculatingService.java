@@ -16,12 +16,12 @@
 
 package de.adorsys.psd2.consent.service.sha;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 
 public interface ChecksumCalculatingService {
     String getVersion();
 
-    byte[] calculateChecksumForConsent(AisConsent consent);
+    byte[] calculateChecksumForConsent(Consent consent);
 
-    boolean verifyConsentWithChecksum(AisConsent consent, byte[] checksum);
+    boolean verifyConsentWithChecksum(Consent consent, byte[] checksum);
 }

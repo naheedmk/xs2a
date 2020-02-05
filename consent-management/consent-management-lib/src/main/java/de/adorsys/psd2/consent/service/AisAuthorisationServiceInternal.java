@@ -26,11 +26,11 @@ import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationService;
 import de.adorsys.psd2.consent.domain.AuthorisationTemplateEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.ScaMethod;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.account.AisConsentAuthorization;
 import de.adorsys.psd2.consent.repository.AisConsentAuthorisationRepository;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
-import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
+import de.adorsys.psd2.consent.service.mapper.ConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.mapper.ScaMethodMapper;
 import de.adorsys.psd2.consent.service.psu.CmsPsuService;
@@ -60,12 +60,12 @@ import static de.adorsys.psd2.consent.api.CmsError.LOGICAL_ERROR;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AisAuthorisationServiceInternal implements AisConsentAuthorisationService {
-    private final AisConsentJpaRepository aisConsentJpaRepository;
+    private final ConsentJpaRepository aisConsentJpaRepository;
     private final AisConsentAuthorisationRepository aisConsentAuthorisationRepository;
-    private final AisConsentMapper consentMapper;
+    private final ConsentMapper consentMapper;
     private final PsuDataMapper psuDataMapper;
     private final AspspProfileService aspspProfileService;
-    private final AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
+    private final ConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
     private final ScaMethodMapper scaMethodMapper;
     private final CmsPsuService cmsPsuService;
 
@@ -159,7 +159,7 @@ public class AisAuthorisationServiceInternal implements AisConsentAuthorisationS
     @Override
     @Transactional
     public CmsResponse<ScaStatus> getAuthorisationScaStatus(String consentId, String authorisationId) {
-        Optional<AisConsent> consentOptional = aisConsentJpaRepository.findByExternalId(consentId);
+        Optional<Consent> consentOptional = aisConsentJpaRepository.findByExternalId(consentId);
         if (!consentOptional.isPresent()) {
             log.info("Consent ID: [{}], Authorisation ID: [{}]. Get authorisation SCA status failed, because consent is not found",
                      consentId, authorisationId);
@@ -168,7 +168,7 @@ public class AisAuthorisationServiceInternal implements AisConsentAuthorisationS
                        .build();
         }
 
-        AisConsent consent = consentOptional.get();
+        Consent consent = consentOptional.get();
         if (aisConsentConfirmationExpirationService.isConsentConfirmationExpired(consent)) {
             aisConsentConfirmationExpirationService.updateConsentOnConfirmationExpiration(consent);
             log.info("Consent ID: [{}], Authorisation ID: [{}]. Get authorisation SCA status failed, because consent is expired",
@@ -274,7 +274,7 @@ public class AisAuthorisationServiceInternal implements AisConsentAuthorisationS
                            .build();
             }
 
-            AisConsent aisConsent = aisConsentAuthorisation.getConsent();
+            Consent aisConsent = aisConsentAuthorisation.getConsent();
             Optional<PsuData> psuDataOptional = cmsPsuService.definePsuDataForAuthorisation(psuRequest, aisConsent.getPsuDataList());
 
             if (psuDataOptional.isPresent()) {
@@ -358,7 +358,7 @@ public class AisAuthorisationServiceInternal implements AisConsentAuthorisationS
                    .build();
     }
 
-    private AisConsentAuthorization saveNewAuthorization(AisConsent aisConsent, AisConsentAuthorizationRequest request) {
+    private AisConsentAuthorization saveNewAuthorization(Consent aisConsent, AisConsentAuthorizationRequest request) {
         AisConsentAuthorization consentAuthorization = new AisConsentAuthorization();
         Optional<PsuData> psuDataOptional = cmsPsuService.definePsuDataForAuthorisation(psuDataMapper.mapToPsuData(request.getPsuData()), aisConsent.getPsuDataList());
 
@@ -384,7 +384,7 @@ public class AisAuthorisationServiceInternal implements AisConsentAuthorisationS
         return aisConsentAuthorisationRepository.save(consentAuthorization);
     }
 
-    private Optional<AisConsentAuthorization> findAuthorisationInConsent(String authorisationId, AisConsent consent) {
+    private Optional<AisConsentAuthorization> findAuthorisationInConsent(String authorisationId, Consent consent) {
         return consent.getAuthorizations()
                    .stream()
                    .filter(auth -> auth.getExternalId().equals(authorisationId))
@@ -392,7 +392,7 @@ public class AisAuthorisationServiceInternal implements AisConsentAuthorisationS
     }
 
     private void closePreviousAuthorisationsByPsu(AisConsentAuthorization authorisation, PsuIdData psuIdData) {
-        AisConsent consent = authorisation.getConsent();
+        Consent consent = authorisation.getConsent();
 
         List<AisConsentAuthorization> previousAuthorisations = consent.getAuthorizations().stream()
                                                                    .filter(a -> !a.getExternalId().equals(authorisation.getExternalId()))

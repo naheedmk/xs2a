@@ -17,7 +17,7 @@
 package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.xs2a.reader.JsonReader;
@@ -31,13 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AisConsentRequestTypeServiceTest {
     private AisConsentRequestTypeService aisConsentRequestTypeService;
     private JsonReader jsonReader = new JsonReader();
-    private AisConsent aisConsent;
+    private Consent aisConsent;
     private AisAccountAccessInfo accessInfo;
 
     @BeforeEach
     void setUp() {
         aisConsentRequestTypeService = new AisConsentRequestTypeService();
-        aisConsent = jsonReader.getObjectFromFile("json/ais-consent.json", AisConsent.class);
+        aisConsent = jsonReader.getObjectFromFile("json/ais-consent.json", Consent.class);
         accessInfo = jsonReader.getObjectFromFile("json/access-info.json", AisAccountAccessInfo.class);
     }
 

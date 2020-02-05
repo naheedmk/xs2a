@@ -27,10 +27,10 @@ import de.adorsys.psd2.consent.api.ais.CreateAisConsentAuthorizationResponse;
 import de.adorsys.psd2.consent.domain.AuthorisationTemplateEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.ScaMethod;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.account.AisConsentAuthorization;
 import de.adorsys.psd2.consent.repository.AisConsentAuthorisationRepository;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.mapper.ScaMethodMapper;
 import de.adorsys.psd2.consent.service.psu.CmsPsuService;
@@ -76,7 +76,7 @@ class AisAuthorisationServiceInternalTest {
     private static final TppRedirectUri TPP_REDIRECT_URIs = new TppRedirectUri(TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
     private static final String INTERNAL_REQUEST_ID = "5c2d5564-367f-4e03-a621-6bef76fa4208";
 
-    private AisConsent aisConsent;
+    private Consent aisConsent;
     private AisConsentAuthorization aisConsentAuthorisation;
     private List<AisConsentAuthorization> aisConsentAuthorisationList = new ArrayList<>();
     private static final JsonReader jsonReader = new JsonReader();
@@ -84,11 +84,11 @@ class AisAuthorisationServiceInternalTest {
     @InjectMocks
     private AisAuthorisationServiceInternal aisAuthorisationServiceInternal;
     @Mock
-    private AisConsentJpaRepository aisConsentJpaRepository;
+    private ConsentJpaRepository aisConsentJpaRepository;
     @Mock
     private PsuDataMapper psuDataMapper;
     @Mock
-    private AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
+    private ConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
     @Mock
     private AspspProfileService aspspProfileService;
     @Mock
@@ -111,7 +111,7 @@ class AisAuthorisationServiceInternalTest {
     @Test
     void getAuthorisationScaStatus_success() {
         List<AisConsentAuthorization> authorisations = Collections.singletonList(buildAisConsentAuthorisation(AUTHORISATION_ID, SCA_STATUS));
-        AisConsent consent = buildConsentWithAuthorisations(EXTERNAL_CONSENT_ID, authorisations);
+        Consent consent = buildConsentWithAuthorisations(EXTERNAL_CONSENT_ID, authorisations);
         when(aisConsentJpaRepository.findByExternalId(EXTERNAL_CONSENT_ID))
             .thenReturn(Optional.of(consent));
 
@@ -140,7 +140,7 @@ class AisAuthorisationServiceInternalTest {
     @Test
     void getAuthorisationScaStatus_failure_wrongAuthorisationId() {
         List<AisConsentAuthorization> authorisations = Collections.singletonList(buildAisConsentAuthorisation(WRONG_AUTHORISATION_ID, SCA_STATUS));
-        AisConsent consent = buildConsentWithAuthorisations(EXTERNAL_CONSENT_ID, authorisations);
+        Consent consent = buildConsentWithAuthorisations(EXTERNAL_CONSENT_ID, authorisations);
         when(aisConsentJpaRepository.findByExternalId(EXTERNAL_CONSENT_ID))
             .thenReturn(Optional.of(consent));
 
@@ -230,7 +230,7 @@ class AisAuthorisationServiceInternalTest {
     void createAuthorizationWithClosingPreviousAuthorisationsTppRedirectLinksFromAuthorisationTemplate_success() {
         //Given
         AuthorisationTemplateEntity authorisationTemplateEntity = buildAuthorisationTemplateEntity();
-        AisConsent aisConsent = buildConsent(EXTERNAL_CONSENT_ID, authorisationTemplateEntity);
+        Consent aisConsent = buildConsent(EXTERNAL_CONSENT_ID, authorisationTemplateEntity);
         ArgumentCaptor<AisConsentAuthorization> argument = ArgumentCaptor.forClass(AisConsentAuthorization.class);
         //noinspection unchecked
         ArgumentCaptor<List<AisConsentAuthorization>> failedAuthorisationsArgument = ArgumentCaptor.forClass(List.class);
@@ -398,22 +398,22 @@ class AisAuthorisationServiceInternalTest {
         return jsonReader.getObjectFromFile("json/AspspSetting.json", AspspSettings.class);
     }
 
-    private AisConsent buildConsent(String externalId) {
+    private Consent buildConsent(String externalId) {
         return buildConsent(externalId, Collections.singletonList(psuDataMocked));
     }
 
-    private AisConsent buildConsent(String externalId, AuthorisationTemplateEntity authorisationTemplateEntity) {
-        AisConsent aisConsent = buildConsent(externalId, Collections.singletonList(psuDataMocked));
+    private Consent buildConsent(String externalId, AuthorisationTemplateEntity authorisationTemplateEntity) {
+        Consent aisConsent = buildConsent(externalId, Collections.singletonList(psuDataMocked));
         aisConsent.setAuthorisationTemplate(authorisationTemplateEntity);
         return aisConsent;
     }
 
-    private AisConsent buildConsent(String externalId, List<PsuData> psuDataList) {
+    private Consent buildConsent(String externalId, List<PsuData> psuDataList) {
         return buildConsent(externalId, psuDataList, LocalDate.now());
     }
 
-    private AisConsent buildConsent(String externalId, List<PsuData> psuDataList, LocalDate validUntil) {
-        AisConsent aisConsent = new AisConsent();
+    private Consent buildConsent(String externalId, List<PsuData> psuDataList, LocalDate validUntil) {
+        Consent aisConsent = new Consent();
         aisConsent.setId(CONSENT_ID);
         aisConsent.setExternalId(externalId);
         aisConsent.setValidUntil(validUntil);
@@ -425,8 +425,8 @@ class AisAuthorisationServiceInternalTest {
         return aisConsent;
     }
 
-    private AisConsent buildConsentWithAuthorisations(String externalId, List<AisConsentAuthorization> authorisations) {
-        AisConsent aisConsent = buildConsent(externalId);
+    private Consent buildConsentWithAuthorisations(String externalId, List<AisConsentAuthorization> authorisations) {
+        Consent aisConsent = buildConsent(externalId);
         aisConsent.setAuthorizations(authorisations);
         return aisConsent;
     }

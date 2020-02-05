@@ -19,8 +19,8 @@ package de.adorsys.psd2.xs2a.integration.consent;
 
 import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.CmsResponse;
-import de.adorsys.psd2.consent.api.ais.AisAccountConsent;
-import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
+import de.adorsys.psd2.consent.api.ais.CmsAccountConsent;
+import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppService;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
@@ -98,7 +98,7 @@ class DeleteConsentTest {
     @MockBean
     private Xs2aEventServiceEncrypted eventServiceEncrypted;
     @MockBean
-    private AisConsentServiceEncrypted aisConsentServiceEncrypted;
+    private ConsentServiceEncrypted aisConsentServiceEncrypted;
     @MockBean
     private PisAuthorisationConfirmationService pisAuthorisationConfirmationService;
 
@@ -127,8 +127,8 @@ class DeleteConsentTest {
     @Test
     void deleteConsent_successful() throws Exception {
         // Given
-        given(aisConsentServiceEncrypted.getAisAccountConsentById(ENCRYPTED_CONSENT_ID))
-            .willReturn(CmsResponse.<AisAccountConsent>builder()
+        given(aisConsentServiceEncrypted.getAccountConsentById(ENCRYPTED_CONSENT_ID))
+            .willReturn(CmsResponse.<CmsAccountConsent>builder()
                             .payload(buildAisAccountConsent(TPP_INFO))
                             .build());
         given(aisConsentServiceEncrypted.updateConsentStatusById(ENCRYPTED_CONSENT_ID, ConsentStatus.TERMINATED_BY_TPP))
@@ -150,8 +150,8 @@ class DeleteConsentTest {
     void deleteConsent_withWrongTpp_shouldReturnConsentInvalid() throws Exception {
         // Given
         String wrongTppId = "Wrong TPP ID";
-        given(aisConsentServiceEncrypted.getAisAccountConsentById(ENCRYPTED_CONSENT_ID))
-            .willReturn(CmsResponse.<AisAccountConsent>builder()
+        given(aisConsentServiceEncrypted.getAccountConsentById(ENCRYPTED_CONSENT_ID))
+            .willReturn(CmsResponse.<CmsAccountConsent>builder()
                             .payload(buildAisAccountConsent(TppInfoBuilder.buildTppInfo(wrongTppId)))
                             .build());
 
@@ -180,8 +180,8 @@ class DeleteConsentTest {
         return headerMap;
     }
 
-    private AisAccountConsent buildAisAccountConsent(TppInfo tppInfo) {
-        AisAccountConsent consent = jsonReader.getObjectFromFile(CONSENT_PATH, AisAccountConsent.class);
+    private CmsAccountConsent buildAisAccountConsent(TppInfo tppInfo) {
+        CmsAccountConsent consent = jsonReader.getObjectFromFile(CONSENT_PATH, CmsAccountConsent.class);
         consent.setTppInfo(tppInfo);
         return consent;
     }

@@ -24,7 +24,7 @@ import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.WrongChecksumException;
 import de.adorsys.psd2.consent.api.ais.*;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
-import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
+import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
 import de.adorsys.psd2.event.service.model.EventBO;
@@ -156,7 +156,7 @@ class ServiceUnavailableIT {
     @MockBean
     private Xs2aEventServiceEncrypted eventServiceEncrypted;
     @MockBean
-    private AisConsentServiceEncrypted aisConsentServiceEncrypted;
+    private ConsentServiceEncrypted aisConsentServiceEncrypted;
     @MockBean
     private AisConsentAuthorisationServiceEncrypted aisConsentAuthorisationServiceEncrypted;
     @MockBean
@@ -346,17 +346,17 @@ class ServiceUnavailableIT {
             aisConsentAuthorisationServiceEncrypted.createAuthorizationWithResponse(any(String.class), any(AisConsentAuthorizationRequest.class)),
             buildCmsResponse(buildCmsResponse(buildCreateAisConsentAuthorizationResponse())),
             throwException);
-        AisAccountConsent aisAccountConsent = AisConsentBuilder.buildAisAccountConsent(DEDICATED_CONSENT_REQUEST_JSON_PATH, ScaApproach.EMBEDDED, ENCRYPT_CONSENT_ID, xs2aObjectMapper);
+        CmsAccountConsent aisAccountConsent = AisConsentBuilder.buildAisAccountConsent(DEDICATED_CONSENT_REQUEST_JSON_PATH, ScaApproach.EMBEDDED, ENCRYPT_CONSENT_ID, xs2aObjectMapper);
         givenReturnOrThrowException(
-            aisConsentServiceEncrypted.createConsent(any(CreateAisConsentRequest.class)),
-            buildCmsResponse(new CreateAisConsentResponse(ENCRYPT_CONSENT_ID, aisAccountConsent, Arrays.asList(NotificationSupportedMode.LAST, NotificationSupportedMode.SCA))),
+            aisConsentServiceEncrypted.createConsent(any(CreateConsentRequest.class)),
+            buildCmsResponse(new CreateConsentResponse(ENCRYPT_CONSENT_ID, aisAccountConsent, Arrays.asList(NotificationSupportedMode.LAST, NotificationSupportedMode.SCA))),
             throwException);
         givenReturnOrThrowException(
             aisConsentServiceEncrypted.updateAspspAccountAccessWithResponse(eq(ENCRYPT_CONSENT_ID), any(AisAccountAccessInfo.class)),
             buildCmsResponse(aisAccountConsent),
             throwException);
         givenReturnOrThrowException(
-            aisConsentServiceEncrypted.getAisAccountConsentById(any(String.class)),
+            aisConsentServiceEncrypted.getAccountConsentById(any(String.class)),
             buildCmsResponse(aisAccountConsent),
             throwException);
         givenReturnOrThrowException(

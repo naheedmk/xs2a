@@ -18,9 +18,9 @@ package de.adorsys.psd2.consent.service.mapper;
 
 import de.adorsys.psd2.consent.api.TypeAccess;
 import de.adorsys.psd2.consent.api.ais.*;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
 import de.adorsys.psd2.consent.domain.account.AisConsentAuthorization;
 import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.account.TppAccountAccess;
 import de.adorsys.psd2.consent.service.AisConsentUsageService;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
@@ -37,15 +37,15 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class AisConsentMapper {
+public class ConsentMapper {
     private final PsuDataMapper psuDataMapper;
     private final TppInfoMapper tppInfoMapper;
     private final AisConsentUsageService aisConsentUsageService;
     private final AuthorisationTemplateMapper authorisationTemplateMapper;
 
-    private AisAccountAccess getAvailableAccess(AisConsent consent) {
-        AisAccountAccess tppAccountAccess = mapToAisAccountAccess(consent);
-        AisAccountAccess aspspAccountAccess = mapToAspspAisAccountAccess(consent);
+    private AccountAccess getAvailableAccess(Consent consent) {
+        AccountAccess tppAccountAccess = mapToAisAccountAccess(consent);
+        AccountAccess aspspAccountAccess = mapToAspspAisAccountAccess(consent);
 
         return tppAccountAccess.getAllPsd2() != null
                    ? tppAccountAccess
@@ -60,12 +60,12 @@ public class AisConsentMapper {
      * @param consent AIS consent entity
      * @return mapped AIS consent
      */
-    public AisAccountConsent mapToAisAccountConsent(AisConsent consent) {
-        AisAccountAccess chosenAccess = getAvailableAccess(consent);
+    public CmsAccountConsent mapToAccountConsent(Consent consent) {
+        AccountAccess chosenAccess = getAvailableAccess(consent);
 
         Map<String, Integer> usageCounterMap = aisConsentUsageService.getUsageCounterMap(consent);
 
-        return new AisAccountConsent(
+        return new CmsAccountConsent(
             consent.getExternalId(),
             chosenAccess,
             mapToAspspAisAccountAccess(consent),
@@ -85,15 +85,16 @@ public class AisConsentMapper {
             mapToAisAccountConsentAuthorisation(consent.getAuthorizations()),
             usageCounterMap,
             consent.getCreationTimestamp(),
-            consent.getStatusChangeTimestamp());
+            consent.getStatusChangeTimestamp(),
+            consent.getBody());
     }
 
-    public CmsAisAccountConsent mapToCmsAisAccountConsent(AisConsent consent) {
-        AisAccountAccess chosenAccess = getAvailableAccess(consent);
+    public CmsPsuAspspAccountConsent mapToCmsPsuAspspAccountConsent(Consent consent) {
+        AccountAccess chosenAccess = getAvailableAccess(consent);
 
         Map<String, Integer> usageCounterMap = aisConsentUsageService.getUsageCounterMap(consent);
 
-        return new CmsAisAccountConsent(
+        return new CmsPsuAspspAccountConsent(
             consent.getExternalId(),
             chosenAccess,
             consent.isRecurringIndicator(),
@@ -112,7 +113,8 @@ public class AisConsentMapper {
             mapToAisAccountConsentAuthorisation(consent.getAuthorizations()),
             usageCounterMap,
             consent.getCreationTimestamp(),
-            consent.getStatusChangeTimestamp());
+            consent.getStatusChangeTimestamp(),
+            consent.getBody());
     }
 
     public AisConsentAuthorizationResponse mapToAisConsentAuthorizationResponse(AisConsentAuthorization aisConsentAuthorization) {
@@ -132,7 +134,7 @@ public class AisConsentMapper {
                    .orElse(null);
     }
 
-    public Set<AspspAccountAccess> mapAspspAccountAccesses(AisAccountAccess aisAccountAccess) {
+    public Set<AspspAccountAccess> mapAspspAccountAccesses(AccountAccess aisAccountAccess) {
         Set<AspspAccountAccess> accesses = new HashSet<>();
         accesses.addAll(getAspspAccountAccesses(TypeAccess.ACCOUNT, aisAccountAccess.getAccounts()));
         accesses.addAll(getAspspAccountAccesses(TypeAccess.BALANCE, aisAccountAccess.getBalances()));
@@ -149,15 +151,15 @@ public class AisConsentMapper {
         return accesses;
     }
 
-    private AisAccountAccess mapToAisAccountAccess(AisConsent consent) {
+    AccountAccess mapToAisAccountAccess(Consent consent) {
         List<TppAccountAccess> accesses = consent.getAccesses();
-        return new AisAccountAccess(mapToInitialAccountReferences(accesses, TypeAccess.ACCOUNT),
-                                    mapToInitialAccountReferences(accesses, TypeAccess.BALANCE),
-                                    mapToInitialAccountReferences(accesses, TypeAccess.TRANSACTION),
-                                    getAccessType(consent.getAvailableAccounts()),
-                                    getAccessType(consent.getAllPsd2()),
-                                    getAccessType(consent.getAvailableAccountsWithBalance()),
-                                    mapToInitialAdditionalInformationAccess(accesses, consent)
+        return new AccountAccess(mapToInitialAccountReferences(accesses, TypeAccess.ACCOUNT),
+                                 mapToInitialAccountReferences(accesses, TypeAccess.BALANCE),
+                                 mapToInitialAccountReferences(accesses, TypeAccess.TRANSACTION),
+                                 getAccessType(consent.getAvailableAccounts()),
+                                 getAccessType(consent.getAllPsd2()),
+                                 getAccessType(consent.getAvailableAccountsWithBalance()),
+                                 mapToInitialAdditionalInformationAccess(accesses, consent)
         );
     }
 
@@ -168,19 +170,19 @@ public class AisConsentMapper {
                    .collect(Collectors.toList());
     }
 
-    private AisAccountAccess mapToAspspAisAccountAccess(AisConsent consent) {
+    private AccountAccess mapToAspspAisAccountAccess(Consent consent) {
         List<AspspAccountAccess> accesses = consent.getAspspAccountAccesses();
-        return new AisAccountAccess(mapToAccountReferences(accesses, TypeAccess.ACCOUNT),
-                                    mapToAccountReferences(accesses, TypeAccess.BALANCE),
-                                    mapToAccountReferences(accesses, TypeAccess.TRANSACTION),
-                                    getAccessType(consent.getAvailableAccounts()),
-                                    getAccessType(consent.getAllPsd2()),
-                                    getAccessType(consent.getAvailableAccountsWithBalance()),
-                                    mapToAspspAdditionalInformationAccess(accesses, consent)
+        return new AccountAccess(mapToAccountReferences(accesses, TypeAccess.ACCOUNT),
+                                 mapToAccountReferences(accesses, TypeAccess.BALANCE),
+                                 mapToAccountReferences(accesses, TypeAccess.TRANSACTION),
+                                 getAccessType(consent.getAvailableAccounts()),
+                                 getAccessType(consent.getAllPsd2()),
+                                 getAccessType(consent.getAvailableAccountsWithBalance()),
+                                 mapToAspspAdditionalInformationAccess(accesses, consent)
         );
     }
 
-    private AdditionalInformationAccess mapToInitialAdditionalInformationAccess(List<TppAccountAccess> accesses, AisConsent consent) {
+    private AdditionalInformationAccess mapToInitialAdditionalInformationAccess(List<TppAccountAccess> accesses, Consent consent) {
         return consent.checkNoneAdditionalAccountInformation()
                    ? null
                    : new AdditionalInformationAccess(mapToAdditionalInformationInitialAccountReferences(consent.getOwnerNameType(), TypeAccess.OWNER_NAME, accesses));
@@ -192,7 +194,7 @@ public class AisConsentMapper {
                    : type == AdditionalAccountInformationType.ALL_AVAILABLE_ACCOUNTS ? Collections.emptyList() : null;
     }
 
-    private AdditionalInformationAccess mapToAspspAdditionalInformationAccess(List<AspspAccountAccess> accesses, AisConsent consent) {
+    private AdditionalInformationAccess mapToAspspAdditionalInformationAccess(List<AspspAccountAccess> accesses, Consent consent) {
         return consent.checkNoneAdditionalAccountInformation()
                    ? null
                    : new AdditionalInformationAccess(mapToAdditionalInformationAspspAccountReferences(consent.getOwnerNameType(), TypeAccess.OWNER_NAME, accesses));

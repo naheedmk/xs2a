@@ -124,7 +124,7 @@ public class PisCommonPaymentServiceInternal implements PisCommonPaymentService 
         if (paymentOptional.isPresent()) {
             Optional<PisCommonPaymentResponse> responseOptional = paymentOptional
                                                                       .map(pisCommonPaymentConfirmationExpirationService::checkAndUpdatePaymentDataOnConfirmationExpiration)
-                                                                      .flatMap(pisCommonPaymentMapper::mapToPisCommonPaymentResponse);
+                                                                      .flatMap(pisCommonPaymentMapper:: mapToPisCommonPaymentResponse);
 
             if (responseOptional.isPresent()) {
                 PisCommonPaymentResponse pisCommonPaymentResponse = responseOptional.get();
@@ -150,7 +150,7 @@ public class PisCommonPaymentServiceInternal implements PisCommonPaymentService 
         List<PisPayment> pisPayments = pisCommonPaymentData.getPayments().stream()
                                            .map(pisCommonPaymentMapper::mapToPisPayment)
                                            .collect(Collectors.toList());
-        byte[] paymentData = corePaymentsConvertService.buildPaymentData(pisPayments, pisCommonPaymentData.getPaymentType());
+        byte[] paymentData = corePaymentsConvertService.data(pisPayments, pisCommonPaymentData.getPaymentType());
         if (paymentData != null) {
             pisCommonPaymentData.setPayment(paymentData);
             pisCommonPaymentDataRepository.save(pisCommonPaymentData);

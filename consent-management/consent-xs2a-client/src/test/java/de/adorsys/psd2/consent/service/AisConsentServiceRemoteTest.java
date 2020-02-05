@@ -18,10 +18,10 @@
 package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.consent.api.CmsResponse;
-import de.adorsys.psd2.consent.api.ais.AisAccountConsent;
-import de.adorsys.psd2.consent.api.ais.CreateAisConsentRequest;
-import de.adorsys.psd2.consent.api.ais.CreateAisConsentResponse;
-import de.adorsys.psd2.consent.config.AisConsentRemoteUrls;
+import de.adorsys.psd2.consent.api.ais.CmsAccountConsent;
+import de.adorsys.psd2.consent.api.ais.CreateConsentRequest;
+import de.adorsys.psd2.consent.api.ais.CreateConsentResponse;
+import de.adorsys.psd2.consent.config.ConsentRemoteUrls;
 import de.adorsys.psd2.xs2a.core.profile.NotificationSupportedMode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,22 +46,22 @@ class AisConsentServiceRemoteTest {
     private RestTemplate restTemplate;
 
     @Mock
-    private AisConsentRemoteUrls remoteAisConsentUrls;
+    private ConsentRemoteUrls remoteAisConsentUrls;
 
     @InjectMocks
-    private AisConsentServiceRemote aisConsentServiceRemote;
+    private ConsentServiceRemote aisConsentServiceRemote;
 
     @Test
     void createConsent_shouldReturnResponse() {
         // Given
         when(remoteAisConsentUrls.createAisConsent()).thenReturn(URL);
-        CreateAisConsentRequest createRequest = new CreateAisConsentRequest();
-        CreateAisConsentResponse controllerResponse = new CreateAisConsentResponse(CONSENT_ID, new AisAccountConsent(), Arrays.asList(NotificationSupportedMode.LAST, NotificationSupportedMode.SCA));
-        when(restTemplate.postForEntity(URL, createRequest, CreateAisConsentResponse.class))
+        CreateConsentRequest createRequest = new CreateConsentRequest();
+        CreateConsentResponse controllerResponse = new CreateConsentResponse(CONSENT_ID, new CmsAccountConsent(), Arrays.asList(NotificationSupportedMode.LAST, NotificationSupportedMode.SCA));
+        when(restTemplate.postForEntity(URL, createRequest, CreateConsentResponse.class))
             .thenReturn(new ResponseEntity<>(controllerResponse, HttpStatus.CREATED));
 
         // When
-        CmsResponse<CreateAisConsentResponse> actualResponse = aisConsentServiceRemote.createConsent(createRequest);
+        CmsResponse<CreateConsentResponse> actualResponse = aisConsentServiceRemote.createConsent(createRequest);
 
         // Then
         assertTrue(actualResponse.isSuccessful());
@@ -72,12 +72,12 @@ class AisConsentServiceRemoteTest {
     void createConsent_withNullBodyInResponse_shouldReturnEmpty() {
         // Given
         when(remoteAisConsentUrls.createAisConsent()).thenReturn(URL);
-        CreateAisConsentRequest createRequest = new CreateAisConsentRequest();
-        when(restTemplate.postForEntity(URL, createRequest, CreateAisConsentResponse.class))
+        CreateConsentRequest createRequest = new CreateConsentRequest();
+        when(restTemplate.postForEntity(URL, createRequest, CreateConsentResponse.class))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.CREATED));
 
         // When
-        CmsResponse<CreateAisConsentResponse> actualResponse = aisConsentServiceRemote.createConsent(createRequest);
+        CmsResponse<CreateConsentResponse> actualResponse = aisConsentServiceRemote.createConsent(createRequest);
 
         // Then
         assertFalse(actualResponse.isSuccessful());

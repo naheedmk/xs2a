@@ -36,7 +36,7 @@ public class AisConsentUsage {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "consent_id", nullable = false)
-    private AisConsent consent;
+    private Consent consent;
 
     @Column(name = "request_uri", nullable = false)
     private String requestUri;
@@ -57,7 +57,7 @@ public class AisConsentUsage {
     @Column(name = "version")
     private long version;
 
-    public AisConsentUsage(AisConsent consent, String requestUri) {
+    public AisConsentUsage(Consent consent, String requestUri) {
         this.usageDate = LocalDate.now();
         this.consent = consent;
         this.requestUri = requestUri;

@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.service.sha;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.sha.ChecksumConstant;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ class ChecksumCalculatingServiceV2Test {
     @Test
     void verifyConsentWithChecksum_success_tppAccesses() {
         // given
-        AisConsent aisConsent = buildConsentTppIban();
+        Consent aisConsent = buildConsentTppIban();
 
         // when
         boolean actualResult = checksumCalculatingServiceV2.verifyConsentWithChecksum(aisConsent, CHECKSUM_TPP_ACCESS_IBAN);
@@ -51,7 +51,7 @@ class ChecksumCalculatingServiceV2Test {
     @Test
     void verifyConsentWithChecksum_success_aspspAccesses() {
         // given
-        AisConsent aisConsent = buildConsentAspspIban();
+        Consent aisConsent = buildConsentAspspIban();
 
         // when
         boolean actualResult = checksumCalculatingServiceV2.verifyConsentWithChecksum(aisConsent, CHECKSUM_ASPSP_ACCESS_IBAN);
@@ -64,7 +64,7 @@ class ChecksumCalculatingServiceV2Test {
     @Test
     void verifyConsentWithChecksum_wrongChecksum() {
         // given
-        AisConsent aisConsent = buildConsentTppIban();
+        Consent aisConsent = buildConsentTppIban();
 
         // when
         boolean actualResult = checksumCalculatingServiceV2.verifyConsentWithChecksum(aisConsent, WRONG_CHECKSUM);
@@ -76,7 +76,7 @@ class ChecksumCalculatingServiceV2Test {
     @Test
     void verifyConsentWithChecksum_wrongChecksumWithDelimiter() {
         // given
-        AisConsent aisConsent = buildConsentTppIban();
+        Consent aisConsent = buildConsentTppIban();
 
         // when
         boolean actualResult = checksumCalculatingServiceV2.verifyConsentWithChecksum(aisConsent, WRONG_CHECKSUM_WITH_DELIMITER);
@@ -88,7 +88,7 @@ class ChecksumCalculatingServiceV2Test {
     @Test
     void calculateChecksumForConsent_success() {
         // given
-        AisConsent aisConsent = buildConsentTppIban();
+        Consent aisConsent = buildConsentTppIban();
 
         // when
         byte[] actualResult = checksumCalculatingServiceV2.calculateChecksumForConsent(aisConsent);
@@ -100,7 +100,7 @@ class ChecksumCalculatingServiceV2Test {
     @Test
     void calculateChecksumForConsent_success_aspspAccesses() {
         // given
-        AisConsent aisConsent = buildConsentAspspIban();
+        Consent aisConsent = buildConsentAspspIban();
 
         // when
         byte[] actualResult = checksumCalculatingServiceV2.calculateChecksumForConsent(aisConsent);
@@ -112,7 +112,7 @@ class ChecksumCalculatingServiceV2Test {
     @Test
     void verifyConsentWithChecksum_success_tppAccesses_IbanAndMaskedPan() {
         // given
-        AisConsent aisConsent = buildConsentTppIbanAndMaskedPan();
+        Consent aisConsent = buildConsentTppIbanAndMaskedPan();
 
         // when
         boolean actualResult = checksumCalculatingServiceV2.verifyConsentWithChecksum(aisConsent, CHECKSUM_TPP_ACCESS_IBAN_MASKEDPAN);
@@ -124,7 +124,7 @@ class ChecksumCalculatingServiceV2Test {
     @Test
     void verifyConsentWithChecksum_success_aspspAccesses_IbanAndMaskedPan() {
         // given
-        AisConsent aisConsent = buildConsentAspspIbanAndMaskedPan();
+        Consent aisConsent = buildConsentAspspIbanAndMaskedPan();
 
         // when
         boolean actualResult = checksumCalculatingServiceV2.verifyConsentWithChecksum(aisConsent, CHECKSUM_ASPSP_ACCESS_IBAN_MASKEDPAN);
@@ -136,7 +136,7 @@ class ChecksumCalculatingServiceV2Test {
     @Test
     void calculateChecksumForConsent_successIbanAndMaskedPan() {
         // given
-        AisConsent aisConsent = buildConsentTppIbanAndMaskedPan();
+        Consent aisConsent = buildConsentTppIbanAndMaskedPan();
 
         // when
         byte[] actualResult = checksumCalculatingServiceV2.calculateChecksumForConsent(aisConsent);
@@ -148,7 +148,7 @@ class ChecksumCalculatingServiceV2Test {
     @Test
     void calculateChecksumForConsent_success_aspspAccessesIbanAndMaskedPan() {
         // given
-        AisConsent aisConsent = buildConsentAspspIbanAndMaskedPan();
+        Consent aisConsent = buildConsentAspspIbanAndMaskedPan();
 
         // when
         byte[] actualResult = checksumCalculatingServiceV2.calculateChecksumForConsent(aisConsent);
@@ -166,12 +166,12 @@ class ChecksumCalculatingServiceV2Test {
         assertEquals(VERSION_02, actualResult);
     }
 
-    private AisConsent buildConsentTppIban() {
-        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_tpp_access.json", AisConsent.class);
+    private Consent buildConsentTppIban() {
+        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_tpp_access.json", Consent.class);
     }
 
-    private AisConsent buildConsentAspspIban() {
-        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_aspsp_access.json", AisConsent.class);
+    private Consent buildConsentAspspIban() {
+        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_aspsp_access.json", Consent.class);
     }
 
     private static String getCorrectChecksumForTppAccessIban() {
@@ -182,12 +182,12 @@ class ChecksumCalculatingServiceV2Test {
         return "002_%_ywb10IC/RWqq6rinq1lcTDb0hobDIMWUCRZOVToY7XtjD558y49ngaM0kT4iZSt9y2hCpHy8Gd3RQTcuJHnuHA==_%_eyJpYmFuIjoiM0hsNjJKRloxQTF1c2JSN2l0VTlnWHRWcGN1QTFFcDRnMWRUWllUTzRzcDY2czNia3pFU1RqYUE3dXkxV2ZOOXhYNEI4bU5lYlg0MEl3UllaTGp2TUE9PSJ9";
     }
 
-    private AisConsent buildConsentTppIbanAndMaskedPan() {
-        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_tpp_access_iban&maskedpan.json", AisConsent.class);
+    private Consent buildConsentTppIbanAndMaskedPan() {
+        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_tpp_access_iban&maskedpan.json", Consent.class);
     }
 
-    private AisConsent buildConsentAspspIbanAndMaskedPan() {
-        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_aspsp_access_iban&maskedpan.json", AisConsent.class);
+    private Consent buildConsentAspspIbanAndMaskedPan() {
+        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_aspsp_access_iban&maskedpan.json", Consent.class);
     }
 
     private static String getCorrectChecksumForTppAccessIbanAndMaskedPan() {

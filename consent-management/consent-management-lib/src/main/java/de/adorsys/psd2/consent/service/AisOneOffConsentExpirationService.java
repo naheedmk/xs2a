@@ -17,9 +17,9 @@
 package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.consent.api.TypeAccess;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
 import de.adorsys.psd2.consent.domain.account.AisConsentTransaction;
 import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.repository.AisConsentTransactionRepository;
 import de.adorsys.psd2.consent.repository.AisConsentUsageRepository;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
@@ -32,27 +32,29 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class OneOffConsentExpirationService {
+public class AisOneOffConsentExpirationService {
 
     private final AisConsentUsageRepository aisConsentUsageRepository;
     private final AisConsentTransactionRepository aisConsentTransactionRepository;
+    private final AisConsentRequestTypeService aisConsentRequestTypeService;
 
     /**
      * Checks, should the one-off consent be expired after using its all GET endpoints (accounts, balances, transactions)
      * in all possible combinations depending on the consent type.
      *
-     * @param consent the {@link AisConsent} to check.
+     * @param consent the {@link Consent} to check.
      * @return true if the consent should be expired, false otherwise.
      */
-    public boolean isConsentExpired(AisConsent consent) {
+    public boolean isConsentExpired(Consent consent) {
+        AisConsentRequestType aisConsentRequestType = aisConsentRequestTypeService.getRequestTypeFromConsent(consent);
 
         // We omit all bank offered consents until they are not populated with accounts.
-        if (consent.getAisConsentRequestType() == AisConsentRequestType.BANK_OFFERED) {
+        if (aisConsentRequestType == AisConsentRequestType.BANK_OFFERED) {
             return false;
         }
 
         // All available account consent support only one call - readAccountList.
-        if (consent.getAisConsentRequestType() == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS) {
+        if (aisConsentRequestType == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS) {
             return true;
         }
 
@@ -67,8 +69,8 @@ public class OneOffConsentExpirationService {
             Optional<AisConsentTransaction> transactionOptional = aisConsentTransactionRepository.findByConsentIdAndResourceId(consent, resourceId);
 
             int transactions = transactionOptional
-                                    .map(AisConsentTransaction::getNumberOfTransactions)
-                                    .orElse(0);
+                                   .map(AisConsentTransaction::getNumberOfTransactions)
+                                   .orElse(0);
 
             int maximumNumberOfGetRequestsForConsent = getMaximumNumberOfGetRequestsForConsentsAccount(consent, transactions);
             int numberOfUsedGetRequestsForConsent = aisConsentUsageRepository.countByConsentIdAndResourceId(consent.getId(), resourceId);
@@ -87,7 +89,7 @@ public class OneOffConsentExpirationService {
      * This method returns maximum number of possible get requests for the definite consent for ONE account
      * except the main get call - readAccountList.
      */
-    private int getMaximumNumberOfGetRequestsForConsentsAccount(AisConsent consent, int numberOfTransactions) {
+    private int getMaximumNumberOfGetRequestsForConsentsAccount(Consent consent, int numberOfTransactions) {
         switch (consent.getAisConsentRequestType()) {
             case DEDICATED_ACCOUNTS:
                 List<AspspAccountAccess> aspspAccountAccesses = consent.getAspspAccountAccesses();

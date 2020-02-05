@@ -38,7 +38,7 @@ class AisConsentTest {
     @Test
     void isWrongConsentData_shouldReturnTrue_emptyPsuDataList() {
         // Given
-        AisConsent aisConsent = buildAisConsent(Collections.emptyList(), TPP_INFO, false);
+        Consent aisConsent = buildAisConsent(Collections.emptyList(), TPP_INFO, false);
 
         // When
         boolean actual = aisConsent.isWrongConsentData();
@@ -50,7 +50,7 @@ class AisConsentTest {
     @Test
     void isWrongConsentData_shouldReturnTrue_tppInfoNull() {
         // Given
-        AisConsent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), null, false);
+        Consent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), null, false);
 
         // When
         boolean actual = aisConsent.isWrongConsentData();
@@ -62,7 +62,7 @@ class AisConsentTest {
     @Test
     void isWrongConsentData_shouldReturnFalse() {
         // Given
-        AisConsent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, false);
+        Consent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, false);
 
         // When
         boolean actual = aisConsent.isWrongConsentData();
@@ -74,7 +74,7 @@ class AisConsentTest {
     @Test
     void isNonReccuringAlreadyUsed_shouldReturnFalse_recurringConsent() {
         // Given
-        AisConsent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, true);
+        Consent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, true);
 
         // When
         boolean actual = aisConsent.isNonReccuringAlreadyUsed();
@@ -86,7 +86,7 @@ class AisConsentTest {
     @Test
     void isNonReccuringAlreadyUsed_shouldReturnFalse_nonRecurringWithoutOldUsages() {
         // Given
-        AisConsent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, false);
+        Consent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, false);
         aisConsent.setUsages(Collections.singletonList(buildAisConsentUsage(LocalDate.now())));
 
         // When
@@ -99,7 +99,7 @@ class AisConsentTest {
     @Test
     void isNonReccuringAlreadyUsed_shouldReturnTrue_nonRecurringWithOldUsages() {
         // Given
-        AisConsent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, false);
+        Consent aisConsent = buildAisConsent(Collections.singletonList(PSU_DATA), TPP_INFO, false);
         aisConsent.setUsages(Arrays.asList(buildAisConsentUsage(LocalDate.now()),
                                            buildAisConsentUsage(LocalDate.now().minusDays(1))));
 
@@ -110,8 +110,8 @@ class AisConsentTest {
         assertTrue(actual);
     }
 
-    private AisConsent buildAisConsent(List<PsuData> psuDataList, TppInfoEntity tppInfoEntity, boolean recurringIndicator) {
-        AisConsent consent = new AisConsent();
+    private Consent buildAisConsent(List<PsuData> psuDataList, TppInfoEntity tppInfoEntity, boolean recurringIndicator) {
+        Consent consent = new Consent();
         consent.setPsuDataList(psuDataList);
         consent.setTppInfo(tppInfoEntity);
         consent.setRecurringIndicator(recurringIndicator);

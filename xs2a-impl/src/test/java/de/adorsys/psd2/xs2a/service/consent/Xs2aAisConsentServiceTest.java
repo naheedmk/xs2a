@@ -21,6 +21,7 @@ import de.adorsys.psd2.consent.api.*;
 import de.adorsys.psd2.consent.api.ais.*;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
+import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.logger.context.LoggingContextService;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthenticationObject;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
@@ -31,7 +32,6 @@ import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.core.tpp.TppRole;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aCreateAisConsentResponse;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
 import de.adorsys.psd2.xs2a.domain.consent.AccountConsentAuthorization;
 import de.adorsys.psd2.xs2a.domain.consent.CreateConsentReq;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
@@ -72,11 +72,11 @@ class Xs2aAisConsentServiceTest {
     private static final ScaStatus SCA_STATUS = ScaStatus.RECEIVED;
     private static final ScaApproach SCA_APPROACH = ScaApproach.DECOUPLED;
     private static final CreateConsentReq CREATE_CONSENT_REQ = buildCreateConsentReq();
-    private static final CreateAisConsentRequest CREATE_AIS_CONSENT_REQUEST = new CreateAisConsentRequest();
+    private static final CreateConsentRequest CREATE_AIS_CONSENT_REQUEST = new CreateConsentRequest();
     private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType", "psuIpAddress");
     private static final TppInfo TPP_INFO = buildTppInfo();
-    private static final AisAccountConsent AIS_ACCOUNT_CONSENT = new AisAccountConsent();
-    private static final AccountConsent ACCOUNT_CONSENT = createConsent(CONSENT_ID);
+    private static final CmsAccountConsent AIS_ACCOUNT_CONSENT = new CmsAccountConsent();
+    private static final de.adorsys.psd2.xs2a.domain.consent.AccountConsent ACCOUNT_CONSENT = createConsent(CONSENT_ID);
     private static final ConsentStatus CONSENT_STATUS = ConsentStatus.VALID;
     private static final AisConsentAuthorizationRequest AIS_CONSENT_AUTHORIZATION_REQUEST = buildAisConsentAuthorizationRequest();
     private static final AisConsentAuthorizationResponse AIS_CONSENT_AUTHORIZATION_RESPONSE = new AisConsentAuthorizationResponse();
@@ -88,6 +88,8 @@ class Xs2aAisConsentServiceTest {
 
     @InjectMocks
     private Xs2aAisConsentService xs2aAisConsentService;
+    @Mock
+    private ConsentServiceEncrypted consentServiceEncrypted;
     @Mock
     private AisConsentServiceEncrypted aisConsentServiceEncrypted;
     @Mock
@@ -115,8 +117,8 @@ class Xs2aAisConsentServiceTest {
             .thenReturn(1);
         when(aisConsentMapper.mapToCreateAisConsentRequest(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO, 1, INTERNAL_REQUEST_ID))
             .thenReturn(CREATE_AIS_CONSENT_REQUEST);
-        when(aisConsentServiceEncrypted.createConsent(CREATE_AIS_CONSENT_REQUEST))
-            .thenReturn(CmsResponse.<CreateAisConsentResponse>builder().payload(new CreateAisConsentResponse(CONSENT_ID, AIS_ACCOUNT_CONSENT, null)).build());
+        when(consentServiceEncrypted.createConsent(CREATE_AIS_CONSENT_REQUEST))
+            .thenReturn(CmsResponse.<CreateConsentResponse>builder().payload(new CreateConsentResponse(CONSENT_ID, AIS_ACCOUNT_CONSENT, null)).build());
         when(aisConsentMapper.mapToAccountConsent(AIS_ACCOUNT_CONSENT))
             .thenReturn(ACCOUNT_CONSENT);
 
@@ -138,8 +140,8 @@ class Xs2aAisConsentServiceTest {
             .thenReturn(1);
         when(aisConsentMapper.mapToCreateAisConsentRequest(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO, 1, INTERNAL_REQUEST_ID))
             .thenReturn(CREATE_AIS_CONSENT_REQUEST);
-        when(aisConsentServiceEncrypted.createConsent(CREATE_AIS_CONSENT_REQUEST))
-            .thenReturn(CmsResponse.<CreateAisConsentResponse>builder().error(CmsError.TECHNICAL_ERROR).build());
+        when(consentServiceEncrypted.createConsent(CREATE_AIS_CONSENT_REQUEST))
+            .thenReturn(CmsResponse.<CreateConsentResponse>builder().error(CmsError.TECHNICAL_ERROR).build());
 
         //When
         Optional<Xs2aCreateAisConsentResponse> actualResponse = xs2aAisConsentService.createConsent(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO);
@@ -151,13 +153,13 @@ class Xs2aAisConsentServiceTest {
     @Test
     void getAccountConsentById_success() {
         //Given
-        when(aisConsentServiceEncrypted.getAisAccountConsentById(CONSENT_ID))
-            .thenReturn(CmsResponse.<AisAccountConsent>builder().payload(AIS_ACCOUNT_CONSENT).build());
+        when(consentServiceEncrypted.getAccountConsentById(CONSENT_ID))
+            .thenReturn(CmsResponse.<CmsAccountConsent>builder().payload(AIS_ACCOUNT_CONSENT).build());
         when(aisConsentMapper.mapToAccountConsent(AIS_ACCOUNT_CONSENT))
             .thenReturn(ACCOUNT_CONSENT);
 
         //When
-        Optional<AccountConsent> actualResponse = xs2aAisConsentService.getAccountConsentById(CONSENT_ID);
+        Optional<de.adorsys.psd2.xs2a.domain.consent.AccountConsent> actualResponse = xs2aAisConsentService.getAccountConsentById(CONSENT_ID);
 
         //Then
         assertThat(actualResponse.isPresent()).isTrue();
@@ -167,11 +169,11 @@ class Xs2aAisConsentServiceTest {
     @Test
     void getAccountConsentById_failed() {
         //Given
-        when(aisConsentServiceEncrypted.getAisAccountConsentById(CONSENT_ID))
-            .thenReturn(CmsResponse.<AisAccountConsent>builder().error(CmsError.TECHNICAL_ERROR).build());
+        when(consentServiceEncrypted.getAccountConsentById(CONSENT_ID))
+            .thenReturn(CmsResponse.<CmsAccountConsent>builder().error(CmsError.TECHNICAL_ERROR).build());
 
         //When
-        Optional<AccountConsent> actualResponse = xs2aAisConsentService.getAccountConsentById(CONSENT_ID);
+        Optional<de.adorsys.psd2.xs2a.domain.consent.AccountConsent> actualResponse = xs2aAisConsentService.getAccountConsentById(CONSENT_ID);
 
         //Then
         assertThat(actualResponse.isPresent()).isFalse();
@@ -180,7 +182,7 @@ class Xs2aAisConsentServiceTest {
     @Test
     void findAndTerminateOldConsentsByNewConsentId_success() {
         //Given
-        when(aisConsentServiceEncrypted.findAndTerminateOldConsentsByNewConsentId(CONSENT_ID))
+        when(consentServiceEncrypted.findAndTerminateOldConsentsByNewConsentId(CONSENT_ID))
             .thenReturn(CmsResponse.<Boolean>builder().payload(true).build());
 
         //When
@@ -193,7 +195,7 @@ class Xs2aAisConsentServiceTest {
     @Test
     void findAndTerminateOldConsentsByNewConsentId_false() {
         //Given
-        when(aisConsentServiceEncrypted.findAndTerminateOldConsentsByNewConsentId(CONSENT_ID))
+        when(consentServiceEncrypted.findAndTerminateOldConsentsByNewConsentId(CONSENT_ID))
             .thenReturn(CmsResponse.<Boolean>builder().payload(false).build());
 
         //When
@@ -382,28 +384,28 @@ class Xs2aAisConsentServiceTest {
     @Test
     void updateConsentStatus_shouldStoreConsentStatusInLoggingContext() throws WrongChecksumException {
         // Given
-        when(aisConsentServiceEncrypted.updateConsentStatusById(CONSENT_ID, CONSENT_STATUS))
+        when(consentServiceEncrypted.updateConsentStatusById(CONSENT_ID, CONSENT_STATUS))
             .thenReturn(CmsResponse.<Boolean>builder().payload(true).build());
 
         // When
         xs2aAisConsentService.updateConsentStatus(CONSENT_ID, CONSENT_STATUS);
 
         // Then
-        verify(aisConsentServiceEncrypted).updateConsentStatusById(CONSENT_ID, CONSENT_STATUS);
+        verify(consentServiceEncrypted).updateConsentStatusById(CONSENT_ID, CONSENT_STATUS);
         verify(loggingContextService).storeConsentStatus(CONSENT_STATUS);
     }
 
     @Test
     void updateConsentStatus_failure_shouldNotStoreConsentStatusInLoggingContext() throws WrongChecksumException {
         // Given
-        when(aisConsentServiceEncrypted.updateConsentStatusById(CONSENT_ID, CONSENT_STATUS))
+        when(consentServiceEncrypted.updateConsentStatusById(CONSENT_ID, CONSENT_STATUS))
             .thenReturn(CmsResponse.<Boolean>builder().payload(false).build());
 
         // When
         xs2aAisConsentService.updateConsentStatus(CONSENT_ID, CONSENT_STATUS);
 
         // Then
-        verify(aisConsentServiceEncrypted).updateConsentStatusById(CONSENT_ID, CONSENT_STATUS);
+        verify(consentServiceEncrypted).updateConsentStatusById(CONSENT_ID, CONSENT_STATUS);
         verify(loggingContextService, never()).storeConsentStatus(any());
     }
 
@@ -429,22 +431,22 @@ class Xs2aAisConsentServiceTest {
     void createConsentCheckInternalRequestId() throws WrongChecksumException {
         //Given
         when(requestProviderService.getInternalRequestIdString()).thenReturn(INTERNAL_REQUEST_ID);
-        ArgumentCaptor<CreateAisConsentRequest> argumentCaptor = ArgumentCaptor.forClass(CreateAisConsentRequest.class);
+        ArgumentCaptor<CreateConsentRequest> argumentCaptor = ArgumentCaptor.forClass(CreateConsentRequest.class);
         when(frequencyPerDateCalculationService.getMinFrequencyPerDay(CREATE_CONSENT_REQ.getFrequencyPerDay()))
             .thenReturn(1);
-        CreateAisConsentRequest createAisConsentRequesWithInternalRequestId = new CreateAisConsentRequest();
+        CreateConsentRequest createAisConsentRequesWithInternalRequestId = new CreateConsentRequest();
         createAisConsentRequesWithInternalRequestId.setInternalRequestId(INTERNAL_REQUEST_ID);
         when(aisConsentMapper.mapToCreateAisConsentRequest(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO, 1, INTERNAL_REQUEST_ID))
             .thenReturn(createAisConsentRequesWithInternalRequestId);
-        when(aisConsentServiceEncrypted.createConsent(any()))
-            .thenReturn(CmsResponse.<CreateAisConsentResponse>builder().error(CmsError.TECHNICAL_ERROR).build());
+        when(consentServiceEncrypted.createConsent(any()))
+            .thenReturn(CmsResponse.<CreateConsentResponse>builder().error(CmsError.TECHNICAL_ERROR).build());
 
         //When
         xs2aAisConsentService.createConsent(CREATE_CONSENT_REQ, PSU_DATA, TPP_INFO);
-        verify(aisConsentServiceEncrypted).createConsent(argumentCaptor.capture());
+        verify(consentServiceEncrypted).createConsent(argumentCaptor.capture());
 
         //Then
-        CreateAisConsentRequest createAisConsentRequest = argumentCaptor.getValue();
+        CreateConsentRequest createAisConsentRequest = argumentCaptor.getValue();
         assertThat(createAisConsentRequest.getInternalRequestId()).isEqualTo(INTERNAL_REQUEST_ID);
 
     }
@@ -472,8 +474,8 @@ class Xs2aAisConsentServiceTest {
         return consentAuthorization;
     }
 
-    private static AccountConsent createConsent(String id) {
-        return new AccountConsent(id, new Xs2aAccountAccess(null, null, null, null, null, null, null), new Xs2aAccountAccess(null, null, null, null, null, null, null), false, LocalDate.now(), LocalDate.now(), 4, LocalDate.now(), ConsentStatus.VALID, false, false, null, null, AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap(), OffsetDateTime.now());
+    private static de.adorsys.psd2.xs2a.domain.consent.AccountConsent createConsent(String id) {
+        return new de.adorsys.psd2.xs2a.domain.consent.AccountConsent(id, new Xs2aAccountAccess(null, null, null, null, null, null, null), new Xs2aAccountAccess(null, null, null, null, null, null, null), false, LocalDate.now(), LocalDate.now(), 4, LocalDate.now(), ConsentStatus.VALID, false, false, null, null, AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap(), OffsetDateTime.now());
     }
 
     private static CreateAisConsentAuthorizationResponse buildCreateAisConsentAuthorizationResponse() {

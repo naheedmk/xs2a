@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2018 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.consent.api.ais;
+package de.adorsys.psd2.consent.api.service;
 
-import de.adorsys.psd2.xs2a.core.profile.NotificationSupportedMode;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-import java.util.List;
-
-@Data
-@AllArgsConstructor
-public class CreateAisConsentResponse {
-    private String consentId;
-    private AisAccountConsent aisAccountConsent;
-    private List<NotificationSupportedMode> tppNotificationContentPreferred;
+/**
+ * AisConsentService without any encryption/decryption. Should not be used in XS2A directly.
+ *
+ * @see ConsentServiceBase
+ * @see ConsentServiceEncrypted
+ */
+public interface ConsentService extends ConsentServiceBase {
 }

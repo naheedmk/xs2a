@@ -17,8 +17,8 @@
 package de.adorsys.psd2.xs2a.service.mapper.consent;
 
 import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
-import de.adorsys.psd2.consent.api.ais.AisAccountConsent;
-import de.adorsys.psd2.consent.api.ais.CreateAisConsentRequest;
+import de.adorsys.psd2.consent.api.ais.CmsAccountConsent;
+import de.adorsys.psd2.consent.api.ais.CreateConsentRequest;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthenticationObject;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -56,31 +56,31 @@ class Xs2aAisConsentMapperTest {
 
     @Test
     void mapToAccountConsent() {
-        AisAccountConsent aisAccountConsent = jsonReader.getObjectFromFile("json/service/mapper/consent/account-consent.json", AisAccountConsent.class);
-        AccountConsent expectedAccountConsent = jsonReader.getObjectFromFile("json/service/mapper/consent/xs2a-account-consent.json", AccountConsent.class);
+        CmsAccountConsent aisAccountConsent = jsonReader.getObjectFromFile("json/service/mapper/consent/account-consent.json", CmsAccountConsent.class);
+        de.adorsys.psd2.xs2a.domain.consent.AccountConsent expectedAccountConsent = jsonReader.getObjectFromFile("json/service/mapper/consent/xs2a-account-consent.json", de.adorsys.psd2.xs2a.domain.consent.AccountConsent.class);
 
-        AccountConsent actualAccountConsent = mapper.mapToAccountConsent(aisAccountConsent);
+        de.adorsys.psd2.xs2a.domain.consent.AccountConsent actualAccountConsent = mapper.mapToAccountConsent(aisAccountConsent);
         assertEquals(expectedAccountConsent, actualAccountConsent);
     }
 
     @Test
     void mapToAccountConsent_nullValue() {
-        AccountConsent actualAccountConsent = mapper.mapToAccountConsent(null);
+        de.adorsys.psd2.xs2a.domain.consent.AccountConsent actualAccountConsent = mapper.mapToAccountConsent(null);
         assertNull(actualAccountConsent);
     }
 
     @Test
     void mapToAccountConsentWithNewStatus() {
-        AccountConsent accountConsent = jsonReader.getObjectFromFile("json/service/mapper/consent/xs2a-account-consent.json", AccountConsent.class);
-        AccountConsent expectedAccountConsent = jsonReader.getObjectFromFile("json/service/mapper/consent/xs2a-account-consent-rejected.json", AccountConsent.class);
+        de.adorsys.psd2.xs2a.domain.consent.AccountConsent accountConsent = jsonReader.getObjectFromFile("json/service/mapper/consent/xs2a-account-consent.json", de.adorsys.psd2.xs2a.domain.consent.AccountConsent.class);
+        de.adorsys.psd2.xs2a.domain.consent.AccountConsent expectedAccountConsent = jsonReader.getObjectFromFile("json/service/mapper/consent/xs2a-account-consent-rejected.json", de.adorsys.psd2.xs2a.domain.consent.AccountConsent.class);
 
-        AccountConsent actualAccountConsent = mapper.mapToAccountConsentWithNewStatus(accountConsent, ConsentStatus.REJECTED);
+        de.adorsys.psd2.xs2a.domain.consent.AccountConsent actualAccountConsent = mapper.mapToAccountConsentWithNewStatus(accountConsent, ConsentStatus.REJECTED);
         assertEquals(expectedAccountConsent, actualAccountConsent);
     }
 
     @Test
     void mapToAccountConsentWithNewStatus_nullValue() {
-        AccountConsent actualAccountConsent = mapper.mapToAccountConsentWithNewStatus(null, ConsentStatus.REJECTED);
+        de.adorsys.psd2.xs2a.domain.consent.AccountConsent actualAccountConsent = mapper.mapToAccountConsentWithNewStatus(null, ConsentStatus.REJECTED);
         assertNull(actualAccountConsent);
     }
 
@@ -169,7 +169,7 @@ class Xs2aAisConsentMapperTest {
         AisAccountAccessInfo expectedAisAccountAccessInfo = jsonReader.getObjectFromFile("json/service/mapper/consent/account-access-info.json", AisAccountAccessInfo.class);
 
 
-        CreateAisConsentRequest createAisConsentRequest = mapper.mapToCreateAisConsentRequest(request, psuData, tppInfo, 34, INTERNAL_REQUEST_ID);
+        CreateConsentRequest createAisConsentRequest = mapper.mapToCreateAisConsentRequest(request, psuData, tppInfo, 34, INTERNAL_REQUEST_ID);
 
         assertEquals(psuData, createAisConsentRequest.getPsuData());
         assertEquals(tppInfo, createAisConsentRequest.getTppInfo());
@@ -187,7 +187,7 @@ class Xs2aAisConsentMapperTest {
         PsuIdData psuData = new PsuIdData("1", "2", "3", "4", "5");
         TppInfo tppInfo = new TppInfo();
 
-        CreateAisConsentRequest createAisConsentRequest = mapper.mapToCreateAisConsentRequest(null, psuData, tppInfo, 34, INTERNAL_REQUEST_ID);
+        CreateConsentRequest createAisConsentRequest = mapper.mapToCreateAisConsentRequest(null, psuData, tppInfo, 34, INTERNAL_REQUEST_ID);
 
         assertNull(createAisConsentRequest);
     }
@@ -195,7 +195,7 @@ class Xs2aAisConsentMapperTest {
     @Test
     void mapToSpiAccountConsent() {
         //Given
-        AccountConsent accountConsent = jsonReader.getObjectFromFile("json/service/mapper/consent/xs2a-account-consent.json", AccountConsent.class);
+        de.adorsys.psd2.xs2a.domain.consent.AccountConsent accountConsent = jsonReader.getObjectFromFile("json/service/mapper/consent/xs2a-account-consent.json", de.adorsys.psd2.xs2a.domain.consent.AccountConsent.class);
         //When
         SpiAccountConsent spiAccountConsent = mapper.mapToSpiAccountConsent(accountConsent);
         SpiAccountConsent spiAccountConsentExpected = jsonReader.getObjectFromFile("json/service/mapper/consent/spi-account-consent.json", SpiAccountConsent.class);

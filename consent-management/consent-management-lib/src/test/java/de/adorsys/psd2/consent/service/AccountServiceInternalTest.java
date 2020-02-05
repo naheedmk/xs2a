@@ -16,9 +16,9 @@
 
 package de.adorsys.psd2.consent.service;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.account.AisConsentTransaction;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.AisConsentTransactionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +46,7 @@ class AccountServiceInternalTest {
     private AisConsentTransactionRepository aisConsentTransactionRepository;
 
     @Mock
-    private AisConsentJpaRepository aisConsentJpaRepository;
+    private ConsentJpaRepository aisConsentJpaRepository;
 
     @Test
     void saveNumberOfTransactions_shouldFail() {
@@ -64,7 +64,7 @@ class AccountServiceInternalTest {
     @Test
     void saveNumberOfTransactions_success() {
         // Given
-        when(aisConsentJpaRepository.findByExternalId(CONSENT_ID)).thenReturn(Optional.of(new AisConsent()));
+        when(aisConsentJpaRepository.findByExternalId(CONSENT_ID)).thenReturn(Optional.of(new Consent()));
 
         // When
         boolean result = accountServiceInternal.saveNumberOfTransactions(CONSENT_ID, RESOURCE_ID, 10);

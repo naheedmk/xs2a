@@ -29,7 +29,7 @@ import java.util.List;
 
 @Data
 @ApiModel(description = "Ais consent request", value = "AisConsentRequest")
-public class CreateAisConsentRequest {
+public class CreateConsentRequest {
 
     @ApiModelProperty(value = "Corresponding PSU", required = true)
     private PsuIdData psuData;
@@ -69,4 +69,7 @@ public class CreateAisConsentRequest {
 
     @ApiModelProperty(value = "List of notification modes. It could be values: SCA, PROCESS, LAST or NONE ")
     private List<NotificationSupportedMode> notificationSupportedModes;
+
+    @ApiModelProperty(value = "The body of the request consent as bytes")
+    private byte[] body;
 }

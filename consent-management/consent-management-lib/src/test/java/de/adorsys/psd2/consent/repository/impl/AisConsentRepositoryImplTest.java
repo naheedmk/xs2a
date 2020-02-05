@@ -18,8 +18,8 @@ package de.adorsys.psd2.consent.repository.impl;
 
 import de.adorsys.psd2.consent.api.WrongChecksumException;
 import de.adorsys.psd2.consent.domain.PsuData;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.domain.account.Consent;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.service.sha.ChecksumCalculatingService;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
@@ -54,7 +54,7 @@ class AisConsentRepositoryImplTest {
     @InjectMocks
     private AisConsentRepositoryImpl aisConsentVerifyingRepository;
     @Mock
-    private AisConsentJpaRepository aisConsentRepository;
+    private ConsentJpaRepository aisConsentRepository;
     @Mock
     private ChecksumCalculatingFactory calculatingFactory;
 
@@ -72,11 +72,11 @@ class AisConsentRepositoryImplTest {
     @Test
     void verifyAndSave_ReceivedToValidStatus_success() throws WrongChecksumException {
         // given
-        AisConsent aisConsent = buildConsent(ConsentStatus.RECEIVED, ConsentStatus.VALID);
+        Consent aisConsent = buildConsent(ConsentStatus.RECEIVED, ConsentStatus.VALID);
         when(aisConsentRepository.save(aisConsent)).thenReturn(aisConsent);
 
         // when
-        AisConsent actualResult = aisConsentVerifyingRepository.verifyAndSave(aisConsent);
+        Consent actualResult = aisConsentVerifyingRepository.verifyAndSave(aisConsent);
 
         // then
         assertEquals(aisConsent, actualResult);
@@ -86,7 +86,7 @@ class AisConsentRepositoryImplTest {
     @Test
     void verifyAndSave_failedSha() {
         // Given
-        AisConsent aisConsent = buildConsent(ConsentStatus.VALID, ConsentStatus.VALID);
+        Consent aisConsent = buildConsent(ConsentStatus.VALID, ConsentStatus.VALID);
         aisConsent.setChecksum(CHECKSUM);
         when(checksumCalculatingService.verifyConsentWithChecksum(aisConsent, CHECKSUM)).thenReturn(false);
 
@@ -100,13 +100,13 @@ class AisConsentRepositoryImplTest {
     @Test
     void verifyAndSave_correctSha() throws WrongChecksumException {
         // given
-        AisConsent aisConsent = buildConsent(ConsentStatus.VALID, ConsentStatus.VALID);
+        Consent aisConsent = buildConsent(ConsentStatus.VALID, ConsentStatus.VALID);
         aisConsent.setChecksum(CHECKSUM);
         when(checksumCalculatingService.verifyConsentWithChecksum(aisConsent, CHECKSUM)).thenReturn(true);
         when(aisConsentRepository.save(aisConsent)).thenReturn(aisConsent);
 
         // when
-        AisConsent actualResult = aisConsentVerifyingRepository.verifyAndSave(aisConsent);
+        Consent actualResult = aisConsentVerifyingRepository.verifyAndSave(aisConsent);
 
         // then
         assertEquals(aisConsent, actualResult);
@@ -116,13 +116,13 @@ class AisConsentRepositoryImplTest {
     @Test
     void verifyAndUpdate_success() throws WrongChecksumException {
         // given
-        AisConsent aisConsent = buildConsent(ConsentStatus.VALID, ConsentStatus.VALID);
+        Consent aisConsent = buildConsent(ConsentStatus.VALID, ConsentStatus.VALID);
         aisConsent.setChecksum(CHECKSUM);
         when(checksumCalculatingService.verifyConsentWithChecksum(aisConsent, CHECKSUM)).thenReturn(true);
         when(aisConsentRepository.save(aisConsent)).thenReturn(aisConsent);
 
         // when
-        AisConsent actualResult = aisConsentVerifyingRepository.verifyAndUpdate(aisConsent);
+        Consent actualResult = aisConsentVerifyingRepository.verifyAndUpdate(aisConsent);
 
         // then
         assertEquals(aisConsent, actualResult);
@@ -132,7 +132,7 @@ class AisConsentRepositoryImplTest {
     @Test
     void verifyAndUpdate_failedSha() {
         // Given
-        AisConsent aisConsent = buildConsent(ConsentStatus.VALID, ConsentStatus.VALID);
+        Consent aisConsent = buildConsent(ConsentStatus.VALID, ConsentStatus.VALID);
         aisConsent.setChecksum(CHECKSUM);
         when(checksumCalculatingService.verifyConsentWithChecksum(aisConsent, CHECKSUM)).thenReturn(false);
 
@@ -146,22 +146,22 @@ class AisConsentRepositoryImplTest {
     @Test
     void verifyAndSaveAll_success() throws WrongChecksumException {
         // given
-        AisConsent aisConsent = buildConsent(ConsentStatus.VALID, ConsentStatus.VALID);
+        Consent aisConsent = buildConsent(ConsentStatus.VALID, ConsentStatus.VALID);
         aisConsent.setChecksum(CHECKSUM);
-        List<AisConsent> asList = Collections.singletonList(aisConsent);
+        List<Consent> asList = Collections.singletonList(aisConsent);
         when(checksumCalculatingService.verifyConsentWithChecksum(aisConsent, CHECKSUM)).thenReturn(true);
         when(aisConsentRepository.save(aisConsent)).thenReturn(aisConsent);
 
         // when
-        List<AisConsent> actualResult = aisConsentVerifyingRepository.verifyAndSaveAll(asList);
+        List<Consent> actualResult = aisConsentVerifyingRepository.verifyAndSaveAll(asList);
 
         // then
         assertEquals(asList, actualResult);
         verify(aisConsentRepository, times(1)).save(aisConsent);
     }
 
-    private AisConsent buildConsent(ConsentStatus previousStatus, ConsentStatus currentStatus) {
-        AisConsent aisConsent = jsonReader.getObjectFromFile("json/AisConsent.json", AisConsent.class);
+    private Consent buildConsent(ConsentStatus previousStatus, ConsentStatus currentStatus) {
+        Consent aisConsent = jsonReader.getObjectFromFile("json/AisConsent.json", Consent.class);
 
         aisConsent.setCreationTimestamp(OffsetDateTime.of(2018, 10, 10, 10, 10, 10, 10, ZoneOffset.UTC));
         aisConsent.setValidUntil(LocalDate.now().plusDays(1));

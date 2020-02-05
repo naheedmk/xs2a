@@ -25,6 +25,7 @@ import de.adorsys.psd2.consent.api.ais.*;
 import de.adorsys.psd2.consent.api.service.AccountServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
+import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.consent.web.xs2a.config.InternalCmsXs2aApiTagName;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
@@ -46,6 +47,7 @@ import java.util.List;
 public class AisConsentController {
     private final AisConsentAuthorisationServiceEncrypted aisConsentAuthorisationServiceEncrypted;
     private final AisConsentServiceEncrypted aisConsentService;
+    private final ConsentServiceEncrypted consentService;
     private final AccountServiceEncrypted accountServiceEncrypted;
 
     @PostMapping(path = "/")
@@ -54,11 +56,11 @@ public class AisConsentController {
         @ApiResponse(code = 201, message = "Created", response = String.class),
         @ApiResponse(code = 400, message = "Checksum verification failed"),
         @ApiResponse(code = 204, message = "No Content")})
-    public ResponseEntity createConsent(@RequestBody CreateAisConsentRequest request) {
-        CmsResponse<CreateAisConsentResponse> cmsResponse;
+    public ResponseEntity createConsent(@RequestBody CreateConsentRequest request) {
+        CmsResponse<CreateConsentResponse> cmsResponse;
 
         try {
-            cmsResponse = aisConsentService.createConsent(request);
+            cmsResponse = consentService.createConsent(request);
         } catch (WrongChecksumException e) {
             return new ResponseEntity<>(CmsError.CHECKSUM_ERROR, HttpStatus.BAD_REQUEST);
         }
@@ -86,15 +88,15 @@ public class AisConsentController {
     @GetMapping(path = "/{consent-id}")
     @ApiOperation(value = "Read account consent by given consent id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "OK", response = AisAccountConsent.class),
+        @ApiResponse(code = 200, message = "OK", response = CmsAccountConsent.class),
         @ApiResponse(code = 204, message = "No Content")})
-    public ResponseEntity<AisAccountConsent> getConsentById(
+    public ResponseEntity<CmsAccountConsent> getConsentById(
         @ApiParam(name = "consent-id",
             value = "The account consent identification assigned to the created account consent.",
             example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7",
             required = true)
         @PathVariable("consent-id") String consentId) {
-        CmsResponse<AisAccountConsent> consentById = aisConsentService.getAisAccountConsentById(consentId);
+        CmsResponse<CmsAccountConsent> consentById = consentService.getAccountConsentById(consentId);
 
         if (consentById.hasError()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -116,10 +118,10 @@ public class AisConsentController {
             required = true)
         @PathVariable("consent-id") String consentId,
         @RequestBody AisAccountAccessInfo request) {
-        CmsResponse<AisAccountConsent> response;
+        CmsResponse<CmsAccountConsent> response;
 
         try {
-            response = aisConsentService.updateAspspAccountAccessWithResponse(consentId, request);
+            response = consentService.updateAspspAccountAccessWithResponse(consentId, request);
         } catch (WrongChecksumException e) {
             return new ResponseEntity<>(CmsError.CHECKSUM_ERROR, HttpStatus.BAD_REQUEST);
         }
@@ -142,7 +144,7 @@ public class AisConsentController {
             example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7",
             required = true)
         @PathVariable("consent-id") String consentId) {
-        CmsResponse<ConsentStatus> consentStatusById = aisConsentService.getConsentStatusById(consentId);
+        CmsResponse<ConsentStatus> consentStatusById = consentService.getConsentStatusById(consentId);
 
         if (consentStatusById.hasError()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -170,7 +172,7 @@ public class AisConsentController {
         CmsResponse<Boolean> response;
 
         try {
-            response = aisConsentService.updateConsentStatusById(consentId, ConsentStatus.valueOf(status));
+            response = consentService.updateConsentStatusById(consentId, ConsentStatus.valueOf(status));
         } catch (WrongChecksumException e) {
             return new ResponseEntity<>(CmsError.CHECKSUM_ERROR, HttpStatus.BAD_REQUEST);
         }
@@ -191,7 +193,7 @@ public class AisConsentController {
             example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7",
             required = true)
         @PathVariable("consent-id") String consentId) {
-        aisConsentService.findAndTerminateOldConsentsByNewConsentId(consentId);
+        consentService.findAndTerminateOldConsentsByNewConsentId(consentId);
         return ResponseEntity.noContent().build();
     }
 
@@ -410,7 +412,7 @@ public class AisConsentController {
         CmsResponse<Boolean> response;
 
         try {
-            response = aisConsentService.updateMultilevelScaRequired(consentId, multilevelSca);
+            response = consentService.updateMultilevelScaRequired(consentId, multilevelSca);
         } catch (WrongChecksumException e) {
             return new ResponseEntity<>(CmsError.CHECKSUM_ERROR, HttpStatus.BAD_REQUEST);
         }

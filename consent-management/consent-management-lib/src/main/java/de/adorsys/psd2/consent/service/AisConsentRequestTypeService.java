@@ -17,7 +17,7 @@
 package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,7 +29,7 @@ import java.util.List;
 @Service
 public class AisConsentRequestTypeService {
 
-    public AisConsentRequestType getRequestTypeFromConsent(AisConsent aisConsent) {
+    public AisConsentRequestType getRequestTypeFromConsent(Consent aisConsent) {
         return getRequestType(aisConsent.getAllPsd2(),
                               aisConsent.getAvailableAccounts(),
                               aisConsent.getAvailableAccountsWithBalance(),

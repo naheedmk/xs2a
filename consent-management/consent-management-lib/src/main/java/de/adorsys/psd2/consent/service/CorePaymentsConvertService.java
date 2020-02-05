@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.consent.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import de.adorsys.psd2.consent.api.pis.CmsCommonPayment;
 import de.adorsys.psd2.consent.api.pis.CmsCommonPaymentMapper;
 import de.adorsys.psd2.consent.api.pis.CmsPayment;
@@ -24,31 +23,22 @@ import de.adorsys.psd2.consent.api.pis.PisPayment;
 import de.adorsys.psd2.consent.service.mapper.CmsCorePaymentMapper;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
-public class CorePaymentsConvertService {
+public class CorePaymentsConvertService extends CoreConvertService<List<PisPayment>, PaymentType> {
     private final CmsCorePaymentMapper cmsCorePaymentMapper;
-    private final Xs2aObjectMapper xs2aObjectMapper;
     private final CmsCommonPaymentMapper cmsCommonPaymentMapper;
 
-    public byte[] buildPaymentData(List<PisPayment> pisPayments, PaymentType paymentType) {
-        switch (paymentType) {
-            case SINGLE:
-                return writeValueAsBytes(cmsCorePaymentMapper.mapToPaymentInitiationJson(pisPayments));
-            case BULK:
-                return writeValueAsBytes(cmsCorePaymentMapper.mapToBulkPaymentInitiationJson(pisPayments));
-            case PERIODIC:
-                return writeValueAsBytes(cmsCorePaymentMapper.mapToPeriodicPaymentInitiationJson(pisPayments));
-            default:
-                return new byte[0];
-        }
+    public CorePaymentsConvertService(Xs2aObjectMapper xs2aObjectMapper, CmsCorePaymentMapper cmsCorePaymentMapper, CmsCommonPaymentMapper cmsCommonPaymentMapper) {
+        super(xs2aObjectMapper);
+        this.cmsCorePaymentMapper = cmsCorePaymentMapper;
+        this.cmsCommonPaymentMapper = cmsCommonPaymentMapper;
     }
 
     public CmsPayment expandCommonPaymentWithCorePayment(CmsCommonPayment cmsCommonPayment) {
@@ -64,16 +54,12 @@ public class CorePaymentsConvertService {
         }
     }
 
-    private byte[] writeValueAsBytes(Object object) {
-        if (object == null) {
-            return new byte[0];
-        }
-
-        try {
-            return xs2aObjectMapper.writeValueAsBytes(object);
-        } catch (JsonProcessingException e) {
-            log.warn("Can't convert object to byte[] : {}", e.getMessage());
-            return new byte[0];
-        }
+    @Override
+    public Map<PaymentType, Function<List<PisPayment>, Object>> statusTransformer() {
+        HashMap<PaymentType, Function<List<PisPayment>, Object>> map = new HashMap<>();
+        map.put(PaymentType.SINGLE, cmsCorePaymentMapper::mapToPaymentInitiationJson);
+        map.put(PaymentType.BULK, cmsCorePaymentMapper::mapToBulkPaymentInitiationJson);
+        map.put(PaymentType.PERIODIC, cmsCorePaymentMapper::mapToPeriodicPaymentInitiationJson);
+        return map;
     }
 }

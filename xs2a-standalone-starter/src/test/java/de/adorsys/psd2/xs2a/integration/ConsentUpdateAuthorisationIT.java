@@ -19,11 +19,11 @@ package de.adorsys.psd2.xs2a.integration;
 
 import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.CmsResponse;
-import de.adorsys.psd2.consent.api.ais.AisAccountConsent;
+import de.adorsys.psd2.consent.api.ais.CmsAccountConsent;
 import de.adorsys.psd2.consent.api.ais.AisAccountConsentAuthorisation;
 import de.adorsys.psd2.consent.api.ais.AisConsentAuthorizationResponse;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
-import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
+import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppService;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
@@ -107,7 +107,7 @@ class ConsentUpdateAuthorisationIT {
     @MockBean
     private AisConsentAuthorisationServiceEncrypted aisConsentAuthorisationServiceEncrypted;
     @MockBean
-    private AisConsentServiceEncrypted aisConsentService;
+    private ConsentServiceEncrypted aisConsentService;
 
     @BeforeEach
     void setUp() {
@@ -154,11 +154,11 @@ class ConsentUpdateAuthorisationIT {
         PsuIdData psuIdDataAuthorisation = buildPsuIdDataAuthorisation(psuIdAuthorisation);
         HttpHeadersMock httpHeaders = buildHttpHeaders(psuIdHeader);
 
-        AisAccountConsent aisAccountConsent = AisConsentBuilder.buildAisAccountConsent(CONSENT_PATH, scaApproach, CONSENT_ID, xs2aObjectMapper, new AisAccountConsentAuthorisation(AUTHORISATION_ID, psuIdDataAuthorisation, ScaStatus.RECEIVED));
+        CmsAccountConsent aisAccountConsent = AisConsentBuilder.buildAisAccountConsent(CONSENT_PATH, scaApproach, CONSENT_ID, xs2aObjectMapper, new AisAccountConsentAuthorisation(AUTHORISATION_ID, psuIdDataAuthorisation, ScaStatus.RECEIVED));
 
 
-        given(aisConsentService.getAisAccountConsentById(CONSENT_ID))
-            .willReturn(CmsResponse.<AisAccountConsent>builder()
+        given(aisConsentService.getAccountConsentById(CONSENT_ID))
+            .willReturn(CmsResponse.<CmsAccountConsent>builder()
                             .payload(aisAccountConsent)
                             .build());
         given(aisConsentAuthorisationServiceEncrypted.getAccountConsentAuthorizationById(any(String.class), any(String.class)))

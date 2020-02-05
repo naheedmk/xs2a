@@ -23,7 +23,7 @@ import de.adorsys.psd2.consent.api.AspspDataService;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.ais.*;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
-import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
+import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppService;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
@@ -125,7 +125,7 @@ public class ConsentCreationSuccessfulIT {
     @MockBean
     private Xs2aEventServiceEncrypted eventServiceEncrypted;
     @MockBean
-    private AisConsentServiceEncrypted aisConsentServiceEncrypted;
+    private ConsentServiceEncrypted aisConsentServiceEncrypted;
     @MockBean
     private AisConsentAuthorisationServiceEncrypted aisConsentAuthorisationServiceEncrypted;
     @MockBean
@@ -299,18 +299,18 @@ public class ConsentCreationSuccessfulIT {
             .willReturn(CmsResponse.<CreateAisConsentAuthorizationResponse>builder()
                             .payload(buildCreateAisConsentAuthorizationResponse())
                             .build());
-        AisAccountConsent aisAccountConsent = AisConsentBuilder.buildAisAccountConsent(requestJsonPath, scaApproach, ENCRYPT_CONSENT_ID, xs2aObjectMapper);
-        given(aisConsentServiceEncrypted.createConsent(any(CreateAisConsentRequest.class)))
-            .willReturn(CmsResponse.<CreateAisConsentResponse>builder()
-                            .payload(new CreateAisConsentResponse(ENCRYPT_CONSENT_ID, aisAccountConsent, Arrays.asList(NotificationSupportedMode.LAST, NotificationSupportedMode.SCA)))
+        CmsAccountConsent aisAccountConsent = AisConsentBuilder.buildAisAccountConsent(requestJsonPath, scaApproach, ENCRYPT_CONSENT_ID, xs2aObjectMapper);
+        given(aisConsentServiceEncrypted.createConsent(any(CreateConsentRequest.class)))
+            .willReturn(CmsResponse.<CreateConsentResponse>builder()
+                            .payload(new CreateConsentResponse(ENCRYPT_CONSENT_ID, aisAccountConsent, Arrays.asList(NotificationSupportedMode.LAST, NotificationSupportedMode.SCA)))
                             .build());
         given(aisConsentServiceEncrypted.updateAspspAccountAccessWithResponse(eq(ENCRYPT_CONSENT_ID), any(AisAccountAccessInfo.class)))
-            .willReturn(CmsResponse.<AisAccountConsent>builder()
+            .willReturn(CmsResponse.<CmsAccountConsent>builder()
                             .payload(aisAccountConsent)
                             .build());
 
-        given(aisConsentServiceEncrypted.getAisAccountConsentById(any(String.class)))
-            .willReturn(CmsResponse.<AisAccountConsent>builder()
+        given(aisConsentServiceEncrypted.getAccountConsentById(any(String.class)))
+            .willReturn(CmsResponse.<CmsAccountConsent>builder()
                             .payload(aisAccountConsent)
                             .build());
         given(aisConsentAuthorisationServiceEncrypted.getAccountConsentAuthorizationById(any(String.class), any(String.class)))

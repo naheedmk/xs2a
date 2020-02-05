@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.service.sha;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.sha.ChecksumConstant;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ class ChecksumCalculatingServiceV1Test {
     @Test
     void verifyConsentWithChecksum_success_tppAccesses() {
         // given
-        AisConsent aisConsent = buildConsentTpp();
+        Consent aisConsent = buildConsentTpp();
 
         // when
         boolean actualResult = checksumCalculatingServiceV1.verifyConsentWithChecksum(aisConsent, CHECKSUM_TPP_ACCESS);
@@ -51,7 +51,7 @@ class ChecksumCalculatingServiceV1Test {
     @Test
     void verifyConsentWithChecksum_success_aspspAccesses() {
         // given
-        AisConsent aisConsent = buildConsentAspsp();
+        Consent aisConsent = buildConsentAspsp();
 
         // when
         boolean actualResult = checksumCalculatingServiceV1.verifyConsentWithChecksum(aisConsent, CHECKSUM_ASPSP_ACCESS);
@@ -64,7 +64,7 @@ class ChecksumCalculatingServiceV1Test {
     @Test
     void verifyConsentWithChecksum_wrongChecksum() {
         // given
-        AisConsent aisConsent = buildConsentTpp();
+        Consent aisConsent = buildConsentTpp();
 
         // when
         boolean actualResult = checksumCalculatingServiceV1.verifyConsentWithChecksum(aisConsent, WRONG_CHECKSUM);
@@ -76,7 +76,7 @@ class ChecksumCalculatingServiceV1Test {
     @Test
     void verifyConsentWithChecksum_wrongChecksumWithDelimiter() {
         // given
-        AisConsent aisConsent = buildConsentTpp();
+        Consent aisConsent = buildConsentTpp();
 
         // when
         boolean actualResult = checksumCalculatingServiceV1.verifyConsentWithChecksum(aisConsent, WRONG_CHECKSUM_WITH_DELIMITER);
@@ -88,7 +88,7 @@ class ChecksumCalculatingServiceV1Test {
     @Test
     void calculateChecksumForConsent_success() {
         // given
-        AisConsent aisConsent = buildConsentTpp();
+        Consent aisConsent = buildConsentTpp();
 
         // when
         byte[] actualResult = checksumCalculatingServiceV1.calculateChecksumForConsent(aisConsent);
@@ -100,7 +100,7 @@ class ChecksumCalculatingServiceV1Test {
     @Test
     void calculateChecksumForConsent_success_aspspAccesses() {
         // given
-        AisConsent aisConsent = buildConsentAspsp();
+        Consent aisConsent = buildConsentAspsp();
 
         // when
         byte[] actualResult = checksumCalculatingServiceV1.calculateChecksumForConsent(aisConsent);
@@ -118,12 +118,12 @@ class ChecksumCalculatingServiceV1Test {
         assertEquals(VERSION_01, actualResult);
     }
 
-    private AisConsent buildConsentTpp() {
-        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_tpp_access.json", AisConsent.class);
+    private Consent buildConsentTpp() {
+        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_tpp_access.json", Consent.class);
     }
 
-    private AisConsent buildConsentAspsp() {
-        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_aspsp_access.json", AisConsent.class);
+    private Consent buildConsentAspsp() {
+        return jsonReader.getObjectFromFile("json/dedicated-ais-consent_aspsp_access.json", Consent.class);
     }
 
     private static String getCorrectChecksumForTppAccess() {

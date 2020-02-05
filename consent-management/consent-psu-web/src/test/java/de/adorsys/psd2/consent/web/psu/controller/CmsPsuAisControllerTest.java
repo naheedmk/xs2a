@@ -17,7 +17,7 @@
 package de.adorsys.psd2.consent.web.psu.controller;
 
 import de.adorsys.psd2.consent.api.WrongChecksumException;
-import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
+import de.adorsys.psd2.consent.api.ais.CmsPsuAspspAccountConsent;
 import de.adorsys.psd2.consent.api.ais.CmsAisConsentResponse;
 import de.adorsys.psd2.consent.psu.api.CmsPsuAisService;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
@@ -124,10 +124,10 @@ class CmsPsuAisControllerTest {
     void getConsent_withValidRequest_shouldReturnOk() {
         // Given
         when(cmsPsuAisService.getConsent(psuIdData, CONSENT_ID, INSTANCE_ID))
-            .thenReturn(Optional.of(new CmsAisAccountConsent()));
+            .thenReturn(Optional.of(new CmsPsuAspspAccountConsent()));
 
         // When
-        ResponseEntity<CmsAisAccountConsent> actualResponse = cmsPsuAisController.getConsentByConsentId(CONSENT_ID, PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, INSTANCE_ID);
+        ResponseEntity<CmsPsuAspspAccountConsent> actualResponse = cmsPsuAisController.getConsentByConsentId(CONSENT_ID, PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, INSTANCE_ID);
 
         // Then
         verify(cmsPsuAisService).getConsent(psuIdData, CONSENT_ID, INSTANCE_ID);
@@ -143,7 +143,7 @@ class CmsPsuAisControllerTest {
             .thenReturn(Optional.empty());
 
         // When
-        ResponseEntity<CmsAisAccountConsent> actualResponse = cmsPsuAisController.getConsentByConsentId(CONSENT_ID, PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, INSTANCE_ID);
+        ResponseEntity<CmsPsuAspspAccountConsent> actualResponse = cmsPsuAisController.getConsentByConsentId(CONSENT_ID, PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, INSTANCE_ID);
 
         // Then
         verify(cmsPsuAisService).getConsent(psuIdData, CONSENT_ID, INSTANCE_ID);
@@ -307,10 +307,10 @@ class CmsPsuAisControllerTest {
     void getConsentsForPsu_withTrueRequest_shouldReturnOk() {
         // Given
         when(cmsPsuAisService.getConsentsForPsu(psuIdData, INSTANCE_ID))
-            .thenReturn(Collections.singletonList(new CmsAisAccountConsent()));
+            .thenReturn(Collections.singletonList(new CmsPsuAspspAccountConsent()));
 
         // When
-        ResponseEntity<List<CmsAisAccountConsent>> actualResponse = cmsPsuAisController.getConsentsForPsu(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, INSTANCE_ID);
+        ResponseEntity<List<CmsPsuAspspAccountConsent>> actualResponse = cmsPsuAisController.getConsentsForPsu(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, INSTANCE_ID);
 
         // Then
         verify(cmsPsuAisService).getConsentsForPsu(psuIdData, INSTANCE_ID);
@@ -326,7 +326,7 @@ class CmsPsuAisControllerTest {
             .thenReturn(Collections.emptyList());
 
         // When
-        ResponseEntity<List<CmsAisAccountConsent>> actualResponse = cmsPsuAisController.getConsentsForPsu(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, INSTANCE_ID);
+        ResponseEntity<List<CmsPsuAspspAccountConsent>> actualResponse = cmsPsuAisController.getConsentsForPsu(PSU_ID, PSU_ID_TYPE, PSU_CORPORATE_ID, PSU_CORPORATE_ID_TYPE, INSTANCE_ID);
 
         // Then
         verify(cmsPsuAisService).getConsentsForPsu(psuIdData, INSTANCE_ID);
@@ -374,7 +374,7 @@ class CmsPsuAisControllerTest {
     void getConsentIdByRedirectId_withValidRequest_shouldReturnOk() throws RedirectUrlIsExpiredException {
         // Given
         when(cmsPsuAisService.checkRedirectAndGetConsent(AUTHORISATION_ID, INSTANCE_ID))
-            .thenReturn(Optional.of(new CmsAisConsentResponse(new CmsAisAccountConsent(), null, null, null)));
+            .thenReturn(Optional.of(new CmsAisConsentResponse(new CmsPsuAspspAccountConsent(), null, null, null)));
 
         // When
         ResponseEntity<CmsAisConsentResponse> actualResponse = cmsPsuAisController.getConsentIdByRedirectId(AUTHORISATION_ID, INSTANCE_ID);

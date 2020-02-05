@@ -16,8 +16,8 @@
 
 package de.adorsys.psd2.scheduler;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.domain.account.Consent;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -47,14 +47,14 @@ class NonRecurringConsentExpirationScheduleTaskTest {
     private NonRecurringConsentExpirationScheduleTask scheduleTask;
 
     @Mock
-    private AisConsentJpaRepository aisConsentJpaRepository;
+    private ConsentJpaRepository aisConsentJpaRepository;
 
     @Captor
-    private ArgumentCaptor<ArrayList<AisConsent>> consentsCaptor;
+    private ArgumentCaptor<ArrayList<Consent>> consentsCaptor;
 
     @Test
     void expireUsedNonRecurringConsent() {
-        List<AisConsent> aisConsents = new ArrayList<>();
+        List<Consent> aisConsents = new ArrayList<>();
         aisConsents.add(createConsent(RECEIVED));
         aisConsents.add(createConsent(VALID));
 
@@ -72,8 +72,8 @@ class NonRecurringConsentExpirationScheduleTaskTest {
     }
 
     @NotNull
-    private AisConsent createConsent(ConsentStatus consentStatus) {
-        AisConsent aisConsent = new AisConsent();
+    private Consent createConsent(ConsentStatus consentStatus) {
+        Consent aisConsent = new Consent();
         aisConsent.setConsentStatus(consentStatus);
         return aisConsent;
     }

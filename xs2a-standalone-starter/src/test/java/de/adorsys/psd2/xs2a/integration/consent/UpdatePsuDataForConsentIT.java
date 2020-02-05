@@ -20,7 +20,7 @@ import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.ais.*;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
-import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
+import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppService;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
@@ -108,7 +108,7 @@ class UpdatePsuDataForConsentIT {
     @MockBean
     private Xs2aEventServiceEncrypted eventServiceEncrypted;
     @MockBean
-    private AisConsentServiceEncrypted aisConsentServiceEncrypted;
+    private ConsentServiceEncrypted aisConsentServiceEncrypted;
     @MockBean
     private AisConsentAuthorisationServiceEncrypted aisConsentAuthorisationServiceEncrypted;
     @MockBean
@@ -147,8 +147,8 @@ class UpdatePsuDataForConsentIT {
             .willReturn(CmsResponse.<AisConsentAuthorizationResponse>builder()
                             .payload(authorizationResponse)
                             .build());
-        given(aisConsentServiceEncrypted.getAisAccountConsentById(ENCRYPTED_CONSENT_ID))
-            .willReturn(CmsResponse.<AisAccountConsent>builder()
+        given(aisConsentServiceEncrypted.getAccountConsentById(ENCRYPTED_CONSENT_ID))
+            .willReturn(CmsResponse.<CmsAccountConsent>builder()
                             .payload(buildAisAccountConsent())
                             .build());
 
@@ -204,8 +204,8 @@ class UpdatePsuDataForConsentIT {
             .willReturn(CmsResponse.<AisConsentAuthorizationResponse>builder()
                             .payload(new AisConsentAuthorizationResponse())
                             .build());
-        given(aisConsentServiceEncrypted.getAisAccountConsentById(ENCRYPTED_CONSENT_ID))
-            .willReturn(CmsResponse.<AisAccountConsent>builder()
+        given(aisConsentServiceEncrypted.getAccountConsentById(ENCRYPTED_CONSENT_ID))
+            .willReturn(CmsResponse.<CmsAccountConsent>builder()
                             .payload(buildAisAccountConsent())
                             .build());
 
@@ -221,16 +221,16 @@ class UpdatePsuDataForConsentIT {
     }
 
     @NotNull
-    private AisAccountConsent buildAisAccountConsent() {
-        AisAccountConsent aisAccountConsent = new AisAccountConsent();
-        aisAccountConsent.setTppAccess(new AisAccountAccess(Collections.emptyList(),
-                                                            Collections.emptyList(),
-                                                            Collections.emptyList(),
-                                                            null, null, null, null));
-        aisAccountConsent.setAspspAccess(new AisAccountAccess(Collections.emptyList(),
-                                                              Collections.emptyList(),
-                                                              Collections.emptyList(),
-                                                              null, null, null, null));
+    private CmsAccountConsent buildAisAccountConsent() {
+        CmsAccountConsent aisAccountConsent = new CmsAccountConsent();
+        aisAccountConsent.setTppAccess(new AccountAccess(Collections.emptyList(),
+                                                         Collections.emptyList(),
+                                                         Collections.emptyList(),
+                                                         null, null, null, null));
+        aisAccountConsent.setAspspAccess(new AccountAccess(Collections.emptyList(),
+                                                           Collections.emptyList(),
+                                                           Collections.emptyList(),
+                                                           null, null, null, null));
         PsuIdData psuIdData = new PsuIdData(PSU_ID, null, null, null, null);
         aisAccountConsent.setAccountConsentAuthorizations(Collections.singletonList(
             new AisAccountConsentAuthorisation(AUTHORISATION_ID, psuIdData, ScaStatus.PSUIDENTIFIED)));

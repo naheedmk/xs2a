@@ -77,6 +77,9 @@ public class AccountConsent {
     private final OffsetDateTime creationTimestamp;
 
     @JsonIgnore
+    private final byte[] body;
+
+    @JsonIgnore
     public boolean isExpired() {
         return consentStatus == ConsentStatus.EXPIRED;
     }

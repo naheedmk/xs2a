@@ -17,9 +17,9 @@
 package de.adorsys.psd2.consent.service.aspsp;
 
 import de.adorsys.psd2.consent.aspsp.api.psu.CmsAspspPsuAccountService;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.piis.PiisConsentEntity;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.PiisConsentRepository;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
 import de.adorsys.psd2.consent.repository.specification.PiisConsentEntitySpecification;
@@ -40,17 +40,17 @@ import java.util.stream.Collectors;
 @Service
 public class CmsAspspPsuAccountServiceInternal implements CmsAspspPsuAccountService {
     private final AisConsentSpecification aisConsentSpecification;
-    private final AisConsentJpaRepository aisConsentJpaRepository;
+    private final ConsentJpaRepository aisConsentJpaRepository;
     private final PiisConsentRepository piisConsentRepository;
     private final PiisConsentEntitySpecification piisConsentEntitySpecification;
 
     @Override
     @Transactional
     public boolean revokeAllConsents(@Nullable String aspspAccountId, @NotNull PsuIdData psuIdData, @Nullable String instanceId) {
-        List<AisConsent> aisConsents = aisConsentJpaRepository.findAll(aisConsentSpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(aspspAccountId, psuIdData, instanceId));
+        List<Consent> aisConsents = aisConsentJpaRepository.findAll(aisConsentSpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(aspspAccountId, psuIdData, instanceId));
         List<PiisConsentEntity> piisConsents = piisConsentRepository.findAll(piisConsentEntitySpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(aspspAccountId, psuIdData, instanceId));
 
-        List<AisConsent> filteredAisConsents = aisConsents.stream()
+        List<Consent> filteredAisConsents = aisConsents.stream()
                                                    .filter(cst -> !cst.getConsentStatus().isFinalisedStatus())
                                                    .collect(Collectors.toList());
 

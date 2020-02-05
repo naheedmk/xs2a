@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.web.aspsp.controller;
 
-import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
+import de.adorsys.psd2.consent.api.ais.CmsPsuAspspAccountConsent;
 import de.adorsys.psd2.consent.aspsp.api.ais.CmsAspspAisExportService;
 import de.adorsys.psd2.consent.web.aspsp.config.ObjectMapperTestConfig;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -60,7 +60,7 @@ class CmsAspspAisExportControllerTest {
     private JsonReader jsonReader = new JsonReader();
     private HttpHeaders httpHeaders = new HttpHeaders();
     private PsuIdData psuIdData;
-    private Collection<CmsAisAccountConsent> consents;
+    private Collection<CmsPsuAspspAccountConsent> consents;
 
     @InjectMocks
     private CmsAspspAisExportController cmsAspspAisExportController;
@@ -73,7 +73,7 @@ class CmsAspspAisExportControllerTest {
         ObjectMapperTestConfig objectMapperTestConfig = new ObjectMapperTestConfig();
 
         psuIdData = jsonReader.getObjectFromFile("json/psu-id-data.json", PsuIdData.class);
-        CmsAisAccountConsent aisAccountConsent = jsonReader.getObjectFromFile("json/ais/ais-account-consent.json", CmsAisAccountConsent.class);
+        CmsPsuAspspAccountConsent aisAccountConsent = jsonReader.getObjectFromFile("json/ais/ais-account-consent.json", CmsPsuAspspAccountConsent.class);
         consents = Collections.singletonList(aisAccountConsent);
 
         httpHeaders.add("psu-id", PSU_ID);

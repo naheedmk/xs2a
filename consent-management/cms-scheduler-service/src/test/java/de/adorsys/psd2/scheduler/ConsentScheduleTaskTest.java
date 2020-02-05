@@ -16,8 +16,8 @@
 
 package de.adorsys.psd2.scheduler;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.domain.account.Consent;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -45,14 +45,14 @@ class ConsentScheduleTaskTest {
     private ConsentScheduleTask scheduleTask;
 
     @Mock
-    private AisConsentJpaRepository aisConsentJpaRepository;
+    private ConsentJpaRepository aisConsentJpaRepository;
 
     @Captor
-    private ArgumentCaptor<ArrayList<AisConsent>> consentCaptor;
+    private ArgumentCaptor<ArrayList<Consent>> consentCaptor;
 
     @Test
     void checkConsentStatus_allConsentsExpired() {
-        List<AisConsent> availableConsents = new ArrayList<>();
+        List<Consent> availableConsents = new ArrayList<>();
         availableConsents.add(createConsent(RECEIVED));
         availableConsents.add(createConsent(VALID));
         when(aisConsentJpaRepository.findByConsentStatusIn(EnumSet.of(RECEIVED, VALID))).thenReturn(availableConsents);
@@ -70,9 +70,9 @@ class ConsentScheduleTaskTest {
 
     @Test
     void checkConsentStatus_notAllConsentsExpired() {
-        List<AisConsent> availableConsents = new ArrayList<>();
+        List<Consent> availableConsents = new ArrayList<>();
         availableConsents.add(createConsent(RECEIVED));
-        AisConsent consent = createConsent(VALID);
+        Consent consent = createConsent(VALID);
         consent.setValidUntil(LocalDate.now().plusDays(1));
         availableConsents.add(consent);
         when(aisConsentJpaRepository.findByConsentStatusIn(EnumSet.of(RECEIVED, VALID))).thenReturn(availableConsents);
@@ -103,8 +103,8 @@ class ConsentScheduleTaskTest {
     }
 
     @NotNull
-    private AisConsent createConsent(ConsentStatus consentStatus) {
-        AisConsent aisConsent = new AisConsent();
+    private Consent createConsent(ConsentStatus consentStatus) {
+        Consent aisConsent = new Consent();
         aisConsent.setConsentStatus(consentStatus);
         aisConsent.setExternalId(consentStatus.toString());
         aisConsent.setValidUntil(LocalDate.now().minusDays(1));

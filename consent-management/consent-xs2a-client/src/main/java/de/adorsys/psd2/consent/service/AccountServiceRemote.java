@@ -17,7 +17,7 @@
 package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.consent.api.service.AccountServiceEncrypted;
-import de.adorsys.psd2.consent.config.AisConsentRemoteUrls;
+import de.adorsys.psd2.consent.config.ConsentRemoteUrls;
 import de.adorsys.psd2.consent.config.CmsRestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class AccountServiceRemote implements AccountServiceEncrypted {
 
     @Qualifier("consentRestTemplate")
     private final RestTemplate consentRestTemplate;
-    private final AisConsentRemoteUrls remoteAisConsentUrls;
+    private final ConsentRemoteUrls remoteAisConsentUrls;
 
     @Override
     public boolean saveNumberOfTransactions(String consentId, String resourceId, int numberOfTransactions) {

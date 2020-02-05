@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.service;
 
-import de.adorsys.psd2.consent.config.AisConsentRemoteUrls;
+import de.adorsys.psd2.consent.config.ConsentRemoteUrls;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,7 +43,7 @@ class AccountServiceRemoteTest {
     private RestTemplate restTemplate;
 
     @Mock
-    private AisConsentRemoteUrls remoteAisConsentUrls;
+    private ConsentRemoteUrls remoteAisConsentUrls;
 
     @InjectMocks
     private AccountServiceRemote accountServiceRemote;

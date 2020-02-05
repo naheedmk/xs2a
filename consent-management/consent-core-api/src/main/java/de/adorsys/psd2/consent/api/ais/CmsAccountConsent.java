@@ -33,10 +33,10 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AisAccountConsent {
+public class CmsAccountConsent {
     private String id;
-    private AisAccountAccess tppAccess;
-    private AisAccountAccess aspspAccess;
+    private AccountAccess tppAccess;
+    private AccountAccess aspspAccess;
     private boolean recurringIndicator;
     private LocalDate validUntil;
     private LocalDate expireDate;
@@ -54,4 +54,5 @@ public class AisAccountConsent {
     private Map<String, Integer> usageCounterMap;
     private OffsetDateTime creationTimestamp;
     private OffsetDateTime statusChangeTimestamp;
+    private byte[] body;
 }

@@ -17,13 +17,13 @@
 package de.adorsys.psd2.consent.service.mapper;
 
 import de.adorsys.psd2.consent.api.TypeAccess;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccess;
-import de.adorsys.psd2.consent.api.ais.AisAccountConsent;
+import de.adorsys.psd2.consent.api.ais.AccountAccess;
+import de.adorsys.psd2.consent.api.ais.CmsAccountConsent;
 import de.adorsys.psd2.consent.api.ais.AisAccountConsentAuthorisation;
-import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
+import de.adorsys.psd2.consent.api.ais.CmsPsuAspspAccountConsent;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.TppInfoEntity;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.account.AisConsentAuthorization;
 import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.account.TppAccountAccess;
@@ -84,7 +84,7 @@ class AisConsentMapperTest {
     private AisConsentUsageService aisConsentUsageService;
 
     @InjectMocks
-    private AisConsentMapper aisConsentMapper;
+    private ConsentMapper aisConsentMapper;
 
     @BeforeEach
     void setUp() {
@@ -95,10 +95,10 @@ class AisConsentMapperTest {
 
     @Test
     void mapToAisAccountConsent_accountAccess_emptyAspspAccountAccesses() {
-        AisConsent aisConsent = buildAisConsentEmptyAspspAccesses();
+        Consent aisConsent = buildAisConsentEmptyAspspAccesses();
 
-        AisAccountAccess expectedAccess = buildAisAccountAccessAccounts();
-        AisAccountConsent result = aisConsentMapper.mapToAisAccountConsent(aisConsent);
+        AccountAccess expectedAccess = buildAisAccountAccessAccounts();
+        CmsAccountConsent result = aisConsentMapper.mapToAccountConsent(aisConsent);
 
         assertEquals(expectedAccess, result.getTppAccess());
         assertEquals(aisConsent.getStatusChangeTimestamp(), result.getStatusChangeTimestamp());
@@ -108,12 +108,12 @@ class AisConsentMapperTest {
     @Test
     void mapToAisAccountConsent() {
         // Given
-        AisConsent aisConsent = buildAisConsent();
-        AisAccountAccess expectedAccess = buildAisAccountAccessAccountsWithResourceId();
+        Consent aisConsent = buildAisConsent();
+        AccountAccess expectedAccess = buildAisAccountAccessAccountsWithResourceId();
         when(aisConsentUsageService.getUsageCounterMap(aisConsent)).thenReturn(USAGE_COUNTER);
 
         // When
-        AisAccountConsent result = aisConsentMapper.mapToAisAccountConsent(aisConsent);
+        CmsAccountConsent result = aisConsentMapper.mapToAccountConsent(aisConsent);
 
         // Then
         assertConsentsEquals(expectedAccess, aisConsent, result);
@@ -122,18 +122,18 @@ class AisConsentMapperTest {
     @Test
     void mapToCmsAisAccountConsent() {
         // Given
-        AisConsent aisConsent = buildAisConsent();
-        AisAccountAccess expectedAccess = buildAisAccountAccessAccountsWithResourceId();
+        Consent aisConsent = buildAisConsent();
+        AccountAccess expectedAccess = buildAisAccountAccessAccountsWithResourceId();
         when(aisConsentUsageService.getUsageCounterMap(aisConsent)).thenReturn(USAGE_COUNTER);
 
         // When
-        CmsAisAccountConsent result = aisConsentMapper.mapToCmsAisAccountConsent(aisConsent);
+        CmsPsuAspspAccountConsent result = aisConsentMapper.mapToCmsPsuAspspAccountConsent(aisConsent);
 
         // Then
         assertConsentsEquals(expectedAccess, aisConsent, result);
     }
 
-    private void assertConsentsEquals(AisAccountAccess expectedAccess, AisConsent aisConsent, CmsAisAccountConsent aisAccountConsent) {
+    private void assertConsentsEquals(AccountAccess expectedAccess, Consent aisConsent, CmsPsuAspspAccountConsent aisAccountConsent) {
         AisConsentAuthorization aisConsentAuthorization = aisConsent.getAuthorizations().get(0);
         AisAccountConsentAuthorisation aisAccountConsentAuthorisation = aisAccountConsent.getAccountConsentAuthorizations().get(0);
 
@@ -159,7 +159,7 @@ class AisConsentMapperTest {
         assertEquals(aisConsent.getStatusChangeTimestamp(), aisAccountConsent.getStatusChangeTimestamp());
     }
 
-    private void assertConsentsEquals(AisAccountAccess expectedAccess, AisConsent aisConsent, AisAccountConsent aisAccountConsent) {
+    private void assertConsentsEquals(AccountAccess expectedAccess, Consent aisConsent, CmsAccountConsent aisAccountConsent) {
         AisConsentAuthorization aisConsentAuthorization = aisConsent.getAuthorizations().get(0);
         AisAccountConsentAuthorisation aisAccountConsentAuthorisation = aisAccountConsent.getAccountConsentAuthorizations().get(0);
 
@@ -185,16 +185,16 @@ class AisConsentMapperTest {
         assertEquals(aisConsent.getStatusChangeTimestamp(), aisAccountConsent.getStatusChangeTimestamp());
     }
 
-    private AisConsent buildAisConsentEmptyAspspAccesses() {
+    private Consent buildAisConsentEmptyAspspAccesses() {
         return buildAisConsent(Collections.emptyList());
     }
 
-    private AisConsent buildAisConsent() {
+    private Consent buildAisConsent() {
         return buildAisConsent(Collections.singletonList(buildAspspAccountAccessAccounts()));
     }
 
-    private AisConsent buildAisConsent(List<AspspAccountAccess> aspspAccountAccesses) {
-        AisConsent aisConsent = new AisConsent();
+    private Consent buildAisConsent(List<AspspAccountAccess> aspspAccountAccesses) {
+        Consent aisConsent = new Consent();
         aisConsent.setExternalId(EXTERNAL_ID);
         aisConsent.setAspspAccountAccesses(aspspAccountAccesses);
         aisConsent.setAccesses(Collections.singletonList(buildTppAccountAccessAccounts()));
@@ -230,17 +230,17 @@ class AisConsentMapperTest {
         return new AspspAccountAccess(ACCOUNT_IBAN, TypeAccess.ACCOUNT, AccountReferenceType.IBAN, CURRENCY, RESOURCE_ID, ASPSP_ACCOUNT_ID);
     }
 
-    private AisAccountAccess buildAisAccountAccessAccounts() {
+    private AccountAccess buildAisAccountAccessAccounts() {
         AccountReference accountReference = new AccountReference(AccountReferenceType.IBAN, ACCOUNT_IBAN, CURRENCY);
         List<AccountReference> accountReferences = Collections.singletonList(accountReference);
-        return new AisAccountAccess(accountReferences, Collections.emptyList(), Collections.emptyList(), null, null, null, null);
+        return new AccountAccess(accountReferences, Collections.emptyList(), Collections.emptyList(), null, null, null, null);
     }
 
-    private AisAccountAccess buildAisAccountAccessAccountsWithResourceId() {
+    private AccountAccess buildAisAccountAccessAccountsWithResourceId() {
         AccountReference accountReference = new AccountReference(AccountReferenceType.IBAN, ACCOUNT_IBAN, CURRENCY,
                                                                  RESOURCE_ID, ASPSP_ACCOUNT_ID);
         List<AccountReference> accountReferences = Collections.singletonList(accountReference);
-        return new AisAccountAccess(accountReferences, Collections.emptyList(), Collections.emptyList(), null, null, null, null);
+        return new AccountAccess(accountReferences, Collections.emptyList(), Collections.emptyList(), null, null, null, null);
     }
 
     private static TppInfoEntity buildTppInfoEntity() {

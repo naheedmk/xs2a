@@ -19,24 +19,24 @@ package de.adorsys.psd2.consent.service;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.TypeAccess;
 import de.adorsys.psd2.consent.api.ais.AdditionalAccountInformationType;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccess;
-import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
+import de.adorsys.psd2.consent.api.ais.AccountAccess;
+import de.adorsys.psd2.consent.api.ais.CmsPsuAspspAccountConsent;
 import de.adorsys.psd2.consent.api.ais.CmsAisConsentResponse;
-import de.adorsys.psd2.consent.api.service.AisConsentService;
+import de.adorsys.psd2.consent.api.service.ConsentService;
 import de.adorsys.psd2.consent.domain.PsuData;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.account.AisConsentAuthorization;
 import de.adorsys.psd2.consent.domain.account.AisConsentUsage;
 import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.psu.api.ais.CmsAisConsentAccessRequest;
 import de.adorsys.psd2.consent.psu.api.ais.CmsAisPsuDataAuthorisation;
 import de.adorsys.psd2.consent.repository.AisConsentAuthorisationRepository;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.impl.AisConsentRepositoryImpl;
 import de.adorsys.psd2.consent.api.WrongChecksumException;
 import de.adorsys.psd2.consent.repository.specification.AisConsentAuthorizationSpecification;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
-import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
+import de.adorsys.psd2.consent.service.mapper.ConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.psu.CmsPsuAisServiceInternal;
 import de.adorsys.psd2.consent.service.psu.CmsPsuService;
@@ -76,11 +76,11 @@ class CmsPsuAisServiceTest {
     private CmsPsuAisServiceInternal cmsPsuAisService;
 
     @Mock
-    private AisConsentJpaRepository aisConsentJpaRepository;
+    private ConsentJpaRepository aisConsentJpaRepository;
     @Mock
     private AisConsentRepositoryImpl aisConsentRepositoryImpl;
     @Mock
-    private AisConsentMapper aisConsentMapper;
+    private ConsentMapper aisConsentMapper;
     @Mock
     private AisConsentAuthorisationRepository aisConsentAuthorisationRepository;
     @Mock
@@ -88,13 +88,13 @@ class CmsPsuAisServiceTest {
     @Mock
     private AisConsentAuthorization mockAisConsentAuthorization;
     @Mock
-    private CmsAisAccountConsent mockCmsAisAccountConsent;
+    private CmsPsuAspspAccountConsent mockCmsAisAccountConsent;
     @Mock
     private AisConsentAuthorizationSpecification aisConsentAuthorizationSpecification;
     @Mock
     private AisConsentSpecification aisConsentSpecification;
     @Mock
-    private AisConsentService aisConsentService;
+    private ConsentService aisConsentService;
     @Mock
     private AisConsentUsageService aisConsentUsageService;
     @Mock
@@ -102,7 +102,7 @@ class CmsPsuAisServiceTest {
     @Mock
     private AisConsentRequestTypeService aisConsentRequestTypeService;
     @Mock
-    private AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
+    private ConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
 
     private static final String EXTERNAL_CONSENT_ID = "4b112130-6a96-4941-a220-2da8a4af2c65";
     private static final String EXTERNAL_CONSENT_ID_NOT_EXIST = "4b112130-6a96-4941-a220-2da8a4af2c63";
@@ -118,9 +118,9 @@ class CmsPsuAisServiceTest {
     private static final String METHOD_ID = "SMS";
     private static final String AUTHENTICATION_DATA = "123456";
 
-    private AisConsent aisConsent;
-    private List<AisConsent> aisConsents;
-    private CmsAisAccountConsent aisAccountConsent;
+    private Consent aisConsent;
+    private List<Consent> aisConsents;
+    private CmsPsuAspspAccountConsent aisAccountConsent;
     private AisConsentAuthorization aisConsentAuthorization;
     private PsuIdData psuIdData;
     private PsuIdData psuIdDataWrong;
@@ -176,13 +176,13 @@ class CmsPsuAisServiceTest {
 
     @Test
     void getConsentSuccess() {
-        when(aisConsentMapper.mapToCmsAisAccountConsent(aisConsent)).thenReturn(aisAccountConsent);
+        when(aisConsentMapper.mapToCmsPsuAspspAccountConsent(aisConsent)).thenReturn(aisAccountConsent);
         //noinspection unchecked
         when(aisConsentJpaRepository.findOne(any(Specification.class))).thenReturn(Optional.ofNullable(aisConsent));
         when(aisConsentSpecification.byConsentIdAndInstanceId(EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID)).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
 
         // When
-        Optional<CmsAisAccountConsent> consent = cmsPsuAisService.getConsent(psuIdData, EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID);
+        Optional<CmsPsuAspspAccountConsent> consent = cmsPsuAisService.getConsent(psuIdData, EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID);
 
         // Then
         assertTrue(consent.isPresent());
@@ -198,7 +198,7 @@ class CmsPsuAisServiceTest {
         when(aisConsentJpaRepository.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
         // When
-        Optional<CmsAisAccountConsent> consent = cmsPsuAisService.getConsent(psuIdData, EXTERNAL_CONSENT_ID_NOT_EXIST, DEFAULT_SERVICE_INSTANCE_ID);
+        Optional<CmsPsuAspspAccountConsent> consent = cmsPsuAisService.getConsent(psuIdData, EXTERNAL_CONSENT_ID_NOT_EXIST, DEFAULT_SERVICE_INSTANCE_ID);
 
         // Then
         assertFalse(consent.isPresent());
@@ -210,20 +210,20 @@ class CmsPsuAisServiceTest {
     void getConsentSuccessStatusNotChanged() {
         //Given
         ConsentStatus consentStatus = ConsentStatus.TERMINATED_BY_TPP;
-        AisConsent aisConsentTerminatedByTpp = buildConsentByStatusAndExpireDate(consentStatus, LocalDate.now().minusDays(1));
+        Consent aisConsentTerminatedByTpp = buildConsentByStatusAndExpireDate(consentStatus, LocalDate.now().minusDays(1));
         when(aisConsentSpecification.byConsentIdAndInstanceId(eq(EXTERNAL_CONSENT_ID), eq(DEFAULT_SERVICE_INSTANCE_ID))).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         //noinspection unchecked
         when(aisConsentJpaRepository.findOne(any(Specification.class))).thenReturn(Optional.of(aisConsentTerminatedByTpp));
-        when(aisConsentMapper.mapToCmsAisAccountConsent(aisConsentTerminatedByTpp)).thenReturn(mockCmsAisAccountConsent);
+        when(aisConsentMapper.mapToCmsPsuAspspAccountConsent(aisConsentTerminatedByTpp)).thenReturn(mockCmsAisAccountConsent);
 
-        ArgumentCaptor<AisConsent> argument = ArgumentCaptor.forClass(AisConsent.class);
+        ArgumentCaptor<Consent> argument = ArgumentCaptor.forClass(Consent.class);
 
         // When
-        Optional<CmsAisAccountConsent> consent = cmsPsuAisService.getConsent(psuIdData, EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID);
+        Optional<CmsPsuAspspAccountConsent> consent = cmsPsuAisService.getConsent(psuIdData, EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID);
 
         // Then
         assertTrue(consent.isPresent());
-        verify(aisConsentMapper).mapToCmsAisAccountConsent(argument.capture());
+        verify(aisConsentMapper).mapToCmsPsuAspspAccountConsent(argument.capture());
         assertEquals(consentStatus, argument.getValue().getConsentStatus());
     }
 
@@ -275,11 +275,11 @@ class CmsPsuAisServiceTest {
         when(aisConsentSpecification.byPsuDataInListAndInstanceId(psuIdData, DEFAULT_SERVICE_INSTANCE_ID)).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         //noinspection unchecked
         when(aisConsentJpaRepository.findAll(any(Specification.class))).thenReturn(aisConsents);
-        when(aisConsentMapper.mapToCmsAisAccountConsent(aisConsent)).thenReturn(aisAccountConsent);
+        when(aisConsentMapper.mapToCmsPsuAspspAccountConsent(aisConsent)).thenReturn(aisAccountConsent);
 
 
         // When
-        List<CmsAisAccountConsent> consentsForPsu = cmsPsuAisService.getConsentsForPsu(psuIdData, DEFAULT_SERVICE_INSTANCE_ID);
+        List<CmsPsuAspspAccountConsent> consentsForPsu = cmsPsuAisService.getConsentsForPsu(psuIdData, DEFAULT_SERVICE_INSTANCE_ID);
 
         // Then
         assertEquals(consentsForPsu.size(), aisConsents.size());
@@ -290,7 +290,7 @@ class CmsPsuAisServiceTest {
     @Test
     void getConsentsForPsuFail() {
         // When
-        List<CmsAisAccountConsent> consentsForPsu = cmsPsuAisService.getConsentsForPsu(psuIdDataWrong, DEFAULT_SERVICE_INSTANCE_ID);
+        List<CmsPsuAspspAccountConsent> consentsForPsu = cmsPsuAisService.getConsentsForPsu(psuIdDataWrong, DEFAULT_SERVICE_INSTANCE_ID);
 
         // Then
         assertTrue(consentsForPsu.isEmpty());
@@ -311,7 +311,7 @@ class CmsPsuAisServiceTest {
                             .payload(true)
                             .build());
 
-        AisConsent aisConsentValid = buildConsentByStatus(ConsentStatus.VALID);
+        Consent aisConsentValid = buildConsentByStatus(ConsentStatus.VALID);
         when(aisConsentRepositoryImpl.verifyAndSave(aisConsentValid)).thenReturn(aisConsentValid);
 
         // When
@@ -342,7 +342,7 @@ class CmsPsuAisServiceTest {
 
         when(aisConsentSpecification.byConsentIdAndInstanceId(EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID)).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
 
-        AisConsent aisConsentRejected = buildConsentByStatus(ConsentStatus.REJECTED);
+        Consent aisConsentRejected = buildConsentByStatus(ConsentStatus.REJECTED);
         when(aisConsentRepositoryImpl.verifyAndSave(aisConsentRejected)).thenReturn(aisConsentRejected);
 
         // When
@@ -373,7 +373,7 @@ class CmsPsuAisServiceTest {
 
         when(aisConsentSpecification.byConsentIdAndInstanceId(EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID)).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
 
-        AisConsent aisConsentRevoked = buildConsentByStatus(ConsentStatus.REVOKED_BY_PSU);
+        Consent aisConsentRevoked = buildConsentByStatus(ConsentStatus.REVOKED_BY_PSU);
         when(aisConsentRepositoryImpl.verifyAndSave(aisConsentRevoked)).thenReturn(aisConsentRevoked);
 
         // When
@@ -404,16 +404,16 @@ class CmsPsuAisServiceTest {
 
         when(aisConsentSpecification.byConsentIdAndInstanceId(EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID)).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
 
-        AisConsent aisConsent = buildConsentByStatus(ConsentStatus.PARTIALLY_AUTHORISED);
+        Consent aisConsent = buildConsentByStatus(ConsentStatus.PARTIALLY_AUTHORISED);
         aisConsent.setMultilevelScaRequired(true);
         when(aisConsentRepositoryImpl.verifyAndSave(aisConsent)).thenReturn(aisConsent);
-        ArgumentCaptor<AisConsent> argumentCaptor = ArgumentCaptor.forClass(AisConsent.class);
+        ArgumentCaptor<Consent> argumentCaptor = ArgumentCaptor.forClass(Consent.class);
         // When
         boolean updateAuthorisationStatus = cmsPsuAisService.authorisePartiallyConsent(EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID);
         // Then
         assertTrue(updateAuthorisationStatus);
         verify(aisConsentRepositoryImpl).verifyAndSave(argumentCaptor.capture());
-        AisConsent aisConsentActual = argumentCaptor.getValue();
+        Consent aisConsentActual = argumentCaptor.getValue();
         assertEquals(ConsentStatus.PARTIALLY_AUTHORISED, aisConsentActual.getConsentStatus());
         assertTrue(aisConsentActual.isMultilevelScaRequired());
     }
@@ -532,7 +532,7 @@ class CmsPsuAisServiceTest {
 
         when(mockAisConsentAuthorization.isRedirectUrlNotExpired()).thenReturn(true);
         when(mockAisConsentAuthorization.getConsent()).thenReturn(aisConsent);
-        when(aisConsentMapper.mapToCmsAisAccountConsent(aisConsent)).thenReturn(mockCmsAisAccountConsent);
+        when(aisConsentMapper.mapToCmsPsuAspspAccountConsent(aisConsent)).thenReturn(mockCmsAisAccountConsent);
         when(mockAisConsentAuthorization.getTppOkRedirectUri()).thenReturn(TPP_OK_REDIRECT_URI);
         when(mockAisConsentAuthorization.getTppNokRedirectUri()).thenReturn(TPP_NOK_REDIRECT_URI);
 
@@ -554,10 +554,10 @@ class CmsPsuAisServiceTest {
         Currency currency = Currency.getInstance("EUR");
         LocalDate validUntil = LocalDate.now();
         AccountReference accountReference = getAccountReference(iban, currency);
-        AisAccountAccess aisAccountAccess = getAisAccountAccess(accountReference);
+        AccountAccess aisAccountAccess = getAisAccountAccess(accountReference);
         Set<AspspAccountAccess> aspspAccountAccesses = getAspspAccountAccesses(aisAccountAccess);
         CmsAisConsentAccessRequest accountAccessRequest = new CmsAisConsentAccessRequest(aisAccountAccess, validUntil, frequencyPerDay, Boolean.TRUE, Boolean.TRUE);
-        ArgumentCaptor<AisConsent> argument = ArgumentCaptor.forClass(AisConsent.class);
+        ArgumentCaptor<Consent> argument = ArgumentCaptor.forClass(Consent.class);
         when(aisConsentMapper.mapAspspAccountAccesses(aisAccountAccess)).thenReturn(aspspAccountAccesses);
         //noinspection unchecked
         when(aisConsentJpaRepository.findOne(any(Specification.class))).thenReturn(Optional.ofNullable(aisConsent));
@@ -585,11 +585,11 @@ class CmsPsuAisServiceTest {
     void updateAccountAccessInConsent_NoAdditionalAccountInformation_Success() throws WrongChecksumException {
         // Given
         AccountReference accountReference = getAccountReference("DE67597874259856475273", Currency.getInstance("EUR"));
-        AisAccountAccess aisAccountAccess = getAisAccountAccess(accountReference);
+        AccountAccess aisAccountAccess = getAisAccountAccess(accountReference);
         Set<AspspAccountAccess> aspspAccountAccesses = getAspspAccountAccesses(aisAccountAccess);
 
         CmsAisConsentAccessRequest accountAccessRequest = new CmsAisConsentAccessRequest(aisAccountAccess, LocalDate.now(), 777, Boolean.TRUE, Boolean.TRUE);
-        ArgumentCaptor<AisConsent> argument = ArgumentCaptor.forClass(AisConsent.class);
+        ArgumentCaptor<Consent> argument = ArgumentCaptor.forClass(Consent.class);
         when(aisConsentMapper.mapAspspAccountAccesses(aisAccountAccess)).thenReturn(aspspAccountAccesses);
         //noinspection unchecked
         when(aisConsentJpaRepository.findOne(any(Specification.class))).thenReturn(Optional.ofNullable(aisConsent));
@@ -600,7 +600,7 @@ class CmsPsuAisServiceTest {
         boolean saved = cmsPsuAisService.updateAccountAccessInConsent(EXTERNAL_CONSENT_ID, accountAccessRequest, DEFAULT_SERVICE_INSTANCE_ID);
         // Then
         verify(aisConsentRepositoryImpl).verifyAndUpdate(argument.capture());
-        AisConsent aisConsent = argument.getValue();
+        Consent aisConsent = argument.getValue();
         List<AspspAccountAccess> aspspAccountAccessesChecked = aisConsent.getAspspAccountAccesses();
 
         Function<TypeAccess, Long> countAccessesByType = typeAccess -> aspspAccountAccessesChecked.stream()
@@ -618,11 +618,11 @@ class CmsPsuAisServiceTest {
     void updateAccountAccessInConsent_AdditionalAccountInformation_Success() throws WrongChecksumException {
         // Given
         AccountReference accountReference = getAccountReference("DE67597874259856475273", Currency.getInstance("EUR"));
-        AisAccountAccess aisAccountAccess = getAisAccountAccessWithAdditionalAccountInformation(accountReference);
+        AccountAccess aisAccountAccess = getAisAccountAccessWithAdditionalAccountInformation(accountReference);
         Set<AspspAccountAccess> aspspAccountAccesses = getAspspAccountAccesses(aisAccountAccess);
 
         CmsAisConsentAccessRequest accountAccessRequest = new CmsAisConsentAccessRequest(aisAccountAccess, LocalDate.now(), 777, Boolean.TRUE, Boolean.TRUE);
-        ArgumentCaptor<AisConsent> argument = ArgumentCaptor.forClass(AisConsent.class);
+        ArgumentCaptor<Consent> argument = ArgumentCaptor.forClass(Consent.class);
         when(aisConsentMapper.mapAspspAccountAccesses(aisAccountAccess)).thenReturn(aspspAccountAccesses);
         //noinspection unchecked
         when(aisConsentJpaRepository.findOne(any(Specification.class))).thenReturn(Optional.ofNullable(aisConsent));
@@ -633,7 +633,7 @@ class CmsPsuAisServiceTest {
         boolean saved = cmsPsuAisService.updateAccountAccessInConsent(EXTERNAL_CONSENT_ID, accountAccessRequest, DEFAULT_SERVICE_INSTANCE_ID);
         // Then
         verify(aisConsentRepositoryImpl).verifyAndUpdate(argument.capture());
-        AisConsent aisConsent = argument.getValue();
+        Consent aisConsent = argument.getValue();
         List<AspspAccountAccess> aspspAccountAccessesChecked = aisConsent.getAspspAccountAccesses();
 
         Function<TypeAccess, Long> countAccessesByType = typeAccess -> aspspAccountAccessesChecked.stream()
@@ -650,11 +650,11 @@ class CmsPsuAisServiceTest {
     void updateAccountAccessInConsent_AdditionalAccountInformation_AllAvailableAccounts_Success() throws WrongChecksumException {
         // Given
         AccountReference accountReference = getAccountReference("DE67597874259856475273", Currency.getInstance("EUR"));
-        AisAccountAccess aisAccountAccess = getAisAccountAccessWithAdditionalAccountInformationAllAvailableAccounts(accountReference);
+        AccountAccess aisAccountAccess = getAisAccountAccessWithAdditionalAccountInformationAllAvailableAccounts(accountReference);
         Set<AspspAccountAccess> aspspAccountAccesses = getAspspAccountAccesses(aisAccountAccess);
 
         CmsAisConsentAccessRequest accountAccessRequest = new CmsAisConsentAccessRequest(aisAccountAccess, LocalDate.now(), 777, Boolean.TRUE, Boolean.TRUE);
-        ArgumentCaptor<AisConsent> argument = ArgumentCaptor.forClass(AisConsent.class);
+        ArgumentCaptor<Consent> argument = ArgumentCaptor.forClass(Consent.class);
         when(aisConsentMapper.mapAspspAccountAccesses(aisAccountAccess)).thenReturn(aspspAccountAccesses);
         //noinspection unchecked
         when(aisConsentJpaRepository.findOne(any(Specification.class))).thenReturn(Optional.ofNullable(aisConsent));
@@ -665,7 +665,7 @@ class CmsPsuAisServiceTest {
         boolean saved = cmsPsuAisService.updateAccountAccessInConsent(EXTERNAL_CONSENT_ID, accountAccessRequest, DEFAULT_SERVICE_INSTANCE_ID);
         // Then
         verify(aisConsentRepositoryImpl).verifyAndUpdate(argument.capture());
-        AisConsent aisConsent = argument.getValue();
+        Consent aisConsent = argument.getValue();
         List<AspspAccountAccess> aspspAccountAccessesChecked = aisConsent.getAspspAccountAccesses();
 
         Function<TypeAccess, Long> count = typeAccess -> aspspAccountAccessesChecked.stream()
@@ -682,7 +682,7 @@ class CmsPsuAisServiceTest {
     @Test
     void getPsuDataAuthorisations_Success() {
         // Given
-        AisConsent consent = buildAisConsentWithFinalisedAuthorisation();
+        Consent consent = buildAisConsentWithFinalisedAuthorisation();
         when(aisConsentSpecification.byConsentIdAndInstanceId(eq(EXTERNAL_CONSENT_ID), eq(DEFAULT_SERVICE_INSTANCE_ID))).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         //noinspection unchecked
         when(aisConsentJpaRepository.findOne(any(Specification.class))).thenReturn(Optional.of(consent));
@@ -699,7 +699,7 @@ class CmsPsuAisServiceTest {
     @Test
     void getPsuDataAuthorisationsEmptyPsuData_Success() {
         // Given
-        AisConsent consent = buildAisConsentWithFinalisedAuthorisationNoPsuData();
+        Consent consent = buildAisConsentWithFinalisedAuthorisationNoPsuData();
         when(aisConsentSpecification.byConsentIdAndInstanceId(eq(EXTERNAL_CONSENT_ID), eq(DEFAULT_SERVICE_INSTANCE_ID))).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         //noinspection unchecked
         when(aisConsentJpaRepository.findOne(any(Specification.class))).thenReturn(Optional.of(consent));
@@ -770,7 +770,7 @@ class CmsPsuAisServiceTest {
         assertEquals(TPP_OK_REDIRECT_URI, cmsAisConsentResponse.getTppOkRedirectUri());
     }
 
-    private int getUsageCounter(AisConsent aisConsent) {
+    private int getUsageCounter(Consent aisConsent) {
         Integer usage = aisConsent.getUsages().stream()
                             .filter(consent -> LocalDate.now().isEqual(consent.getUsageDate()))
                             .findFirst()
@@ -780,7 +780,7 @@ class CmsPsuAisServiceTest {
         return Math.max(aisConsent.getAllowedFrequencyPerDay() - usage, 0);
     }
 
-    private Set<AspspAccountAccess> getAspspAccountAccesses(AisAccountAccess aisAccountAccess) {
+    private Set<AspspAccountAccess> getAspspAccountAccesses(AccountAccess aisAccountAccess) {
         Set<AspspAccountAccess> aspspAccountAccesses = new HashSet<>();
         aspspAccountAccesses.add(mapToAccountInfo(aisAccountAccess.getAccounts().get(0), TypeAccess.ACCOUNT));
         aspspAccountAccesses.add(mapToAccountInfo(aisAccountAccess.getBalances().get(0), TypeAccess.BALANCE));
@@ -806,21 +806,21 @@ class CmsPsuAisServiceTest {
                                       accountReference.getAspspAccountId());
     }
 
-    private AisConsent buildAisConsentWithFinalisedAuthorisation() {
-        AisConsent consent = buildConsent();
+    private Consent buildAisConsentWithFinalisedAuthorisation() {
+        Consent consent = buildConsent();
         AisConsentAuthorization finalisedAuthorisation = buildFinalisedAuthorisation();
         finalisedAuthorisation.setPsuData(psuData);
         consent.setAuthorizations(Collections.singletonList(finalisedAuthorisation));
         return consent;
     }
 
-    private AisConsent buildAisConsentWithFinalisedAuthorisationNoPsuData() {
-        AisConsent consent = buildConsent();
+    private Consent buildAisConsentWithFinalisedAuthorisationNoPsuData() {
+        Consent consent = buildConsent();
         consent.setAuthorizations(Collections.singletonList(buildFinalisedAuthorisation()));
         return consent;
     }
 
-    private List<AisConsent> buildAisConsents() {
+    private List<Consent> buildAisConsents() {
         return Arrays.asList(aisConsent, aisConsent, aisConsent);
     }
 
@@ -842,8 +842,8 @@ class CmsPsuAisServiceTest {
         return aisConsentAuthorization;
     }
 
-    private AisConsent buildConsent() {
-        AisConsent aisConsent = jsonReader.getObjectFromFile("json/AisConsent.json", AisConsent.class);
+    private Consent buildConsent() {
+        Consent aisConsent = jsonReader.getObjectFromFile("json/AisConsent.json", Consent.class);
 
         aisConsent.setCreationTimestamp(OffsetDateTime.of(2018, 10, 10, 10, 10, 10, 10, ZoneOffset.UTC));
         aisConsent.setValidUntil(LocalDate.now().plusDays(1));
@@ -856,14 +856,14 @@ class CmsPsuAisServiceTest {
         return aisConsent;
     }
 
-    private AisConsent buildConsentByStatus(ConsentStatus status) {
-        AisConsent aisConsent = buildConsent();
+    private Consent buildConsentByStatus(ConsentStatus status) {
+        Consent aisConsent = buildConsent();
         aisConsent.setConsentStatus(status);
         return aisConsent;
     }
 
-    private AisConsent buildConsentByStatusAndExpireDate(ConsentStatus status, LocalDate validUntil) {
-        AisConsent aisConsent = buildConsent();
+    private Consent buildConsentByStatusAndExpireDate(ConsentStatus status, LocalDate validUntil) {
+        Consent aisConsent = buildConsent();
         aisConsent.setConsentStatus(status);
         aisConsent.setValidUntil(validUntil);
         return aisConsent;
@@ -877,17 +877,17 @@ class CmsPsuAisServiceTest {
         return new PsuIdData(psuId, "", "", "", "");
     }
 
-    private CmsAisAccountConsent buildSpiAccountConsent() {
-        return new CmsAisAccountConsent(aisConsent.getId().toString(),
-                                        null, false,
-                                        null, null, 0,
-                                        null, null,
-                                        false, false, null, null, null, null, false, Collections.emptyList(), Collections.emptyMap(), OffsetDateTime.now(),
-                                        OffsetDateTime.now());
+    private CmsPsuAspspAccountConsent buildSpiAccountConsent() {
+        return new CmsPsuAspspAccountConsent(aisConsent.getId().toString(),
+                                             null, false,
+                                             null, null, 0,
+                                             null, null,
+                                             false, false, null, null, null, null, false, Collections.emptyList(), Collections.emptyMap(), OffsetDateTime.now(),
+                                             OffsetDateTime.now());
     }
 
-    private AisAccountAccess getAisAccountAccess(AccountReference accountReference) {
-        return new AisAccountAccess(
+    private AccountAccess getAisAccountAccess(AccountReference accountReference) {
+        return new AccountAccess(
             Collections.singletonList(accountReference),
             Collections.singletonList(accountReference),
             Collections.singletonList(accountReference),
@@ -896,8 +896,8 @@ class CmsPsuAisServiceTest {
             null, null);
     }
 
-    private AisAccountAccess getAisAccountAccessWithAdditionalAccountInformation(AccountReference accountReference) {
-        return new AisAccountAccess(
+    private AccountAccess getAisAccountAccessWithAdditionalAccountInformation(AccountReference accountReference) {
+        return new AccountAccess(
             Collections.singletonList(accountReference),
             Collections.singletonList(accountReference),
             Collections.singletonList(accountReference),
@@ -907,8 +907,8 @@ class CmsPsuAisServiceTest {
             new AdditionalInformationAccess(Collections.singletonList(accountReference)));
     }
 
-    private AisAccountAccess getAisAccountAccessWithAdditionalAccountInformationAllAvailableAccounts(AccountReference accountReference) {
-        return new AisAccountAccess(
+    private AccountAccess getAisAccountAccessWithAdditionalAccountInformationAllAvailableAccounts(AccountReference accountReference) {
+        return new AccountAccess(
             Collections.singletonList(accountReference),
             Collections.singletonList(accountReference),
             Collections.singletonList(accountReference),

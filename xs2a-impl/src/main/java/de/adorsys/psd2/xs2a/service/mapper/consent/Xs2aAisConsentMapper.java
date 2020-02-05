@@ -53,10 +53,10 @@ public class Xs2aAisConsentMapper {
     private final Xs2aToSpiPsuDataMapper xs2aToSpiPsuDataMapper;
     private final Xs2aToSpiAccountAccessMapper xs2aToSpiAccountAccessMapper;
 
-    public CreateAisConsentRequest mapToCreateAisConsentRequest(CreateConsentReq req, PsuIdData psuData, TppInfo tppInfo, int allowedFrequencyPerDay, String internalRequestId) {
+    public CreateConsentRequest mapToCreateAisConsentRequest(CreateConsentReq req, PsuIdData psuData, TppInfo tppInfo, int allowedFrequencyPerDay, String internalRequestId) {
         return Optional.ofNullable(req)
                    .map(r -> {
-                       CreateAisConsentRequest aisRequest = new CreateAisConsentRequest();
+                       CreateConsentRequest aisRequest = new CreateConsentRequest();
                        aisRequest.setPsuData(psuData);
                        aisRequest.setTppInfo(tppInfo);
                        aisRequest.setRequestedFrequencyPerDay(r.getFrequencyPerDay());
@@ -74,7 +74,7 @@ public class Xs2aAisConsentMapper {
                    .orElse(null);
     }
 
-    public SpiAccountConsent mapToSpiAccountConsent(AccountConsent accountConsent) {
+    public SpiAccountConsent mapToSpiAccountConsent(de.adorsys.psd2.xs2a.domain.consent.AccountConsent accountConsent) {
         return Optional.ofNullable(accountConsent)
                    .map(ac -> new SpiAccountConsent(
                             ac.getId(),
@@ -201,9 +201,9 @@ public class Xs2aAisConsentMapper {
                    .build();
     }
 
-    public AccountConsent mapToAccountConsent(AisAccountConsent ais) {
+    public de.adorsys.psd2.xs2a.domain.consent.AccountConsent mapToAccountConsent(CmsAccountConsent ais) {
         return Optional.ofNullable(ais)
-                   .map(ac -> new AccountConsent(
+                   .map(ac -> new de.adorsys.psd2.xs2a.domain.consent.AccountConsent(
                        ac.getId(),
                        mapToXs2aAccountAccess(ac.getTppAccess()),
                        mapToXs2aAccountAccess(ac.getAspspAccess()),
@@ -222,13 +222,14 @@ public class Xs2aAisConsentMapper {
                        mapToAccountConsentAuthorisation(ais.getAccountConsentAuthorizations()),
                        ac.getStatusChangeTimestamp(),
                        ac.getUsageCounterMap(),
-                       ac.getCreationTimestamp()))
+                       ac.getCreationTimestamp(),
+                       ac.getBody()))
                    .orElse(null);
     }
 
-    public AccountConsent mapToAccountConsentWithNewStatus(AccountConsent consent, ConsentStatus consentStatus) {
+    public de.adorsys.psd2.xs2a.domain.consent.AccountConsent mapToAccountConsentWithNewStatus(de.adorsys.psd2.xs2a.domain.consent.AccountConsent consent, ConsentStatus consentStatus) {
         return Optional.ofNullable(consent)
-                   .map(ac -> new AccountConsent(
+                   .map(ac -> new de.adorsys.psd2.xs2a.domain.consent.AccountConsent(
                        ac.getId(),
                        ac.getAccess(),
                        ac.getAspspAccess(),
@@ -247,7 +248,8 @@ public class Xs2aAisConsentMapper {
                        ac.getAuthorisations(),
                        ac.getStatusChangeTimestamp(),
                        ac.getUsageCounterMap(),
-                       ac.getCreationTimestamp()))
+                       ac.getCreationTimestamp(),
+                       ac.getBody()))
                    .orElse(null);
     }
 
@@ -272,7 +274,7 @@ public class Xs2aAisConsentMapper {
                    .orElse(null);
     }
 
-    private Xs2aAccountAccess mapToXs2aAccountAccess(AisAccountAccess ais) {
+    private Xs2aAccountAccess mapToXs2aAccountAccess(AccountAccess ais) {
         return new Xs2aAccountAccess(
             ais.getAccounts(),
             ais.getBalances(),
@@ -284,9 +286,9 @@ public class Xs2aAisConsentMapper {
     }
 
     private AdditionalInformationAccess mapToAdditionalInformationAccess(AdditionalInformationAccess accountAdditionalInformationAccess) {
-        return  Optional.ofNullable(accountAdditionalInformationAccess)
-                       .map(info -> new AdditionalInformationAccess(info.getOwnerName()))
-                       .orElse(null);
+        return Optional.ofNullable(accountAdditionalInformationAccess)
+                   .map(info -> new AdditionalInformationAccess(info.getOwnerName()))
+                   .orElse(null);
     }
 
     private AccountAccessType getAccessType(String type) {

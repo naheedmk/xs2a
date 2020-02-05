@@ -25,11 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AisConsentRemoteUrlsTest {
     private static final String BASE_URL = "http://base.url";
 
-    private AisConsentRemoteUrls aisConsentRemoteUrls;
+    private ConsentRemoteUrls aisConsentRemoteUrls;
 
     @BeforeEach
     void setUp() {
-        aisConsentRemoteUrls = new AisConsentRemoteUrls();
+        aisConsentRemoteUrls = new ConsentRemoteUrls();
         ReflectionTestUtils.setField(aisConsentRemoteUrls, "consentServiceBaseUrl", BASE_URL);
     }
 
@@ -67,12 +67,6 @@ class AisConsentRemoteUrlsTest {
     void findAndTerminateOldConsentsByNewConsentId() {
         assertEquals("http://base.url/ais/consent/{consent-id}/old-consents",
                      aisConsentRemoteUrls.findAndTerminateOldConsentsByNewConsentId());
-    }
-
-    @Test
-    void consentActionLog() {
-        assertEquals("http://base.url/ais/consent/action",
-                     aisConsentRemoteUrls.consentActionLog());
     }
 
     @Test

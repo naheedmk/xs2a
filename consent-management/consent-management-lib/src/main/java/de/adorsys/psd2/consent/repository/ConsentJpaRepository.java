@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.repository;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface AisConsentJpaRepository extends CrudRepository<AisConsent, Long>, JpaSpecificationExecutor<AisConsent> {
-    List<AisConsent> findByConsentStatusIn(Set<ConsentStatus> statuses);
+public interface ConsentJpaRepository extends CrudRepository<Consent, Long>, JpaSpecificationExecutor<Consent> {
+    List<Consent> findByConsentStatusIn(Set<ConsentStatus> statuses);
 
-    Optional<AisConsent> findByExternalId(String externalId);
+    Optional<Consent> findByExternalId(String externalId);
 
     @Query(
         "select c from ais_consent c " +
@@ -42,11 +42,11 @@ public interface AisConsentJpaRepository extends CrudRepository<AisConsent, Long
             "and c.consentStatus in :consentStatuses " +
             "and c.externalId <> :newConsentId"
     )
-    List<AisConsent> findOldConsentsByNewConsentParams(@Param("psuIds") Set<String> psuIds,
-                                                       @Param("authorisationNumber") String tppAuthorisationNumber,
-                                                       @Param("instanceId") String instanceId,
-                                                       @Param("newConsentId") String newConsentId,
-                                                       @Param("consentStatuses") Set<ConsentStatus> consentStatuses);
+    List<Consent> findOldConsentsByNewConsentParams(@Param("psuIds") Set<String> psuIds,
+                                                    @Param("authorisationNumber") String tppAuthorisationNumber,
+                                                    @Param("instanceId") String instanceId,
+                                                    @Param("newConsentId") String newConsentId,
+                                                    @Param("consentStatuses") Set<ConsentStatus> consentStatuses);
 
     @Query(
         "select c from ais_consent c " +
@@ -55,6 +55,6 @@ public interface AisConsentJpaRepository extends CrudRepository<AisConsent, Long
             "and c.consentStatus in :consentStatuses " +
             "and u.usageDate < :currentDate"
     )
-    List<AisConsent> findUsedNonRecurringConsents(@Param("consentStatuses") Set<ConsentStatus> consentStatuses,
-                                                  @Param("currentDate") LocalDate currentDate);
+    List<Consent> findUsedNonRecurringConsents(@Param("consentStatuses") Set<ConsentStatus> consentStatuses,
+                                               @Param("currentDate") LocalDate currentDate);
 }

@@ -25,7 +25,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.List;
 
 @Value
-public class AisAccountAccess {
+public class AccountAccess {
     private List<AccountReference> accounts;
     private List<AccountReference> balances;
     private List<AccountReference> transactions;

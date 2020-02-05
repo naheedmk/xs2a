@@ -17,8 +17,8 @@
 package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.domain.account.Consent;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +34,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AisConsentConfirmationExpirationService {
-    private final AisConsentJpaRepository aisConsentJpaRepository;
+public class ConsentConfirmationExpirationService {
+    private final ConsentJpaRepository consentJpaRepository;
     private final AspspProfileService aspspProfileService;
 
     @Transactional
-    public AisConsent checkAndUpdateOnConfirmationExpiration(AisConsent consent) {
+    public Consent checkAndUpdateOnConfirmationExpiration(Consent consent) {
         if (isConsentConfirmationExpired(consent)) {
             log.info("Consent ID: [{}]. Consent is expired", consent.getExternalId());
             return updateConsentOnConfirmationExpiration(consent);
@@ -47,37 +47,37 @@ public class AisConsentConfirmationExpirationService {
         return consent;
     }
 
-    public boolean isConsentConfirmationExpired(AisConsent consent) {
+    public boolean isConsentConfirmationExpired(Consent consent) {
         long expirationPeriodMs = aspspProfileService.getAspspSettings().getAis().getConsentTypes().getNotConfirmedConsentExpirationTimeMs();
         return consent != null && consent.isConfirmationExpired(expirationPeriodMs);
     }
 
     @Transactional
-    public AisConsent expireConsent(AisConsent consent) {
+    public Consent expireConsent(Consent consent) {
         LocalDate now = LocalDate.now();
         consent.setConsentStatus(ConsentStatus.EXPIRED);
         consent.setExpireDate(now);
         consent.setLastActionDate(now);
-        return aisConsentJpaRepository.save(consent);
+        return consentJpaRepository.save(consent);
     }
 
     @Transactional
-    public AisConsent updateConsentOnConfirmationExpiration(AisConsent consent) {
-        return aisConsentJpaRepository.save(obsoleteConsent(consent));
+    public Consent updateConsentOnConfirmationExpiration(Consent consent) {
+        return consentJpaRepository.save(obsoleteConsent(consent));
     }
 
     @Transactional
-    public List<AisConsent> updateConsentListOnConfirmationExpiration(List<AisConsent> consents) {
-        return IterableUtils.toList(aisConsentJpaRepository.saveAll(obsoleteConsentList(consents)));
+    public List<Consent> updateConsentListOnConfirmationExpiration(List<Consent> consents) {
+        return IterableUtils.toList(consentJpaRepository.saveAll(obsoleteConsentList(consents)));
     }
 
-    private List<AisConsent> obsoleteConsentList(List<AisConsent> consents) {
+    private List<Consent> obsoleteConsentList(List<Consent> consents) {
         return consents.stream()
                    .map(this::obsoleteConsent)
                    .collect(Collectors.toList());
     }
 
-    private AisConsent obsoleteConsent(AisConsent consent) {
+    private Consent obsoleteConsent(Consent consent) {
         consent.setConsentStatus(ConsentStatus.REJECTED);
         consent.getAuthorizations().forEach(auth -> auth.setScaStatus(ScaStatus.FAILED));
         consent.setLastActionDate(LocalDate.now());

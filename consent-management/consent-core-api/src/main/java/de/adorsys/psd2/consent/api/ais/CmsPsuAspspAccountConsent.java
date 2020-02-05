@@ -17,9 +17,9 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CmsAisAccountConsent {
+public class CmsPsuAspspAccountConsent {
     private String id;
-    private AisAccountAccess access;
+    private AccountAccess access;
     private boolean recurringIndicator;
     private LocalDate validUntil;
     private LocalDate expireDate;
@@ -37,4 +37,5 @@ public class CmsAisAccountConsent {
     private Map<String, Integer> usageCounterMap;
     private OffsetDateTime creationTimestamp;
     private OffsetDateTime statusChangeTimestamp;
+    private byte[] body;
 }

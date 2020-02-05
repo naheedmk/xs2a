@@ -23,7 +23,7 @@ import de.adorsys.psd2.consent.api.WrongChecksumException;
 import de.adorsys.psd2.consent.api.ais.*;
 import de.adorsys.psd2.consent.api.service.AccountServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
-import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
+import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.profile.NotificationSupportedMode;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
@@ -65,7 +65,7 @@ class AisConsentControllerTest {
     private AisConsentController aisConsentController;
 
     @Mock
-    private AisConsentServiceEncrypted aisConsentService;
+    private ConsentServiceEncrypted aisConsentService;
     @Mock
     private AccountServiceEncrypted accountServiceEncrypted;
     @Mock
@@ -74,13 +74,13 @@ class AisConsentControllerTest {
     @Test
     void createConsent_success() throws WrongChecksumException {
         // Given
-        CreateAisConsentRequest createRequest = new CreateAisConsentRequest();
-        CreateAisConsentResponse serviceResponse = new CreateAisConsentResponse(CONSENT_ID, new AisAccountConsent(), Arrays.asList(NotificationSupportedMode.LAST, NotificationSupportedMode.SCA));
+        CreateConsentRequest createRequest = new CreateConsentRequest();
+        CreateConsentResponse serviceResponse = new CreateConsentResponse(CONSENT_ID, new CmsAccountConsent(), Arrays.asList(NotificationSupportedMode.LAST, NotificationSupportedMode.SCA));
         when(aisConsentService.createConsent(createRequest))
-            .thenReturn(CmsResponse.<CreateAisConsentResponse>builder().payload(serviceResponse).build());
+            .thenReturn(CmsResponse.<CreateConsentResponse>builder().payload(serviceResponse).build());
 
         // When
-        ResponseEntity<CreateAisConsentResponse> actualResponse = aisConsentController.createConsent(createRequest);
+        ResponseEntity<CreateConsentResponse> actualResponse = aisConsentController.createConsent(createRequest);
 
         // Then
         assertEquals(HttpStatus.CREATED, actualResponse.getStatusCode());
@@ -90,12 +90,12 @@ class AisConsentControllerTest {
     @Test
     void createConsent_emptyServiceResponse() throws WrongChecksumException {
         // Given
-        CreateAisConsentRequest createRequest = new CreateAisConsentRequest();
+        CreateConsentRequest createRequest = new CreateConsentRequest();
         when(aisConsentService.createConsent(createRequest))
-            .thenReturn(CmsResponse.<CreateAisConsentResponse>builder().error(CmsError.TECHNICAL_ERROR).build());
+            .thenReturn(CmsResponse.<CreateConsentResponse>builder().error(CmsError.TECHNICAL_ERROR).build());
 
         // When
-        ResponseEntity<CreateAisConsentResponse> actualResponse = aisConsentController.createConsent(createRequest);
+        ResponseEntity<CreateConsentResponse> actualResponse = aisConsentController.createConsent(createRequest);
 
         // Then
         assertEquals(HttpStatus.NO_CONTENT, actualResponse.getStatusCode());

@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.psu.api.ais;
 
-import de.adorsys.psd2.consent.api.ais.AisAccountAccess;
+import de.adorsys.psd2.consent.api.ais.AccountAccess;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Value;
 
@@ -24,7 +24,7 @@ import java.time.LocalDate;
 
 @Value
 public class CmsAisConsentAccessRequest {
-    private AisAccountAccess accountAccess;
+    private AccountAccess accountAccess;
     @ApiModelProperty(dataType = "Date", example = "2019-12-31")
     private LocalDate validUntil;
     @ApiModelProperty(example = "4")

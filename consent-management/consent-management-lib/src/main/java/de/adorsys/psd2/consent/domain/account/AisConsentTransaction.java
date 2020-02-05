@@ -31,7 +31,7 @@ public class AisConsentTransaction {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "consent_id", nullable = false)
-    private AisConsent consentId;
+    private Consent consentId;
 
     @Column(name = "number_of_transactions")
     private int numberOfTransactions;

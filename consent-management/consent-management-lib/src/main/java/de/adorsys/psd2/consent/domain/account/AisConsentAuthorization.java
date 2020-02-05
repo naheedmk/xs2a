@@ -46,7 +46,7 @@ public class AisConsentAuthorization extends InstanceDependableEntity {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "consent_id", nullable = false)
-    private AisConsent consent;
+    private Consent consent;
 
     @Column(name = "sca_status", nullable = false)
     @Enumerated(value = EnumType.STRING)

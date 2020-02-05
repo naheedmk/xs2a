@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.account.TppAccountAccess;
 import de.adorsys.psd2.consent.domain.sha.AisConsentSha;
@@ -46,7 +46,7 @@ public class ChecksumCalculatingServiceV1 implements ChecksumCalculatingService 
     private final ObjectMapper objectMapper = buildObjectMapper();
 
     @Override
-    public boolean verifyConsentWithChecksum(AisConsent consent, byte[] checksum) {
+    public boolean verifyConsentWithChecksum(Consent consent, byte[] checksum) {
         String checksumStr = new String(checksum);
         String[] elements = checksumStr.split(ChecksumConstant.DELIMITER);
 
@@ -75,7 +75,7 @@ public class ChecksumCalculatingServiceV1 implements ChecksumCalculatingService 
     }
 
     @Override
-    public byte[] calculateChecksumForConsent(AisConsent consent) {
+    public byte[] calculateChecksumForConsent(Consent consent) {
         StringBuilder sb = new StringBuilder(VERSION).append(ChecksumConstant.DELIMITER);
 
         byte[] aisConsentAsBytes = getBytesFromObject(mapToShaModel(consent));
@@ -96,7 +96,7 @@ public class ChecksumCalculatingServiceV1 implements ChecksumCalculatingService 
         return sb.toString().getBytes();
     }
 
-    private String calculateChecksumForConsentStr(AisConsent consent) {
+    private String calculateChecksumForConsentStr(Consent consent) {
         byte[] aisConsentAsBytes = getBytesFromObject(mapToShaModel(consent));
         byte[] aisConsentChecksum = calculateChecksum(aisConsentAsBytes);
         return Base64.getEncoder().encodeToString(aisConsentChecksum);
@@ -113,7 +113,7 @@ public class ChecksumCalculatingServiceV1 implements ChecksumCalculatingService 
         return VERSION;
     }
 
-    private AisConsentSha mapToShaModel(AisConsent consent) {
+    private AisConsentSha mapToShaModel(Consent consent) {
         AisConsentSha aisConsentSha = new AisConsentSha();
         aisConsentSha.setRecurringIndicator(consent.isRecurringIndicator());
         aisConsentSha.setCombinedServiceIndicator(consent.isCombinedServiceIndicator());

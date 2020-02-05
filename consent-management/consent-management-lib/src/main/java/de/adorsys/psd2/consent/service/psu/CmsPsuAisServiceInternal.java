@@ -19,12 +19,12 @@ package de.adorsys.psd2.consent.service.psu;
 
 import de.adorsys.psd2.consent.api.WrongChecksumException;
 import de.adorsys.psd2.consent.api.ais.AdditionalAccountInformationType;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccess;
-import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
+import de.adorsys.psd2.consent.api.ais.AccountAccess;
+import de.adorsys.psd2.consent.api.ais.CmsPsuAspspAccountConsent;
 import de.adorsys.psd2.consent.api.ais.CmsAisConsentResponse;
-import de.adorsys.psd2.consent.api.service.AisConsentService;
+import de.adorsys.psd2.consent.api.service.ConsentService;
 import de.adorsys.psd2.consent.domain.PsuData;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.account.AisConsentAuthorization;
 import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.psu.api.CmsPsuAisService;
@@ -32,14 +32,14 @@ import de.adorsys.psd2.consent.psu.api.CmsPsuAuthorisation;
 import de.adorsys.psd2.consent.psu.api.ais.CmsAisConsentAccessRequest;
 import de.adorsys.psd2.consent.psu.api.ais.CmsAisPsuDataAuthorisation;
 import de.adorsys.psd2.consent.repository.AisConsentAuthorisationRepository;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
-import de.adorsys.psd2.consent.repository.AisConsentVerifyingRepository;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
+import de.adorsys.psd2.consent.repository.ConsentVerifyingRepository;
 import de.adorsys.psd2.consent.repository.specification.AisConsentAuthorizationSpecification;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
-import de.adorsys.psd2.consent.service.AisConsentConfirmationExpirationService;
+import de.adorsys.psd2.consent.service.ConsentConfirmationExpirationService;
 import de.adorsys.psd2.consent.service.AisConsentRequestTypeService;
 import de.adorsys.psd2.consent.service.AisConsentUsageService;
-import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
+import de.adorsys.psd2.consent.service.mapper.ConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsPsuAuthorisationMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
@@ -73,19 +73,19 @@ import static de.adorsys.psd2.xs2a.core.consent.ConsentStatus.*;
 //TODO Discuss instanceId security workflow https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/577
 @SuppressWarnings("PMD.TooManyMethods")
 public class CmsPsuAisServiceInternal implements CmsPsuAisService {
-    private final AisConsentJpaRepository aisConsentJpaRepository;
-    private final AisConsentVerifyingRepository aisConsentRepository;
-    private final AisConsentMapper consentMapper;
+    private final ConsentJpaRepository aisConsentJpaRepository;
+    private final ConsentVerifyingRepository aisConsentRepository;
+    private final ConsentMapper consentMapper;
     private final AisConsentAuthorisationRepository aisConsentAuthorisationRepository;
     private final AisConsentAuthorizationSpecification aisConsentAuthorizationSpecification;
     private final AisConsentSpecification aisConsentSpecification;
-    private final AisConsentService aisConsentService;
+    private final ConsentService aisConsentService;
     private final PsuDataMapper psuDataMapper;
     private final AisConsentUsageService aisConsentUsageService;
     private final CmsPsuService cmsPsuService;
     private final AisConsentRequestTypeService aisConsentRequestTypeService;
     private final CmsPsuAuthorisationMapper cmsPsuPisAuthorisationMapper;
-    private final AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
+    private final ConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
 
     @Override
     @Transactional
@@ -127,10 +127,10 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
 
     @Override
     @Transactional
-    public @NotNull Optional<CmsAisAccountConsent> getConsent(@NotNull PsuIdData psuIdData, @NotNull String consentId, @NotNull String instanceId) {
+    public @NotNull Optional<CmsPsuAspspAccountConsent> getConsent(@NotNull PsuIdData psuIdData, @NotNull String consentId, @NotNull String instanceId) {
         return aisConsentJpaRepository.findOne(aisConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId))
                    .map(this::checkAndUpdateOnExpiration)
-                   .map(consentMapper::mapToCmsAisAccountConsent);
+                   .map(consentMapper::mapToCmsPsuAspspAccountConsent);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     public boolean updateAuthorisationStatus(@NotNull PsuIdData psuIdData, @NotNull String consentId,
                                              @NotNull String authorisationId, @NotNull ScaStatus status,
                                              @NotNull String instanceId, AuthenticationDataHolder authenticationDataHolder) throws AuthorisationIsExpiredException {
-        Optional<AisConsent> actualAisConsent = getActualAisConsent(consentId, instanceId);
+        Optional<Consent> actualAisConsent = getActualAisConsent(consentId, instanceId);
 
         if (!actualAisConsent.isPresent()) {
             log.info("Consent ID: [{}]. Update of authorisation status failed, because consent either has finalised status or not found", consentId);
@@ -190,13 +190,13 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     }
 
     @Override
-    public @NotNull List<CmsAisAccountConsent> getConsentsForPsu(@NotNull PsuIdData psuIdData, @NotNull String instanceId) {
+    public @NotNull List<CmsPsuAspspAccountConsent> getConsentsForPsu(@NotNull PsuIdData psuIdData, @NotNull String instanceId) {
         if (psuIdData.isEmpty()) {
             return Collections.emptyList();
         }
 
         return aisConsentJpaRepository.findAll(aisConsentSpecification.byPsuDataInListAndInstanceId(psuIdData, instanceId)).stream()
-                   .map(consentMapper::mapToCmsAisAccountConsent)
+                   .map(consentMapper::mapToCmsPsuAspspAccountConsent)
                    .collect(Collectors.toList());
     }
 
@@ -215,7 +215,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     @Override
     @Transactional
     public boolean updateAccountAccessInConsent(@NotNull String consentId, @NotNull CmsAisConsentAccessRequest accountAccessRequest, @NotNull String instanceId) {
-        Optional<AisConsent> aisConsentOptional = getActualAisConsent(consentId, instanceId);
+        Optional<Consent> aisConsentOptional = getActualAisConsent(consentId, instanceId);
         if (aisConsentOptional.isPresent()) {
             return updateAccountAccessInConsent(aisConsentOptional.get(), accountAccessRequest);
         }
@@ -227,7 +227,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     @Override
     public Optional<List<CmsAisPsuDataAuthorisation>> getPsuDataAuthorisations(@NotNull String consentId, @NotNull String instanceId) {
         return getActualAisConsent(consentId, instanceId)
-                   .map(AisConsent::getAuthorizations)
+                   .map(Consent::getAuthorizations)
                    .map(this::getPsuDataAuthorisations);
     }
 
@@ -243,7 +243,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
                    .collect(Collectors.toList());
     }
 
-    private boolean updateAccountAccessInConsent(AisConsent consent, CmsAisConsentAccessRequest request) {
+    private boolean updateAccountAccessInConsent(Consent consent, CmsAisConsentAccessRequest request) {
         if (consent.getConsentStatus() == VALID) {
             log.info("Consent ID [{}]. Can't execute updateAccountAccessInConsent, because AIS consent has already VALID status.",
                      consent.getExternalId());
@@ -256,7 +256,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
             return false;
         }
 
-        AisAccountAccess accountAccess = request.getAccountAccess();
+        AccountAccess accountAccess = request.getAccountAccess();
         if (accountAccess == null) {
             log.info("Consent ID [{}]. Update account access in consent failed, because AIS Account Access is null",
                      consent.getExternalId());
@@ -296,7 +296,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
         return true;
     }
 
-    private void setAdditionalInformationTypes(AisConsent consent, AdditionalInformationAccess info) {
+    private void setAdditionalInformationTypes(Consent consent, AdditionalInformationAccess info) {
         AdditionalAccountInformationType ownerNameType = info == null
                                                              ? AdditionalAccountInformationType.NONE
                                                              : AdditionalAccountInformationType.findTypeByList(info.getOwnerName());
@@ -305,7 +305,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
 
     private boolean changeConsentStatus(String consentId, ConsentStatus status, String instanceId) throws WrongChecksumException {
 
-        Optional<AisConsent> aisConsentOptional = aisConsentJpaRepository.findOne(aisConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId));
+        Optional<Consent> aisConsentOptional = aisConsentJpaRepository.findOne(aisConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId));
 
         if (aisConsentOptional.isPresent()) {
             return updateConsentStatus(aisConsentOptional.get(), status);
@@ -316,7 +316,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
         return false;
     }
 
-    private AisConsent checkAndUpdateOnExpiration(AisConsent consent) {
+    private Consent checkAndUpdateOnExpiration(Consent consent) {
         if (consent != null && consent.shouldConsentBeExpired()) {
             return aisConsentConfirmationExpirationService.expireConsent(consent);
         }
@@ -324,12 +324,12 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
         return consent;
     }
 
-    private Optional<AisConsent> getActualAisConsent(String consentId, String instanceId) {
+    private Optional<Consent> getActualAisConsent(String consentId, String instanceId) {
         return aisConsentJpaRepository.findOne(aisConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId))
                    .filter(c -> !c.getConsentStatus().isFinalisedStatus());
     }
 
-    private boolean updateConsentStatus(AisConsent consent, ConsentStatus status) throws WrongChecksumException {
+    private boolean updateConsentStatus(Consent consent, ConsentStatus status) throws WrongChecksumException {
         if (consent.getConsentStatus().isFinalisedStatus()) {
             log.info("Consent ID: [{}], Consent status: [{}]. Confirmation of consent failed in updateConsentStatus method, because consent has finalised status",
                      consent.getExternalId(), consent.getConsentStatus().getValue());
@@ -400,14 +400,14 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     }
 
     private Optional<CmsAisConsentResponse> createCmsAisConsentResponseFromAisConsent(AisConsentAuthorization authorisation, String redirectId) {
-        AisConsent aisConsent = authorisation.getConsent();
+        Consent aisConsent = authorisation.getConsent();
         if (aisConsent == null) {
             log.info("Authorisation ID [{}]. Check redirect URL and get consent failed in createCmsAisConsentResponseFromAisConsent method, because AIS consent is null",
                      redirectId);
             return Optional.empty();
         }
 
-        CmsAisAccountConsent aisAccountConsent = consentMapper.mapToCmsAisAccountConsent(aisConsent);
+        CmsPsuAspspAccountConsent aisAccountConsent = consentMapper.mapToCmsPsuAspspAccountConsent(aisConsent);
         return Optional.of(new CmsAisConsentResponse(aisAccountConsent, redirectId, authorisation.getTppOkRedirectUri(),
                                                      authorisation.getTppNokRedirectUri()));
     }

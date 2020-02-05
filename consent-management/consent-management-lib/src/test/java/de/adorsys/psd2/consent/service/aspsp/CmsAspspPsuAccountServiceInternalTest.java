@@ -16,9 +16,9 @@
 
 package de.adorsys.psd2.consent.service.aspsp;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.piis.PiisConsentEntity;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.PiisConsentRepository;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
 import de.adorsys.psd2.consent.repository.specification.PiisConsentEntitySpecification;
@@ -44,7 +44,7 @@ class CmsAspspPsuAccountServiceInternalTest {
     private final String INSTANCE_ID = "Instance id";
     private static final String ASPSP_ACCOUNT_ID = "aspsp account id";
     private static final PsuIdData PSU_ID_DATA = new PsuIdData(PSU_ID, null, null, null, null);
-    private AisConsent aisConsent;
+    private Consent aisConsent;
     private PiisConsentEntity piisConsentEntity;
 
     private JsonReader jsonReader = new JsonReader();
@@ -54,7 +54,7 @@ class CmsAspspPsuAccountServiceInternalTest {
     @Mock
     private AisConsentSpecification aisConsentSpecification;
     @Mock
-    private AisConsentJpaRepository aisConsentJpaRepository;
+    private ConsentJpaRepository aisConsentJpaRepository;
     @Mock
     private PiisConsentRepository piisConsentRepository;
     @Mock
@@ -62,7 +62,7 @@ class CmsAspspPsuAccountServiceInternalTest {
 
     @BeforeEach
     void setUp() {
-        aisConsent = jsonReader.getObjectFromFile("json/AisConsent.json", AisConsent.class);
+        aisConsent = jsonReader.getObjectFromFile("json/AisConsent.json", Consent.class);
         piisConsentEntity = jsonReader.getObjectFromFile("json/service/mapper/piis-consent-entity.json", PiisConsentEntity.class);
     }
 

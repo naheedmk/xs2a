@@ -22,7 +22,7 @@ import de.adorsys.psd2.consent.api.ais.AisConsentAuthorizationRequest;
 import de.adorsys.psd2.consent.api.ais.AisConsentAuthorizationResponse;
 import de.adorsys.psd2.consent.api.ais.CreateAisConsentAuthorizationResponse;
 import de.adorsys.psd2.consent.api.service.AisConsentAuthorisationServiceEncrypted;
-import de.adorsys.psd2.consent.config.AisConsentRemoteUrls;
+import de.adorsys.psd2.consent.config.ConsentRemoteUrls;
 import de.adorsys.psd2.consent.config.CmsRestException;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
@@ -49,7 +49,7 @@ import static de.adorsys.psd2.consent.api.CmsError.TECHNICAL_ERROR;
 public class AisConsentAuthorisationServiceRemote implements AisConsentAuthorisationServiceEncrypted {
     @Qualifier("consentRestTemplate")
     private final RestTemplate consentRestTemplate;
-    private final AisConsentRemoteUrls remoteAisConsentUrls;
+    private final ConsentRemoteUrls remoteAisConsentUrls;
 
     @Override
     public CmsResponse<CreateAisConsentAuthorizationResponse> createAuthorizationWithResponse(String consentId, AisConsentAuthorizationRequest request) {

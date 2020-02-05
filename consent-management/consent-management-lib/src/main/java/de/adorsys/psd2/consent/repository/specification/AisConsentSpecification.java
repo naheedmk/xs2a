@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.repository.specification;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.account.Consent;
 import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import org.jetbrains.annotations.NotNull;
@@ -42,8 +42,8 @@ public class AisConsentSpecification extends GenericSpecification {
      * @param instanceId instance ID
      * @return specification for AisConsent entity
      */
-    public Specification<AisConsent> byConsentIdAndInstanceId(String consentId, String instanceId) {
-        return Specification.<AisConsent>where(byInstanceId(instanceId))
+    public Specification<Consent> byConsentIdAndInstanceId(String consentId, String instanceId) {
+        return Specification.<Consent>where(byInstanceId(instanceId))
                    .and(provideSpecificationForEntityAttribute(CONSENT_EXTERNAL_ID_ATTRIBUTE, consentId));
     }
 
@@ -57,12 +57,12 @@ public class AisConsentSpecification extends GenericSpecification {
      * @param instanceId             optional instance ID
      * @return specification for AisConsent entity
      */
-    public Specification<AisConsent> byTppIdAndCreationPeriodAndPsuIdDataAndInstanceId(@NotNull String tppAuthorisationNumber,
-                                                                                       @Nullable LocalDate createDateFrom,
-                                                                                       @Nullable LocalDate createDateTo,
-                                                                                       @Nullable PsuIdData psuIdData,
-                                                                                       @Nullable String instanceId) {
-        return Specification.<AisConsent>where(byTppAuthorisationNumber(tppAuthorisationNumber))
+    public Specification<Consent> byTppIdAndCreationPeriodAndPsuIdDataAndInstanceId(@NotNull String tppAuthorisationNumber,
+                                                                                    @Nullable LocalDate createDateFrom,
+                                                                                    @Nullable LocalDate createDateTo,
+                                                                                    @Nullable PsuIdData psuIdData,
+                                                                                    @Nullable String instanceId) {
+        return Specification.<Consent>where(byTppAuthorisationNumber(tppAuthorisationNumber))
                    .and(byCreationTimestamp(createDateFrom, createDateTo))
                    .and(byPsuIdDataInList(psuIdData))
                    .and(byInstanceId(instanceId));
@@ -77,11 +77,11 @@ public class AisConsentSpecification extends GenericSpecification {
      * @param instanceId     optional instance ID
      * @return specification for AisConsent entity
      */
-    public Specification<AisConsent> byPsuIdDataAndCreationPeriodAndInstanceId(@NotNull PsuIdData psuIdData,
-                                                                               @Nullable LocalDate createDateFrom,
-                                                                               @Nullable LocalDate createDateTo,
-                                                                               @Nullable String instanceId) {
-        return Specification.<AisConsent>where(byPsuIdDataInList(psuIdData))
+    public Specification<Consent> byPsuIdDataAndCreationPeriodAndInstanceId(@NotNull PsuIdData psuIdData,
+                                                                            @Nullable LocalDate createDateFrom,
+                                                                            @Nullable LocalDate createDateTo,
+                                                                            @Nullable String instanceId) {
+        return Specification.<Consent>where(byPsuIdDataInList(psuIdData))
                    .and(byCreationTimestamp(createDateFrom, createDateTo))
                    .and(byInstanceId(instanceId));
     }
@@ -95,11 +95,11 @@ public class AisConsentSpecification extends GenericSpecification {
      * @param instanceId     optional instance ID
      * @return specification for AisConsent entity
      */
-    public Specification<AisConsent> byAspspAccountIdAndCreationPeriodAndInstanceId(@NotNull String aspspAccountId,
-                                                                                    @Nullable LocalDate createDateFrom,
-                                                                                    @Nullable LocalDate createDateTo,
-                                                                                    @Nullable String instanceId) {
-        return Specification.<AisConsent>where(byAspspAccountIdInAspspAccountAccess(aspspAccountId))
+    public Specification<Consent> byAspspAccountIdAndCreationPeriodAndInstanceId(@NotNull String aspspAccountId,
+                                                                                 @Nullable LocalDate createDateFrom,
+                                                                                 @Nullable LocalDate createDateTo,
+                                                                                 @Nullable String instanceId) {
+        return Specification.<Consent>where(byAspspAccountIdInAspspAccountAccess(aspspAccountId))
                    .and(byCreationTimestamp(createDateFrom, createDateTo))
                    .and(byInstanceId(instanceId));
     }
@@ -112,11 +112,11 @@ public class AisConsentSpecification extends GenericSpecification {
      * @param instanceId     optional instance ID
      * @return specification for AisConsent entity
      */
-    public Specification<AisConsent> byAspspAccountIdAndPsuIdDataAndInstanceId(@Nullable String aspspAccountId,
-                                                                               @NotNull PsuIdData psuIdData,
-                                                                               @Nullable String instanceId) {
+    public Specification<Consent> byAspspAccountIdAndPsuIdDataAndInstanceId(@Nullable String aspspAccountId,
+                                                                            @NotNull PsuIdData psuIdData,
+                                                                            @Nullable String instanceId) {
 
-        return Specification.<AisConsent>where(byAspspAccountIdInAspspAccountAccess(aspspAccountId))
+        return Specification.<Consent>where(byAspspAccountIdInAspspAccountAccess(aspspAccountId))
                    .and(byPsuIdDataInList(psuIdData))
                    .and(byInstanceId(instanceId));
     }

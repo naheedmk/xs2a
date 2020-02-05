@@ -19,7 +19,7 @@ package de.adorsys.psd2.consent.service;
 
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.ais.AisConsentAuthorizationResponse;
-import de.adorsys.psd2.consent.config.AisConsentRemoteUrls;
+import de.adorsys.psd2.consent.config.ConsentRemoteUrls;
 import de.adorsys.psd2.consent.config.CmsRestException;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
@@ -46,7 +46,7 @@ class AisConsentAuthorisationServiceRemoteTest {
     @Mock
     private RestTemplate consentRestTemplate;
     @Mock
-    private AisConsentRemoteUrls remoteAisConsentUrls;
+    private ConsentRemoteUrls remoteAisConsentUrls;
     @Mock
     private CmsRestException cmsRestException;
 

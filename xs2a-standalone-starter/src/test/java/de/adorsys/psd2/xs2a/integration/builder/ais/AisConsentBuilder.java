@@ -17,8 +17,8 @@
 package de.adorsys.psd2.xs2a.integration.builder.ais;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccess;
-import de.adorsys.psd2.consent.api.ais.AisAccountConsent;
+import de.adorsys.psd2.consent.api.ais.AccountAccess;
+import de.adorsys.psd2.consent.api.ais.CmsAccountConsent;
 import de.adorsys.psd2.consent.api.ais.AisAccountConsentAuthorisation;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
@@ -54,7 +54,7 @@ public class AisConsentBuilder {
     private final static String AUTHORISATION_ID = UUID.randomUUID().toString();
     private static final Charset UTF_8 = StandardCharsets.UTF_8;
 
-    public static AisAccountConsent buildAisAccountConsent(String jsonPath, ScaApproach scaApproach, String encryptConsentId, Xs2aObjectMapper mapper, AisAccountConsentAuthorisation consentAuthorisation) throws IOException {
+    public static CmsAccountConsent buildAisAccountConsent(String jsonPath, ScaApproach scaApproach, String encryptConsentId, Xs2aObjectMapper mapper, AisAccountConsentAuthorisation consentAuthorisation) throws IOException {
         CreateConsentReq consentReq = mapper.readValue(
             resourceToString(jsonPath, UTF_8),
             new TypeReference<CreateConsentReq>() {
@@ -63,16 +63,16 @@ public class AisConsentBuilder {
         return buildAisConsent(consentReq, encryptConsentId, scaApproach, consentAuthorisation);
     }
 
-    public static AisAccountConsent buildAisAccountConsent(String jsonPath, ScaApproach scaApproach, String encryptConsentId, Xs2aObjectMapper mapper) throws IOException {
+    public static CmsAccountConsent buildAisAccountConsent(String jsonPath, ScaApproach scaApproach, String encryptConsentId, Xs2aObjectMapper mapper) throws IOException {
         return buildAisAccountConsent(jsonPath, scaApproach, encryptConsentId, mapper, null);
     }
 
-    private static AisAccountConsent buildAisConsent(CreateConsentReq consentReq, String consentId, ScaApproach scaApproach, AisAccountConsentAuthorisation consentAuthorisation) {
+    private static CmsAccountConsent buildAisConsent(CreateConsentReq consentReq, String consentId, ScaApproach scaApproach, AisAccountConsentAuthorisation consentAuthorisation) {
         return Optional.ofNullable(consentReq)
-                   .map(cr -> new AisAccountConsent(
+                   .map(cr -> new CmsAccountConsent(
                             consentId,
                             mapToAccountAccess(cr.getAccess()),
-                            new AisAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null, null, null, null),
+                            new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null, null, null, null),
                             cr.isRecurringIndicator(),
                             cr.getValidUntil(),
                             null,
@@ -95,11 +95,11 @@ public class AisConsentBuilder {
                    .orElse(null);
     }
 
-    private static AisAccountAccess mapToAccountAccess(Xs2aAccountAccess access) {
+    private static AccountAccess mapToAccountAccess(Xs2aAccountAccess access) {
         AccountAccessType availableAccounts = access.getAvailableAccounts();
         return Optional.ofNullable(access)
                    .map(aa ->
-                            new AisAccountAccess(
+                            new AccountAccess(
                                 aa.getAccounts(),
                                 aa.getBalances(),
                                 aa.getTransactions(),

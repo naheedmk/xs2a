@@ -23,10 +23,10 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UpdateAisConsentResponse {
-    private AisAccountConsent aisConsent;
+    private CmsAccountConsent aisConsent;
     private CmsError cmsError;
 
-    public UpdateAisConsentResponse(AisAccountConsent aisConsent) {
+    public UpdateAisConsentResponse(CmsAccountConsent aisConsent) {
         this.aisConsent = aisConsent;
     }
 

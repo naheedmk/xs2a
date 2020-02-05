@@ -44,9 +44,9 @@ import java.util.Set;
 
 @Data
 @ToString(exclude = {"accesses", "authorizations", "usages"})
-@Entity(name = "ais_consent")
+@Entity(name = "consent")
 @ApiModel(description = "Ais consent entity", value = "AisConsent")
-public class AisConsent extends InstanceDependableEntity {
+public class Consent extends InstanceDependableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ais_consent_generator")
     @SequenceGenerator(name = "ais_consent_generator", sequenceName = "ais_consent_id_seq", allocationSize = 1)
@@ -80,11 +80,11 @@ public class AisConsent extends InstanceDependableEntity {
     @ApiModelProperty(value = "Expiration date for the requested consent. The content is the local ASPSP date in ISODate Format", required = true, example = "2018-05-04")
     private LocalDate expireDate;
 
-    @Column(name = "valid_until", nullable = false)  //TODO  Create migration file with not null constraint for "valid_until" https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1160
+    @Column(name = "valid_until", nullable = false)//TODO  Create migration file with not null constraint for "valid_until" https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1160
     private LocalDate validUntil;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "ais_consent_psu_data",
+    @JoinTable(name = "consent_psu_data",
         joinColumns = @JoinColumn(name = "ais_consent_id"),
         inverseJoinColumns = @JoinColumn(name = "psu_data_id"))
     private List<PsuData> psuDataList = new ArrayList<>();
@@ -129,12 +129,12 @@ public class AisConsent extends InstanceDependableEntity {
     private List<AisConsentUsage> usages = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name = "ais_account_access", joinColumns = @JoinColumn(name = "consent_id"))
+    @CollectionTable(name = "account_access", joinColumns = @JoinColumn(name = "consent_id"))
     @ApiModelProperty(value = "Set of accesses given by psu for this account", required = true)
     private List<TppAccountAccess> accesses = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name = "ais_aspsp_account_access", joinColumns = @JoinColumn(name = "consent_id"))
+    @CollectionTable(name = "aspsp_account_access", joinColumns = @JoinColumn(name = "consent_id"))
     @ApiModelProperty(value = "Set of aspsp account accesses given by aspsp for this account", required = true)
     private List<AspspAccountAccess> aspspAccountAccesses = new ArrayList<>();
 
@@ -190,6 +190,9 @@ public class AisConsent extends InstanceDependableEntity {
 
     @Transient
     private ConsentStatus previousConsentStatus;
+
+    @Column(name = "body")
+    private byte[] body;
 
     @PostLoad
     public void aisConsentPostLoad() {
