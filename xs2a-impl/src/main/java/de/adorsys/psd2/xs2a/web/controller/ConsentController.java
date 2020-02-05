@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.web.controller;
 
 import de.adorsys.psd2.api.ConsentApi;
+import de.adorsys.psd2.consent.api.ConsentType;
 import de.adorsys.psd2.model.Consents;
 import de.adorsys.psd2.xs2a.core.psu.AdditionalPsuIdData;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -35,6 +36,7 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ResponseErrorMapper;
 import de.adorsys.psd2.xs2a.web.header.ConsentHeadersBuilder;
 import de.adorsys.psd2.xs2a.web.header.ResponseHeaders;
 import de.adorsys.psd2.xs2a.web.mapper.AuthorisationMapper;
+import de.adorsys.psd2.xs2a.web.mapper.ConsentModelMapperPsd2;
 import de.adorsys.psd2.xs2a.web.mapper.ConsentModelMapperXs2a;
 import de.adorsys.psd2.xs2a.web.mapper.TppRedirectUriMapper;
 import lombok.AllArgsConstructor;
@@ -54,7 +56,8 @@ import java.util.UUID;
 public class ConsentController implements ConsentApi {
     private final ConsentService consentService;
     private final ResponseMapper responseMapper;
-    private final ConsentModelMapperXs2a consentModelMapper;
+    private final ConsentModelMapperXs2a consentModelMapperXs2a;
+    private final ConsentModelMapperPsd2 consentModelMapperPsd2;
     private final AuthorisationMapper authorisationMapper;
     private final TppRedirectUriMapper tppRedirectUriMapper;
     private final ResponseErrorMapper responseErrorMapper;
@@ -74,7 +77,7 @@ public class ConsentController implements ConsentApi {
         TppRedirectUri tppRedirectUri = tppRedirectUriMapper.mapToTppRedirectUri(tppRedirectUriString, tppNokRedirectUriString);
         TppNotificationData tppNotificationData = notificationSupportedModeService.getTppNotificationData(tppNotificationContentPreferred, tppNotificationUri);
 
-        CreateConsentReq createConsent = consentModelMapper.mapToCreateConsentReq(consentModelMapper.mapToXs2aConsent(), body, tppRedirectUri, tppNotificationData);
+        CreateConsentReq createConsent = consentModelMapperXs2a.mapToCreateConsentReq(consentModelMapperXs2a.mapToXs2aConsent(), body, tppRedirectUri, tppNotificationData);
 
         PsuIdData psuData = new PsuIdData(psuId, psuIdType, psuCorporateId, psuCorporateIdType, psuIpAddress,
                                           new AdditionalPsuIdData(psuIpPort, psuUserAgent, psuGeoLocation, psuAccept, psuAcceptCharset, psuAcceptEncoding, psuAcceptLanguage, psuHttpMethod, psuDeviceId));
@@ -96,7 +99,7 @@ public class ConsentController implements ConsentApi {
                                                                                       .orElseThrow(() -> new IllegalArgumentException("Wrong href type in self link")),
                                                                                   notificationHeaders);
 
-        return responseMapper.created(createResponse, consentModelMapper::mapToConsentsResponse201, headers);
+        return responseMapper.created(createResponse, consentModelMapperPsd2::mapToConsentsResponse201, headers);
     }
 
     @Override
@@ -109,7 +112,7 @@ public class ConsentController implements ConsentApi {
         ResponseObject<ConsentStatusResponse> accountConsentsStatusByIdResponse = consentService.getAccountConsentsStatusById(consentId);
         return accountConsentsStatusByIdResponse.hasError()
                    ? responseErrorMapper.generateErrorResponse(accountConsentsStatusByIdResponse.getError())
-                   : responseMapper.ok(accountConsentsStatusByIdResponse, consentModelMapper::mapToConsentStatusResponse200);
+                   : responseMapper.ok(accountConsentsStatusByIdResponse, consentModelMapperPsd2::mapToConsentStatusResponse200);
     }
 
     @Override
@@ -156,7 +159,7 @@ public class ConsentController implements ConsentApi {
     }
 
     private ResponseEntity updateAisAuthorisation(PsuIdData psuData, String authorisationId, String consentId, Object body) {
-        UpdateConsentPsuDataReq updatePsuDataRequest = consentModelMapper.mapToUpdatePsuData(psuData, consentId, authorisationId, (Map) body);
+        UpdateConsentPsuDataReq updatePsuDataRequest = consentModelMapperXs2a.mapToUpdatePsuData(psuData, consentId, authorisationId, (Map) body);
         ResponseObject<UpdateConsentPsuDataResponse> updateConsentPsuDataResponse = consentService.updateConsentPsuData(updatePsuDataRequest);
 
         if (updateConsentPsuDataResponse.hasError()) {
@@ -201,7 +204,9 @@ public class ConsentController implements ConsentApi {
         ResponseObject<AccountConsent> accountConsentByIdResponse = consentService.getAccountConsentById(consentId);
         return accountConsentByIdResponse.hasError()
                    ? responseErrorMapper.generateErrorResponse(accountConsentByIdResponse.getError())
-                   : responseMapper.ok(accountConsentByIdResponse, consentModelMapper::mapToConsentInformationResponse200Json);
+                   : responseMapper.ok(ResponseObject.builder()
+                                           .body(consentModelMapperPsd2.mapToGetConsentsResponse(accountConsentByIdResponse.getBody(), ConsentType.AIS)).build()
+        );
     }
 
     @Override

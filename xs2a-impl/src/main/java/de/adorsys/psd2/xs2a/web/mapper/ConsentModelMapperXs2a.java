@@ -47,8 +47,6 @@ import java.util.stream.Collectors;
 public class ConsentModelMapperXs2a {
     private final Xs2aObjectMapper xs2aObjectMapper;
     public final AccountModelMapper accountModelMapper;
-    private final HrefLinkMapper hrefLinkMapper;
-    private final ScaMethodsMapper scaMethodsMapper;
     private final HttpServletRequest httpServletRequest;
 
     public CreateConsentReq mapToCreateConsentReq(byte[] body, Consents consent, TppRedirectUri tppRedirectUri, TppNotificationData tppNotificationData) {
@@ -79,26 +77,6 @@ public class ConsentModelMapperXs2a {
             log.warn("Cannot deserialize httpServletRequest body!", e);
             return new byte[0];
         }
-    }
-
-    public ConsentStatusResponse200 mapToConsentStatusResponse200(ConsentStatusResponse consentStatusResponse) {
-        return Optional.ofNullable(consentStatusResponse)
-                   .map(cstr -> new ConsentStatusResponse200().consentStatus(ConsentStatus.fromValue(cstr.getConsentStatus())))
-                   .orElse(null);
-    }
-
-    public ConsentsResponse201 mapToConsentsResponse201(CreateConsentResponse createConsentResponse) {
-        return Optional.ofNullable(createConsentResponse)
-                   .map(cnst ->
-                            new ConsentsResponse201()
-                                .consentStatus(ConsentStatus.fromValue(cnst.getConsentStatus()))
-                                .consentId(cnst.getConsentId())
-                                .scaMethods(scaMethodsMapper.mapToScaMethods(cnst.getScaMethods()))
-                                ._links(hrefLinkMapper.mapToLinksMap(cnst.getLinks()))
-                                .psuMessage(cnst.getPsuMessage())
-                                .tppMessages(mapToTppMessage2XXList(cnst.getTppMessageInformation()))
-                   )
-                   .orElse(null);
     }
 
     public ConsentInformationResponse200Json mapToConsentInformationResponse200Json(AccountConsent accountConsent) {
@@ -288,25 +266,5 @@ public class ConsentModelMapperXs2a {
         cancellationList.addAll(cancellationIds);
         cancellations.setCancellationIds(cancellationList);
         return cancellations;
-    }
-
-
-    private List<TppMessage2XX> mapToTppMessage2XXList(Set<TppMessageInformation> tppMessages) {
-        if (CollectionUtils.isEmpty(tppMessages)) {
-            return null;
-        }
-        return tppMessages.stream()
-                   .map(this::mapToTppMessage2XX)
-                   .collect(Collectors.toList());
-    }
-
-    private TppMessage2XX mapToTppMessage2XX(TppMessageInformation tppMessage) {
-        TppMessage2XX tppMessage2XX = new TppMessage2XX();
-        tppMessage2XX.setCategory(TppMessageCategory.fromValue(tppMessage.getCategory().name()));
-        tppMessage2XX.setCode(MessageCode2XX.WARNING);
-        tppMessage2XX.setPath(tppMessage.getPath());
-        tppMessage2XX.setText(tppMessage.getText());
-
-        return tppMessage2XX;
     }
 }

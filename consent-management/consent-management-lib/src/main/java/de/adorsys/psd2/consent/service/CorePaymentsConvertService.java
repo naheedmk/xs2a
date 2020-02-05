@@ -56,7 +56,7 @@ public class CorePaymentsConvertService extends CoreConvertService<List<PisPayme
 
     @Override
     public Map<PaymentType, Function<List<PisPayment>, Object>> statusTransformer() {
-        HashMap<PaymentType, Function<List<PisPayment>, Object>> map = new HashMap<>();
+        Map<PaymentType, Function<List<PisPayment>, Object>> map = new HashMap<>();
         map.put(PaymentType.SINGLE, cmsCorePaymentMapper::mapToPaymentInitiationJson);
         map.put(PaymentType.BULK, cmsCorePaymentMapper::mapToBulkPaymentInitiationJson);
         map.put(PaymentType.PERIODIC, cmsCorePaymentMapper::mapToPeriodicPaymentInitiationJson);
