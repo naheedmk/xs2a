@@ -44,7 +44,6 @@ public class PisCommonPaymentMapper {
     private final AccountReferenceMapper accountReferenceMapper;
     private final AuthorisationMapper authorisationMapper;
 
-
     public PisCommonPaymentData mapToPisCommonPaymentData(PisPaymentInfo paymentInfo) {
         PisCommonPaymentData commonPaymentData = new PisCommonPaymentData();
         commonPaymentData.setPaymentId(paymentInfo.getPaymentId());
