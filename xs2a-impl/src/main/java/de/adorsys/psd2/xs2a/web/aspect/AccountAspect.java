@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2018 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package de.adorsys.psd2.xs2a.web.aspect;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountDetails;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountDetailsHolder;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountListHolder;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.web.controller.AccountController;
 import de.adorsys.psd2.xs2a.web.link.AccountDetailsLinks;
@@ -47,7 +47,7 @@ public class AccountAspect extends AbstractLinkAspect<AccountController> {
             Xs2aAccountDetailsHolder body = result.getBody();
             Xs2aAccountDetails accountDetails = body.getAccountDetails();
             accountDetails.setLinks(new AccountDetailsLinks(getHttpUrl(), accountDetails.getResourceId(),
-                                                            body.getAccountConsent().getAccess()));
+                                                            body.getAisConsent().getAccess()));
         }
         return result;
     }
@@ -57,12 +57,12 @@ public class AccountAspect extends AbstractLinkAspect<AccountController> {
         if (!result.hasError()) {
             Xs2aAccountListHolder body = result.getBody();
             List<Xs2aAccountDetails> accountDetails = body.getAccountDetails();
-            Xs2aAccountAccess xs2aAccountAccess = body.getAccountConsent().getAccess();
-            if (body.getAccountConsent().getAisConsentRequestType() == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS) {
+            AccountAccess accountAccess = body.getAisConsent().getAccess();
+            if (body.getAisConsent().getAisConsentRequestType() == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS) {
                 accountDetails.forEach(acc -> acc.setLinks(null));
             } else {
                 accountDetails.forEach(acc -> acc.setLinks(new AccountDetailsLinks(getHttpUrl(), acc.getResourceId(),
-                                                                                   xs2aAccountAccess)));
+                                                                                   accountAccess)));
             }
         }
         return result;

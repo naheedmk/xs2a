@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,7 +36,7 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 @RequiredArgsConstructor
 public class AccountReferenceAccessValidator {
 
-    public ValidationResult validate(Xs2aAccountAccess accountAccess, List<AccountReference> references, String accountId, AisConsentRequestType consentRequestType) {
+    public ValidationResult validate(AccountAccess accountAccess, List<AccountReference> references, String accountId, AisConsentRequestType consentRequestType) {
         if (AisConsentRequestType.GLOBAL == consentRequestType) {
             return ValidationResult.valid();
         }
@@ -55,7 +55,7 @@ public class AccountReferenceAccessValidator {
                                   .anyMatch(a -> StringUtils.equals(a.getResourceId(), accountId));
     }
 
-    private boolean isConsentForAllAvailableAccounts(Xs2aAccountAccess accountAccess) {
+    private boolean isConsentForAllAvailableAccounts(AccountAccess accountAccess) {
         return Arrays.asList(accountAccess.getAvailableAccounts(), accountAccess.getAvailableAccountsWithBalance())
                    .contains(AccountAccessType.ALL_ACCOUNTS);
     }

@@ -16,10 +16,10 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +37,7 @@ class AccountReferenceAccessValidatorTest {
 
     private AccountReferenceAccessValidator validator;
     private JsonReader jsonReader;
-    private Xs2aAccountAccess accountAccess;
+    private AccountAccess accountAccess;
     private AccountReference accountReference;
 
     @BeforeEach
@@ -45,27 +45,27 @@ class AccountReferenceAccessValidatorTest {
         validator = new AccountReferenceAccessValidator();
         jsonReader = new JsonReader();
 
-        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", Xs2aAccountAccess.class);
+        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", AccountAccess.class);
         accountReference = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-reference.json", AccountReference.class);
     }
 
     @Test
     void validate_success() {
-        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", Xs2aAccountAccess.class);
+        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", AccountAccess.class);
         ValidationResult validationResult = validator.validate(accountAccess, Collections.singletonList(accountReference), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS);
         assertTrue(validationResult.isValid());
     }
 
     @Test
     void validate_success_global() {
-        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", Xs2aAccountAccess.class);
+        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", AccountAccess.class);
         ValidationResult validationResult = validator.validate(accountAccess, Collections.singletonList(accountReference), ACCOUNT_ID, AisConsentRequestType.GLOBAL);
         assertTrue(validationResult.isValid());
     }
 
     @Test
     void validate_notValidByAccountId() {
-        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", Xs2aAccountAccess.class);
+        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", AccountAccess.class);
         ValidationResult validationResult = validator.validate(accountAccess, Collections.singletonList(accountReference), WRONG_ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS);
 
         assertFalse(validationResult.isValid());
@@ -75,7 +75,7 @@ class AccountReferenceAccessValidatorTest {
 
     @Test
     void validate_notValidAvailableAccount() {
-        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access-available_accounts.json", Xs2aAccountAccess.class);
+        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access-available_accounts.json", AccountAccess.class);
         ValidationResult validationResult = validator.validate(accountAccess, Collections.emptyList(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS);
 
         assertFalse(validationResult.isValid());
@@ -85,7 +85,7 @@ class AccountReferenceAccessValidatorTest {
 
     @Test
     void validate_notValidAvailableAccountWithValances() {
-        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access-available_accounts_with_balances.json", Xs2aAccountAccess.class);
+        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access-available_accounts_with_balances.json", AccountAccess.class);
         ValidationResult validationResult = validator.validate(accountAccess, Collections.emptyList(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS);
 
         assertFalse(validationResult.isValid());

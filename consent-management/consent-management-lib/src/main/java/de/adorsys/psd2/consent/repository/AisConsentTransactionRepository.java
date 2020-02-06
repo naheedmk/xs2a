@@ -16,14 +16,14 @@
 
 package de.adorsys.psd2.consent.repository;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
 import de.adorsys.psd2.consent.domain.account.AisConsentTransaction;
+import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
 public interface AisConsentTransactionRepository extends CrudRepository<AisConsentTransaction, Long> {
 
-    Optional<AisConsentTransaction> findByConsentIdAndResourceId(AisConsent aisConsent, String resourceId);
+    Optional<AisConsentTransaction> findByConsentIdAndResourceId(ConsentEntity aisConsent, String resourceId);
 
 }

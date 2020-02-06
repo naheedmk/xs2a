@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,24 @@
 
 package de.adorsys.psd2.consent.service;
 
-import de.adorsys.psd2.consent.api.TypeAccess;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.domain.account.AisConsentTransaction;
-import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
+import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.AisConsentTransactionRepository;
 import de.adorsys.psd2.consent.repository.AisConsentUsageRepository;
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
+import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
+import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -36,29 +41,39 @@ public class OneOffConsentExpirationService {
 
     private final AisConsentUsageRepository aisConsentUsageRepository;
     private final AisConsentTransactionRepository aisConsentTransactionRepository;
+    private final ConsentDataMapper consentDataMapper;
 
     /**
      * Checks, should the one-off consent be expired after using its all GET endpoints (accounts, balances, transactions)
      * in all possible combinations depending on the consent type.
      *
-     * @param consent the {@link AisConsent} to check.
+     * @param consent the {@link ConsentEntity} to check.
+     * @param cmsConsent the {@link CmsConsent} to check.
      * @return true if the consent should be expired, false otherwise.
      */
-    public boolean isConsentExpired(AisConsent consent) {
+
+    // TODO need to refactor this method in order to use one parameter instead of two  TODO https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1202
+    public boolean isConsentExpired(ConsentEntity consent, CmsConsent cmsConsent) {
+        byte[] consentData = cmsConsent.getConsentData();
+        AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consentData);
+        AisConsentRequestType consentRequestType = aisConsentData.getConsentRequestType();
 
         // We omit all bank offered consents until they are not populated with accounts.
-        if (consent.getAisConsentRequestType() == AisConsentRequestType.BANK_OFFERED) {
+        if (consentRequestType == AisConsentRequestType.BANK_OFFERED) {
             return false;
         }
 
         // All available account consent support only one call - readAccountList.
-        if (consent.getAisConsentRequestType() == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS) {
+        if (consentRequestType == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS) {
             return true;
         }
 
-        List<String> consentResourceIds = consent.getAspspAccountAccesses()
-                                              .stream()
-                                              .map(AspspAccountAccess::getResourceId)
+        AccountAccess aspspAccess = aisConsentData.getAspspAccountAccess();
+        List<AccountReference> references = Stream.of(aspspAccess.getAccounts(), aspspAccess.getBalances(), aspspAccess.getTransactions())
+                                                .flatMap(Collection::stream).collect(Collectors.toList());
+
+        List<String> consentResourceIds = references.stream()
+                                              .map(AccountReference::getResourceId)
                                               .distinct()
                                               .collect(Collectors.toList());
 
@@ -70,7 +85,7 @@ public class OneOffConsentExpirationService {
                                    .map(AisConsentTransaction::getNumberOfTransactions)
                                    .orElse(0);
 
-            int maximumNumberOfGetRequestsForConsent = getMaximumNumberOfGetRequestsForConsentsAccount(consent.getAspspAccountAccesses(), resourceId, transactions);
+            int maximumNumberOfGetRequestsForConsent = getMaximumNumberOfGetRequestsForConsentsAccount(aspspAccess, resourceId, transactions);
             int numberOfUsedGetRequestsForConsent = aisConsentUsageRepository.countByConsentIdAndResourceId(consent.getId(), resourceId);
 
             // There are some available not used get requests - omit all other iterations.
@@ -87,29 +102,36 @@ public class OneOffConsentExpirationService {
      * This method returns maximum number of possible get requests for the definite consent for ONE account
      * except the main get call - readAccountList.
      */
-    private int getMaximumNumberOfGetRequestsForConsentsAccount(List<AspspAccountAccess> aspspAccountAccesses, String resourceId, int numberOfTransactions) {
-        List<AspspAccountAccess> filteredByResourceId = aspspAccountAccesses.stream().filter(access -> access.getResourceId().equals(resourceId)).collect(Collectors.toList());
+    private int getMaximumNumberOfGetRequestsForConsentsAccount(AccountAccess aspspAccountAccesses, String resourceId, int numberOfTransactions) {
+
+        boolean accessesForAccountsEmpty = aspspAccountAccesses.getAccounts().stream()
+                                               .filter(access -> access.getResourceId().equals(resourceId))
+                                               .collect(Collectors.toList()).isEmpty();
+
+        boolean accessesForBalanceEmpty = aspspAccountAccesses.getBalances().stream()
+                                              .filter(access -> access.getResourceId().equals(resourceId))
+                                              .collect(Collectors.toList()).isEmpty();
+
+        boolean accessesForTransactionsEmpty = aspspAccountAccesses.getTransactions().stream()
+                                                   .filter(access -> access.getResourceId().equals(resourceId))
+                                                   .collect(Collectors.toList()).isEmpty();
 
         // Consent was given only for accounts: readAccountDetails for each account.
-        if (filteredByResourceId
-                .stream()
-                .allMatch(access -> access.getTypeAccess() == TypeAccess.ACCOUNT)) {
+        if (!accessesForAccountsEmpty
+                && accessesForBalanceEmpty
+                && accessesForTransactionsEmpty) {
             return 1;
         }
 
         // Consent was given for accounts and balances.
-        if (filteredByResourceId
-                .stream()
-                .noneMatch(access -> access.getTypeAccess() == TypeAccess.TRANSACTION)) {
+        if (accessesForTransactionsEmpty) {
 
             // Value 2 corresponds to the readAccountDetails and readBalances.
             return 2;
         }
 
         // Consent was given for accounts and transactions.
-        if (filteredByResourceId
-                .stream()
-                .noneMatch(access -> access.getTypeAccess() == TypeAccess.BALANCE)) {
+        if (accessesForBalanceEmpty) {
 
             // Value 2 corresponds to the readAccountDetails and readTransactions. Plus each account's transactions.
             return 2 + numberOfTransactions;

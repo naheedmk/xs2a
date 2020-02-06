@@ -16,14 +16,16 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
+import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.validator.OauthConsentValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.ais.account.common.AccountConsentValidator;
@@ -36,7 +38,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -75,14 +76,14 @@ class GetCardAccountListValidatorTest {
     @Test
     void validate_withValidConsentObject_maskedPan_shouldReturnValid() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccessWithMaskedPan(MASKED_PAN);
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
-        when(accountConsentValidator.validate(accountConsent, REQUEST_URI)).thenReturn(ValidationResult.valid());
-        when(oauthConsentValidator.validate(accountConsent)).thenReturn(ValidationResult.valid());
+        AccountAccess accountAccess = buildXs2aAccountAccessWithMaskedPan(MASKED_PAN);
+        AisConsent aisConsent = buildAccountConsent(accountAccess, TPP_INFO);
+        when(accountConsentValidator.validate(aisConsent, REQUEST_URI)).thenReturn(ValidationResult.valid());
+        when(oauthConsentValidator.validate(aisConsent)).thenReturn(ValidationResult.valid());
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
 
         // When
-        ValidationResult validationResult = getCardAccountListValidator.validate(new GetCardAccountListConsentObject(accountConsent, REQUEST_URI));
+        ValidationResult validationResult = getCardAccountListValidator.validate(new GetCardAccountListConsentObject(aisConsent, REQUEST_URI));
 
         // Then
         assertNotNull(validationResult);
@@ -93,12 +94,12 @@ class GetCardAccountListValidatorTest {
     @Test
     void validate_withValidConsentObject_Iban_shouldReturnInvalid() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccessWithIban(IBAN);
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
+        AccountAccess accountAccess = buildXs2aAccountAccessWithIban(IBAN);
+        AisConsent aisConsent = buildAccountConsent(accountAccess, TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
 
         // When
-        ValidationResult validationResult = getCardAccountListValidator.validate(new GetCardAccountListConsentObject(accountConsent, REQUEST_URI));
+        ValidationResult validationResult = getCardAccountListValidator.validate(new GetCardAccountListConsentObject(aisConsent, REQUEST_URI));
 
         // Then
         assertNotNull(validationResult);
@@ -109,14 +110,14 @@ class GetCardAccountListValidatorTest {
     @Test
     void validate_withValidConsentObject_mixedAccountReference_shouldReturnValid() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccess(false, IBAN, MASKED_PAN);
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
-        when(accountConsentValidator.validate(accountConsent, REQUEST_URI)).thenReturn(ValidationResult.valid());
-        when(oauthConsentValidator.validate(accountConsent)).thenReturn(ValidationResult.valid());
+        AccountAccess accountAccess = buildXs2aAccountAccess(false, IBAN, MASKED_PAN);
+        AisConsent aisConsent = buildAccountConsent(accountAccess, TPP_INFO);
+        when(accountConsentValidator.validate(aisConsent, REQUEST_URI)).thenReturn(ValidationResult.valid());
+        when(oauthConsentValidator.validate(aisConsent)).thenReturn(ValidationResult.valid());
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
 
         // When
-        GetCardAccountListConsentObject getCardAccountListConsentObject = new GetCardAccountListConsentObject(accountConsent, REQUEST_URI);
+        GetCardAccountListConsentObject getCardAccountListConsentObject = new GetCardAccountListConsentObject(aisConsent, REQUEST_URI);
         ValidationResult validationResult = getCardAccountListValidator.validate(getCardAccountListConsentObject);
 
         // Then
@@ -128,16 +129,16 @@ class GetCardAccountListValidatorTest {
     @Test
     void validate_withInvalidTppInConsent_shouldReturnTppValidationError() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccessWithMaskedPan(null);
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, INVALID_TPP_INFO);
+        AccountAccess accountAccess = buildXs2aAccountAccessWithMaskedPan(null);
+        AisConsent aisConsent = buildAccountConsent(accountAccess, INVALID_TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(INVALID_TPP_INFO)).thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
 
         // When
-        GetCardAccountListConsentObject getCardAccountListConsentObject = new GetCardAccountListConsentObject(accountConsent, REQUEST_URI);
+        GetCardAccountListConsentObject getCardAccountListConsentObject = new GetCardAccountListConsentObject(aisConsent, REQUEST_URI);
         ValidationResult validationResult = getCardAccountListValidator.validate(getCardAccountListConsentObject);
 
         // Then
-        verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
+        verify(aisAccountTppInfoValidator).validateTpp(aisConsent.getTppInfo());
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
@@ -147,14 +148,14 @@ class GetCardAccountListValidatorTest {
     @Test
     void validate_withInvalidConsent_shouldReturnInvalid() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccessWithMaskedPan(MASKED_PAN);
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
+        AccountAccess accountAccess = buildXs2aAccountAccessWithMaskedPan(MASKED_PAN);
+        AisConsent aisConsent = buildAccountConsent(accountAccess, TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
         ValidationResult validationResultExpected = ValidationResult.invalid(AIS_401, CONSENT_EXPIRED);
-        when(accountConsentValidator.validate(accountConsent, REQUEST_URI)).thenReturn(validationResultExpected);
+        when(accountConsentValidator.validate(aisConsent, REQUEST_URI)).thenReturn(validationResultExpected);
 
         // When
-        ValidationResult validationResult = getCardAccountListValidator.validate(new GetCardAccountListConsentObject(accountConsent, REQUEST_URI));
+        ValidationResult validationResult = getCardAccountListValidator.validate(new GetCardAccountListConsentObject(aisConsent, REQUEST_URI));
 
         // Then
         assertNotNull(validationResult);
@@ -165,14 +166,14 @@ class GetCardAccountListValidatorTest {
     @Test
     void validate_withOauthConcentInvalid_shouldReturnInvalid() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccessWithMaskedPan(MASKED_PAN);
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
+        AccountAccess accountAccess = buildXs2aAccountAccessWithMaskedPan(MASKED_PAN);
+        AisConsent aisConsent = buildAccountConsent(accountAccess, TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
-        when(accountConsentValidator.validate(accountConsent, REQUEST_URI)).thenReturn(ValidationResult.valid());
-        when(oauthConsentValidator.validate(accountConsent)).thenReturn(ValidationResult.invalid(FORBIDDEN_ERROR));
+        when(accountConsentValidator.validate(aisConsent, REQUEST_URI)).thenReturn(ValidationResult.valid());
+        when(oauthConsentValidator.validate(aisConsent)).thenReturn(ValidationResult.invalid(FORBIDDEN_ERROR));
 
         // When
-        ValidationResult validationResult = getCardAccountListValidator.validate(new GetCardAccountListConsentObject(accountConsent, REQUEST_URI));
+        ValidationResult validationResult = getCardAccountListValidator.validate(new GetCardAccountListConsentObject(aisConsent, REQUEST_URI));
 
         // Then
         assertNotNull(validationResult);
@@ -180,22 +181,24 @@ class GetCardAccountListValidatorTest {
         assertEquals(FORBIDDEN_ERROR, validationResult.getMessageError());
     }
 
-    private AccountConsent buildAccountConsent(Xs2aAccountAccess xs2aAccountAccess, TppInfo tppInfo) {
-        return new AccountConsent("id", xs2aAccountAccess, xs2aAccountAccess, false, null, null, 0,
-                                  null, null, false, false,
-                                  Collections.emptyList(), tppInfo, null, false,
-                                  Collections.emptyList(), null, Collections.emptyMap(), OffsetDateTime.now());
+    private AisConsent buildAccountConsent(AccountAccess accountAccess, TppInfo tppInfo) {
+        AisConsent aisConsent = new AisConsent();
+        ConsentTppInformation consentTppInformation = new ConsentTppInformation();
+        consentTppInformation.setTppInfo(tppInfo);
+        aisConsent.setConsentData(new AisConsentData(accountAccess, accountAccess, false));
+        aisConsent.setConsentTppInformation(consentTppInformation);
+        return aisConsent;
     }
 
-    private Xs2aAccountAccess buildXs2aAccountAccessWithIban(String iban) {
+    private AccountAccess buildXs2aAccountAccessWithIban(String iban) {
         return buildXs2aAccountAccess(false, iban, null);
     }
 
-    private Xs2aAccountAccess buildXs2aAccountAccessWithMaskedPan(String maskedPan) {
+    private AccountAccess buildXs2aAccountAccessWithMaskedPan(String maskedPan) {
         return buildXs2aAccountAccess(false, null, maskedPan);
     }
 
-    private Xs2aAccountAccess buildXs2aAccountAccess(boolean withBalancesAccess, String iban, String maskedPan) {
+    private AccountAccess buildXs2aAccountAccess(boolean withBalancesAccess, String iban, String maskedPan) {
         AccountReference accountReference = new AccountReference();
         accountReference.setIban(iban);
         accountReference.setMaskedPan(maskedPan);
@@ -205,7 +208,7 @@ class GetCardAccountListValidatorTest {
                                               ? accountReferences
                                               : Collections.emptyList();
 
-        return new Xs2aAccountAccess(accountReferences, balances, accountReferences, null, null, null, null);
+        return new AccountAccess(accountReferences, balances, accountReferences, null, null, null, null);
     }
 
     private static TppInfo buildTppInfo(String authorisationNumber) {

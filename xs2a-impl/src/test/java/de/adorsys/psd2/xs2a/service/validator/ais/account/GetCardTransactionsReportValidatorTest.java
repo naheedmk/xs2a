@@ -16,15 +16,17 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
+import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.OauthConsentValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
@@ -42,7 +44,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -103,7 +104,7 @@ class GetCardTransactionsReportValidatorTest {
     @Test
     void validate_withValidConsentObject_shouldReturnValid() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent aisConsent = buildAccountConsent(TPP_INFO);
 
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
@@ -113,18 +114,18 @@ class GetCardTransactionsReportValidatorTest {
             .thenReturn(Collections.singletonList(BOOKING_STATUS));
         when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
             .thenReturn(ValidationResult.valid());
-        when(accountReferenceAccessValidator.validate(accountConsent.getAccess(), accountConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+        when(accountReferenceAccessValidator.validate(aisConsent.getAccess(), aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
             .thenReturn(ValidationResult.valid());
-        when(accountConsentValidator.validate(accountConsent, REQUEST_URI))
+        when(accountConsentValidator.validate(aisConsent, REQUEST_URI))
             .thenReturn(ValidationResult.valid());
-        when(oauthConsentValidator.validate(accountConsent))
+        when(oauthConsentValidator.validate(aisConsent))
             .thenReturn(ValidationResult.valid());
 
         // When
-        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, REQUEST_URI, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
+        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, REQUEST_URI, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
 
         // Then
-        verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
+        verify(aisAccountTppInfoValidator).validateTpp(aisConsent.getTppInfo());
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isValid());
@@ -134,7 +135,7 @@ class GetCardTransactionsReportValidatorTest {
     @Test
     void validate_withAcceptHeader_shouldReturnInvalid() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent aisConsent = buildAccountConsent(TPP_INFO);
 
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
@@ -143,10 +144,10 @@ class GetCardTransactionsReportValidatorTest {
 
         // When
         ValidationResult validationResult = getCardTransactionsReportValidator.validate(
-            new CardTransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, REQUEST_URI, Boolean.TRUE, MediaType.APPLICATION_ATOM_XML_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
+            new CardTransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, REQUEST_URI, Boolean.TRUE, MediaType.APPLICATION_ATOM_XML_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
 
         // Then
-        verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
+        verify(aisAccountTppInfoValidator).validateTpp(aisConsent.getTppInfo());
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
@@ -156,7 +157,7 @@ class GetCardTransactionsReportValidatorTest {
     @Test
     void validate_withInvalidAccountReferenceAccess_error() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent aisConsent = buildAccountConsent(TPP_INFO);
 
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
@@ -164,34 +165,34 @@ class GetCardTransactionsReportValidatorTest {
             .thenReturn(false);
         when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
             .thenReturn(ValidationResult.valid());
-        when(accountReferenceAccessValidator.validate(accountConsent.getAccess(), accountConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+        when(accountReferenceAccessValidator.validate(aisConsent.getAccess(), aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
             .thenReturn(ValidationResult.invalid(ErrorType.AIS_401, CONSENT_INVALID));
 
         // When
-        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, REQUEST_URI, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
+        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, REQUEST_URI, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
 
         // Then
-        verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
+        verify(aisAccountTppInfoValidator).validateTpp(aisConsent.getTppInfo());
 
         assertNotNull(validationResult);
         assertFalse(validationResult.isValid());
 
-        verify(accountConsentValidator, never()).validate(any(AccountConsent.class), anyString());
+        verify(accountConsentValidator, never()).validate(any(AisConsent.class), anyString());
     }
 
     @Test
     void validate_withInvalidTppInConsent_shouldReturnTppValidationError() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(INVALID_TPP_INFO);
+        AisConsent aisConsent = buildAccountConsent(INVALID_TPP_INFO);
 
         when(aisAccountTppInfoValidator.validateTpp(INVALID_TPP_INFO))
             .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
 
         // When
-        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, REQUEST_URI, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
+        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, REQUEST_URI, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
 
         // Then
-        verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
+        verify(aisAccountTppInfoValidator).validateTpp(aisConsent.getTppInfo());
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
@@ -201,7 +202,7 @@ class GetCardTransactionsReportValidatorTest {
     @Test
     void validate_withDeltaListNoSupported_shouldReturnInvalid() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent aisConsent = buildAccountConsent(TPP_INFO);
         when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
             .thenReturn(ValidationResult.valid());
         when(aspspProfileService.isDeltaListSupported())
@@ -212,10 +213,10 @@ class GetCardTransactionsReportValidatorTest {
             .thenReturn(false);
 
         // When
-        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, REQUEST_URI, Boolean.TRUE, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, null, null));
+        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, REQUEST_URI, Boolean.TRUE, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, null, null));
 
         // Then
-        verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
+        verify(aisAccountTppInfoValidator).validateTpp(aisConsent.getTppInfo());
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
@@ -225,12 +226,12 @@ class GetCardTransactionsReportValidatorTest {
     @Test
     void validate_withDeltaListNoSupportedDateFromPresent_shouldReturnValid() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
-        when(accountReferenceAccessValidator.validate(accountConsent.getAccess(), accountConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+        AisConsent aisConsent = buildAccountConsent(TPP_INFO);
+        when(accountReferenceAccessValidator.validate(aisConsent.getAccess(), aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
             .thenReturn(ValidationResult.valid());
-        when(oauthConsentValidator.validate(accountConsent))
+        when(oauthConsentValidator.validate(aisConsent))
             .thenReturn(ValidationResult.valid());
-        when(accountConsentValidator.validate(accountConsent, REQUEST_URI))
+        when(accountConsentValidator.validate(aisConsent, REQUEST_URI))
             .thenReturn(ValidationResult.valid());
         when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
             .thenReturn(ValidationResult.valid());
@@ -242,10 +243,10 @@ class GetCardTransactionsReportValidatorTest {
             .thenReturn(Collections.singletonList(BOOKING_STATUS));
 
         // When
-        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, REQUEST_URI, Boolean.TRUE, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
+        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, REQUEST_URI, Boolean.TRUE, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
 
         // Then
-        verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
+        verify(aisAccountTppInfoValidator).validateTpp(aisConsent.getTppInfo());
         assertNotNull(validationResult);
         assertTrue(validationResult.isValid());
         assertNull(validationResult.getMessageError());
@@ -254,12 +255,12 @@ class GetCardTransactionsReportValidatorTest {
     @Test
     void validate_withEntryReferenceFromNoSupportedDateFromPresent_shouldReturnValid() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
-        when(accountReferenceAccessValidator.validate(accountConsent.getAccess(), accountConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+        AisConsent aisConsent = buildAccountConsent(TPP_INFO);
+        when(accountReferenceAccessValidator.validate(aisConsent.getAccess(), aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
             .thenReturn(ValidationResult.valid());
-        when(oauthConsentValidator.validate(accountConsent))
+        when(oauthConsentValidator.validate(aisConsent))
             .thenReturn(ValidationResult.valid());
-        when(accountConsentValidator.validate(accountConsent, REQUEST_URI))
+        when(accountConsentValidator.validate(aisConsent, REQUEST_URI))
             .thenReturn(ValidationResult.valid());
         when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
             .thenReturn(ValidationResult.valid());
@@ -271,10 +272,10 @@ class GetCardTransactionsReportValidatorTest {
             .thenReturn(Collections.singletonList(BOOKING_STATUS));
 
         // When
-        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, REQUEST_URI, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
+        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, REQUEST_URI, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
 
         // Then
-        verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
+        verify(aisAccountTppInfoValidator).validateTpp(aisConsent.getTppInfo());
         assertNotNull(validationResult);
         assertTrue(validationResult.isValid());
         assertNull(validationResult.getMessageError());
@@ -283,7 +284,7 @@ class GetCardTransactionsReportValidatorTest {
     @Test
     void validate_withOneDeltaReportParameterCanBePresent_shouldReturnInvalid() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent aisConsent = buildAccountConsent(TPP_INFO);
         when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
             .thenReturn(ValidationResult.valid());
         when(aspspProfileService.isDeltaListSupported())
@@ -292,10 +293,10 @@ class GetCardTransactionsReportValidatorTest {
             .thenReturn(ValidationResult.valid());
 
         // When
-        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, REQUEST_URI, Boolean.TRUE, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
+        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, REQUEST_URI, Boolean.TRUE, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now(), LocalDate.now()));
 
         // Then
-        verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
+        verify(aisAccountTppInfoValidator).validateTpp(aisConsent.getTppInfo());
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
@@ -305,10 +306,10 @@ class GetCardTransactionsReportValidatorTest {
     @Test
     void validate_withNotSupportedBookingStatus_shouldReturnBookingStatusValidationError() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent aisConsent = buildAccountConsent(TPP_INFO);
         when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
             .thenReturn(ValidationResult.valid());
-        when(accountReferenceAccessValidator.validate(accountConsent.getAccess(), accountConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+        when(accountReferenceAccessValidator.validate(aisConsent.getAccess(), aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
             .thenReturn(ValidationResult.valid());
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
@@ -318,10 +319,10 @@ class GetCardTransactionsReportValidatorTest {
             .thenReturn(Collections.singletonList(BOOKING_STATUS));
 
         // When
-        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, REQUEST_URI, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, PENDING, LocalDate.now(), LocalDate.now()));
+        ValidationResult validationResult = getCardTransactionsReportValidator.validate(new CardTransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, REQUEST_URI, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, PENDING, LocalDate.now(), LocalDate.now()));
 
         // Then
-        verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
+        verify(aisAccountTppInfoValidator).validateTpp(aisConsent.getTppInfo());
 
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
@@ -334,19 +335,21 @@ class GetCardTransactionsReportValidatorTest {
         return tppInfo;
     }
 
-    private AccountConsent buildAccountConsent(TppInfo tppInfo) {
-        return new AccountConsent("id", buildXs2aAccountAccess(), buildXs2aAccountAccess(), false, null, null, 0,
-                                  null, null, false, false,
-                                  Collections.emptyList(), tppInfo, AisConsentRequestType.DEDICATED_ACCOUNTS, false,
-                                  Collections.emptyList(), null, Collections.emptyMap(), OffsetDateTime.now());
+    private AisConsent buildAccountConsent(TppInfo tppInfo) {
+        AisConsent aisConsent = new AisConsent();
+        ConsentTppInformation consentTppInformation = new ConsentTppInformation();
+        consentTppInformation.setTppInfo(tppInfo);
+        aisConsent.setConsentTppInformation(consentTppInformation);
+        aisConsent.setConsentData(new AisConsentData(buildXs2aAccountAccess(), buildXs2aAccountAccess(), false));
+        return aisConsent;
     }
 
-    private Xs2aAccountAccess buildXs2aAccountAccess() {
+    private AccountAccess buildXs2aAccountAccess() {
         AccountReference maskedPanAccountReference = new AccountReference();
         maskedPanAccountReference.setMaskedPan("493702******0836");
         List<AccountReference> accountReferences = Collections.singletonList(maskedPanAccountReference);
 
-        return new Xs2aAccountAccess(accountReferences, accountReferences, accountReferences, null, null, null, null);
+        return new AccountAccess(accountReferences, accountReferences, accountReferences, null, null, null, null);
     }
 
 }

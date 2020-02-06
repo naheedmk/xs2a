@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,17 @@
 package de.adorsys.psd2.xs2a.core.profile;
 
 import lombok.Value;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 @Value
 public class AdditionalInformationAccess {
-    @Nullable private List<AccountReference> ownerName;
+    @Nullable
+    private List<AccountReference> ownerName;
 
     public boolean noAdditionalInformationAccess() {
-        return ownerName == null;
+        return CollectionUtils.isEmpty(ownerName);
     }
 }

@@ -16,13 +16,15 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
+import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.validator.OauthConsentValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.ais.account.common.AccountAccessMultipleAccountsValidator;
@@ -37,7 +39,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -82,8 +83,8 @@ class GetAccountListValidatorTest {
     @Test
     void validate_withValidConsentObject_shouldReturnValid() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccess(IBAN);
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
+        AccountAccess accountAccess = buildXs2aAccountAccess(IBAN);
+        AisConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
         when(accountConsentValidator.validate(accountConsent, REQUEST_URI))
@@ -107,8 +108,8 @@ class GetAccountListValidatorTest {
     @Test
     void validate_withBalanceRequestAndValidAccess_shouldReturnValid() {
         // Given
-        Xs2aAccountAccess accessWithBalances = buildXs2aAccountAccess(true, IBAN);
-        AccountConsent accountConsent = buildAccountConsent(accessWithBalances, TPP_INFO);
+        AccountAccess accessWithBalances = buildXs2aAccountAccess(true, IBAN);
+        AisConsent accountConsent = buildAccountConsent(accessWithBalances, TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
         when(accountConsentValidator.validate(accountConsent, REQUEST_URI))
@@ -132,8 +133,8 @@ class GetAccountListValidatorTest {
     @Test
     void validate_withInvalidTppInConsent_shouldReturnTppValidationError() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccess(null);
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, INVALID_TPP_INFO);
+        AccountAccess accountAccess = buildXs2aAccountAccess(null);
+        AisConsent accountConsent = buildAccountConsent(accountAccess, INVALID_TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(INVALID_TPP_INFO))
             .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
 
@@ -151,8 +152,8 @@ class GetAccountListValidatorTest {
     @Test
     void validate_withBalanceRequestAndNoBalanceAccessInConsent_shouldReturnAccessValidationError() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccess(IBAN);
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
+        AccountAccess accountAccess = buildXs2aAccountAccess(IBAN);
+        AisConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
         when(accountConsentValidator.validate(accountConsent, REQUEST_URI))
@@ -170,14 +171,15 @@ class GetAccountListValidatorTest {
     }
 
     @Test
-    void validate_withBalanceRequestAndNullAccess_shouldReturnAccessValidationError() {
+    void validate_withBalanceRequestAndInvalidAccess_shouldReturnAccessValidationError() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(null, TPP_INFO);
+        AccountAccess accountAccess = buildXs2aAccountAccess(IBAN);
+        AisConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
         when(accountConsentValidator.validate(accountConsent, REQUEST_URI))
             .thenReturn(ValidationResult.valid());
-        when(accountAccessValidator.validate(any(), anyBoolean()))
+        when(accountAccessValidator.validate(accountConsent, true))
             .thenReturn(ValidationResult.invalid(ACCESS_VALIDATION_ERROR));
 
         // When
@@ -192,8 +194,8 @@ class GetAccountListValidatorTest {
     @Test
     void validate_withInvalidTppInConsentAndInvalidAccess_shouldReturnTppValidationErrorFirst() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccess(null);
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, INVALID_TPP_INFO);
+        AccountAccess accountAccess = buildXs2aAccountAccess(null);
+        AisConsent accountConsent = buildAccountConsent(accountAccess, INVALID_TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(INVALID_TPP_INFO))
             .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
 
@@ -209,9 +211,9 @@ class GetAccountListValidatorTest {
     @Test
     void validate_withNoIbanInConsent_shouldReturnValidationError() {
         // Given
-        Xs2aAccountAccess accountAccess = buildXs2aAccountAccess(null);
+        AccountAccess accountAccess = buildXs2aAccountAccess(null);
 
-        AccountConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
+        AisConsent accountConsent = buildAccountConsent(accountAccess, TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
 
@@ -230,18 +232,20 @@ class GetAccountListValidatorTest {
         return tppInfo;
     }
 
-    private AccountConsent buildAccountConsent(Xs2aAccountAccess xs2aAccountAccess, TppInfo tppInfo) {
-        return new AccountConsent("id", xs2aAccountAccess, xs2aAccountAccess, false, null, null, 0,
-                                  null, null, false, false,
-                                  Collections.emptyList(), tppInfo, null, false,
-                                  Collections.emptyList(), null, Collections.emptyMap(), OffsetDateTime.now());
+    private AisConsent buildAccountConsent(AccountAccess accountAccess, TppInfo tppInfo) {
+        AisConsent aisConsent = new AisConsent();
+        ConsentTppInformation consentTppInformation = new ConsentTppInformation();
+        consentTppInformation.setTppInfo(tppInfo);
+        aisConsent.setConsentData(new AisConsentData(accountAccess, accountAccess, false));
+        aisConsent.setConsentTppInformation(consentTppInformation);
+        return aisConsent;
     }
 
-    private Xs2aAccountAccess buildXs2aAccountAccess(String iban) {
+    private AccountAccess buildXs2aAccountAccess(String iban) {
         return buildXs2aAccountAccess(false, iban);
     }
 
-    private Xs2aAccountAccess buildXs2aAccountAccess(boolean withBalancesAccess, String iban) {
+    private AccountAccess buildXs2aAccountAccess(boolean withBalancesAccess, String iban) {
         AccountReference accountReference = new AccountReference();
         accountReference.setIban(iban);
 
@@ -250,6 +254,6 @@ class GetAccountListValidatorTest {
                                               ? accountReferences
                                               : Collections.emptyList();
 
-        return new Xs2aAccountAccess(accountReferences, balances, accountReferences, null, null, null, null);
+        return new AccountAccess(accountReferences, balances, accountReferences, null, null, null, null);
     }
 }

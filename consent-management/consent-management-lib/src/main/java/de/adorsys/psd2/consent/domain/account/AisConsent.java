@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+@Deprecated // TODO: https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
 @Data
 @ToString(exclude = {"accesses", "usages"})
 @EqualsAndHashCode

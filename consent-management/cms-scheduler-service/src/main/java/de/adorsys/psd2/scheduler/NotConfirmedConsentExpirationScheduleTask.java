@@ -16,8 +16,8 @@
 
 package de.adorsys.psd2.scheduler;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.service.AisConsentConfirmationExpirationService;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +35,13 @@ import java.util.stream.Collectors;
 @Component
 public class NotConfirmedConsentExpirationScheduleTask {
     private final AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
-    private final AisConsentJpaRepository aisConsentJpaRepository;
+    private final ConsentJpaRepository consentJpaRepository;
 
     @Scheduled(cron = "${not-confirmed-consent-expiration.cron.expression}")
     @Transactional
     public void obsoleteNotConfirmedConsentIfExpired() {
         log.info("Not confirmed consent expiration schedule task is run!");
-        List<AisConsent> expiredNotConfirmedConsents = aisConsentJpaRepository.findByConsentStatusIn(EnumSet.of(ConsentStatus.RECEIVED))
+        List<ConsentEntity> expiredNotConfirmedConsents = consentJpaRepository.findByConsentStatusIn(EnumSet.of(ConsentStatus.RECEIVED))
                                                            .stream()
                                                            .filter(aisConsentConfirmationExpirationService::isConfirmationExpired)
                                                            .collect(Collectors.toList());

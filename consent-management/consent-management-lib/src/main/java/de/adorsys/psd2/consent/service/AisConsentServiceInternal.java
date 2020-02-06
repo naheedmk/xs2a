@@ -16,26 +16,29 @@
 
 package de.adorsys.psd2.consent.service;
 
-import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.ActionStatus;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.WrongChecksumException;
-import de.adorsys.psd2.consent.api.ais.*;
+import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
+import de.adorsys.psd2.consent.api.ais.AisConsentActionRequest;
+import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.api.service.AisConsentService;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
-import de.adorsys.psd2.consent.domain.AuthorisationTemplateEntity;
-import de.adorsys.psd2.consent.domain.PsuData;
-import de.adorsys.psd2.consent.domain.TppInfoEntity;
-import de.adorsys.psd2.consent.domain.account.*;
-import de.adorsys.psd2.consent.repository.*;
+import de.adorsys.psd2.consent.domain.account.AisConsentAction;
+import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
+import de.adorsys.psd2.consent.repository.AisConsentActionRepository;
+import de.adorsys.psd2.consent.repository.AisConsentVerifyingRepository;
+import de.adorsys.psd2.consent.repository.AuthorisationRepository;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
+import de.adorsys.psd2.consent.service.mapper.AccessMapper;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
-import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
-import de.adorsys.psd2.consent.service.mapper.TppInfoMapper;
-import de.adorsys.psd2.consent.service.psu.CmsPsuService;
+import de.adorsys.psd2.consent.service.mapper.CmsConsentMapper;
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
+import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
-import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
-import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
-import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
+import de.adorsys.psd2.xs2a.core.profile.AccountReference;
+import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -43,210 +46,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static de.adorsys.psd2.consent.api.CmsError.LOGICAL_ERROR;
-import static de.adorsys.psd2.consent.api.CmsError.TECHNICAL_ERROR;
-import static de.adorsys.psd2.xs2a.core.consent.ConsentStatus.*;
+import static de.adorsys.psd2.xs2a.core.consent.ConsentStatus.EXPIRED;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AisConsentServiceInternal implements AisConsentService {
-    private final AuthorisationRepository authorisationRepository;
-    private final AisConsentJpaRepository aisConsentJpaRepository;
+
+    private final ConsentJpaRepository consentJpaRepository;
     private final AisConsentVerifyingRepository aisConsentRepository;
     private final AisConsentActionRepository aisConsentActionRepository;
-    private final TppInfoRepository tppInfoRepository;
+    private final AuthorisationRepository authorisationRepository;
     private final AisConsentMapper consentMapper;
-    private final PsuDataMapper psuDataMapper;
-    private final AspspProfileService aspspProfileService;
     private final AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
-    private final TppInfoMapper tppInfoMapper;
-    private final CmsPsuService cmsPsuService;
     private final AisConsentUsageService aisConsentUsageService;
-    private final AisConsentRequestTypeService aisConsentRequestTypeService;
     private final OneOffConsentExpirationService oneOffConsentExpirationService;
-
-    /**
-     * Creates AIS consent.
-     *
-     * @param request needed parameters for creating AIS consent
-     * @return create consent response, containing consent and its encrypted ID
-     */
-    @Override
-    @Transactional(rollbackFor = WrongChecksumException.class)
-    public CmsResponse<CreateAisConsentResponse> createConsent(CreateAisConsentRequest request) throws WrongChecksumException {
-
-        if (request.getAllowedFrequencyPerDay() == null) {
-            log.info("TPP ID: [{}]. Consent cannot be created, because request contains no allowed frequency per day",
-                     request.getTppInfo().getAuthorisationNumber());
-            return CmsResponse.<CreateAisConsentResponse>builder()
-                       .error(LOGICAL_ERROR)
-                       .build();
-        }
-        AisConsent consent = createConsentFromRequest(request);
-        tppInfoRepository.findByAuthorisationNumber(request.getTppInfo().getAuthorisationNumber())
-            .ifPresent(consent::setTppInfo);
-
-        AisConsent savedConsent = aisConsentRepository.verifyAndSave(consent);
-
-        if (savedConsent.getId() != null) {
-            return CmsResponse.<CreateAisConsentResponse>builder()
-                       .payload(new CreateAisConsentResponse(savedConsent.getExternalId(), consentMapper.mapToAisAccountConsent(savedConsent, Collections.emptyList()), consent.getTppNotificationContentPreferred()))
-                       .build();
-
-        } else {
-            log.info("TPP ID: [{}], External Consent ID: [{}]. AIS consent cannot be created, because when saving to DB got null ID",
-                     request.getTppInfo().getAuthorisationNumber(), consent.getExternalId());
-            return CmsResponse.<CreateAisConsentResponse>builder()
-                       .error(TECHNICAL_ERROR)
-                       .build();
-        }
-    }
-
-    /**
-     * Reads status of consent by ID.
-     *
-     * @param consentId ID of consent
-     * @return ConsentStatus
-     */
-    @Override
-    @Transactional
-    public CmsResponse<ConsentStatus> getConsentStatusById(String consentId) {
-        Optional<ConsentStatus> consentStatusOptional = aisConsentJpaRepository.findByExternalId(consentId)
-                                                            .map(aisConsentConfirmationExpirationService::checkAndUpdateOnConfirmationExpiration)
-                                                            .map(this::checkAndUpdateOnExpiration)
-                                                            .map(AisConsent::getConsentStatus);
-        if (consentStatusOptional.isPresent()) {
-            return CmsResponse.<ConsentStatus>builder()
-                       .payload(consentStatusOptional.get())
-                       .build();
-        } else {
-            log.info("Consent ID: [{}]. Get consent status failed, because consent not found", consentId);
-            return CmsResponse.<ConsentStatus>builder()
-                       .error(LOGICAL_ERROR)
-                       .build();
-        }
-    }
-
-    /**
-     * Updates consent status by ID.
-     *
-     * @param consentId ID of consent
-     * @param status    new consent status
-     * @return Boolean
-     */
-    @Override
-    @Transactional(rollbackFor = WrongChecksumException.class)
-    public CmsResponse<Boolean> updateConsentStatusById(String consentId, ConsentStatus status) throws WrongChecksumException {
-        Optional<AisConsent> consentOptional = getActualAisConsent(consentId);
-
-        if (consentOptional.isPresent()) {
-            AisConsent consent = consentOptional.get();
-            boolean result = setStatusAndSaveConsent(consent, status);
-
-            return CmsResponse.<Boolean>builder()
-                       .payload(result)
-                       .build();
-        }
-
-        log.info("Consent ID [{}]. Update consent status by ID failed, because consent not found", consentId);
-        return CmsResponse.<Boolean>builder()
-                   .error(LOGICAL_ERROR)
-                   .build();
-    }
-
-    /**
-     * Reads full information of consent by ID.
-     *
-     * @param consentId ID of consent
-     * @return AisAccountConsent
-     */
-    @Override
-    @Transactional
-    public CmsResponse<AisAccountConsent> getAisAccountConsentById(String consentId) {
-        Optional<AisConsent> consentOptional = aisConsentJpaRepository.findByExternalId(consentId)
-                                                   .map(aisConsentConfirmationExpirationService::checkAndUpdateOnConfirmationExpiration)
-                                                   .map(this::checkAndUpdateOnExpiration);
-
-        if (!consentOptional.isPresent()) {
-            log.info("Consent ID [{}]. Get consent by ID failed, because consent not found", consentId);
-            return CmsResponse.<AisAccountConsent>builder()
-                       .error(LOGICAL_ERROR)
-                       .build();
-        }
-
-        AisConsent consent = consentOptional.get();
-        List<AuthorisationEntity> authorisations = authorisationRepository.findAllByParentExternalIdAndAuthorisationType(consent.getExternalId(), AuthorisationType.AIS);
-        AisAccountConsent aisAccountConsent = consentMapper.mapToAisAccountConsent(consent, authorisations);
-
-        return CmsResponse.<AisAccountConsent>builder()
-                   .payload(aisAccountConsent)
-                   .build();
-    }
-
-    /**
-     * Searches the old AIS consents and updates their statuses according to authorisation states and PSU data.
-     *
-     * @param newConsentId ID of new consent that was created
-     * @return true if old consents were updated, false otherwise
-     */
-    @Override
-    @Transactional
-    public CmsResponse<Boolean> findAndTerminateOldConsentsByNewConsentId(String newConsentId) {
-        AisConsent newConsent = aisConsentJpaRepository.findByExternalId(newConsentId)
-                                    .orElseThrow(() -> {
-                                        log.info("Consent ID: [{}]. Cannot find consent by ID", newConsentId);
-                                        return new IllegalArgumentException("Wrong consent ID: " + newConsentId);
-                                    });
-
-        if (newConsent.isOneAccessType()) {
-            log.info("Consent ID: [{}]. Cannot find old consents, because consent is OneAccessType", newConsentId);
-            return CmsResponse.<Boolean>builder()
-                       .payload(false)
-                       .build();
-        }
-
-        if (newConsent.isWrongConsentData()) {
-            log.info("Consent ID: [{}]. Find old consents failed, because consent PSU data list is empty or TPP Info is null", newConsentId);
-            throw new IllegalArgumentException("Wrong consent data");
-        }
-
-        List<PsuData> psuDataList = newConsent.getPsuDataList();
-        Set<String> psuIds = psuDataList.stream()
-                                 .filter(Objects::nonNull)
-                                 .map(PsuData::getPsuId)
-                                 .collect(Collectors.toSet());
-        TppInfoEntity tppInfo = newConsent.getTppInfo();
-
-        List<AisConsent> oldConsents = aisConsentJpaRepository.findOldConsentsByNewConsentParams(psuIds,
-                                                                                                 tppInfo.getAuthorisationNumber(),
-                                                                                                 newConsent.getInstanceId(),
-                                                                                                 newConsent.getExternalId(),
-                                                                                                 EnumSet.of(RECEIVED, PARTIALLY_AUTHORISED, VALID));
-
-        List<AisConsent> oldConsentsWithExactPsuDataLists = oldConsents.stream()
-                                                                .distinct()
-                                                                .filter(c -> cmsPsuService.isPsuDataListEqual(c.getPsuDataList(), psuDataList))
-                                                                .collect(Collectors.toList());
-
-        if (oldConsentsWithExactPsuDataLists.isEmpty()) {
-            log.info("Consent ID: [{}]. Cannot find old consents, because consent hasn't exact PSU data lists as old consents", newConsentId);
-            return CmsResponse.<Boolean>builder()
-                       .payload(false)
-                       .build();
-        }
-
-        oldConsentsWithExactPsuDataLists.forEach(this::updateStatus);
-        aisConsentJpaRepository.saveAll(oldConsentsWithExactPsuDataLists);
-        return CmsResponse.<Boolean>builder()
-                   .payload(true)
-                   .build();
-    }
+    private final CmsConsentMapper cmsConsentMapper;
+    private final ConsentDataMapper consentDataMapper;
+    private final AccessMapper accessMapper;
 
     /**
      * Saves information about consent usage and consent's sub-resources usage.
@@ -256,9 +80,9 @@ public class AisConsentServiceInternal implements AisConsentService {
     @Override
     @Transactional(rollbackFor = WrongChecksumException.class)
     public CmsResponse<CmsResponse.VoidResponse> checkConsentAndSaveActionLog(AisConsentActionRequest request) throws WrongChecksumException {
-        Optional<AisConsent> consentOpt = getActualAisConsent(request.getConsentId());
+        Optional<ConsentEntity> consentOpt = getActualAisConsent(request.getConsentId());
         if (consentOpt.isPresent()) {
-            AisConsent consent = consentOpt.get();
+            ConsentEntity consent = consentOpt.get();
             aisConsentConfirmationExpirationService.checkAndUpdateOnConfirmationExpiration(consent);
             checkAndUpdateOnExpiration(consent);
             // In this method sonar claims that NPE is possible:
@@ -273,192 +97,69 @@ public class AisConsentServiceInternal implements AisConsentService {
                    .build();
     }
 
-    /**
-     * Updates AIS consent account access by ID.
-     *
-     * @param request   needed parameters for updating AIS consent
-     * @param consentId ID of the consent to be updated
-     * @return String   consent ID
-     */
     @Override
     @Transactional(rollbackFor = WrongChecksumException.class)
-    public CmsResponse<String> updateAspspAccountAccess(String consentId, AisAccountAccessInfo request) throws WrongChecksumException {
-        Optional<AisConsent> consentOptional = aisConsentRepository.getActualAisConsent(consentId);
-
-        if (!consentOptional.isPresent()) {
-            log.info("Consent ID [{}]. Update aspsp account access failed, because consent not found",
-                     consentId);
-            return CmsResponse.<String>builder()
-                       .error(LOGICAL_ERROR)
-                       .build();
-        }
-
-        AisConsent consent = consentOptional.get();
-        consent.addAspspAccountAccess(new AspspAccountAccessHolder(request).getAccountAccesses());
-
-        String externalId = aisConsentRepository.verifyAndSave(consent).getExternalId();
-
-        return CmsResponse.<String>builder()
-                   .payload(externalId)
-                   .build();
-    }
-
-    @Override
-    @Transactional(rollbackFor = WrongChecksumException.class)
-    public CmsResponse<AisAccountConsent> updateAspspAccountAccessWithResponse(String consentId, AisAccountAccessInfo request) throws WrongChecksumException {
-        Optional<AisConsent> consentOptional = aisConsentRepository.getActualAisConsent(consentId);
+    public CmsResponse<CmsConsent> updateAspspAccountAccess(String consentId, AisAccountAccessInfo request) throws WrongChecksumException {
+        Optional<ConsentEntity> consentOptional = aisConsentRepository.getActualAisConsent(consentId);
 
         if (!consentOptional.isPresent()) {
             log.info("Consent ID [{}]. Update aspsp account access with response failed, because consent not found",
                      consentId);
-            return CmsResponse.<AisAccountConsent>builder()
+            return CmsResponse.<CmsConsent>builder()
                        .error(LOGICAL_ERROR)
                        .build();
         }
 
-        AisConsent consent = consentOptional.get();
+        ConsentEntity consentEntity = consentOptional.get();
+        ConsentEntity updatedConsent = updateConsentAccess(consentEntity, request);
+        ConsentEntity savedConsent = aisConsentRepository.verifyAndUpdate(updatedConsent);
+        CmsConsent cmsConsent = mapToCmsConsent(savedConsent);
 
-        Set<AspspAccountAccess> aspspAccesses = new AspspAccountAccessHolder(request).getAccountAccesses();
-
-        List<AspspAccountAccess> cmsAccesses = consent.getAspspAccountAccesses();
-
-        consent.setAspspAccountAccesses(getUpdatedAccesses(cmsAccesses, aspspAccesses));
-
-        AisConsent aisConsent = aisConsentRepository.verifyAndUpdate(consent);
-        List<AuthorisationEntity> authorisations = authorisationRepository.findAllByParentExternalIdAndAuthorisationType(aisConsent.getExternalId(), AuthorisationType.AIS);
-
-        return CmsResponse.<AisAccountConsent>builder()
-                   .payload(consentMapper.mapToAisAccountConsent(aisConsent, authorisations))
+        return CmsResponse.<CmsConsent>builder()
+                   .payload(cmsConsent)
                    .build();
     }
 
-    private AspspAccountAccess enrichAccount(Set<AspspAccountAccess> accounts, AspspAccountAccess element) {
-
-        return accounts.stream()
-                   .filter(a -> a.getAccountIdentifier().equals(element.getAccountIdentifier())
-                                    && a.getAccountReferenceType() == element.getAccountReferenceType()
-                                    && a.getCurrency() == element.getCurrency()
-                                    && a.getTypeAccess() == (element.getTypeAccess()))
-                   .findFirst()
-                   .orElse(element);
+    private CmsConsent mapToCmsConsent(ConsentEntity consent) {
+        List<AuthorisationEntity> authorisations = authorisationRepository.findAllByParentExternalIdAndAuthorisationType(consent.getExternalId(), AuthorisationType.AIS);
+        Map<String, Integer> usageCounterMap = aisConsentUsageService.getUsageCounterMap(consent);
+        return cmsConsentMapper.mapToCmsConsent(consent, authorisations, usageCounterMap);
     }
 
-    private List<AspspAccountAccess> getUpdatedAccesses(List<AspspAccountAccess> cmsAccesses, Set<AspspAccountAccess> requestAccesses) {
-        if (CollectionUtils.isEmpty(cmsAccesses)) {
-            return new ArrayList<>(requestAccesses);
-        }
+    private ConsentEntity updateConsentAccess(ConsentEntity consentEntity, AisAccountAccessInfo request) {
+        AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consentEntity.getData());
+        AccountAccess existingAccess = aisConsentData.getAspspAccountAccess();
+        AccountAccess requestedAccess = accessMapper.mapToAccountAccess(request);
+        AccountAccess updatedAccesses = updateAccountReferencesInAccess(existingAccess, requestedAccess);
 
-        Set<AspspAccountAccess> updatedCmsAccesses = new HashSet<>();
+        AisConsentData updatedAisConsentData = new AisConsentData(aisConsentData.getTppAccountAccess(),
+                                                                  updatedAccesses,
+                                                                  aisConsentData.isCombinedServiceIndicator());
+        byte[] updatedConsentData = consentDataMapper.getBytesFromAisConsentData(updatedAisConsentData);
+        consentEntity.setData(updatedConsentData);
 
-        for (AspspAccountAccess access : cmsAccesses) {
-            updatedCmsAccesses.add(enrichAccount(requestAccesses, access));
-        }
-
-        return new ArrayList<>(updatedCmsAccesses);
+        return consentEntity;
     }
 
-    @Override
-    public CmsResponse<List<PsuIdData>> getPsuDataByConsentId(String consentId) {
-        Optional<List<PsuIdData>> psuIdDataOptional = getActualAisConsent(consentId)
-                                                          .map(ac -> psuDataMapper.mapToPsuIdDataList(ac.getPsuDataList()));
+    private void updateAisConsentUsage(ConsentEntity consent, AisConsentActionRequest request) throws WrongChecksumException {
+        if (!request.isUpdateUsage()) {
+            return;
+        }
+        aisConsentUsageService.incrementUsage(consent, request);
 
-        if (psuIdDataOptional.isPresent()) {
-            return CmsResponse.<List<PsuIdData>>builder()
-                       .payload(psuIdDataOptional.get())
-                       .build();
+        CmsConsent cmsConsent = mapToCmsConsent(consent);
+
+        if (!consent.isRecurringIndicator() && consent.getFrequencyPerDay() == 1
+                && oneOffConsentExpirationService.isConsentExpired(consent, cmsConsent)) {
+            consent.setConsentStatus(EXPIRED);
         }
 
-        log.info("Consent ID [{}]. Get psu data by consent id failed, because consent not found",
-                 consentId);
-        return CmsResponse.<List<PsuIdData>>builder()
-                   .error(LOGICAL_ERROR)
-                   .build();
-    }
-
-    @Override
-    @Transactional(rollbackFor = WrongChecksumException.class)
-    public CmsResponse<Boolean> updateMultilevelScaRequired(String consentId, boolean multilevelScaRequired) throws WrongChecksumException {
-        Optional<AisConsent> aisConsentOptional = aisConsentJpaRepository.findByExternalId(consentId);
-        if (!aisConsentOptional.isPresent()) {
-            log.info("Consent ID: [{}]. Get update multilevel SCA required status failed, because consent authorisation is not found",
-                     consentId);
-            return CmsResponse.<Boolean>builder()
-                       .payload(false)
-                       .build();
-        }
-        AisConsent consent = aisConsentOptional.get();
-        consent.setMultilevelScaRequired(multilevelScaRequired);
+        consent.setLastActionDate(LocalDate.now());
 
         aisConsentRepository.verifyAndSave(consent);
-
-        return CmsResponse.<Boolean>builder()
-                   .payload(true)
-                   .build();
     }
 
-    private AisConsent checkAndUpdateOnExpiration(AisConsent consent) {
-        if (consent != null && consent.shouldConsentBeExpired()) {
-            return aisConsentConfirmationExpirationService.expireConsent(consent);
-        }
-
-        return consent;
-    }
-
-    private AisConsent createConsentFromRequest(CreateAisConsentRequest request) {
-
-        AisConsent consent = new AisConsent();
-        consent.setExternalId(UUID.randomUUID().toString());
-        consent.setConsentStatus(RECEIVED);
-        consent.setAllowedFrequencyPerDay(request.getAllowedFrequencyPerDay());
-        consent.setTppFrequencyPerDay(request.getRequestedFrequencyPerDay());
-        consent.setRequestDateTime(LocalDateTime.now());
-        consent.setValidUntil(adjustExpireDate(request.getValidUntil()));
-        consent.setPsuDataList(psuDataMapper.mapToPsuDataList(Collections.singletonList(request.getPsuData())));
-        consent.setTppInfo(tppInfoMapper.mapToTppInfoEntity(request.getTppInfo()));
-        AuthorisationTemplateEntity authorisationTemplate = new AuthorisationTemplateEntity();
-        TppRedirectUri tppRedirectUri = request.getTppRedirectUri();
-        if (tppRedirectUri != null) {
-            authorisationTemplate.setRedirectUri(tppRedirectUri.getUri());
-            authorisationTemplate.setNokRedirectUri(tppRedirectUri.getNokUri());
-        }
-        consent.setAuthorisationTemplate(authorisationTemplate);
-        consent.addAccountAccess(new TppAccountAccessHolder(request.getAccess())
-                                     .getAccountAccesses());
-        consent.setRecurringIndicator(request.isRecurringIndicator());
-        consent.setTppRedirectPreferred(request.isTppRedirectPreferred());
-        consent.setCombinedServiceIndicator(request.isCombinedServiceIndicator());
-        consent.setAisConsentRequestType(aisConsentRequestTypeService.getRequestTypeFromAccess(request.getAccess()));
-        consent.setAvailableAccounts(request.getAccess().getAvailableAccounts());
-        consent.setAllPsd2(request.getAccess().getAllPsd2());
-        consent.setAvailableAccountsWithBalance(request.getAccess().getAvailableAccountsWithBalance());
-        consent.setLastActionDate(LocalDate.now());
-        setAdditionalInformationTypes(consent, request.getAccess().getAccountAdditionalInformationAccess());
-        consent.setInternalRequestId(request.getInternalRequestId());
-        consent.setTppNotificationUri(request.getTppNotificationUri());
-        consent.setTppNotificationContentPreferred(request.getNotificationSupportedModes());
-
-        return consent;
-    }
-
-    private void setAdditionalInformationTypes(AisConsent consent, AccountAdditionalInformationAccess info) {
-        AdditionalAccountInformationType ownerNameType = info == null
-                                                             ? AdditionalAccountInformationType.NONE
-                                                             : AdditionalAccountInformationType.findTypeByList(info.getOwnerName());
-        consent.setOwnerNameType(ownerNameType);
-    }
-
-    private LocalDate adjustExpireDate(LocalDate validUntil) {
-        int lifetime = aspspProfileService.getAspspSettings().getAis().getConsentTypes().getMaxConsentValidityDays();
-        if (lifetime <= 0) {
-            return validUntil;
-        }
-
-        //Expire date is inclusive and TPP can access AIS consent from current date
-        LocalDate lifeTimeDate = LocalDate.now().plusDays(lifetime - 1L);
-        return lifeTimeDate.isBefore(validUntil) ? lifeTimeDate : validUntil;
-    }
-
-    private ActionStatus resolveConsentActionStatus(AisConsentActionRequest request, AisConsent consent) {
+    private ActionStatus resolveConsentActionStatus(AisConsentActionRequest request, ConsentEntity consent) {
 
         if (consent == null) {
             log.info("Consent ID: [{}]. Consent action status resolver received null consent",
@@ -477,44 +178,71 @@ public class AisConsentServiceInternal implements AisConsentService {
         aisConsentActionRepository.save(action);
     }
 
-    private Optional<AisConsent> getActualAisConsent(String consentId) {
-        return aisConsentJpaRepository.findByExternalId(consentId)
+    private Optional<ConsentEntity> getActualAisConsent(String consentId) {
+        return consentJpaRepository.findByExternalId(consentId)
                    .filter(c -> !c.getConsentStatus().isFinalisedStatus());
     }
 
-    private boolean setStatusAndSaveConsent(AisConsent consent, ConsentStatus status) throws WrongChecksumException {
-        if (consent.getConsentStatus().isFinalisedStatus()) {
-            log.info("Consent ID: [{}], Consent status [{}]. Update consent status by ID failed, because consent status is finalised",
-                     consent.getExternalId(), consent.getConsentStatus());
-            return false;
+    private ConsentEntity checkAndUpdateOnExpiration(ConsentEntity consent) {
+        if (consent != null && consent.shouldConsentBeExpired()) {
+            return aisConsentConfirmationExpirationService.expireConsent(consent);
         }
-        consent.setLastActionDate(LocalDate.now());
-        consent.setConsentStatus(status);
 
-        AisConsent aisConsent = aisConsentRepository.verifyAndSave(consent);
-
-        return Optional.ofNullable(aisConsent)
-                   .isPresent();
+        return consent;
     }
 
-    private void updateAisConsentUsage(AisConsent consent, AisConsentActionRequest request) throws WrongChecksumException {
-        if (!request.isUpdateUsage()) {
-            return;
-        }
-        aisConsentUsageService.incrementUsage(consent, request);
-
-        if (!consent.isRecurringIndicator() && consent.getAllowedFrequencyPerDay() == 1 && oneOffConsentExpirationService.isConsentExpired(consent)) {
-            consent.setConsentStatus(EXPIRED);
+    private AccountAccess updateAccountReferencesInAccess(AccountAccess existingAccess, AccountAccess requestedAccess) {
+        if (hasNoAccountReferences(existingAccess)) {
+            return requestedAccess;
         }
 
-        consent.setLastActionDate(LocalDate.now());
+        List<AccountReference> updatedAccounts = existingAccess.getAccounts().stream()
+                                                     .map(ref -> updateAccountReference(ref, requestedAccess.getAccounts())).collect(Collectors.toList());
+        List<AccountReference> updatedBalances = existingAccess.getBalances().stream()
+                                                     .map(ref -> updateAccountReference(ref, requestedAccess.getBalances())).collect(Collectors.toList());
+        List<AccountReference> updatedTransactions = existingAccess.getTransactions().stream()
+                                                         .map(ref -> updateAccountReference(ref, requestedAccess.getTransactions())).collect(Collectors.toList());
+        AdditionalInformationAccess updatedAdditionalInformation = updateAccountReferencesInAdditionalInformation(existingAccess.getAdditionalInformationAccess(),
+                                                                                                                  requestedAccess.getAdditionalInformationAccess());
 
-        aisConsentRepository.verifyAndSave(consent);
+        return new AccountAccess(updatedAccounts, updatedBalances, updatedTransactions, existingAccess.getAvailableAccounts(), existingAccess.getAllPsd2(),
+                                 existingAccess.getAvailableAccountsWithBalance(), updatedAdditionalInformation);
     }
 
-    private void updateStatus(AisConsent aisConsent) {
-        aisConsent.setConsentStatus(aisConsent.getConsentStatus() == RECEIVED || aisConsent.getConsentStatus() == PARTIALLY_AUTHORISED
-                                        ? REJECTED
-                                        : TERMINATED_BY_TPP);
+    private boolean hasNoAccountReferences(AccountAccess accountAccess) {
+        AdditionalInformationAccess additionalInformationAccess = accountAccess.getAdditionalInformationAccess();
+        boolean hasNoAdditionalInformationReferences = additionalInformationAccess == null
+                                                           || CollectionUtils.isEmpty(additionalInformationAccess.getOwnerName());
+
+        return CollectionUtils.isEmpty(accountAccess.getAccounts())
+                   && CollectionUtils.isEmpty(accountAccess.getBalances())
+                   && CollectionUtils.isEmpty(accountAccess.getTransactions())
+                   && hasNoAdditionalInformationReferences;
+    }
+
+    private AdditionalInformationAccess updateAccountReferencesInAdditionalInformation(AdditionalInformationAccess existingAccess, AdditionalInformationAccess requestedAccess) {
+        if (isAdditionalInformationAbsent(existingAccess) || isAdditionalInformationAbsent(requestedAccess)) {
+            return existingAccess;
+        }
+
+        assert existingAccess.getOwnerName() != null;
+        assert requestedAccess.getOwnerName() != null;
+        List<AccountReference> updatedOwnerName = existingAccess.getOwnerName().stream()
+                                                      .map(ref -> updateAccountReference(ref, requestedAccess.getOwnerName()))
+                                                      .collect(Collectors.toList());
+
+        return new AdditionalInformationAccess(updatedOwnerName);
+    }
+
+    private boolean isAdditionalInformationAbsent(AdditionalInformationAccess additionalInformationAccess) {
+        return additionalInformationAccess == null || additionalInformationAccess.getOwnerName() == null;
+    }
+
+    private AccountReference updateAccountReference(AccountReference existingReference, List<AccountReference> requestedAspspReferences) {
+        return requestedAspspReferences.stream()
+                   .filter(aspsp -> aspsp.getUsedAccountReferenceSelector().equals(existingReference.getUsedAccountReferenceSelector()))
+                   .filter(aspsp -> aspsp.getCurrency().equals(existingReference.getCurrency()))
+                   .findFirst()
+                   .orElse(existingReference);
     }
 }

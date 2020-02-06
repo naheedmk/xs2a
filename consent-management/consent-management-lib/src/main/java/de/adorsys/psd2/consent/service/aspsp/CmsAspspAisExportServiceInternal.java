@@ -19,9 +19,9 @@ package de.adorsys.psd2.consent.service.aspsp;
 import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
 import de.adorsys.psd2.consent.aspsp.api.ais.CmsAspspAisExportService;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.AuthorisationRepository;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
@@ -46,9 +46,10 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CmsAspspAisExportServiceInternal implements CmsAspspAisExportService {
     private final AisConsentSpecification aisConsentSpecification;
-    private final AisConsentJpaRepository aisConsentJpaRepository;
+    private final ConsentJpaRepository consentJpaRepository;
     private final AisConsentMapper aisConsentMapper;
     private final AuthorisationRepository authorisationRepository;
+    private final ConsentFilteringService consentFilteringService;
 
     @Override
     public Collection<CmsAisAccountConsent> exportConsentsByTpp(String tppAuthorisationNumber,
@@ -60,7 +61,7 @@ public class CmsAspspAisExportServiceInternal implements CmsAspspAisExportServic
             return Collections.emptyList();
         }
 
-        return aisConsentJpaRepository.findAll(aisConsentSpecification.byTppIdAndCreationPeriodAndPsuIdDataAndInstanceId(
+        return consentJpaRepository.findAll(aisConsentSpecification.byTppIdAndCreationPeriodAndPsuIdDataAndInstanceId(
             tppAuthorisationNumber,
             createDateFrom,
             createDateTo,
@@ -82,10 +83,10 @@ public class CmsAspspAisExportServiceInternal implements CmsAspspAisExportServic
             return Collections.emptyList();
         }
 
-        return aisConsentJpaRepository.findAll(aisConsentSpecification.byPsuIdDataAndCreationPeriodAndInstanceId(psuIdData,
-                                                                                                                 createDateFrom,
-                                                                                                                 createDateTo,
-                                                                                                                 instanceId
+        return consentJpaRepository.findAll(aisConsentSpecification.byPsuIdDataAndCreationPeriodAndInstanceId(psuIdData,
+                                                                                                              createDateFrom,
+                                                                                                              createDateTo,
+                                                                                                              instanceId
         ))
                    .stream()
                    .map(this::mapToCmsAisAccountConsentWithAuthorisations)
@@ -104,19 +105,19 @@ public class CmsAspspAisExportServiceInternal implements CmsAspspAisExportServic
             return Collections.emptyList();
         }
 
-        return aisConsentJpaRepository.findAll(aisConsentSpecification.byAspspAccountIdAndCreationPeriodAndInstanceId(aspspAccountId,
-                                                                                                                      createDateFrom,
-                                                                                                                      createDateTo,
-                                                                                                                      instanceId
-        ))
+        List<ConsentEntity> consents = consentJpaRepository.findAll(aisConsentSpecification.byCreationPeriodAndInstanceId(createDateFrom,
+                                                                                                                          createDateTo,
+                                                                                                                          instanceId));
+        List<ConsentEntity> filteredConsents = consentFilteringService.filterAisConsentsByAspspAccountId(consents, aspspAccountId);
+        return filteredConsents
                    .stream()
                    .map(this::mapToCmsAisAccountConsentWithAuthorisations)
                    .collect(Collectors.toList());
     }
 
-    private CmsAisAccountConsent mapToCmsAisAccountConsentWithAuthorisations(AisConsent aisConsent) {
+    private CmsAisAccountConsent mapToCmsAisAccountConsentWithAuthorisations(ConsentEntity aisConsentEntity) {
         List<AuthorisationEntity> authorisations =
-            authorisationRepository.findAllByParentExternalIdAndAuthorisationType(aisConsent.getExternalId(), AuthorisationType.AIS);
-        return aisConsentMapper.mapToCmsAisAccountConsent(aisConsent, authorisations);
+            authorisationRepository.findAllByParentExternalIdAndAuthorisationType(aisConsentEntity.getExternalId(), AuthorisationType.AIS);
+        return aisConsentMapper.mapToCmsAisAccountConsent(aisConsentEntity, authorisations);
     }
 }

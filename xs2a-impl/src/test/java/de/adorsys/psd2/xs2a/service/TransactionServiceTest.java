@@ -16,11 +16,14 @@
 
 package de.adorsys.psd2.xs2a.service;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.event.core.model.EventType;
 import de.adorsys.psd2.logger.context.LoggingContextService;
 import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
-import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
+import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
@@ -36,8 +39,6 @@ import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountReport;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aTransactionsDownloadResponse;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aTransactionsReport;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aTransactionsReportByPeriodRequest;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.ais.AccountHelperService;
 import de.adorsys.psd2.xs2a.service.ais.TransactionService;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aAccountService;
@@ -90,7 +91,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceTest {
-
     private static final JsonReader jsonReader = new JsonReader();
     private static final String ASPSP_ACCOUNT_ID = "3278921mxl-n2131-13nw";
     private static final boolean WITH_BALANCE = false;
@@ -122,7 +122,7 @@ class TransactionServiceTest {
 
     private SpiAccountReference spiAccountReference;
     private Xs2aTransactionsDownloadResponse xs2aTransactionsDownloadResponse;
-    private AccountConsent accountConsent;
+    private AisConsent aisConsent;
     private InputStream inputStream;
     private TransactionsReportByPeriodObject transactionsReportByPeriodObject;
     private SpiAspspConsentDataProvider spiAspspConsentDataProvider;
@@ -177,7 +177,7 @@ class TransactionServiceTest {
 
     @BeforeEach
     void setUp() {
-        accountConsent = createConsent(createAccountAccess());
+        aisConsent = createConsent(createAccountAccess());
         spiAccountReference = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/spi-account-reference.json", SpiAccountReference.class);
         xs2aTransactionsDownloadResponse = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/xs2a-transactions-download-response.json", Xs2aTransactionsDownloadResponse.class);
         inputStream = new ByteArrayInputStream("test string".getBytes());
@@ -189,7 +189,7 @@ class TransactionServiceTest {
     void getTransactionsReportByPeriod_Failure_NoAccountConsent() {
         // Given
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
 
         when(aisConsentService.getAccountConsentById(CONSENT_ID)).thenReturn(Optional.empty());
         // When
@@ -204,7 +204,7 @@ class TransactionServiceTest {
         when(getTransactionsReportValidator.validate(any(TransactionsReportByPeriodObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
 
         when(getTransactionsReportValidator.validate(transactionsReportByPeriodObject))
             .thenReturn(ValidationResult.invalid(VALIDATION_ERROR));
@@ -222,7 +222,7 @@ class TransactionServiceTest {
         when(getTransactionsReportValidator.validate(any(TransactionsReportByPeriodObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(spiAccountReference);
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
@@ -254,7 +254,7 @@ class TransactionServiceTest {
         when(getTransactionsReportValidator.validate(any(TransactionsReportByPeriodObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
 
         when(getTransactionsReportValidator.validate(transactionsReportByPeriodObject))
             .thenReturn(ValidationResult.invalid(VALIDATION_ERROR));
@@ -272,7 +272,7 @@ class TransactionServiceTest {
         when(getTransactionsReportValidator.validate(any(TransactionsReportByPeriodObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(spiAccountReference);
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
@@ -298,7 +298,7 @@ class TransactionServiceTest {
         when(getTransactionsReportValidator.validate(any(TransactionsReportByPeriodObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(spiAccountReference);
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
@@ -351,17 +351,17 @@ class TransactionServiceTest {
         when(getTransactionsReportValidator.validate(any(TransactionsReportByPeriodObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(spiAccountReference);
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
-        Xs2aAccountAccess xs2aAccountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access-global.json", Xs2aAccountAccess.class);
+        AccountAccess accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access-global.json", AccountAccess.class);
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(SPI_ACCOUNT_REFERENCE_GLOBAL);
 
-        AccountConsent accountConsent = createConsent(xs2aAccountAccess);
+        AisConsent aisConsent = createConsent(accountAccess);
 
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
 
         when(aspspProfileService.isTransactionsWithoutBalancesSupported())
             .thenReturn(true);
@@ -403,7 +403,7 @@ class TransactionServiceTest {
         when(getTransactionsReportValidator.validate(any(TransactionsReportByPeriodObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(spiAccountReference);
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
@@ -434,7 +434,7 @@ class TransactionServiceTest {
     void getTransactionsReportByPeriod_withInvalidConsent_shouldReturnValidationError() {
         // Given
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
 
         when(getTransactionsReportValidator.validate(any(TransactionsReportByPeriodObject.class)))
             .thenReturn(ValidationResult.invalid(VALIDATION_ERROR));
@@ -453,7 +453,7 @@ class TransactionServiceTest {
         when(getTransactionsReportValidator.validate(any(TransactionsReportByPeriodObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(spiAccountReference);
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
@@ -487,7 +487,7 @@ class TransactionServiceTest {
         ArgumentCaptor<EventType> argumentCaptor = ArgumentCaptor.forClass(EventType.class);
 
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
         when(downloadTransactionsReportValidator.validate(any(DownloadTransactionListRequestObject.class)))
@@ -530,7 +530,7 @@ class TransactionServiceTest {
     void downloadTransactions_Failure_validation_fails_shouldReturn_400() {
         // Given
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
 
         when(downloadTransactionsReportValidator.validate(any(DownloadTransactionListRequestObject.class)))
             .thenReturn(ValidationResult.invalid(AIS_401, CONSENT_EXPIRED));
@@ -548,7 +548,7 @@ class TransactionServiceTest {
         SpiTransactionsDownloadResponse spiTransactionsDownloadResponse = new SpiTransactionsDownloadResponse(inputStream, FILENAME, DATA_SIZE_BYTES);
 
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
         when(downloadTransactionsReportValidator.validate(any(DownloadTransactionListRequestObject.class)))
@@ -577,7 +577,7 @@ class TransactionServiceTest {
         ArgumentCaptor<ConsentStatus> argumentCaptor = ArgumentCaptor.forClass(ConsentStatus.class);
 
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
         when(downloadTransactionsReportValidator.validate(any(DownloadTransactionListRequestObject.class)))
@@ -613,9 +613,9 @@ class TransactionServiceTest {
         when(getTransactionDetailsValidator.validate(any(CommonAccountTransactionsRequestObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
 
-        when(getTransactionDetailsValidator.validate(new CommonAccountTransactionsRequestObject(accountConsent, ACCOUNT_ID, REQUEST_URI)))
+        when(getTransactionDetailsValidator.validate(new CommonAccountTransactionsRequestObject(aisConsent, ACCOUNT_ID, REQUEST_URI)))
             .thenReturn(ValidationResult.invalid(VALIDATION_ERROR));
 
         // When
@@ -631,7 +631,7 @@ class TransactionServiceTest {
         when(getTransactionDetailsValidator.validate(any(CommonAccountTransactionsRequestObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(spiAccountReference);
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
@@ -661,9 +661,9 @@ class TransactionServiceTest {
         when(getTransactionDetailsValidator.validate(any(CommonAccountTransactionsRequestObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
 
-        when(getTransactionDetailsValidator.validate(new CommonAccountTransactionsRequestObject(accountConsent, ACCOUNT_ID, REQUEST_URI)))
+        when(getTransactionDetailsValidator.validate(new CommonAccountTransactionsRequestObject(aisConsent, ACCOUNT_ID, REQUEST_URI)))
             .thenReturn(ValidationResult.invalid(VALIDATION_ERROR));
 
         // When
@@ -679,7 +679,7 @@ class TransactionServiceTest {
         when(getTransactionDetailsValidator.validate(any(CommonAccountTransactionsRequestObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(spiAccountReference);
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
@@ -712,7 +712,7 @@ class TransactionServiceTest {
         when(getTransactionDetailsValidator.validate(any(CommonAccountTransactionsRequestObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(spiAccountReference);
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
@@ -737,7 +737,7 @@ class TransactionServiceTest {
     void getTransactionDetails_withInvalidConsent_shouldReturnValidationError() {
         // Given
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
 
         when(getTransactionDetailsValidator.validate(any(CommonAccountTransactionsRequestObject.class)))
             .thenReturn(ValidationResult.invalid(VALIDATION_ERROR));
@@ -746,7 +746,7 @@ class TransactionServiceTest {
         ResponseObject<Transactions> actualResponse = transactionService.getTransactionDetails(CONSENT_ID, ACCOUNT_ID, TRANSACTION_ID, REQUEST_URI);
 
         // Then
-        verify(getTransactionDetailsValidator).validate(new CommonAccountTransactionsRequestObject(accountConsent, ACCOUNT_ID, REQUEST_URI));
+        verify(getTransactionDetailsValidator).validate(new CommonAccountTransactionsRequestObject(aisConsent, ACCOUNT_ID, REQUEST_URI));
         assertThatErrorIs(actualResponse, CONSENT_INVALID);
     }
 
@@ -756,7 +756,7 @@ class TransactionServiceTest {
         when(getTransactionDetailsValidator.validate(any(CommonAccountTransactionsRequestObject.class)))
             .thenReturn(ValidationResult.valid());
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
         when(accountHelperService.findAccountReference(any(), any())).thenReturn(spiAccountReference);
         when(accountHelperService.getSpiContextData()).thenReturn(SPI_CONTEXT_DATA);
 
@@ -815,8 +815,29 @@ class TransactionServiceTest {
         assertThat(actualResponse.hasError()).isFalse();
     }
 
-    private static AccountConsent createConsent(Xs2aAccountAccess access) {
-        return new AccountConsent(CONSENT_ID, access, access, false, LocalDate.now(), null, 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap(), OffsetDateTime.now());
+    private static AisConsent createConsent(AccountAccess access) {
+        AisConsent aisConsent =  new AisConsent();
+        aisConsent.setConsentData(buildAisConsentData( access ));
+        aisConsent.setId(CONSENT_ID);
+        aisConsent.setValidUntil(LocalDate.now());
+        aisConsent.setFrequencyPerDay(4);
+        aisConsent.setConsentStatus(ConsentStatus.VALID);
+        aisConsent.setAuthorisations(Collections.emptyList());
+        aisConsent.setConsentTppInformation( buildConsentTppInformation() );
+        aisConsent.setStatusChangeTimestamp(OffsetDateTime.now());
+        aisConsent.setUsages(Collections.emptyMap());
+        aisConsent.setStatusChangeTimestamp(OffsetDateTime.now());
+        return aisConsent;
+    }
+
+    private static AisConsentData buildAisConsentData(AccountAccess access ){
+        return new AisConsentData( access, access, false );
+    }
+
+    private static ConsentTppInformation buildConsentTppInformation() {
+        ConsentTppInformation consentTppInformation = new ConsentTppInformation();
+        consentTppInformation.setTppInfo(createTppInfo());
+        return consentTppInformation;
     }
 
     private static TppInfo createTppInfo() {
@@ -825,8 +846,8 @@ class TransactionServiceTest {
         return tppInfo;
     }
 
-    private static Xs2aAccountAccess createAccountAccess() {
-        return new Xs2aAccountAccess(Collections.singletonList(XS2A_ACCOUNT_REFERENCE), Collections.singletonList(XS2A_ACCOUNT_REFERENCE), Collections.singletonList(XS2A_ACCOUNT_REFERENCE), null, null, null, null);
+    private static AccountAccess createAccountAccess() {
+        return new AccountAccess(Collections.singletonList(XS2A_ACCOUNT_REFERENCE), Collections.singletonList(XS2A_ACCOUNT_REFERENCE), Collections.singletonList(XS2A_ACCOUNT_REFERENCE), null, null, null, null);
     }
 
     private static SpiAccountReference buildSpiAccountReferenceGlobal() {
@@ -844,7 +865,7 @@ class TransactionServiceTest {
 
     @NotNull
     private TransactionsReportByPeriodObject buildTransactionsReportByPeriodObject() {
-        return new TransactionsReportByPeriodObject(accountConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, ENTRY_REFERENCE_FROM, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, DATE_FROM);
+        return new TransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, ENTRY_REFERENCE_FROM, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, DATE_FROM);
     }
 
     @NotNull

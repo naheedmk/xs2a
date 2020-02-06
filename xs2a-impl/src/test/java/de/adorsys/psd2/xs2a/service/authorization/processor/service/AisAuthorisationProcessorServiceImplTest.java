@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.authorization.processor.service;
 
+import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthenticationObject;
 import de.adorsys.psd2.xs2a.core.authorisation.Authorisation;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
@@ -29,7 +30,6 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ChallengeData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
 import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataReq;
 import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataResponse;
 import de.adorsys.psd2.xs2a.service.authorization.ais.AisAuthorizationService;
@@ -190,11 +190,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -259,11 +259,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -321,11 +321,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -379,11 +379,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -400,7 +400,7 @@ class AisAuthorisationProcessorServiceImplTest {
                             .payload(spiPsuAuthorisationResponse)
                             .build());
 
-        when(aisScaAuthorisationService.isOneFactorAuthorisation(accountConsent)).thenReturn(true);
+        when(aisScaAuthorisationService.isOneFactorAuthorisation(aisConsent)).thenReturn(true);
 
         Authorisation authorisation = new Authorisation();
         AuthorisationProcessorRequest processorRequest = buildAuthorisationProcessorRequest(ScaStatus.RECEIVED, updateAuthorisationRequest, authorisation);
@@ -426,11 +426,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -475,11 +475,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -552,11 +552,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -609,11 +609,11 @@ class AisAuthorisationProcessorServiceImplTest {
         String psuPassword = PSU_PASSWORD;
         updateAuthorisationRequest.setPassword(psuPassword);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -659,11 +659,11 @@ class AisAuthorisationProcessorServiceImplTest {
         String psuPassword = PSU_PASSWORD;
         updateAuthorisationRequest.setPassword(psuPassword);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -762,11 +762,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -831,11 +831,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -893,11 +893,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -951,11 +951,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -972,7 +972,7 @@ class AisAuthorisationProcessorServiceImplTest {
                             .payload(spiPsuAuthorisationResponse)
                             .build());
 
-        when(aisScaAuthorisationService.isOneFactorAuthorisation(accountConsent)).thenReturn(true);
+        when(aisScaAuthorisationService.isOneFactorAuthorisation(aisConsent)).thenReturn(true);
 
         Authorisation authorisation = new Authorisation();
         AuthorisationProcessorRequest processorRequest = buildAuthorisationProcessorRequest(ScaStatus.PSUIDENTIFIED, updateAuthorisationRequest, authorisation);
@@ -998,11 +998,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -1047,11 +1047,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -1123,11 +1123,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setPassword(PSU_PASSWORD);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -1180,11 +1180,11 @@ class AisAuthorisationProcessorServiceImplTest {
         String psuPassword = PSU_PASSWORD;
         updateAuthorisationRequest.setPassword(psuPassword);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -1230,11 +1230,11 @@ class AisAuthorisationProcessorServiceImplTest {
         String psuPassword = PSU_PASSWORD;
         updateAuthorisationRequest.setPassword(psuPassword);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -1292,11 +1292,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setAuthenticationMethodId(AUTHENTICATION_METHOD_ID);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -1343,11 +1343,11 @@ class AisAuthorisationProcessorServiceImplTest {
 
         updateAuthorisationRequest.setAuthenticationMethodId(AUTHENTICATION_METHOD_ID);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         when(xs2aAisConsentService.isAuthenticationMethodDecoupled(AUTHORISATION_ID, AUTHENTICATION_METHOD_ID))
             .thenReturn(true);
@@ -1412,11 +1412,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setAuthenticationMethodId(AUTHENTICATION_METHOD_ID);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -1470,11 +1470,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setAuthenticationMethodId(AUTHENTICATION_METHOD_ID);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -1519,11 +1519,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setAuthenticationMethodId(AUTHENTICATION_METHOD_ID);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -1593,11 +1593,11 @@ class AisAuthorisationProcessorServiceImplTest {
         updateAuthorisationRequest.setPsuData(psuIdData);
         updateAuthorisationRequest.setAuthenticationMethodId(AUTHENTICATION_METHOD_ID);
 
-        AccountConsent accountConsent = buildAccountConsent();
-        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(accountConsent));
+        AisConsent aisConsent = buildAccountConsent();
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
 
         SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
-        when(xs2aAisConsentMapper.mapToSpiAccountConsent(accountConsent)).thenReturn(spiAccountConsent);
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
 
         SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
         SpiContextData spiContextData = new SpiContextData(spiPsuData, null, null, null, null);
@@ -1641,8 +1641,9 @@ class AisAuthorisationProcessorServiceImplTest {
         assertEquals(AUTHORISATION_ID, processorResponse.getAuthorisationId());
     }
 
-    private AccountConsent buildAccountConsent() {
-        return new AccountConsent(INTERNAL_CONSENT_ID, null, null, false, null, null, 1, null, null, false, false, null, null, null, false, null, null, null, null);
+    private AisConsent buildAccountConsent() {
+        return new AisConsent();
+        //return new AccountConsent(INTERNAL_CONSENT_ID, null, null, false, null, null, 1, null, null, false, false, null, null, null, false, null, null, null, null);
     }
 
     @Test

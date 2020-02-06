@@ -16,9 +16,9 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -30,12 +30,12 @@ import java.util.List;
 public class PermittedAccountReferenceValidator {
     private final AccountReferenceAccessValidator accountReferenceAccessValidator;
 
-    public ValidationResult validate(AccountConsent accountConsent, String accountId, boolean withBalance) {
-        Xs2aAccountAccess accountAccess = accountConsent.getAspspAccess();
+    public ValidationResult validate(AisConsent aisConsent, String accountId, boolean withBalance) {
+        AccountAccess accountAccess = aisConsent.getAspspAccess();
         List<AccountReference> accountReferences = withBalance
                                                        ? accountAccess.getBalances()
                                                        : accountAccess.getAccounts();
 
-        return accountReferenceAccessValidator.validate(accountAccess, accountReferences, accountId, accountConsent.getAisConsentRequestType());
+        return accountReferenceAccessValidator.validate(accountAccess, accountReferences, accountId, aisConsent.getAisConsentRequestType());
     }
 }

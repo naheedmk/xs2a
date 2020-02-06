@@ -16,10 +16,10 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
@@ -29,9 +29,9 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 @Component
 public class AccountAccessValidator {
 
-    public ValidationResult validate(AccountConsent accountConsent, boolean withBalance) {
+    public ValidationResult validate(AisConsent aisConsent, boolean withBalance) {
         if (withBalance) {
-            Xs2aAccountAccess accountAccess = accountConsent.getAccess();
+            AccountAccess accountAccess = aisConsent.getAccess();
 
             if (accountAccess.getAllPsd2() != null) {
                 return ValidationResult.valid();

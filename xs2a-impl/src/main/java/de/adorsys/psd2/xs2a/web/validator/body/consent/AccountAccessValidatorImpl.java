@@ -17,7 +17,6 @@
 package de.adorsys.psd2.xs2a.web.validator.body.consent;
 
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
-import de.adorsys.psd2.model.AccountAccess;
 import de.adorsys.psd2.model.AccountReference;
 import de.adorsys.psd2.model.Consents;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
@@ -25,7 +24,7 @@ import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import de.adorsys.psd2.xs2a.domain.consent.CreateConsentReq;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
+import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
 import de.adorsys.psd2.xs2a.web.validator.body.AbstractBodyValidatorImpl;
 import de.adorsys.psd2.xs2a.web.validator.body.AccountReferenceValidator;
@@ -86,7 +85,7 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
     }
 
     private void validateAccountAccess(Consents consents, MessageError messageError) {
-        AccountAccess accountAccess = consents.getAccess();
+        de.adorsys.psd2.model.AccountAccess accountAccess = consents.getAccess();
 
         if (accountAccess.getAccounts() != null) {
 
@@ -114,14 +113,14 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
     }
 
     private boolean areFlagsAndAccountsInvalid(CreateConsentReq request) {
-        Xs2aAccountAccess access = request.getAccess();
+        AccountAccess access = request.getAccess();
         if (access.isNotEmpty()) {
             return !(CollectionUtils.isEmpty(request.getAccountReferences()) || areFlagsEmpty(access));
         }
         return false;
     }
 
-    private boolean areFlagsEmpty(Xs2aAccountAccess access) {
+    private boolean areFlagsEmpty(AccountAccess access) {
         return Objects.isNull(access.getAvailableAccounts()) && Objects.isNull(access.getAllPsd2());
     }
 
@@ -135,10 +134,10 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
                    .orElse(null);
     }
 
-    private Xs2aAccountAccess mapToAccountAccessInner(AccountAccess accountAccess, MessageError messageError) {
+    private AccountAccess mapToAccountAccessInner(de.adorsys.psd2.model.AccountAccess accountAccess, MessageError messageError) {
         return Optional.ofNullable(accountAccess)
                    .map(acs ->
-                            new Xs2aAccountAccess(
+                            new AccountAccess(
                                 mapToXs2aAccountReferences(acs.getAccounts(), messageError),
                                 mapToXs2aAccountReferences(acs.getBalances(), messageError),
                                 mapToXs2aAccountReferences(acs.getTransactions(), messageError),
@@ -166,19 +165,19 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
                    .orElseGet(Collections::emptyList);
     }
 
-    private AccountAccessType mapToAccountAccessTypeFromAvailableAccounts(AccountAccess.AvailableAccountsEnum accountsEnum) {
+    private AccountAccessType mapToAccountAccessTypeFromAvailableAccounts(de.adorsys.psd2.model.AccountAccess.AvailableAccountsEnum accountsEnum) {
         return Optional.ofNullable(accountsEnum)
                    .flatMap(en -> AccountAccessType.getByDescription(en.toString()))
                    .orElse(null);
     }
 
-    private AccountAccessType mapToAccountAccessTypeFromAllPsd2Enum(AccountAccess.AllPsd2Enum allPsd2Enum) {
+    private AccountAccessType mapToAccountAccessTypeFromAllPsd2Enum(de.adorsys.psd2.model.AccountAccess.AllPsd2Enum allPsd2Enum) {
         return Optional.ofNullable(allPsd2Enum)
                    .flatMap(en -> AccountAccessType.getByDescription(en.toString()))
                    .orElse(null);
     }
 
-    private AccountAccessType mapToAccountAccessTypeFromAvailableAccountsWithBalance(AccountAccess.AvailableAccountsWithBalanceEnum accountsEnum) {
+    private AccountAccessType mapToAccountAccessTypeFromAvailableAccountsWithBalance(de.adorsys.psd2.model.AccountAccess.AvailableAccountsWithBalanceEnum accountsEnum) {
         return Optional.ofNullable(accountsEnum)
                    .flatMap(en -> AccountAccessType.getByDescription(en.toString()))
                    .orElse(null);

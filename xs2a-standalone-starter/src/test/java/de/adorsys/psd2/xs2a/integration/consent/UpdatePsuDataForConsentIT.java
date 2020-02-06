@@ -18,14 +18,15 @@ package de.adorsys.psd2.xs2a.integration.consent;
 
 import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.CmsResponse;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccess;
-import de.adorsys.psd2.consent.api.ais.AisAccountConsent;
-import de.adorsys.psd2.consent.api.ais.AisAccountConsentAuthorisation;
+import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.api.authorisation.UpdateAuthorisationRequest;
-import de.adorsys.psd2.consent.api.service.AisConsentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.AuthorisationServiceEncrypted;
+import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppService;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
+import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
 import de.adorsys.psd2.event.service.model.EventBO;
 import de.adorsys.psd2.starter.Xs2aStandaloneStarter;
@@ -35,7 +36,9 @@ import de.adorsys.psd2.xs2a.config.Xs2aEndpointPathConstant;
 import de.adorsys.psd2.xs2a.config.Xs2aInterfaceConfig;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthenticationObject;
 import de.adorsys.psd2.xs2a.core.authorisation.Authorisation;
+import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
+import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.AuthorisationScaApproachResponse;
@@ -112,11 +115,13 @@ class UpdatePsuDataForConsentIT {
     @MockBean
     private Xs2aEventServiceEncrypted eventServiceEncrypted;
     @MockBean
-    private AisConsentServiceEncrypted aisConsentServiceEncrypted;
+    private ConsentServiceEncrypted aisConsentServiceEncrypted;
     @MockBean
     private AuthorisationServiceEncrypted authorisationServiceEncrypted;
     @MockBean
     private AisConsentSpi aisConsentSpi;
+    @Autowired
+    private ConsentDataMapper consentDataMapper;
 
     private JsonReader jsonReader = new JsonReader();
 
@@ -151,9 +156,9 @@ class UpdatePsuDataForConsentIT {
             .willReturn(CmsResponse.<Authorisation>builder()
                             .payload(authorizationResponse)
                             .build());
-        given(aisConsentServiceEncrypted.getAisAccountConsentById(ENCRYPTED_CONSENT_ID))
-            .willReturn(CmsResponse.<AisAccountConsent>builder()
-                            .payload(buildAisAccountConsent())
+        given(aisConsentServiceEncrypted.getConsentById(ENCRYPTED_CONSENT_ID))
+            .willReturn(CmsResponse.<CmsConsent>builder()
+                            .payload(buildCmsConsent())
                             .build());
 
         given(authorisationServiceEncrypted.getAuthorisationScaApproach(AUTHORISATION_ID))
@@ -208,9 +213,9 @@ class UpdatePsuDataForConsentIT {
             .willReturn(CmsResponse.<Authorisation>builder()
                             .payload(new Authorisation())
                             .build());
-        given(aisConsentServiceEncrypted.getAisAccountConsentById(ENCRYPTED_CONSENT_ID))
-            .willReturn(CmsResponse.<AisAccountConsent>builder()
-                            .payload(buildAisAccountConsent())
+        given(aisConsentServiceEncrypted.getConsentById(ENCRYPTED_CONSENT_ID))
+            .willReturn(CmsResponse.<CmsConsent>builder()
+                            .payload(buildCmsConsent())
                             .build());
 
         MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.buildConsentUpdateAuthorisationUrl(ENCRYPTED_CONSENT_ID, WRONG_AUTHORISATION_ID));
@@ -225,21 +230,21 @@ class UpdatePsuDataForConsentIT {
     }
 
     @NotNull
-    private AisAccountConsent buildAisAccountConsent() {
-        AisAccountConsent aisAccountConsent = new AisAccountConsent();
-        aisAccountConsent.setTppAccess(new AisAccountAccess(Collections.emptyList(),
-                                                            Collections.emptyList(),
-                                                            Collections.emptyList(),
-                                                            null, null, null, null));
-        aisAccountConsent.setAspspAccess(new AisAccountAccess(Collections.emptyList(),
-                                                              Collections.emptyList(),
-                                                              Collections.emptyList(),
-                                                              null, null, null, null));
+    private CmsConsent buildCmsConsent() {
+        AisConsentData aisConsentData = new AisConsentData(AccountAccess.EMPTY_ACCESS, AccountAccess.EMPTY_ACCESS, false);
+        byte[] bytes = consentDataMapper.getBytesFromAisConsentData(aisConsentData);
         PsuIdData psuIdData = new PsuIdData(PSU_ID, null, null, null, null);
-        aisAccountConsent.setAccountConsentAuthorizations(Collections.singletonList(
-            new AisAccountConsentAuthorisation(AUTHORISATION_ID, psuIdData, ScaStatus.PSUIDENTIFIED)));
-        aisAccountConsent.setTppInfo(TPP_INFO);
-        aisAccountConsent.setConsentStatus(ConsentStatus.VALID);
-        return aisAccountConsent;
+        Authorisation authorisation = new Authorisation(AUTHORISATION_ID, psuIdData, ENCRYPTED_CONSENT_ID, AuthorisationType.AIS, ScaStatus.PSUIDENTIFIED);
+        ConsentTppInformation consentTppInformation = new ConsentTppInformation();
+        consentTppInformation.setTppInfo(TPP_INFO);
+
+        CmsConsent cmsConsent = new CmsConsent();
+        cmsConsent.setConsentData(bytes);
+        cmsConsent.setAuthorisations(Collections.singletonList(authorisation));
+        cmsConsent.setTppInformation(consentTppInformation);
+        cmsConsent.setConsentStatus(ConsentStatus.VALID);
+        cmsConsent.setFrequencyPerDay(0);
+
+        return cmsConsent;
     }
 }

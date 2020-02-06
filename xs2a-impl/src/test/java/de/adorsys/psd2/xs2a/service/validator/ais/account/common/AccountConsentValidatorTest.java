@@ -16,12 +16,13 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
-import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
 import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.Collections;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
@@ -61,7 +61,7 @@ class AccountConsentValidatorTest {
     @Test
     void testValidate_shouldReturnValid() {
         // Given
-        AccountConsent accountConsent = buildAccountConsentValid();
+        AisConsent accountConsent = buildAccountConsentValid();
 
         // When
         ValidationResult actual = accountConsentValidator.validate(accountConsent, REQUEST_URI);
@@ -73,7 +73,7 @@ class AccountConsentValidatorTest {
     @Test
     void testValidateInvalid_shouldReturnInvalidErrorWithTextConsentRevoked() {
         // Given
-        AccountConsent accountConsent = buildAccountConsentInvalidRevokedByPsu();
+        AisConsent accountConsent = buildAccountConsentInvalidRevokedByPsu();
 
         // When
         ValidationResult actual = accountConsentValidator.validate(accountConsent, REQUEST_URI);
@@ -86,7 +86,7 @@ class AccountConsentValidatorTest {
     @Test
     void testValidateExpired_shouldReturnExpiredError() {
         // Given
-        AccountConsent accountConsent = buildAccountConsentExpired();
+        AisConsent accountConsent = buildAccountConsentExpired();
 
         // When
         ValidationResult actual = accountConsentValidator.validate(accountConsent, REQUEST_URI);
@@ -99,7 +99,7 @@ class AccountConsentValidatorTest {
     @Test
     void testValidateInvalid_shouldReturnInvalidError() {
         // Given
-        AccountConsent accountConsent = buildAccountConsentInvalid();
+        AisConsent accountConsent = buildAccountConsentInvalid();
 
         // When
         ValidationResult actual = accountConsentValidator.validate(accountConsent, REQUEST_URI);
@@ -113,7 +113,7 @@ class AccountConsentValidatorTest {
     void testValidateAccessExceeded_shouldReturnExceededError() {
         // Given
         when(requestProviderService.isRequestFromPsu()).thenReturn(false);
-        AccountConsent accountConsent = buildAccountConsentAccessExceeded();
+        AisConsent accountConsent = buildAccountConsentAccessExceeded();
 
         // When
         ValidationResult actual = accountConsentValidator.validate(accountConsent, REQUEST_URI);
@@ -127,7 +127,7 @@ class AccountConsentValidatorTest {
     void testValidateAccessExceeded_shouldReturnValid_UsageCounterMapNotContainsRequestUri() {
         // Given
         when(requestProviderService.isRequestFromPsu()).thenReturn(false);
-        AccountConsent accountConsent = buildAccountConsentAccessExceededIsOneAccessType();
+        AisConsent accountConsent = buildAccountConsentAccessExceededIsOneAccessType();
 
         // When
         ValidationResult actual = accountConsentValidator.validate(accountConsent, REQUEST_URI);
@@ -141,7 +141,7 @@ class AccountConsentValidatorTest {
     void testValidateAccessExceeded_shouldReturnValid() {
         // Given
         when(requestProviderService.isRequestFromPsu()).thenReturn(true);
-        AccountConsent accountConsent = buildAccountConsentAccessExceeded();
+        AisConsent accountConsent = buildAccountConsentAccessExceeded();
 
         // When
         ValidationResult actual = accountConsentValidator.validate(accountConsent, REQUEST_URI);
@@ -154,7 +154,7 @@ class AccountConsentValidatorTest {
     void testValidateAccessExceeded_oneOff_shouldReturnExceededError() {
         // Given
         when(requestProviderService.isRequestFromPsu()).thenReturn(false);
-        AccountConsent accountConsent = buildOneOffAccountConsentAccessExceeded();
+        AisConsent accountConsent = buildOneOffAccountConsentAccessExceeded();
 
         // When
         ValidationResult actual = accountConsentValidator.validate(accountConsent, REQUEST_URI);
@@ -164,58 +164,60 @@ class AccountConsentValidatorTest {
         assertEquals(AIS_CONSENT_ACCESS_EXCEEDED_ERROR, actual.getMessageError());
     }
 
-    private AccountConsent buildAccountConsentValid() {
-        return new AccountConsent("id", null, null, false, LocalDate.now().plusYears(1), null, 0,
-                                  null, ConsentStatus.VALID, false, false,
-                                  Collections.emptyList(), buildTppInfo(), null, false,
-                                  Collections.emptyList(), null, Collections.singletonMap(REQUEST_URI, 10), OffsetDateTime.now());
+    private AisConsent buildAccountConsentValid() {
+        AisConsent aisConsent = new AisConsent();
+        aisConsent.setConsentStatus(ConsentStatus.VALID);
+        aisConsent.setValidUntil(LocalDate.now().plusYears(1));
+        aisConsent.setUsages(Collections.singletonMap(REQUEST_URI, 10));
+        return aisConsent;
     }
 
-    private AccountConsent buildAccountConsentExpired() {
-        return new AccountConsent("id", null, null, false, LocalDate.now().minusDays(1), null, 0,
-                                  null, ConsentStatus.VALID, false, false,
-                                  Collections.emptyList(), buildTppInfo(), null, false,
-                                  Collections.emptyList(), null, Collections.singletonMap(REQUEST_URI, 10), OffsetDateTime.now());
+    private AisConsent buildAccountConsentExpired() {
+        AisConsent aisConsent = new AisConsent();
+        aisConsent.setValidUntil(LocalDate.now().minusDays(1));
+        return aisConsent;
     }
 
-    private AccountConsent buildAccountConsentInvalid() {
-        return new AccountConsent("id", null, null, false, LocalDate.now().plusYears(1), null, 0,
-                                  null, ConsentStatus.RECEIVED, false, false,
-                                  Collections.emptyList(), buildTppInfo(), null, false,
-                                  Collections.emptyList(), null, Collections.singletonMap(REQUEST_URI, 10), OffsetDateTime.now());
+    private AisConsent buildAccountConsentInvalid() {
+        AisConsent aisConsent = new AisConsent();
+        aisConsent.setId("id");
+        aisConsent.setConsentData(new AisConsentData(AccountAccess.EMPTY_ACCESS, AccountAccess.EMPTY_ACCESS, false));
+        aisConsent.setValidUntil(LocalDate.now().plusYears(1));
+        aisConsent.setConsentStatus(ConsentStatus.RECEIVED);
+        return aisConsent;
     }
 
-    private AccountConsent buildAccountConsentInvalidRevokedByPsu() {
-        return new AccountConsent("id", null, null, false, LocalDate.now().plusYears(1), null, 0,
-                                  null, ConsentStatus.REVOKED_BY_PSU, false, false,
-                                  Collections.emptyList(), buildTppInfo(), null, false,
-                                  Collections.emptyList(), null, Collections.singletonMap(REQUEST_URI, 10), OffsetDateTime.now());
+    private AisConsent buildAccountConsentInvalidRevokedByPsu() {
+        AisConsent aisConsent = new AisConsent();
+        aisConsent.setConsentStatus(ConsentStatus.REVOKED_BY_PSU);
+        aisConsent.setValidUntil(LocalDate.now().plusYears(1));
+        return aisConsent;
     }
 
-    private AccountConsent buildOneOffAccountConsentAccessExceeded() {
-        return new AccountConsent("id", null, null, false, LocalDate.now().plusYears(1), null, 1,
-                                  null, ConsentStatus.VALID, false, false,
-                                  Collections.emptyList(), buildTppInfo(), null, false,
-                                  Collections.emptyList(), null, Collections.singletonMap(REQUEST_URI, 0), OffsetDateTime.now());
+    private AisConsent buildOneOffAccountConsentAccessExceeded() {
+        AisConsent aisConsent = new AisConsent();
+        aisConsent.setValidUntil(LocalDate.now().plusYears(1));
+        aisConsent.setConsentStatus(ConsentStatus.VALID);
+        aisConsent.setFrequencyPerDay(1);
+        aisConsent.setUsages(Collections.singletonMap(REQUEST_URI, 0));
+        return aisConsent;
     }
 
-    private AccountConsent buildAccountConsentAccessExceeded() {
-        return new AccountConsent("id", null, null, true, LocalDate.now().plusYears(1), null, 0,
-                                  null, ConsentStatus.VALID, false, false,
-                                  Collections.emptyList(), buildTppInfo(), null, false,
-                                  Collections.emptyList(), null, Collections.singletonMap(REQUEST_URI, 0), OffsetDateTime.now());
+    private AisConsent buildAccountConsentAccessExceeded() {
+        AisConsent aisConsent = new AisConsent();
+        aisConsent.setValidUntil(LocalDate.now().plusYears(1));
+        aisConsent.setUsages(Collections.singletonMap(REQUEST_URI, 0));
+        aisConsent.setConsentStatus(ConsentStatus.VALID);
+        aisConsent.setRecurringIndicator(true);
+        return aisConsent;
     }
 
-    private AccountConsent buildAccountConsentAccessExceededIsOneAccessType() {
-        return new AccountConsent("id", null, null, false, LocalDate.now().plusYears(1), null, 0,
-                                  null, ConsentStatus.VALID, false, false,
-                                  Collections.emptyList(), buildTppInfo(), null, false,
-                                  Collections.emptyList(), null, Collections.emptyMap(), OffsetDateTime.now());
-    }
-
-    private static TppInfo buildTppInfo() {
-        TppInfo tppInfo = new TppInfo();
-        tppInfo.setAuthorisationNumber(AUTHORISATION_NUMBER);
-        return tppInfo;
+    private AisConsent buildAccountConsentAccessExceededIsOneAccessType() {
+        AisConsent aisConsent = new AisConsent();
+        aisConsent.setValidUntil(LocalDate.now().plusYears(1));
+        aisConsent.setFrequencyPerDay(0);
+        aisConsent.setConsentStatus(ConsentStatus.VALID);
+        aisConsent.setUsages(Collections.emptyMap());
+        return aisConsent;
     }
 }

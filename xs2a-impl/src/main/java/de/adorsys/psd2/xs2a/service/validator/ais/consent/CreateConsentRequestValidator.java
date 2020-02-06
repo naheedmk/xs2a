@@ -21,7 +21,7 @@ import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import de.adorsys.psd2.xs2a.domain.consent.CreateConsentReq;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
+import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.BusinessValidator;
@@ -128,14 +128,14 @@ public class CreateConsentRequestValidator implements BusinessValidator<CreateCo
                    && EnumSet.of(ALL_ACCOUNTS, ALL_ACCOUNTS_WITH_OWNER_NAME).contains(request.getAccess().getAllPsd2());
     }
 
-    private boolean isNotEmptyAccess(Xs2aAccountAccess access) {
+    private boolean isNotEmptyAccess(AccountAccess access) {
         return Optional.ofNullable(access)
-                   .map(Xs2aAccountAccess::isNotEmpty)
+                   .map(AccountAccess::isNotEmpty)
                    .orElse(false);
     }
 
     private boolean isNotSupportedAvailableAccounts(CreateConsentReq request) {
-        Xs2aAccountAccess access = request.getAccess();
+        AccountAccess access = request.getAccess();
         boolean isConsentWithoutAvailableAccounts = Stream.of(access.getAvailableAccounts(), access.getAvailableAccountsWithBalance())
                                                         .allMatch(Objects::isNull);
 
@@ -152,7 +152,7 @@ public class CreateConsentRequestValidator implements BusinessValidator<CreateCo
     }
 
     private boolean isNotSupportedAccountOwnerInformation(CreateConsentReq request) {
-        Xs2aAccountAccess access = request.getAccess();
+        AccountAccess access = request.getAccess();
 
         AccountAccessType allAccountsWithOwnerName = ALL_ACCOUNTS_WITH_OWNER_NAME;
         boolean isConsentWithAdditionalInformation = Stream.of(isConsentWithAdditionalInformationAccess(access),
@@ -164,7 +164,7 @@ public class CreateConsentRequestValidator implements BusinessValidator<CreateCo
         return isConsentWithAdditionalInformation && !aspspProfileService.isAccountOwnerInformationSupported();
     }
 
-    private boolean isConsentWithAdditionalInformationAccess(Xs2aAccountAccess access) {
+    private boolean isConsentWithAdditionalInformationAccess(AccountAccess access) {
         return Optional.ofNullable(access.getAdditionalInformationAccess())
                    .map(AdditionalInformationAccess::getOwnerName)
                    .isPresent();

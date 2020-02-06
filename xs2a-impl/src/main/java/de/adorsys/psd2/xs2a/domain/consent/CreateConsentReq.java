@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.domain.consent;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.tpp.TppNotificationData;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
@@ -38,7 +39,7 @@ public class CreateConsentReq implements AccountReferenceCollector {
 
     @ApiModelProperty(value = "Requested access services.", required = true)
     @NotNull
-    private Xs2aAccountAccess access;
+    private AccountAccess access;
 
     @ApiModelProperty(value = "'true', if the consent is for recurring access to the account data , 'false', if the consent is for one access to the account data", required = true)
     @NotNull

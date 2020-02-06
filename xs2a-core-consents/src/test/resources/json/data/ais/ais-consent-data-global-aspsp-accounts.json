@@ -1,0 +1,23 @@
+{
+  "tppAccountAccess": {
+    "allPsd2": "allAccounts"
+  },
+  "aspspAccountAccess": {
+    "accounts": [
+      {
+        "iban": "DE98500105171757213183"
+      }
+    ],
+    "balances": [
+      {
+        "iban": "DE98500105171757213183"
+      }
+    ],
+    "transactions": [
+      {
+        "iban": "DE98500105171757213183"
+      }
+    ],
+    "allPsd2": "allAccounts"
+  }
+}

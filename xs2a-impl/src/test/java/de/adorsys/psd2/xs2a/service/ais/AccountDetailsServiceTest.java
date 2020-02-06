@@ -17,10 +17,13 @@
 package de.adorsys.psd2.xs2a.service.ais;
 
 import de.adorsys.psd2.consent.api.ActionStatus;
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.event.core.model.EventType;
 import de.adorsys.psd2.logger.context.LoggingContextService;
-import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
+import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
@@ -33,8 +36,6 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountDetails;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountDetailsHolder;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aAisConsentService;
 import de.adorsys.psd2.xs2a.service.event.Xs2aEventService;
@@ -96,7 +97,7 @@ class AccountDetailsServiceTest {
     private static final MessageError VALIDATION_ERROR = buildMessageError();
 
     private SpiAccountReference spiAccountReference;
-    private AccountConsent accountConsent;
+    private AisConsent aisConsent;
     private CommonAccountRequestObject commonAccountRequestObject;
     private SpiAspspConsentDataProvider spiAspspConsentDataProvider;
 
@@ -132,13 +133,13 @@ class AccountDetailsServiceTest {
 
     @BeforeEach
     void setUp() {
-        accountConsent = createConsent(createAccountAccess());
+        aisConsent = createConsent(createAccountAccess());
         spiAccountReference = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/spi-account-reference.json", SpiAccountReference.class);
         commonAccountRequestObject = buildCommonAccountRequestObject();
         spiAspspConsentDataProvider = spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID);
 
         when(aisConsentService.getAccountConsentById(CONSENT_ID))
-            .thenReturn(Optional.of(accountConsent));
+            .thenReturn(Optional.of(aisConsent));
     }
 
     @Test
@@ -332,8 +333,29 @@ class AccountDetailsServiceTest {
         return new AccountReference(ASPSP_ACCOUNT_ID, ACCOUNT_ID, IBAN, BBAN, PAN, MASKED_PAN, MSISDN, EUR_CURRENCY);
     }
 
-    private static AccountConsent createConsent(Xs2aAccountAccess access) {
-        return new AccountConsent(CONSENT_ID, access, access, false, LocalDate.now(), null, 4, null, ConsentStatus.VALID, false, false, null, createTppInfo(), AisConsentRequestType.GLOBAL, false, Collections.emptyList(), OffsetDateTime.now(), Collections.emptyMap(), OffsetDateTime.now());
+    private static AisConsent createConsent(AccountAccess access) {
+        AisConsent aisConsent = new AisConsent();
+        aisConsent.setConsentData(buildAisConsentData(access));
+        aisConsent.setId(CONSENT_ID);
+        aisConsent.setValidUntil(LocalDate.now());
+        aisConsent.setFrequencyPerDay(4);
+        aisConsent.setConsentStatus(ConsentStatus.VALID);
+        aisConsent.setAuthorisations(Collections.emptyList());
+        aisConsent.setConsentTppInformation(buildConsentTppInformation());
+        aisConsent.setStatusChangeTimestamp(OffsetDateTime.now());
+        aisConsent.setUsages(Collections.emptyMap());
+        aisConsent.setStatusChangeTimestamp(OffsetDateTime.now());
+        return aisConsent;
+    }
+
+    private static AisConsentData buildAisConsentData(AccountAccess access) {
+        return new AisConsentData(access, access, false);
+    }
+
+    private static ConsentTppInformation buildConsentTppInformation() {
+        ConsentTppInformation consentTppInformation = new ConsentTppInformation();
+        consentTppInformation.setTppInfo(createTppInfo());
+        return consentTppInformation;
     }
 
     private static TppInfo createTppInfo() {
@@ -342,8 +364,8 @@ class AccountDetailsServiceTest {
         return tppInfo;
     }
 
-    private static Xs2aAccountAccess createAccountAccess() {
-        return new Xs2aAccountAccess(Collections.singletonList(XS2A_ACCOUNT_REFERENCE), Collections.singletonList(XS2A_ACCOUNT_REFERENCE), Collections.singletonList(XS2A_ACCOUNT_REFERENCE), null, null, null, null);
+    private static AccountAccess createAccountAccess() {
+        return new AccountAccess(Collections.singletonList(XS2A_ACCOUNT_REFERENCE), Collections.singletonList(XS2A_ACCOUNT_REFERENCE), Collections.singletonList(XS2A_ACCOUNT_REFERENCE), null, null, null, null);
     }
 
     @NotNull
@@ -358,6 +380,6 @@ class AccountDetailsServiceTest {
 
     @NotNull
     private CommonAccountRequestObject buildCommonAccountRequestObject() {
-        return new CommonAccountRequestObject(accountConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI);
+        return new CommonAccountRequestObject(aisConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI);
     }
 }

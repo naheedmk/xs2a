@@ -26,7 +26,7 @@ import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.domain.consent.CreateConsentReq;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
+import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.PsuDataInInitialRequestValidator;
@@ -96,8 +96,8 @@ class CreateConsentRequestValidatorTest {
             .thenReturn(ValidationResult.invalid(SUPPORTED_ACCOUNT_REFERENCE_VALIDATION_ERROR));
 
         AccountReference accountReference = buildAccountReference();
-        Xs2aAccountAccess xs2aAccountAccess = new Xs2aAccountAccess(Collections.singletonList(accountReference), Collections.emptyList(), Collections.emptyList(), null, null, null, null);
-        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(xs2aAccountAccess);
+        AccountAccess accountAccess = new AccountAccess(Collections.singletonList(accountReference), Collections.emptyList(), Collections.emptyList(), null, null, null, null);
+        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess);
 
         //When
         ValidationResult validationResult = createConsentRequestValidator.validate(new CreateConsentRequestObject(createConsentReq, EMPTY_PSU_DATA));
@@ -266,9 +266,9 @@ class CreateConsentRequestValidatorTest {
         AccountReference accountReference = buildAccountReference();
         List<AccountReference> accountReferences = Collections.singletonList(accountReference);
         AdditionalInformationAccess additionalInformationAccess = new AdditionalInformationAccess(accountReferences);
-        Xs2aAccountAccess xs2aAccountAccess = new Xs2aAccountAccess(accountReferences, Collections.emptyList(), Collections.emptyList(),
-                                                                    null, null, null, additionalInformationAccess);
-        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(xs2aAccountAccess);
+        AccountAccess accountAccess = new AccountAccess(accountReferences, Collections.emptyList(), Collections.emptyList(),
+                                                        null, null, null, additionalInformationAccess);
+        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess);
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class)))
             .thenReturn(ValidationResult.valid());
         when(supportedAccountReferenceValidator.validate(anyCollection()))
@@ -287,9 +287,9 @@ class CreateConsentRequestValidatorTest {
         AccountReference accountReference = buildAccountReference();
         List<AccountReference> accountReferences = Collections.singletonList(accountReference);
         AdditionalInformationAccess additionalInformationAccess = new AdditionalInformationAccess(accountReferences);
-        Xs2aAccountAccess xs2aAccountAccess = new Xs2aAccountAccess(accountReferences, Collections.emptyList(), Collections.emptyList(),
-                                                                    null, null, null, additionalInformationAccess);
-        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(xs2aAccountAccess);
+        AccountAccess accountAccess = new AccountAccess(accountReferences, Collections.emptyList(), Collections.emptyList(),
+                                                        null, null, null, additionalInformationAccess);
+        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess);
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class)))
             .thenReturn(ValidationResult.valid());
         when(supportedAccountReferenceValidator.validate(anyCollection()))
@@ -304,9 +304,9 @@ class CreateConsentRequestValidatorTest {
     @Test
     void validate_availableAccountWithOwnerName_shouldReturnConsentInvalid() {
         //Given
-        Xs2aAccountAccess xs2aAccountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                                                                    AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null, null, null);
-        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(xs2aAccountAccess);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+                                                        AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null, null, null);
+        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess);
         when(aspspProfileService.isAvailableAccountsConsentSupported()).thenReturn(true);
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class)))
             .thenReturn(ValidationResult.valid());
@@ -323,9 +323,9 @@ class CreateConsentRequestValidatorTest {
     void validate_availableAccountWithOwnerName_shouldReturnConsentValid() {
         //Given
         when(aspspProfileService.isAccountOwnerInformationSupported()).thenReturn(true);
-        Xs2aAccountAccess xs2aAccountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                                                                    AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null, null, null);
-        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(xs2aAccountAccess);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+                                                        AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null, null, null);
+        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess);
         when(aspspProfileService.isAvailableAccountsConsentSupported()).thenReturn(true);
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class)))
             .thenReturn(ValidationResult.valid());
@@ -341,9 +341,9 @@ class CreateConsentRequestValidatorTest {
     @Test
     void validate_allPsd2WithOwnerName_shouldReturnConsentInvalid() {
         //Given
-        Xs2aAccountAccess xs2aAccountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                                                                    null, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null, null);
-        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(xs2aAccountAccess);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+                                                        null, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null, null);
+        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess);
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class)))
             .thenReturn(ValidationResult.valid());
         when(supportedAccountReferenceValidator.validate(anyCollection()))
@@ -361,9 +361,9 @@ class CreateConsentRequestValidatorTest {
     void validate_allPsd2WithOwnerName_shouldReturnConsentValid() {
         //Given
         when(aspspProfileService.isAccountOwnerInformationSupported()).thenReturn(true);
-        Xs2aAccountAccess xs2aAccountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                                                                    null, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null, null);
-        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(xs2aAccountAccess);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+                                                        null, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null, null);
+        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess);
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class)))
             .thenReturn(ValidationResult.valid());
         when(supportedAccountReferenceValidator.validate(anyCollection()))
@@ -380,9 +380,9 @@ class CreateConsentRequestValidatorTest {
     @Test
     void validate_availableAccountWithBalanceWithOwnerName_shouldReturnConsentInvalid() {
         //Given
-        Xs2aAccountAccess xs2aAccountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                                                                    null, null, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null);
-        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(xs2aAccountAccess);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+                                                        null, null, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null);
+        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess);
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class)))
             .thenReturn(ValidationResult.valid());
         when(supportedAccountReferenceValidator.validate(anyCollection()))
@@ -400,9 +400,9 @@ class CreateConsentRequestValidatorTest {
     void validate_availableAccountWithBalanceWithOwnerName_shouldReturnConsentValid() {
         //Given
         when(aspspProfileService.isAccountOwnerInformationSupported()).thenReturn(true);
-        Xs2aAccountAccess xs2aAccountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                                                                    null, null, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null);
-        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(xs2aAccountAccess);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+                                                        null, null, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null);
+        CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess);
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class)))
             .thenReturn(ValidationResult.valid());
         when(supportedAccountReferenceValidator.validate(anyCollection()))
@@ -532,9 +532,9 @@ class CreateConsentRequestValidatorTest {
         return new AccountReference(AccountReferenceType.IBAN, "some iban", Currency.getInstance("EUR"));
     }
 
-    private CreateConsentReq buildCreateConsentReqWithAccess(Xs2aAccountAccess xs2aAccountAccess) {
+    private CreateConsentReq buildCreateConsentReqWithAccess(AccountAccess accountAccess) {
         CreateConsentReq createConsentReq = buildCreateConsentReqWithCombinedServiceIndicator(false);
-        createConsentReq.setAccess(xs2aAccountAccess);
+        createConsentReq.setAccess(accountAccess);
         return createConsentReq;
     }
 
@@ -554,14 +554,14 @@ class CreateConsentRequestValidatorTest {
         createConsentReq.setValidUntil(validUntil);
         createConsentReq.setRecurringIndicator(recurringIndicator);
         createConsentReq.setFrequencyPerDay(frequencyPerDay);
-        Xs2aAccountAccess accountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), AccountAccessType.ALL_ACCOUNTS, null, null, null);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), AccountAccessType.ALL_ACCOUNTS, null, null, null);
         createConsentReq.setAccess(accountAccess);
         return createConsentReq;
     }
 
     private CreateConsentReq buildCreateConsentReqWithoutFlagsAndAccesses(boolean recurringIndicator, int frequencyPerDay) {
         CreateConsentReq createConsentReq = buildCreateConsentReq(recurringIndicator, frequencyPerDay);
-        Xs2aAccountAccess accountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null, null, null, null);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null, null, null, null);
         createConsentReq.setAccess(accountAccess);
         return createConsentReq;
     }
@@ -579,7 +579,7 @@ class CreateConsentRequestValidatorTest {
     }
 
     private CreateConsentReq buildCreateConsentReq(AccountAccessType availableAccounts, AccountAccessType allPsd2, AccountAccessType availableAccountsWithBalance) {
-        Xs2aAccountAccess accountAccess = new Xs2aAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), availableAccounts, allPsd2, availableAccountsWithBalance, null);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), availableAccounts, allPsd2, availableAccountsWithBalance, null);
         CreateConsentReq createConsentReq = new CreateConsentReq();
         createConsentReq.setAccess(accountAccess);
         return createConsentReq;

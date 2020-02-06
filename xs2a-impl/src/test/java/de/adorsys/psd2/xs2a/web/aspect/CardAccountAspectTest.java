@@ -17,11 +17,13 @@
 package de.adorsys.psd2.xs2a.web.aspect;
 
 import de.adorsys.psd2.aspsp.profile.domain.AspspSettings;
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aCardAccountDetails;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aCardAccountDetailsHolder;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aCardAccountListHolder;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisCancellationAuthorisationResponse;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.web.link.CardAccountDetailsLinks;
@@ -47,7 +49,7 @@ class CardAccountAspectTest {
     private AspspProfileServiceWrapper aspspProfileServiceWrapper;
 
     private Xs2aCardAccountDetails accountDetails;
-    private AccountConsent accountConsent;
+    private AisConsent aisConsent;
     private ResponseObject responseObject;
     private JsonReader jsonReader = new JsonReader();
     private CardAccountAspect aspect;
@@ -55,7 +57,13 @@ class CardAccountAspectTest {
     @BeforeEach
     void setUp() {
         aspect = new CardAccountAspect(aspspProfileServiceWrapper);
-        accountConsent = jsonReader.getObjectFromFile("json/aspect/account_consent.json", AccountConsent.class);
+        aisConsent = jsonReader.getObjectFromFile("json/aspect/ais-consent.json", AisConsent.class);
+        AccountAccess accountAccess = jsonReader.getObjectFromFile("json/aspect/account-access.json", AccountAccess.class);
+
+        aisConsent.setConsentData(new AisConsentData(accountAccess,
+                                                     accountAccess,
+                                                     false));
+
         accountDetails = jsonReader.getObjectFromFile("json/aspect/card_account_details.json", Xs2aCardAccountDetails.class);
     }
 
@@ -69,7 +77,7 @@ class CardAccountAspectTest {
             .thenReturn(aspspSettings.getCommon().getXs2aBaseLinksUrl());
 
         responseObject = ResponseObject.<Xs2aCardAccountDetailsHolder>builder()
-                             .body(new Xs2aCardAccountDetailsHolder(accountDetails, accountConsent))
+                             .body(new Xs2aCardAccountDetailsHolder(accountDetails, aisConsent))
                              .build();
         // When
         ResponseObject actualResponse = aspect.getCardAccountDetails(responseObject);
@@ -104,7 +112,7 @@ class CardAccountAspectTest {
             .thenReturn(aspspSettings.getCommon().getXs2aBaseLinksUrl());
 
         responseObject = ResponseObject.<Xs2aCardAccountListHolder>builder()
-                             .body(new Xs2aCardAccountListHolder(Collections.singletonList(accountDetails), accountConsent))
+                             .body(new Xs2aCardAccountListHolder(Collections.singletonList(accountDetails), aisConsent))
                              .build();
         // When
         ResponseObject actualResponse = aspect.getCardAccountList(responseObject);

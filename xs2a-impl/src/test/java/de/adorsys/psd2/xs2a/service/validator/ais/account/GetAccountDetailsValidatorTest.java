@@ -16,14 +16,16 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account;
 
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
+import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAccountAccess;
 import de.adorsys.psd2.xs2a.service.validator.OauthConsentValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.service.validator.ais.account.common.AccountAccessValidator;
@@ -39,9 +41,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.OffsetDateTime;
-import java.util.Collections;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.UNAUTHORIZED;
@@ -84,13 +83,13 @@ class GetAccountDetailsValidatorTest {
     private OauthConsentValidator oauthConsentValidator;
 
     private JsonReader jsonReader = new JsonReader();
-    private Xs2aAccountAccess accountAccess;
-    private Xs2aAccountAccess cardAccountAccess;
+    private AccountAccess accountAccess;
+    private AccountAccess cardAccountAccess;
 
     @BeforeEach
     void setUp() {
-        cardAccountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access-pan.json", Xs2aAccountAccess.class);
-        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", Xs2aAccountAccess.class);
+        cardAccountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access-pan.json", AccountAccess.class);
+        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", AccountAccess.class);
 
         // Inject pisTppInfoValidator via setter
         getAccountDetailsValidator.setAisAccountTppInfoValidator(aisAccountTppInfoValidator);
@@ -99,7 +98,7 @@ class GetAccountDetailsValidatorTest {
     @Test
     void validate_withInvalidAccountReference_shouldReturnInvalid() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent accountConsent = buildAccountConsent(TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
         when(accountReferenceAccessValidator.validate(accountConsent.getAccess(), accountConsent.getAccess().getAccounts(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
             .thenReturn(ValidationResult.valid());
@@ -120,11 +119,11 @@ class GetAccountDetailsValidatorTest {
     @Test
     void validate_withValidConsentObject_shouldReturnValid() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent accountConsent = buildAccountConsent(TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
         when(accountReferenceAccessValidator.validate(accountConsent.getAccess(), accountConsent.getAccess().getAccounts(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
             .thenReturn(ValidationResult.valid());
-        when(permittedAccountReferenceValidator.validate(accountConsent, ACCOUNT_ID, WITH_BALANCE))
+        when(permittedAccountReferenceValidator.validate(accountConsent, ACCOUNT_ID, accountConsent.isWithBalance()))
             .thenReturn(ValidationResult.valid());
         when(accountAccessValidator.validate(accountConsent, accountConsent.isWithBalance()))
             .thenReturn(ValidationResult.valid());
@@ -134,7 +133,7 @@ class GetAccountDetailsValidatorTest {
             .thenReturn(ValidationResult.valid());
 
         // When
-        ValidationResult validationResult = getAccountDetailsValidator.validate(new CommonAccountRequestObject(accountConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI));
+        ValidationResult validationResult = getAccountDetailsValidator.validate(new CommonAccountRequestObject(accountConsent, ACCOUNT_ID, accountConsent.isWithBalance(), REQUEST_URI));
 
         // Then
         verify(aisAccountTppInfoValidator).validateTpp(accountConsent.getTppInfo());
@@ -147,7 +146,7 @@ class GetAccountDetailsValidatorTest {
     @Test
     void validate_withInvalidAccountReferenceAccess_error() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent accountConsent = buildAccountConsent(TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
         when(accountReferenceAccessValidator.validate(accountConsent.getAccess(), accountConsent.getAccess().getAccounts(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
             .thenReturn(ValidationResult.invalid(ErrorType.AIS_401, CONSENT_INVALID));
@@ -161,15 +160,15 @@ class GetAccountDetailsValidatorTest {
         assertNotNull(validationResult);
         assertFalse(validationResult.isValid());
 
-        verify(permittedAccountReferenceValidator, never()).validate(any(AccountConsent.class), anyString(), anyBoolean());
-        verify(accountAccessValidator, never()).validate(any(AccountConsent.class), anyBoolean());
-        verify(accountConsentValidator, never()).validate(any(AccountConsent.class), anyString());
+        verify(permittedAccountReferenceValidator, never()).validate(any(AisConsent.class), anyString(), anyBoolean());
+        verify(accountAccessValidator, never()).validate(any(AisConsent.class), anyBoolean());
+        verify(accountConsentValidator, never()).validate(any(AisConsent.class), anyString());
     }
 
     @Test
     void validate_withInvalidTppInConsent_shouldReturnTppValidationError() {
         // Given
-        AccountConsent accountConsent = buildAccountConsent(INVALID_TPP_INFO);
+        AisConsent accountConsent = buildAccountConsent(INVALID_TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(INVALID_TPP_INFO)).thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
 
         // When
@@ -186,7 +185,7 @@ class GetAccountDetailsValidatorTest {
     @Test
     void validate_withInvalidAccountInConsent_shouldReturnConsentInvalidError() {
         // Given
-        AccountConsent accountConsent = buildCardAccountConsent(cardAccountAccess);
+        AisConsent accountConsent = buildCardAccountConsent(cardAccountAccess);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
 
@@ -207,18 +206,22 @@ class GetAccountDetailsValidatorTest {
         return tppInfo;
     }
 
-    private AccountConsent buildAccountConsent(TppInfo tppInfo) {
-        return new AccountConsent("id", accountAccess, accountAccess, false, null, null, 0,
-                                  null, null, false, false,
-                                  Collections.emptyList(), tppInfo, AisConsentRequestType.DEDICATED_ACCOUNTS, false,
-                                  Collections.emptyList(), null, Collections.emptyMap(), OffsetDateTime.now());
+    private AisConsent buildAccountConsent(TppInfo tppInfo) {
+        AisConsent aisConsent = new AisConsent();
+        ConsentTppInformation consentTppInformation = new ConsentTppInformation();
+        consentTppInformation.setTppInfo(tppInfo);
+        aisConsent.setConsentTppInformation(consentTppInformation);
+        aisConsent.setConsentData(new AisConsentData(accountAccess, accountAccess, false));
+        return aisConsent;
     }
 
-    private AccountConsent buildCardAccountConsent(Xs2aAccountAccess xs2aAccountAccess) {
-        return new AccountConsent("id", xs2aAccountAccess, xs2aAccountAccess, false, null, null, 0,
-                                  null, null, false, false,
-                                  Collections.emptyList(), GetAccountDetailsValidatorTest.TPP_INFO, null, false,
-                                  Collections.emptyList(), null, Collections.emptyMap(), OffsetDateTime.now());
+    private AisConsent buildCardAccountConsent(AccountAccess accountAccess) {
+        AisConsent aisConsent = new AisConsent();
+        ConsentTppInformation consentTppInformation = new ConsentTppInformation();
+        consentTppInformation.setTppInfo(GetAccountDetailsValidatorTest.TPP_INFO);
+        aisConsent.setConsentTppInformation(consentTppInformation);
+        aisConsent.setConsentData(new AisConsentData(accountAccess, accountAccess, false));
+        return aisConsent;
     }
 
 }

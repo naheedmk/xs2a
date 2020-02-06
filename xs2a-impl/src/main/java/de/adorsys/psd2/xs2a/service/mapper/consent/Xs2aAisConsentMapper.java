@@ -17,11 +17,18 @@
 package de.adorsys.psd2.xs2a.service.mapper.consent;
 
 import de.adorsys.psd2.consent.api.AccountInfo;
-import de.adorsys.psd2.consent.api.ais.*;
+import de.adorsys.psd2.consent.api.ais.AccountAdditionalInformationAccess;
+import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
+import de.adorsys.psd2.consent.api.ais.CmsConsent;
+import de.adorsys.psd2.consent.api.ais.CreateAisConsentRequest;
+import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
+import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
-import de.adorsys.psd2.xs2a.core.authorisation.AuthenticationObject;
-import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
-import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
+import de.adorsys.psd2.xs2a.core.authorisation.*;
+import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
+import de.adorsys.psd2.xs2a.core.consent.ConsentType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.AccountReferenceSelector;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
@@ -29,7 +36,9 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.core.tpp.TppNotificationData;
 import de.adorsys.psd2.xs2a.domain.authorisation.UpdateAuthorisationRequest;
-import de.adorsys.psd2.xs2a.domain.consent.*;
+import de.adorsys.psd2.xs2a.domain.consent.CreateConsentReq;
+import de.adorsys.psd2.xs2a.domain.consent.UpdateConsentPsuDataReq;
+import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.authorization.processor.model.AuthorisationProcessorResponse;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.Xs2aToSpiAccountAccessMapper;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.Xs2aToSpiPsuDataMapper;
@@ -53,6 +62,8 @@ public class Xs2aAisConsentMapper {
     // TODO remove this dependency. Should not be dependencies between spi-api and consent-api https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/437
     private final Xs2aToSpiPsuDataMapper xs2aToSpiPsuDataMapper;
     private final Xs2aToSpiAccountAccessMapper xs2aToSpiAccountAccessMapper;
+    private final ConsentDataMapper consentDataMapper;
+    private final RequestProviderService requestProviderService;
 
     public CreateAisConsentRequest mapToCreateAisConsentRequest(CreateConsentReq req, PsuIdData psuData, TppInfo tppInfo, int allowedFrequencyPerDay, String internalRequestId) {
         return Optional.ofNullable(req)
@@ -75,8 +86,8 @@ public class Xs2aAisConsentMapper {
                    .orElse(null);
     }
 
-    public SpiAccountConsent mapToSpiAccountConsent(AccountConsent accountConsent) {
-        return Optional.ofNullable(accountConsent)
+    public SpiAccountConsent mapToSpiAccountConsent(AisConsent aisConsent) {
+        return Optional.ofNullable(aisConsent)
                    .map(ac -> new SpiAccountConsent(
                             ac.getId(),
                             xs2aToSpiAccountAccessMapper.mapToAccountAccess(ac.getAccess()),
@@ -87,7 +98,7 @@ public class Xs2aAisConsentMapper {
                             ac.getLastActionDate(),
                             ac.getConsentStatus(),
                             ac.isWithBalance(),
-                            ac.isTppRedirectPreferred(),
+                            ac.getConsentTppInformation().isTppRedirectPreferred(),
                             xs2aToSpiPsuDataMapper.mapToSpiPsuDataList(ac.getPsuIdDataList()),
                             ac.getTppInfo(),
                             ac.getAisConsentRequestType(),
@@ -125,7 +136,7 @@ public class Xs2aAisConsentMapper {
         return accountConfirmation;
     }
 
-    public AisAccountAccessInfo mapToAisAccountAccessInfo(Xs2aAccountAccess access) {
+    public AisAccountAccessInfo mapToAisAccountAccessInfo(AccountAccess access) {
         AisAccountAccessInfo accessInfo = new AisAccountAccessInfo();
         accessInfo.setAccounts(mapToListAccountInfo(access.getAccounts()));
         accessInfo.setBalances(mapToListAccountInfo(access.getBalances()));
@@ -148,6 +159,34 @@ public class Xs2aAisConsentMapper {
                                                              .orElse(null));
 
         return accessInfo;
+    }
+
+    public CmsConsent mapToCmsConsent(CreateConsentReq request, PsuIdData psuData, TppInfo tppInfo, int allowedFrequencyPerDay) {
+        CmsConsent cmsConsent = new CmsConsent();
+
+        AisConsentData aisConsentData = new AisConsentData(request.getAccess(), AccountAccess.EMPTY_ACCESS, request.isCombinedServiceIndicator());
+        byte[] aisConsentDataBytes = consentDataMapper.getBytesFromAisConsentData(aisConsentData);
+        cmsConsent.setConsentData(aisConsentDataBytes);
+
+        ConsentTppInformation tppInformation = new ConsentTppInformation();
+        tppInformation.setTppInfo(tppInfo);
+        tppInformation.setTppFrequencyPerDay(request.getFrequencyPerDay());
+        tppInformation.setTppNotificationUri(Optional.ofNullable(request.getTppNotificationData()).map(TppNotificationData::getTppNotificationUri).orElse(null));
+        tppInformation.setTppNotificationSupportedModes(Optional.ofNullable(request.getTppNotificationData()).map(TppNotificationData::getNotificationModes).orElse(null));
+        cmsConsent.setTppInformation(tppInformation);
+
+        AuthorisationTemplate authorisationTemplate = new AuthorisationTemplate();
+        authorisationTemplate.setTppRedirectUri(request.getTppRedirectUri());
+        cmsConsent.setAuthorisationTemplate(authorisationTemplate);
+
+        cmsConsent.setFrequencyPerDay(allowedFrequencyPerDay);
+        cmsConsent.setInternalRequestId(requestProviderService.getInternalRequestIdString());
+        cmsConsent.setValidUntil(request.getValidUntil());
+        cmsConsent.setRecurringIndicator(request.isRecurringIndicator());
+        cmsConsent.setPsuIdDataList(Collections.singletonList(psuData));
+        cmsConsent.setConsentType(ConsentType.AIS);
+
+        return cmsConsent;
     }
 
     private AccountAdditionalInformationAccess mapToAccountAdditionalInformationAccess(AdditionalInformationAccess info) {
@@ -179,98 +218,54 @@ public class Xs2aAisConsentMapper {
                    .build();
     }
 
-    public AccountConsent mapToAccountConsent(AisAccountConsent ais) {
+    public AisConsent mapToAisConsent(CmsConsent ais) {
         return Optional.ofNullable(ais)
-                   .map(ac -> new AccountConsent(
-                       ac.getId(),
-                       mapToXs2aAccountAccess(ac.getTppAccess()),
-                       mapToXs2aAccountAccess(ac.getAspspAccess()),
-                       ac.isRecurringIndicator(),
-                       ac.getValidUntil(),
-                       ac.getExpireDate(),
-                       ac.getFrequencyPerDay(),
-                       ac.getLastActionDate(),
-                       ac.getConsentStatus(),
-                       ac.isWithBalance(),
-                       ac.isTppRedirectPreferred(),
-                       ac.getPsuIdDataList(),
-                       ac.getTppInfo(),
-                       ac.getAisConsentRequestType(),
-                       ac.isMultilevelScaRequired(),
-                       mapToAccountConsentAuthorisation(ais.getAccountConsentAuthorizations()),
-                       ac.getStatusChangeTimestamp(),
-                       ac.getUsageCounterMap(),
-                       ac.getCreationTimestamp()))
+                   .map(ac -> {
+
+                       AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(ac.getConsentData());
+                       AisConsentData consentData = new AisConsentData(aisConsentData.getTppAccountAccess(), aisConsentData.getAspspAccountAccess(), aisConsentData.isCombinedServiceIndicator());
+
+                       AisConsent aisConsent = new AisConsent();
+                       aisConsent.setId(ac.getId());
+                       aisConsent.setConsentData(consentData);
+                       aisConsent.setRecurringIndicator(ac.isRecurringIndicator());
+                       aisConsent.setValidUntil(ac.getValidUntil());
+                       aisConsent.setExpireDate(ac.getExpireDate());
+                       aisConsent.setFrequencyPerDay(ac.getFrequencyPerDay());
+                       aisConsent.setLastActionDate(ac.getLastActionDate());
+                       aisConsent.setConsentStatus(ac.getConsentStatus());
+                       aisConsent.setAuthorisationTemplate(ac.getAuthorisationTemplate());
+                       aisConsent.setPsuIdDataList(ac.getPsuIdDataList());
+                       aisConsent.setConsentTppInformation(ac.getTppInformation());
+                       aisConsent.setMultilevelScaRequired(ac.isMultilevelScaRequired());
+                       aisConsent.setAuthorisations(mapToAccountConsentAuthorisation(ac.getAuthorisations()));
+                       aisConsent.setStatusChangeTimestamp(ac.getStatusChangeTimestamp());
+                       aisConsent.setUsages(ac.getUsages());
+                       aisConsent.setCreationTimestamp(ac.getCreationTimestamp());
+
+                       return aisConsent;
+                   })
                    .orElse(null);
     }
 
-    public AccountConsent mapToAccountConsentWithNewStatus(AccountConsent consent, ConsentStatus consentStatus) {
-        return Optional.ofNullable(consent)
-                   .map(ac -> new AccountConsent(
-                       ac.getId(),
-                       ac.getAccess(),
-                       ac.getAspspAccess(),
-                       ac.isRecurringIndicator(),
-                       ac.getValidUntil(),
-                       ac.getExpireDate(),
-                       ac.getFrequencyPerDay(),
-                       ac.getLastActionDate(),
-                       consentStatus,
-                       ac.isWithBalance(),
-                       ac.isTppRedirectPreferred(),
-                       ac.getPsuIdDataList(),
-                       ac.getTppInfo(),
-                       ac.getAisConsentRequestType(),
-                       ac.isMultilevelScaRequired(),
-                       ac.getAuthorisations(),
-                       ac.getStatusChangeTimestamp(),
-                       ac.getUsageCounterMap(),
-                       ac.getCreationTimestamp()))
-                   .orElse(null);
-    }
-
-    private List<AccountConsentAuthorization> mapToAccountConsentAuthorisation(List<AisAccountConsentAuthorisation> accountConsentAuthorizations) {
-        if (CollectionUtils.isEmpty(accountConsentAuthorizations)) {
+    private List<AccountConsentAuthorization> mapToAccountConsentAuthorisation(List<Authorisation> authorisations) {
+        if (CollectionUtils.isEmpty(authorisations)) {
             return Collections.emptyList();
         }
-        return accountConsentAuthorizations.stream()
+        return authorisations.stream()
                    .map(this::mapToAccountConsentAuthorisation)
                    .collect(Collectors.toList());
     }
 
-    private AccountConsentAuthorization mapToAccountConsentAuthorisation(AisAccountConsentAuthorisation aisAccountConsentAuthorisation) {
-        return Optional.ofNullable(aisAccountConsentAuthorisation)
+    private AccountConsentAuthorization mapToAccountConsentAuthorisation(Authorisation authorisation) {
+        return Optional.ofNullable(authorisation)
                    .map(auth -> {
                        AccountConsentAuthorization accountConsentAuthorisation = new AccountConsentAuthorization();
-                       accountConsentAuthorisation.setId(auth.getId());
+                       accountConsentAuthorisation.setId(auth.getAuthorisationId());
                        accountConsentAuthorisation.setPsuIdData(auth.getPsuIdData());
                        accountConsentAuthorisation.setScaStatus(auth.getScaStatus());
                        return accountConsentAuthorisation;
                    })
                    .orElse(null);
     }
-
-    private Xs2aAccountAccess mapToXs2aAccountAccess(AisAccountAccess ais) {
-        return new Xs2aAccountAccess(
-            ais.getAccounts(),
-            ais.getBalances(),
-            ais.getTransactions(),
-            getAccessType(ais.getAvailableAccounts()),
-            getAccessType(ais.getAllPsd2()),
-            getAccessType(ais.getAvailableAccountsWithBalance()),
-            mapToAdditionalInformationAccess(ais.getAccountAdditionalInformationAccess()));
-    }
-
-    private AdditionalInformationAccess mapToAdditionalInformationAccess(AdditionalInformationAccess accountAdditionalInformationAccess) {
-        return Optional.ofNullable(accountAdditionalInformationAccess)
-                   .map(info -> new AdditionalInformationAccess(info.getOwnerName()))
-                   .orElse(null);
-    }
-
-    private AccountAccessType getAccessType(String type) {
-        return Optional.ofNullable(type)
-                   .map(a -> AccountAccessType.valueOf(type))
-                   .orElse(null);
-    }
-
 }

@@ -16,10 +16,10 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
+import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
-import de.adorsys.psd2.xs2a.domain.consent.AccountConsent;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ class AccountAccessValidatorTest {
     private AccountAccessValidator accountAccessValidator;
 
     private JsonReader jsonReader;
-    private AccountConsent accountConsent;
+    private AisConsent aisConsent;
 
     @BeforeEach
     void setUp() {
@@ -45,12 +45,21 @@ class AccountAccessValidatorTest {
     }
 
     @Test
+    void testValidate_allAccountConsentWithBalances_shouldReturnValid(){
+        aisConsent = jsonReader.getObjectFromFile( "json/service/validator/ais/account/xs2a-account-consent-all-available-accounts-with-balance.json", AisConsent.class);
+
+        ValidationResult actual = accountAccessValidator.validate(aisConsent, true);
+
+        assertTrue(actual.isValid());
+    }
+
+    @Test
     void testValidate_withoutBalance_shouldReturnValid() {
         // Given
-        accountConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-consent.json", AccountConsent.class);
+        aisConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-consent.json", AisConsent.class);
 
         // When
-        ValidationResult actual = accountAccessValidator.validate(accountConsent, false);
+        ValidationResult actual = accountAccessValidator.validate(aisConsent, false);
 
         // Then
         assertTrue(actual.isValid());
@@ -59,11 +68,11 @@ class AccountAccessValidatorTest {
     @Test
     void testValidate_withBalanceAndNullBalances_shouldReturnError() {
         // Given
-        accountConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-consent.json", AccountConsent.class);
-        accountConsent.getAccess().getBalances().clear();
+        aisConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-consent.json", AisConsent.class);
+        aisConsent.getAccess().getBalances().clear();
 
         // When
-        ValidationResult actual = accountAccessValidator.validate(accountConsent, true);
+        ValidationResult actual = accountAccessValidator.validate(aisConsent, true);
 
         // Then
         assertTrue(actual.isNotValid());
@@ -73,11 +82,11 @@ class AccountAccessValidatorTest {
     @Test
     void testValidate_globalConsent_withBalanceAndNullBalances_shouldReturnError() {
         // Given
-        accountConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-consent-global.json", AccountConsent.class);
-        assertNull(accountConsent.getAccess().getBalances());
+        aisConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-consent-global.json", AisConsent.class);
+        assertNull(aisConsent.getAccess().getBalances());
 
         // When
-        ValidationResult actual = accountAccessValidator.validate(accountConsent, true);
+        ValidationResult actual = accountAccessValidator.validate(aisConsent, true);
 
         // Then
         assertTrue(actual.isValid());
@@ -86,11 +95,11 @@ class AccountAccessValidatorTest {
     @Test
     void testValidate_globalConsent_withoutBalanceAndNullBalances_shouldReturnError() {
         // Given
-        accountConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-consent-global.json", AccountConsent.class);
-        assertNull(accountConsent.getAccess().getBalances());
+        aisConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-consent-global.json", AisConsent.class);
+        assertNull(aisConsent.getAccess().getBalances());
 
         // When
-        ValidationResult actual = accountAccessValidator.validate(accountConsent, false);
+        ValidationResult actual = accountAccessValidator.validate(aisConsent, false);
 
         // Then
         assertTrue(actual.isValid());

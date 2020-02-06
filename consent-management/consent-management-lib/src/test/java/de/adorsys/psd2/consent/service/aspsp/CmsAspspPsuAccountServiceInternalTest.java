@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package de.adorsys.psd2.consent.service.aspsp;
 
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.domain.piis.PiisConsentEntity;
-import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.PiisConsentRepository;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
 import de.adorsys.psd2.consent.repository.specification.PiisConsentEntitySpecification;
@@ -44,7 +44,7 @@ class CmsAspspPsuAccountServiceInternalTest {
     private final String INSTANCE_ID = "Instance id";
     private static final String ASPSP_ACCOUNT_ID = "aspsp account id";
     private static final PsuIdData PSU_ID_DATA = new PsuIdData(PSU_ID, null, null, null, null);
-    private AisConsent aisConsent;
+    private ConsentEntity aisConsent;
     private PiisConsentEntity piisConsentEntity;
 
     private JsonReader jsonReader = new JsonReader();
@@ -54,24 +54,28 @@ class CmsAspspPsuAccountServiceInternalTest {
     @Mock
     private AisConsentSpecification aisConsentSpecification;
     @Mock
-    private AisConsentJpaRepository aisConsentJpaRepository;
+    private ConsentJpaRepository consentJpaRepository;
     @Mock
     private PiisConsentRepository piisConsentRepository;
     @Mock
     private PiisConsentEntitySpecification piisConsentEntitySpecification;
+    @Mock
+    private ConsentFilteringService consentFilteringService;
 
     @BeforeEach
     void setUp() {
-        aisConsent = jsonReader.getObjectFromFile("json/AisConsent.json", AisConsent.class);
+        aisConsent = jsonReader.getObjectFromFile("json/AisConsent.json", ConsentEntity.class);
         piisConsentEntity = jsonReader.getObjectFromFile("json/service/mapper/piis-consent-entity.json", PiisConsentEntity.class);
     }
 
     @Test
     void revokeAllConsents_Success_closeBothType() {
         // given
-        when(aisConsentSpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(ASPSP_ACCOUNT_ID, PSU_ID_DATA, INSTANCE_ID))
+        when(aisConsentSpecification.byAndPsuIdDataAndInstanceId(PSU_ID_DATA, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        when(aisConsentJpaRepository.findAll((any()))).thenReturn(Collections.singletonList(aisConsent));
+        when(consentJpaRepository.findAll((any()))).thenReturn(Collections.singletonList(aisConsent));
+        when(consentFilteringService.filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID))
+            .thenReturn(Collections.singletonList(aisConsent));
 
         when(piisConsentEntitySpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(ASPSP_ACCOUNT_ID, PSU_ID_DATA, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
@@ -82,16 +86,19 @@ class CmsAspspPsuAccountServiceInternalTest {
 
         //then
         assertTrue(actualResult);
-        verify(aisConsentJpaRepository, times(1)).save(aisConsent);
+        verify(consentJpaRepository, times(1)).save(aisConsent);
         verify(piisConsentRepository, times(1)).save(piisConsentEntity);
+        verify(consentFilteringService).filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID);
     }
 
     @Test
     void revokeAllConsents_Success_closeAis() {
         // given
-        when(aisConsentSpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(ASPSP_ACCOUNT_ID, PSU_ID_DATA, INSTANCE_ID))
+        when(aisConsentSpecification.byAndPsuIdDataAndInstanceId(PSU_ID_DATA, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        when(aisConsentJpaRepository.findAll((any()))).thenReturn(Collections.singletonList(aisConsent));
+        when(consentJpaRepository.findAll((any()))).thenReturn(Collections.singletonList(aisConsent));
+        when(consentFilteringService.filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID))
+            .thenReturn(Collections.singletonList(aisConsent));
 
         when(piisConsentEntitySpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(ASPSP_ACCOUNT_ID, PSU_ID_DATA, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
@@ -102,16 +109,17 @@ class CmsAspspPsuAccountServiceInternalTest {
 
         //then
         assertTrue(actualResult);
-        verify(aisConsentJpaRepository, times(1)).save(aisConsent);
+        verify(consentJpaRepository, times(1)).save(aisConsent);
         verify(piisConsentRepository, never()).save(any());
+        verify(consentFilteringService).filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID);
     }
 
     @Test
     void revokeAllConsents_Success_closePiis() {
         // given
-        when(aisConsentSpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(ASPSP_ACCOUNT_ID, PSU_ID_DATA, INSTANCE_ID))
+        when(aisConsentSpecification.byAndPsuIdDataAndInstanceId(PSU_ID_DATA, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        when(aisConsentJpaRepository.findAll((any()))).thenReturn(Collections.emptyList());
+        when(consentJpaRepository.findAll((any()))).thenReturn(Collections.emptyList());
 
         when(piisConsentEntitySpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(ASPSP_ACCOUNT_ID, PSU_ID_DATA, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
@@ -122,16 +130,16 @@ class CmsAspspPsuAccountServiceInternalTest {
 
         //then
         assertTrue(actualResult);
-        verify(aisConsentJpaRepository, never()).save(any());
+        verify(consentJpaRepository, never()).save(any());
         verify(piisConsentRepository, times(1)).save(piisConsentEntity);
     }
 
     @Test
     void revokeAllConsents_NoConsents() {
         // given
-        when(aisConsentSpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(ASPSP_ACCOUNT_ID, PSU_ID_DATA, INSTANCE_ID))
+        when(aisConsentSpecification.byAndPsuIdDataAndInstanceId(PSU_ID_DATA, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        when(aisConsentJpaRepository.findAll((any()))).thenReturn(Collections.emptyList());
+        when(consentJpaRepository.findAll((any()))).thenReturn(Collections.emptyList());
 
         when(piisConsentEntitySpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(ASPSP_ACCOUNT_ID, PSU_ID_DATA, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
@@ -142,7 +150,7 @@ class CmsAspspPsuAccountServiceInternalTest {
 
         //then
         assertFalse(actualResult);
-        verify(aisConsentJpaRepository, never()).save(any());
+        verify(consentJpaRepository, never()).save(any());
         verify(piisConsentRepository, never()).save(any());
     }
 }

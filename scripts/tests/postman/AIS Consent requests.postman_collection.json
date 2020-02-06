@@ -1,19 +1,19 @@
 {
-	"info": {
+  "info": {
     "_postman_id": "c9a27ff7-4034-427b-8e65-cb0d31690ef9",
     "name": "AIS Consent requests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-	"item": [
-		{
-			"name": "Available accounts",
-			"item": [
-				{
-					"name": "Consent available accounts EMBEDDED 0 SCA methods",
-					"item": [
-						{
-							"name": "1. Update ASPSP profile settings",
-							"event": [
+  "item": [
+    {
+      "name": "Available accounts",
+      "item": [
+        {
+          "name": "Consent available accounts EMBEDDED 0 SCA methods",
+          "item": [
+            {
+              "name": "1. Update ASPSP profile settings",
+              "event": [
 								{
 									"listen": "test",
 									"script": {
@@ -21525,67 +21525,78 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"const jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Result validator\", () => {",
-											"      pm.expect(jsonData).to.have.property('tppAccess');",
-											"      pm.expect(jsonData).to.have.property('aspspAccess');",
-											"       pm.expect(jsonData).to.have.property('recurringIndicator');",
-											"       pm.expect(jsonData).to.have.property('validUntil');",
-											"       pm.expect(jsonData).to.have.property('frequencyPerDay');",
-											"       pm.expect(jsonData).to.have.property('lastActionDate');",
-											"       pm.expect(jsonData).to.have.property('consentStatus');",
-											"       pm.expect(jsonData).to.have.property('withBalance');",
-											"       pm.expect(jsonData).to.have.property('tppRedirectPreferred');",
-											"       pm.expect(jsonData).to.have.property('aisConsentRequestType');",
-											"       pm.expect(jsonData).to.have.property('psuIdDataList');",
-											"       pm.expect(jsonData).to.have.property('tppInfo');",
-											"",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Status\", () => {",
-											"    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
+                    "id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Result validator\", () => {",
+                      "    pm.expect(jsonData).to.have.property('id');",
+                      "    pm.expect(jsonData).to.have.property('access');",
+                      "    pm.expect(jsonData).to.have.property('recurringIndicator');",
+                      "    pm.expect(jsonData).to.have.property('validUntil');",
+                      "    pm.expect(jsonData).to.have.property('frequencyPerDay');",
+                      "    pm.expect(jsonData).to.have.property('lastActionDate');",
+                      "    pm.expect(jsonData).to.have.property('consentStatus');",
+                      "    pm.expect(jsonData).to.have.property('withBalance');",
+                      "    pm.expect(jsonData).to.have.property('tppRedirectPreferred');",
+                      "    pm.expect(jsonData).to.have.property('aisConsentRequestType');",
+                      "    pm.expect(jsonData).to.have.property('psuIdDataList');",
+                      "    pm.expect(jsonData).to.have.property('tppInfo');",
+                      "    pm.expect(jsonData).to.have.property('authorisationTemplate');",
+                      "    pm.expect(jsonData).to.have.property('multilevelScaRequired');",
+                      "    pm.expect(jsonData).to.have.property('accountConsentAuthorizations');",
+                      "    pm.expect(jsonData).to.have.property('usageCounterMap');",
+                      "    pm.expect(jsonData).to.have.property('creationTimestamp');",
+                      "    pm.expect(jsonData).to.have.property('statusChangeTimestamp');",
+                      "});",
+                      "",
+                      "pm.test(\"Consent status is Valid\", () => {",
+                      "    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
+                      "});",
+                      "",
+                      "pm.test(\"Access contains accounts, balances and transactions\", () => {",
+                      "    const access = jsonData.access;",
+                      "    pm.expect(access).to.have.property(\"accounts\");",
+                      "    pm.expect(access).to.have.property(\"balances\");",
+                      "    pm.expect(access).to.have.property(\"transactions\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									},
-									{
-										"key": "X-Request-ID",
-										"value": "{{x_request_id}}"
-									}
-								],
-								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/api/v1/ais/consent/{{consent_id}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_cms}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"ais",
-										"consent",
-										"{{consent_id}}"
-									]
-								},
-								"description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
-							},
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "PSU-ID",
+                    "value": "{{psu_id_single}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_cms}}"
+                  ],
+                  "path": [
+                    "psu-api",
+                    "v1",
+                    "ais",
+                    "consent",
+                    "{{internal_consent_id}}"
+                  ]
+                },
+                "description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
+              },
 							"response": []
 						},
 						{
@@ -22418,67 +22429,78 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"const jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Result validator\", () => {",
-											"      pm.expect(jsonData).to.have.property('tppAccess');",
-											"      pm.expect(jsonData).to.have.property('aspspAccess');",
-											"       pm.expect(jsonData).to.have.property('recurringIndicator');",
-											"       pm.expect(jsonData).to.have.property('validUntil');",
-											"       pm.expect(jsonData).to.have.property('frequencyPerDay');",
-											"       pm.expect(jsonData).to.have.property('lastActionDate');",
-											"       pm.expect(jsonData).to.have.property('consentStatus');",
-											"       pm.expect(jsonData).to.have.property('withBalance');",
-											"       pm.expect(jsonData).to.have.property('tppRedirectPreferred');",
-											"       pm.expect(jsonData).to.have.property('aisConsentRequestType');",
-											"       pm.expect(jsonData).to.have.property('psuIdDataList');",
-											"       pm.expect(jsonData).to.have.property('tppInfo');",
-											"",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Status\", () => {",
-											"    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
+                    "id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Result validator\", () => {",
+                      "    pm.expect(jsonData).to.have.property('id');",
+                      "    pm.expect(jsonData).to.have.property('access');",
+                      "    pm.expect(jsonData).to.have.property('recurringIndicator');",
+                      "    pm.expect(jsonData).to.have.property('validUntil');",
+                      "    pm.expect(jsonData).to.have.property('frequencyPerDay');",
+                      "    pm.expect(jsonData).to.have.property('lastActionDate');",
+                      "    pm.expect(jsonData).to.have.property('consentStatus');",
+                      "    pm.expect(jsonData).to.have.property('withBalance');",
+                      "    pm.expect(jsonData).to.have.property('tppRedirectPreferred');",
+                      "    pm.expect(jsonData).to.have.property('aisConsentRequestType');",
+                      "    pm.expect(jsonData).to.have.property('psuIdDataList');",
+                      "    pm.expect(jsonData).to.have.property('tppInfo');",
+                      "    pm.expect(jsonData).to.have.property('authorisationTemplate');",
+                      "    pm.expect(jsonData).to.have.property('multilevelScaRequired');",
+                      "    pm.expect(jsonData).to.have.property('accountConsentAuthorizations');",
+                      "    pm.expect(jsonData).to.have.property('usageCounterMap');",
+                      "    pm.expect(jsonData).to.have.property('creationTimestamp');",
+                      "    pm.expect(jsonData).to.have.property('statusChangeTimestamp');",
+                      "});",
+                      "",
+                      "pm.test(\"Consent status is Valid\", () => {",
+                      "    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
+                      "});",
+                      "",
+                      "pm.test(\"Access contains accounts, balances and transactions\", () => {",
+                      "    const access = jsonData.access;",
+                      "    pm.expect(access).to.have.property(\"accounts\");",
+                      "    pm.expect(access).to.have.property(\"balances\");",
+                      "    pm.expect(access).to.have.property(\"transactions\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									},
-									{
-										"key": "X-Request-ID",
-										"value": "{{x_request_id}}"
-									}
-								],
-								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/api/v1/ais/consent/{{consent_id}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_cms}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"ais",
-										"consent",
-										"{{consent_id}}"
-									]
-								},
-								"description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
-							},
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "PSU-ID",
+                    "value": "{{psu_id_single}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_cms}}"
+                  ],
+                  "path": [
+                    "psu-api",
+                    "v1",
+                    "ais",
+                    "consent",
+                    "{{internal_consent_id}}"
+                  ]
+                },
+                "description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
+              },
 							"response": []
 						},
 						{
@@ -23351,66 +23373,84 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"const jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Result validator\", () => {",
-											"      pm.expect(jsonData).to.have.property('tppAccess');",
-											"      pm.expect(jsonData).to.have.property('aspspAccess');",
-											"       pm.expect(jsonData).to.have.property('recurringIndicator');",
-											"       pm.expect(jsonData).to.have.property('validUntil');",
-											"       pm.expect(jsonData).to.have.property('frequencyPerDay');",
-											"       pm.expect(jsonData).to.have.property('lastActionDate');",
-											"       pm.expect(jsonData).to.have.property('consentStatus');",
-											"     ",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Request Type\", () => {",
-											"    pm.expect(jsonData.aisConsentRequestType).to.eql(\"ALL_AVAILABLE_ACCOUNTS\");",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Status\", () => {",
-											"    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
+                    "id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Result validator\", () => {",
+                      "    pm.expect(jsonData).to.have.property('id');",
+                      "    pm.expect(jsonData).to.have.property('access');",
+                      "    pm.expect(jsonData).to.have.property('recurringIndicator');",
+                      "    pm.expect(jsonData).to.have.property('validUntil');",
+                      "    pm.expect(jsonData).to.have.property('frequencyPerDay');",
+                      "    pm.expect(jsonData).to.have.property('lastActionDate');",
+                      "    pm.expect(jsonData).to.have.property('consentStatus');",
+                      "    pm.expect(jsonData).to.have.property('withBalance');",
+                      "    pm.expect(jsonData).to.have.property('tppRedirectPreferred');",
+                      "    pm.expect(jsonData).to.have.property('aisConsentRequestType');",
+                      "    pm.expect(jsonData).to.have.property('psuIdDataList');",
+                      "    pm.expect(jsonData).to.have.property('tppInfo');",
+                      "    pm.expect(jsonData).to.have.property('authorisationTemplate');",
+                      "    pm.expect(jsonData).to.have.property('multilevelScaRequired');",
+                      "    pm.expect(jsonData).to.have.property('accountConsentAuthorizations');",
+                      "    pm.expect(jsonData).to.have.property('usageCounterMap');",
+                      "    pm.expect(jsonData).to.have.property('creationTimestamp');",
+                      "    pm.expect(jsonData).to.have.property('statusChangeTimestamp');",
+                      "});",
+                      "",
+                      "pm.test(\"Consent status is Valid\", () => {",
+                      "    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
+                      "});",
+                      "",
+                      "pm.test(\"Access contains availableAccounts\", () => {",
+                      "    const access = jsonData.access;",
+                      "    pm.expect(access).to.have.property(\"accounts\");",
+                      "    pm.expect(access).to.have.property(\"balances\");",
+                      "    pm.expect(access).to.have.property(\"transactions\");",
+                      "    pm.expect(access.availableAccounts).to.eql(\"ALL_ACCOUNTS\");",
+                      "});",
+                      "",
+                      "pm.test(\"Check AIS Consent Request Type\", () => {",
+                      "    pm.expect(jsonData.aisConsentRequestType).to.eql(\"ALL_AVAILABLE_ACCOUNTS\");",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									},
-									{
-										"key": "X-Request-ID",
-										"value": "{{x_request_id}}"
-									}
-								],
-								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/api/v1/ais/consent/{{consent_id}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_cms}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"ais",
-										"consent",
-										"{{consent_id}}"
-									]
-								},
-								"description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
-							},
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "PSU-ID",
+                    "value": "{{psu_id_single}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_cms}}"
+                  ],
+                  "path": [
+                    "psu-api",
+                    "v1",
+                    "ais",
+                    "consent",
+                    "{{internal_consent_id}}"
+                  ]
+                },
+                "description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
+              },
 							"response": []
 						},
 						{
@@ -24201,66 +24241,84 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"const jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Result validator\", () => {",
-											"      pm.expect(jsonData).to.have.property('tppAccess');",
-											"      pm.expect(jsonData).to.have.property('aspspAccess');",
-											"       pm.expect(jsonData).to.have.property('recurringIndicator');",
-											"       pm.expect(jsonData).to.have.property('validUntil');",
-											"       pm.expect(jsonData).to.have.property('frequencyPerDay');",
-											"       pm.expect(jsonData).to.have.property('lastActionDate');",
-											"       pm.expect(jsonData).to.have.property('consentStatus');",
-											"     ",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Request Type\", () => {",
-											"    pm.expect(jsonData.aisConsentRequestType).to.eql(\"ALL_AVAILABLE_ACCOUNTS\");",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Status\", () => {",
-											"    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
+                    "id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Result validator\", () => {",
+                      "    pm.expect(jsonData).to.have.property('id');",
+                      "    pm.expect(jsonData).to.have.property('access');",
+                      "    pm.expect(jsonData).to.have.property('recurringIndicator');",
+                      "    pm.expect(jsonData).to.have.property('validUntil');",
+                      "    pm.expect(jsonData).to.have.property('frequencyPerDay');",
+                      "    pm.expect(jsonData).to.have.property('lastActionDate');",
+                      "    pm.expect(jsonData).to.have.property('consentStatus');",
+                      "    pm.expect(jsonData).to.have.property('withBalance');",
+                      "    pm.expect(jsonData).to.have.property('tppRedirectPreferred');",
+                      "    pm.expect(jsonData).to.have.property('aisConsentRequestType');",
+                      "    pm.expect(jsonData).to.have.property('psuIdDataList');",
+                      "    pm.expect(jsonData).to.have.property('tppInfo');",
+                      "    pm.expect(jsonData).to.have.property('authorisationTemplate');",
+                      "    pm.expect(jsonData).to.have.property('multilevelScaRequired');",
+                      "    pm.expect(jsonData).to.have.property('accountConsentAuthorizations');",
+                      "    pm.expect(jsonData).to.have.property('usageCounterMap');",
+                      "    pm.expect(jsonData).to.have.property('creationTimestamp');",
+                      "    pm.expect(jsonData).to.have.property('statusChangeTimestamp');",
+                      "});",
+                      "",
+                      "pm.test(\"Consent status is Valid\", () => {",
+                      "    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
+                      "});",
+                      "",
+                      "pm.test(\"Access contains availableAccounts\", () => {",
+                      "    const access = jsonData.access;",
+                      "    pm.expect(access).to.have.property(\"accounts\");",
+                      "    pm.expect(access).to.have.property(\"balances\");",
+                      "    pm.expect(access).to.have.property(\"transactions\");",
+                      "    pm.expect(access.availableAccounts).to.eql(\"ALL_ACCOUNTS\");",
+                      "});",
+                      "",
+                      "pm.test(\"Check AIS Consent Request Type\", () => {",
+                      "    pm.expect(jsonData.aisConsentRequestType).to.eql(\"ALL_AVAILABLE_ACCOUNTS\");",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									},
-									{
-										"key": "X-Request-ID",
-										"value": "{{x_request_id}}"
-									}
-								],
-								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/api/v1/ais/consent/{{consent_id}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_cms}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"ais",
-										"consent",
-										"{{consent_id}}"
-									]
-								},
-								"description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
-							},
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "PSU-ID",
+                    "value": "{{psu_id_single}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_cms}}"
+                  ],
+                  "path": [
+                    "psu-api",
+                    "v1",
+                    "ais",
+                    "consent",
+                    "{{internal_consent_id}}"
+                  ]
+                },
+                "description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
+              },
 							"response": []
 						},
 						{
@@ -25081,66 +25139,84 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"const jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Result validator\", () => {",
-											"       pm.expect(jsonData).to.have.property('tppAccess');",
-											"       pm.expect(jsonData).to.have.property('aspspAccess');",
-											"       pm.expect(jsonData).to.have.property('recurringIndicator');",
-											"       pm.expect(jsonData).to.have.property('validUntil');",
-											"       pm.expect(jsonData).to.have.property('frequencyPerDay');",
-											"       pm.expect(jsonData).to.have.property('lastActionDate');",
-											"       pm.expect(jsonData).to.have.property('consentStatus');",
-											"     ",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Request Type\", () => {",
-											"    pm.expect(jsonData.aisConsentRequestType).to.eql(\"ALL_AVAILABLE_ACCOUNTS\");",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Status\", () => {",
-											"    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
+                    "id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Result validator\", () => {",
+                      "    pm.expect(jsonData).to.have.property('id');",
+                      "    pm.expect(jsonData).to.have.property('access');",
+                      "    pm.expect(jsonData).to.have.property('recurringIndicator');",
+                      "    pm.expect(jsonData).to.have.property('validUntil');",
+                      "    pm.expect(jsonData).to.have.property('frequencyPerDay');",
+                      "    pm.expect(jsonData).to.have.property('lastActionDate');",
+                      "    pm.expect(jsonData).to.have.property('consentStatus');",
+                      "    pm.expect(jsonData).to.have.property('withBalance');",
+                      "    pm.expect(jsonData).to.have.property('tppRedirectPreferred');",
+                      "    pm.expect(jsonData).to.have.property('aisConsentRequestType');",
+                      "    pm.expect(jsonData).to.have.property('psuIdDataList');",
+                      "    pm.expect(jsonData).to.have.property('tppInfo');",
+                      "    pm.expect(jsonData).to.have.property('authorisationTemplate');",
+                      "    pm.expect(jsonData).to.have.property('multilevelScaRequired');",
+                      "    pm.expect(jsonData).to.have.property('accountConsentAuthorizations');",
+                      "    pm.expect(jsonData).to.have.property('usageCounterMap');",
+                      "    pm.expect(jsonData).to.have.property('creationTimestamp');",
+                      "    pm.expect(jsonData).to.have.property('statusChangeTimestamp');",
+                      "});",
+                      "",
+                      "pm.test(\"Consent status is Valid\", () => {",
+                      "    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
+                      "});",
+                      "",
+                      "pm.test(\"Access contains availableAccounts\", () => {",
+                      "    const access = jsonData.access;",
+                      "    pm.expect(access).to.have.property(\"accounts\");",
+                      "    pm.expect(access).to.have.property(\"balances\");",
+                      "    pm.expect(access).to.have.property(\"transactions\");",
+                      "    pm.expect(access.availableAccountsWithBalance).to.eql(\"ALL_ACCOUNTS\");",
+                      "});",
+                      "",
+                      "pm.test(\"Check AIS Consent Request Type\", () => {",
+                      "    pm.expect(jsonData.aisConsentRequestType).to.eql(\"ALL_AVAILABLE_ACCOUNTS\");",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									},
-									{
-										"key": "X-Request-ID",
-										"value": "{{x_request_id}}"
-									}
-								],
-								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/api/v1/ais/consent/{{consent_id}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_cms}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"ais",
-										"consent",
-										"{{consent_id}}"
-									]
-								},
-								"description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
-							},
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "PSU-ID",
+                    "value": "{{psu_id_single}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_cms}}"
+                  ],
+                  "path": [
+                    "psu-api",
+                    "v1",
+                    "ais",
+                    "consent",
+                    "{{internal_consent_id}}"
+                  ]
+                },
+                "description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
+              },
 							"response": []
 						},
 						{
@@ -25943,66 +26019,84 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"const jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Result validator\", () => {",
-											"       pm.expect(jsonData).to.have.property('tppAccess');",
-											"       pm.expect(jsonData).to.have.property('aspspAccess');",
-											"       pm.expect(jsonData).to.have.property('recurringIndicator');",
-											"       pm.expect(jsonData).to.have.property('validUntil');",
-											"       pm.expect(jsonData).to.have.property('frequencyPerDay');",
-											"       pm.expect(jsonData).to.have.property('lastActionDate');",
-											"       pm.expect(jsonData).to.have.property('consentStatus');",
-											"     ",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Request Type\", () => {",
-											"    pm.expect(jsonData.aisConsentRequestType).to.eql(\"ALL_AVAILABLE_ACCOUNTS\");",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Status\", () => {",
-											"    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
+                    "id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Result validator\", () => {",
+                      "    pm.expect(jsonData).to.have.property('id');",
+                      "    pm.expect(jsonData).to.have.property('access');",
+                      "    pm.expect(jsonData).to.have.property('recurringIndicator');",
+                      "    pm.expect(jsonData).to.have.property('validUntil');",
+                      "    pm.expect(jsonData).to.have.property('frequencyPerDay');",
+                      "    pm.expect(jsonData).to.have.property('lastActionDate');",
+                      "    pm.expect(jsonData).to.have.property('consentStatus');",
+                      "    pm.expect(jsonData).to.have.property('withBalance');",
+                      "    pm.expect(jsonData).to.have.property('tppRedirectPreferred');",
+                      "    pm.expect(jsonData).to.have.property('aisConsentRequestType');",
+                      "    pm.expect(jsonData).to.have.property('psuIdDataList');",
+                      "    pm.expect(jsonData).to.have.property('tppInfo');",
+                      "    pm.expect(jsonData).to.have.property('authorisationTemplate');",
+                      "    pm.expect(jsonData).to.have.property('multilevelScaRequired');",
+                      "    pm.expect(jsonData).to.have.property('accountConsentAuthorizations');",
+                      "    pm.expect(jsonData).to.have.property('usageCounterMap');",
+                      "    pm.expect(jsonData).to.have.property('creationTimestamp');",
+                      "    pm.expect(jsonData).to.have.property('statusChangeTimestamp');",
+                      "});",
+                      "",
+                      "pm.test(\"Consent status is Valid\", () => {",
+                      "    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
+                      "});",
+                      "",
+                      "pm.test(\"Access contains availableAccounts\", () => {",
+                      "    const access = jsonData.access;",
+                      "    pm.expect(access).to.have.property(\"accounts\");",
+                      "    pm.expect(access).to.have.property(\"balances\");",
+                      "    pm.expect(access).to.have.property(\"transactions\");",
+                      "    pm.expect(access.availableAccountsWithBalance).to.eql(\"ALL_ACCOUNTS\");",
+                      "});",
+                      "",
+                      "pm.test(\"Check AIS Consent Request Type\", () => {",
+                      "    pm.expect(jsonData.aisConsentRequestType).to.eql(\"ALL_AVAILABLE_ACCOUNTS\");",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									},
-									{
-										"key": "X-Request-ID",
-										"value": "{{x_request_id}}"
-									}
-								],
-								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/api/v1/ais/consent/{{consent_id}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_cms}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"ais",
-										"consent",
-										"{{consent_id}}"
-									]
-								},
-								"description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
-							},
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "PSU-ID",
+                    "value": "{{psu_id_single}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_cms}}"
+                  ],
+                  "path": [
+                    "psu-api",
+                    "v1",
+                    "ais",
+                    "consent",
+                    "{{internal_consent_id}}"
+                  ]
+                },
+                "description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
+              },
 							"response": []
 						},
 						{
@@ -26825,66 +26919,84 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"const jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Result validator\", () => {",
-											"      pm.expect(jsonData).to.have.property('tppAccess');",
-											"      pm.expect(jsonData).to.have.property('aspspAccess');",
-											"       pm.expect(jsonData).to.have.property('recurringIndicator');",
-											"       pm.expect(jsonData).to.have.property('validUntil');",
-											"       pm.expect(jsonData).to.have.property('frequencyPerDay');",
-											"       pm.expect(jsonData).to.have.property('lastActionDate');",
-											"       pm.expect(jsonData).to.have.property('consentStatus');",
-											"     ",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Request Type\", () => {",
-											"    pm.expect(jsonData.aisConsentRequestType).to.eql(\"GLOBAL\");",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Status\", () => {",
-											"    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
+                    "id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Result validator\", () => {",
+                      "    pm.expect(jsonData).to.have.property('id');",
+                      "    pm.expect(jsonData).to.have.property('access');",
+                      "    pm.expect(jsonData).to.have.property('recurringIndicator');",
+                      "    pm.expect(jsonData).to.have.property('validUntil');",
+                      "    pm.expect(jsonData).to.have.property('frequencyPerDay');",
+                      "    pm.expect(jsonData).to.have.property('lastActionDate');",
+                      "    pm.expect(jsonData).to.have.property('consentStatus');",
+                      "    pm.expect(jsonData).to.have.property('withBalance');",
+                      "    pm.expect(jsonData).to.have.property('tppRedirectPreferred');",
+                      "    pm.expect(jsonData).to.have.property('aisConsentRequestType');",
+                      "    pm.expect(jsonData).to.have.property('psuIdDataList');",
+                      "    pm.expect(jsonData).to.have.property('tppInfo');",
+                      "    pm.expect(jsonData).to.have.property('authorisationTemplate');",
+                      "    pm.expect(jsonData).to.have.property('multilevelScaRequired');",
+                      "    pm.expect(jsonData).to.have.property('accountConsentAuthorizations');",
+                      "    pm.expect(jsonData).to.have.property('usageCounterMap');",
+                      "    pm.expect(jsonData).to.have.property('creationTimestamp');",
+                      "    pm.expect(jsonData).to.have.property('statusChangeTimestamp');",
+                      "});",
+                      "",
+                      "pm.test(\"Consent status is Valid\", () => {",
+                      "    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
+                      "});",
+                      "",
+                      "pm.test(\"Access contains availableAccounts\", () => {",
+                      "    const access = jsonData.access;",
+                      "    pm.expect(access).to.have.property(\"accounts\");",
+                      "    pm.expect(access).to.have.property(\"balances\");",
+                      "    pm.expect(access).to.have.property(\"transactions\");",
+                      "    pm.expect(access.allPsd2).to.eql(\"ALL_ACCOUNTS\");",
+                      "});",
+                      "",
+                      "pm.test(\"Check AIS Consent Request Type\", () => {",
+                      "    pm.expect(jsonData.aisConsentRequestType).to.eql(\"GLOBAL\");",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									},
-									{
-										"key": "X-Request-ID",
-										"value": "{{x_request_id}}"
-									}
-								],
-								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/api/v1/ais/consent/{{consent_id}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_cms}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"ais",
-										"consent",
-										"{{consent_id}}"
-									]
-								},
-								"description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
-							},
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "PSU-ID",
+                    "value": "{{psu_id_single}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_cms}}"
+                  ],
+                  "path": [
+                    "psu-api",
+                    "v1",
+                    "ais",
+                    "consent",
+                    "{{internal_consent_id}}"
+                  ]
+                },
+                "description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
+              },
 							"response": []
 						},
 						{
@@ -27581,29 +27693,31 @@
 								},
 								"method": "GET",
 								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									},
-									{
-										"key": "X-Request-ID",
-										"value": "{{x_request_id}}"
-									}
-								],
-								"url": {
-									"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_xs2a}}"
-									],
-									"path": [
-										"v1",
-										"consents",
-										"{{consent_id}}"
-									]
-								},
-								"description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
-							},
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Request-ID",
+                    "value": "{{x_request_id}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_cms}}"
+                  ],
+                  "path": [
+                    "psu-api",
+                    "v1",
+                    "ais",
+                    "consent",
+                    "{{internal_consent_id}}"
+                  ]
+                },
+                "description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
+              },
 							"response": []
 						},
 						{
@@ -27612,66 +27726,84 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
-										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"const jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Result validator\", () => {",
-											"      pm.expect(jsonData).to.have.property('tppAccess');",
-											"      pm.expect(jsonData).to.have.property('aspspAccess');",
-											"       pm.expect(jsonData).to.have.property('recurringIndicator');",
-											"       pm.expect(jsonData).to.have.property('validUntil');",
-											"       pm.expect(jsonData).to.have.property('frequencyPerDay');",
-											"       pm.expect(jsonData).to.have.property('lastActionDate');",
-											"       pm.expect(jsonData).to.have.property('consentStatus');",
-											"     ",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Request Type\", () => {",
-											"    pm.expect(jsonData.aisConsentRequestType).to.eql(\"GLOBAL\");",
-											"});",
-											"",
-											"pm.test(\"Check AIS Consent Status\", () => {",
-											"    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
+                    "id": "f78fd945-b5d3-4986-96e8-0738bd1f7e27",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "const jsonData = pm.response.json();",
+                      "",
+                      "pm.test(\"Result validator\", () => {",
+                      "    pm.expect(jsonData).to.have.property('id');",
+                      "    pm.expect(jsonData).to.have.property('access');",
+                      "    pm.expect(jsonData).to.have.property('recurringIndicator');",
+                      "    pm.expect(jsonData).to.have.property('validUntil');",
+                      "    pm.expect(jsonData).to.have.property('frequencyPerDay');",
+                      "    pm.expect(jsonData).to.have.property('lastActionDate');",
+                      "    pm.expect(jsonData).to.have.property('consentStatus');",
+                      "    pm.expect(jsonData).to.have.property('withBalance');",
+                      "    pm.expect(jsonData).to.have.property('tppRedirectPreferred');",
+                      "    pm.expect(jsonData).to.have.property('aisConsentRequestType');",
+                      "    pm.expect(jsonData).to.have.property('psuIdDataList');",
+                      "    pm.expect(jsonData).to.have.property('tppInfo');",
+                      "    pm.expect(jsonData).to.have.property('authorisationTemplate');",
+                      "    pm.expect(jsonData).to.have.property('multilevelScaRequired');",
+                      "    pm.expect(jsonData).to.have.property('accountConsentAuthorizations');",
+                      "    pm.expect(jsonData).to.have.property('usageCounterMap');",
+                      "    pm.expect(jsonData).to.have.property('creationTimestamp');",
+                      "    pm.expect(jsonData).to.have.property('statusChangeTimestamp');",
+                      "});",
+                      "",
+                      "pm.test(\"Consent status is Valid\", () => {",
+                      "    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
+                      "});",
+                      "",
+                      "pm.test(\"Access contains availableAccounts\", () => {",
+                      "    const access = jsonData.access;",
+                      "    pm.expect(access).to.have.property(\"accounts\");",
+                      "    pm.expect(access).to.have.property(\"balances\");",
+                      "    pm.expect(access).to.have.property(\"transactions\");",
+                      "    pm.expect(access.allPsd2).to.eql(\"ALL_ACCOUNTS\");",
+                      "});",
+                      "",
+                      "pm.test(\"Check AIS Consent Request Type\", () => {",
+                      "    pm.expect(jsonData.aisConsentRequestType).to.eql(\"GLOBAL\");",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									},
-									{
-										"key": "X-Request-ID",
-										"value": "{{x_request_id}}"
-									}
-								],
-								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/api/v1/ais/consent/{{consent_id}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_cms}}"
-									],
-									"path": [
-										"api",
-										"v1",
-										"ais",
-										"consent",
-										"{{consent_id}}"
-									]
-								},
-								"description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
-							},
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "PSU-ID",
+                    "value": "{{psu_id_single}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_cms}}"
+                  ],
+                  "path": [
+                    "psu-api",
+                    "v1",
+                    "ais",
+                    "consent",
+                    "{{internal_consent_id}}"
+                  ]
+                },
+                "description": "Returns the content of an account information consent object.  This is returning the data for the TPP especially in cases,  where the consent was directly managed between ASPSP and PSU e.g. in a re-direct SCA Approach. "
+              },
 							"response": []
 						},
 						{
