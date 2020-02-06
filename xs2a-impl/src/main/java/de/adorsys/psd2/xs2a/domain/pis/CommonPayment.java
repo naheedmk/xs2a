@@ -43,7 +43,7 @@ public class CommonPayment implements CustomContentTypeProvider {
     @Override
     public MediaType getCustomContentType() {
         if (StringUtils.isBlank(contentType)) {
-            return MediaType.parseMediaType(MediaType.APPLICATION_JSON_VALUE);
+            return MediaType.APPLICATION_JSON;
         }
         return MediaType.parseMediaType(contentType);
     }

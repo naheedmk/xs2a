@@ -43,6 +43,7 @@ import de.adorsys.psd2.xs2a.service.validator.pis.payment.dto.CreatePaymentReque
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -160,16 +161,21 @@ public class PaymentService {
         }
 
         CommonPayment commonPayment = response.getPayment();
-        String responseContentType = Optional.ofNullable(commonPayment.getContentType()).orElse(contentType);
-        if (responseContentType.equals(MediaType.ALL_VALUE)) {
-            responseContentType = MediaType.APPLICATION_JSON_VALUE;
-        }
+        String responseContentType = resolveContentType(contentType, commonPayment.getContentType());
         commonPayment.setContentType(responseContentType);
         loggingContextService.storeTransactionStatus(commonPayment.getTransactionStatus());
 
         return ResponseObject.<CommonPayment>builder()
                    .body(commonPayment)
                    .build();
+    }
+
+    private String resolveContentType(String contentTypeBeforeSpi, String contentTypeAfterSpi) {
+        String responseContentType = StringUtils.isNotBlank(contentTypeAfterSpi) ? contentTypeAfterSpi : contentTypeBeforeSpi;
+        if (MediaType.ALL_VALUE.equals(responseContentType)) {
+            responseContentType = MediaType.APPLICATION_JSON_VALUE;
+        }
+        return responseContentType;
     }
 
     /**
