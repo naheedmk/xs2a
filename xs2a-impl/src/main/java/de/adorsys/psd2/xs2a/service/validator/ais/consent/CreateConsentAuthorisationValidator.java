@@ -71,7 +71,6 @@ public class CreateConsentAuthorisationValidator extends AbstractConsentTppValid
 
         // If the authorisation for this consent ID and for this PSU ID has status FINALISED or EXEMPTED - return error.
         List<AccountConsentAuthorization> accountConsentAuthorisations = accountConsent.getAuthorisations();
-        //TODO: #1175 simplify
         List<Authorisation> authorisations = accountConsentAuthorisations.stream()
                                                  .map(auth -> new Authorisation(auth.getId(),
                                                                                 auth.getPsuIdData(),
