@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -70,7 +71,7 @@ public class OneOffConsentExpirationService {
                                    .map(AisConsentTransaction::getNumberOfTransactions)
                                    .orElse(0);
 
-            int maximumNumberOfGetRequestsForConsent = getMaximumNumberOfGetRequestsForConsentsAccount(consent, transactions);
+            int maximumNumberOfGetRequestsForConsent = getMaximumNumberOfGetRequestsForConsentsAccount(consent, resourceId, transactions);
             int numberOfUsedGetRequestsForConsent = aisConsentUsageRepository.countByConsentIdAndResourceId(consent.getId(), resourceId);
 
             // There are some available not used get requests - omit all other iterations.
@@ -87,31 +88,29 @@ public class OneOffConsentExpirationService {
      * This method returns maximum number of possible get requests for the definite consent for ONE account
      * except the main get call - readAccountList.
      */
-    private int getMaximumNumberOfGetRequestsForConsentsAccount(AisConsent consent, int numberOfTransactions) {
+    private int getMaximumNumberOfGetRequestsForConsentsAccount(AisConsent consent, String resourceId, int numberOfTransactions) {
         switch (consent.getAisConsentRequestType()) {
             case DEDICATED_ACCOUNTS:
                 List<AspspAccountAccess> aspspAccountAccesses = consent.getAspspAccountAccesses();
+                Stream<AspspAccountAccess> filteredByResourceId = aspspAccountAccesses.stream().filter(access -> access.getResourceId().equals(resourceId));
 
                 // Consent was given only for accounts: readAccountDetails for each account.
-                if (aspspAccountAccesses
-                        .stream()
-                        .allMatch(aspspAccountAccess -> aspspAccountAccess.getTypeAccess() == TypeAccess.ACCOUNT)) {
+                if (filteredByResourceId
+                        .allMatch(access -> access.getTypeAccess() == TypeAccess.ACCOUNT)) {
                     return 1;
                 }
 
                 // Consent was given for accounts and balances.
-                if (aspspAccountAccesses
-                        .stream()
-                        .noneMatch(aspspAccountAccess -> aspspAccountAccess.getTypeAccess() == TypeAccess.TRANSACTION)) {
+                if (filteredByResourceId
+                        .noneMatch(access -> access.getTypeAccess() == TypeAccess.TRANSACTION)) {
 
                     // Value 2 corresponds to the readAccountDetails and readBalances.
                     return 2;
                 }
 
                 // Consent was given for accounts and transactions.
-                if (aspspAccountAccesses
-                        .stream()
-                        .noneMatch(aspspAccountAccess -> aspspAccountAccess.getTypeAccess() == TypeAccess.BALANCE)) {
+                if (filteredByResourceId
+                        .noneMatch(access -> access.getTypeAccess() == TypeAccess.BALANCE)) {
 
                     // Value 2 corresponds to the readAccountDetails and readTransactions. Plus each account's transactions.
                     return 2 + numberOfTransactions;
