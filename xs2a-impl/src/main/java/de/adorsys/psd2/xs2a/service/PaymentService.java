@@ -151,7 +151,7 @@ public class PaymentService {
         ReadPaymentService readPaymentService = paymentServiceResolver.getReadPaymentService(commonPaymentResponse);
         String contentType = Optional.ofNullable(commonPaymentResponse.getContentType()).orElseGet(requestProviderService::getAcceptHeader);
         commonPaymentResponse.setContentType(contentType);
-        PaymentInformationResponse response = readPaymentService.getPayment(commonPaymentResponse, psuIdData, encryptedPaymentId, contentType);
+        PaymentInformationResponse<CommonPayment> response = readPaymentService.getPayment(commonPaymentResponse, psuIdData, encryptedPaymentId, contentType);
 
         if (response.hasError()) {
             log.info("Payment-ID [{}]. Read Payment failed: {}", encryptedPaymentId, response.getErrorHolder());
@@ -168,14 +168,6 @@ public class PaymentService {
         return ResponseObject.<CommonPayment>builder()
                    .body(commonPayment)
                    .build();
-    }
-
-    private String resolveContentType(String contentTypeBeforeSpi, String contentTypeAfterSpi) {
-        String responseContentType = StringUtils.isNotBlank(contentTypeAfterSpi) ? contentTypeAfterSpi : contentTypeBeforeSpi;
-        if (MediaType.ALL_VALUE.equals(responseContentType)) {
-            responseContentType = MediaType.APPLICATION_JSON_VALUE;
-        }
-        return responseContentType;
     }
 
     /**
@@ -314,5 +306,13 @@ public class PaymentService {
 
     private boolean isNotSupportedScaApproach(ScaApproach scaApproach) {
         return !EnumSet.of(ScaApproach.REDIRECT, ScaApproach.EMBEDDED, ScaApproach.DECOUPLED).contains(scaApproach);
+    }
+
+    private String resolveContentType(String contentTypeBeforeSpi, String contentTypeAfterSpi) {
+        String responseContentType = StringUtils.defaultIfBlank(contentTypeAfterSpi, contentTypeBeforeSpi);
+        if (MediaType.ALL_VALUE.equals(responseContentType)) {
+            responseContentType = MediaType.APPLICATION_JSON_VALUE;
+        }
+        return responseContentType;
     }
 }
