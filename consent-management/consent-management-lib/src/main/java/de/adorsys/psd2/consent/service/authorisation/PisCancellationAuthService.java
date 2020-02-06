@@ -23,7 +23,6 @@ import de.adorsys.psd2.consent.domain.payment.PisCommonPaymentData;
 import de.adorsys.psd2.consent.repository.AuthorisationRepository;
 import de.adorsys.psd2.consent.repository.PisCommonPaymentDataRepository;
 import de.adorsys.psd2.consent.repository.PisPaymentDataRepository;
-import de.adorsys.psd2.consent.service.ConfirmationExpirationService;
 import de.adorsys.psd2.consent.service.CorePaymentsConvertService;
 import de.adorsys.psd2.consent.service.PisCommonPaymentConfirmationExpirationService;
 import de.adorsys.psd2.consent.service.mapper.AuthorisationMapper;
@@ -42,21 +41,21 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class PisCancellationAuthService extends CmsAuthorisationService {
+public class PisCancellationAuthService extends CmsAuthorisationService<PisCommonPaymentData> {
     private PisPaymentDataRepository pisPaymentDataRepository;
     private PisCommonPaymentDataRepository pisCommonPaymentDataRepository;
-    private PisCommonPaymentConfirmationExpirationService pisCommonPaymentConfirmationExpirationService;
     private PisCommonPaymentMapper pisCommonPaymentMapper;
     private CorePaymentsConvertService corePaymentsConvertService;
 
     @Autowired
     public PisCancellationAuthService(CmsPsuService cmsPsuService, PsuDataMapper psuDataMapper, AspspProfileService aspspProfileService,
-                                      AuthorisationRepository authorisationRepository, PisPaymentDataRepository pisPaymentDataRepository,
+                                      AuthorisationRepository authorisationRepository,
                                       PisCommonPaymentConfirmationExpirationService pisCommonPaymentConfirmationExpirationService,
-                                      AuthorisationMapper authorisationMapper, PisCommonPaymentDataRepository pisCommonPaymentDataRepository, PisCommonPaymentMapper pisCommonPaymentMapper, CorePaymentsConvertService corePaymentsConvertService) {
-        super(cmsPsuService, psuDataMapper, aspspProfileService, authorisationMapper, authorisationRepository);
+                                      PisPaymentDataRepository pisPaymentDataRepository,
+                                      AuthorisationMapper authorisationMapper, PisCommonPaymentDataRepository pisCommonPaymentDataRepository,
+                                      PisCommonPaymentMapper pisCommonPaymentMapper, CorePaymentsConvertService corePaymentsConvertService) {
+        super(cmsPsuService, psuDataMapper, aspspProfileService, authorisationMapper, authorisationRepository, pisCommonPaymentConfirmationExpirationService);
         this.pisPaymentDataRepository = pisPaymentDataRepository;
-        this.pisCommonPaymentConfirmationExpirationService = pisCommonPaymentConfirmationExpirationService;
         this.pisCommonPaymentDataRepository = pisCommonPaymentDataRepository;
         this.pisCommonPaymentMapper = pisCommonPaymentMapper;
         this.corePaymentsConvertService = corePaymentsConvertService;
@@ -84,13 +83,13 @@ public class PisCancellationAuthService extends CmsAuthorisationService {
     }
 
     @Override
-    public ConfirmationExpirationService<PisCommonPaymentData> getConfirmationExpirationService() {
-        return pisCommonPaymentConfirmationExpirationService;
+    AuthorisationType getAuthorisationType() {
+        return AuthorisationType.PIS_CANCELLATION;
     }
 
     @Override
-    AuthorisationType getAuthorisationType() {
-        return AuthorisationType.PIS_CANCELLATION;
+    PisCommonPaymentData castToParent(Authorisable authorisable) {
+        return (PisCommonPaymentData) authorisable;
     }
 
     private PisCommonPaymentData convertToCommonPayment(PisCommonPaymentData pisCommonPaymentData) {

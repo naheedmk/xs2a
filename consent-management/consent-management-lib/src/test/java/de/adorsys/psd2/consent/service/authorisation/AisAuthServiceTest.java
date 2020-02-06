@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.consent.service.authorisation;
 
+import de.adorsys.psd2.consent.domain.Authorisable;
 import de.adorsys.psd2.consent.domain.account.AisConsent;
 import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
 import de.adorsys.psd2.consent.service.AisConsentConfirmationExpirationService;
@@ -30,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,16 +81,46 @@ class AisAuthServiceTest {
     }
 
     @Test
-    void getConfirmationExpirationService() {
-        assertEquals(aisConsentConfirmationExpirationService, service.getConfirmationExpirationService());
-    }
-
-    @Test
     void updateAuthorisable() {
         AisConsent consent = new AisConsent();
 
         service.updateAuthorisable(consent);
         verify(aisConsentJpaRepository, times(1)).save(consent);
+    }
+
+    @Test
+    void checkAndUpdateOnConfirmationExpiration() {
+        AisConsent initialConsent = new AisConsent();
+        AisConsent updatedConsent = new AisConsent();
+        when(aisConsentConfirmationExpirationService.checkAndUpdateOnConfirmationExpiration(initialConsent)).thenReturn(updatedConsent);
+
+        Authorisable response = service.checkAndUpdateOnConfirmationExpiration(initialConsent);
+
+        assertEquals(updatedConsent, response);
+        verify(aisConsentConfirmationExpirationService).checkAndUpdateOnConfirmationExpiration(initialConsent);
+    }
+
+    @Test
+    void isConfirmationExpired() {
+        AisConsent initialConsent = new AisConsent();
+        when(aisConsentConfirmationExpirationService.isConfirmationExpired(initialConsent)).thenReturn(true);
+
+        boolean response = service.isConfirmationExpired(initialConsent);
+
+        assertTrue(response);
+        verify(aisConsentConfirmationExpirationService).isConfirmationExpired(initialConsent);
+    }
+
+    @Test
+    void updateOnConfirmationExpiration() {
+        AisConsent initialConsent = new AisConsent();
+        AisConsent updatedConsent = new AisConsent();
+        when(aisConsentConfirmationExpirationService.updateOnConfirmationExpiration(initialConsent)).thenReturn(updatedConsent);
+
+        Authorisable response = service.updateOnConfirmationExpiration(initialConsent);
+
+        assertEquals(updatedConsent, response);
+        verify(aisConsentConfirmationExpirationService).updateOnConfirmationExpiration(initialConsent);
     }
 
     @Test

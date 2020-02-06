@@ -20,7 +20,6 @@ import de.adorsys.psd2.consent.api.authorisation.CreateAuthorisationRequest;
 import de.adorsys.psd2.consent.api.authorisation.UpdateAuthorisationRequest;
 import de.adorsys.psd2.consent.domain.Authorisable;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
-import de.adorsys.psd2.consent.service.ConfirmationExpirationService;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,10 +33,13 @@ public interface AuthService {
 
     AuthorisationEntity doUpdateAuthorisation(AuthorisationEntity authorisationEntity, UpdateAuthorisationRequest updateAuthorisationRequest);
 
-    // ToDo properly handle generic type https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1175
-    ConfirmationExpirationService<?> getConfirmationExpirationService();
-
     List<AuthorisationEntity> getAuthorisationsByParentId(String parentId);
 
     Optional<AuthorisationEntity> getAuthorisationById(String authorisationId);
+
+    Authorisable checkAndUpdateOnConfirmationExpiration(Authorisable authorisable);
+
+    boolean isConfirmationExpired(Authorisable object);
+
+    Authorisable updateOnConfirmationExpiration(Authorisable object);
 }

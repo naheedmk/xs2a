@@ -17,6 +17,7 @@
 package de.adorsys.psd2.consent.service.authorisation;
 
 import de.adorsys.psd2.consent.api.pis.PisPayment;
+import de.adorsys.psd2.consent.domain.Authorisable;
 import de.adorsys.psd2.consent.domain.payment.PisCommonPaymentData;
 import de.adorsys.psd2.consent.domain.payment.PisPaymentData;
 import de.adorsys.psd2.consent.repository.PisCommonPaymentDataRepository;
@@ -40,6 +41,7 @@ import java.util.Optional;
 import static de.adorsys.psd2.xs2a.core.pis.TransactionStatus.PATC;
 import static de.adorsys.psd2.xs2a.core.pis.TransactionStatus.RCVD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -139,8 +141,38 @@ class PisAuthServiceTest {
     }
 
     @Test
-    void getConfirmationExpirationService() {
-        assertEquals(pisCommonPaymentConfirmationExpirationService, service.getConfirmationExpirationService());
+    void checkAndUpdateOnConfirmationExpiration() {
+        PisCommonPaymentData initialPayment = new PisCommonPaymentData();
+        PisCommonPaymentData updatedPayment = new PisCommonPaymentData();
+        when(pisCommonPaymentConfirmationExpirationService.checkAndUpdateOnConfirmationExpiration(initialPayment)).thenReturn(updatedPayment);
+
+        Authorisable response = service.checkAndUpdateOnConfirmationExpiration(initialPayment);
+
+        assertEquals(updatedPayment, response);
+        verify(pisCommonPaymentConfirmationExpirationService).checkAndUpdateOnConfirmationExpiration(initialPayment);
+    }
+
+    @Test
+    void isConfirmationExpired() {
+        PisCommonPaymentData initialPayment = new PisCommonPaymentData();
+        when(pisCommonPaymentConfirmationExpirationService.isConfirmationExpired(initialPayment)).thenReturn(true);
+
+        boolean response = service.isConfirmationExpired(initialPayment);
+
+        assertTrue(response);
+        verify(pisCommonPaymentConfirmationExpirationService).isConfirmationExpired(initialPayment);
+    }
+
+    @Test
+    void updateOnConfirmationExpiration() {
+        PisCommonPaymentData initialPayment = new PisCommonPaymentData();
+        PisCommonPaymentData updatedPayment = new PisCommonPaymentData();
+        when(pisCommonPaymentConfirmationExpirationService.updateOnConfirmationExpiration(initialPayment)).thenReturn(updatedPayment);
+
+        Authorisable response = service.updateOnConfirmationExpiration(initialPayment);
+
+        assertEquals(updatedPayment, response);
+        verify(pisCommonPaymentConfirmationExpirationService).updateOnConfirmationExpiration(initialPayment);
     }
 
     @Test

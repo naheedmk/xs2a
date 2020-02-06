@@ -22,7 +22,6 @@ import de.adorsys.psd2.consent.domain.account.AisConsent;
 import de.adorsys.psd2.consent.repository.AisConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.AuthorisationRepository;
 import de.adorsys.psd2.consent.service.AisConsentConfirmationExpirationService;
-import de.adorsys.psd2.consent.service.ConfirmationExpirationService;
 import de.adorsys.psd2.consent.service.mapper.AuthorisationMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.psu.CmsPsuService;
@@ -35,18 +34,17 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class AisAuthService extends CmsAuthorisationService {
+public class AisAuthService extends CmsAuthorisationService<AisConsent> {
     private AisConsentJpaRepository aisConsentJpaRepository;
-    private AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
 
     @Autowired
     public AisAuthService(CmsPsuService cmsPsuService, PsuDataMapper psuDataMapper, AspspProfileService aspspProfileService,
-                          AuthorisationRepository authorisationRepository, AisConsentJpaRepository aisConsentJpaRepository,
+                          AuthorisationRepository authorisationRepository,
                           AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService,
+                          AisConsentJpaRepository aisConsentJpaRepository,
                           AuthorisationMapper authorisationMapper) {
-        super(cmsPsuService, psuDataMapper, aspspProfileService, authorisationMapper, authorisationRepository);
+        super(cmsPsuService, psuDataMapper, aspspProfileService, authorisationMapper, authorisationRepository, aisConsentConfirmationExpirationService);
         this.aisConsentJpaRepository = aisConsentJpaRepository;
-        this.aisConsentConfirmationExpirationService = aisConsentConfirmationExpirationService;
     }
 
     @Override
@@ -63,11 +61,6 @@ public class AisAuthService extends CmsAuthorisationService {
     }
 
     @Override
-    public ConfirmationExpirationService<AisConsent> getConfirmationExpirationService() {
-        return aisConsentConfirmationExpirationService;
-    }
-
-    @Override
     protected void updateAuthorisable(Object authorisable) {
         aisConsentJpaRepository.save((AisConsent) authorisable);
     }
@@ -75,5 +68,10 @@ public class AisAuthService extends CmsAuthorisationService {
     @Override
     AuthorisationType getAuthorisationType() {
         return AuthorisationType.AIS;
+    }
+
+    @Override
+    AisConsent castToParent(Authorisable authorisable) {
+        return (AisConsent) authorisable;
     }
 }

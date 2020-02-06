@@ -82,9 +82,9 @@ public class AuthorisationServiceInternal implements AuthorisationService {
         AuthorisationEntity newAuthorisation = authService.saveAuthorisation(request, authorisationParent);
 
         CreateAuthorisationResponse response = new CreateAuthorisationResponse(newAuthorisation.getExternalId(), newAuthorisation.getScaStatus(), authorisationParent.getInternalRequestId(authorisationType), request.getPsuData());
-            return CmsResponse.<CreateAuthorisationResponse>builder()
-                       .payload(response)
-                       .build();
+        return CmsResponse.<CreateAuthorisationResponse>builder()
+                   .payload(response)
+                   .build();
 
     }
 
@@ -177,8 +177,7 @@ public class AuthorisationServiceInternal implements AuthorisationService {
         }
 
         Authorisable authorisationParent = authorisationParentOptional.get();
-        ConfirmationExpirationService confirmationExpirationService = authService.getConfirmationExpirationService();
-        Authorisable checkedParent = confirmationExpirationService.checkAndUpdateOnConfirmationExpiration(authorisationParent);
+        Authorisable checkedParent = authService.checkAndUpdateOnConfirmationExpiration(authorisationParent);
 
         List<AuthorisationEntity> authorisations = authService.getAuthorisationsByParentId(checkedParent.getExternalId());
         List<String> authorisationIds = authorisations.stream()
@@ -204,9 +203,8 @@ public class AuthorisationServiceInternal implements AuthorisationService {
         }
 
         Authorisable parent = parentOptional.get();
-        ConfirmationExpirationService confirmationExpirationService = authService.getConfirmationExpirationService();
-        if (confirmationExpirationService.isConfirmationExpired(parent)) {
-            confirmationExpirationService.updateOnConfirmationExpiration(parent);
+        if (authService.isConfirmationExpired(parent)) {
+            authService.updateOnConfirmationExpiration(parent);
             log.info("Parent ID: [{}], Authorisation ID: [{}]. Get authorisation SCA status has failed, because parent is expired",
                      parentHolder.getParentId(), authorisationId);
             return CmsResponse.<ScaStatus>builder()

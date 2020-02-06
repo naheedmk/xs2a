@@ -22,6 +22,5 @@ import java.util.List;
 
 public interface AisConsentConfirmationExpirationService extends ConfirmationExpirationService<AisConsent> {
     AisConsent expireConsent(AisConsent consent);
-
     List<AisConsent> updateConsentListOnConfirmationExpiration(List<AisConsent> consents);
 }

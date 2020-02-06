@@ -84,8 +84,6 @@ class AuthorisationServiceInternalTest {
     private AuthService authService;
     @Mock
     private AuthorisationClosingService authorisationClosingService;
-    @Mock
-    private ConfirmationExpirationService confirmationExpirationService;
 
     @InjectMocks
     private AuthorisationServiceInternal authorisationServiceInternal;
@@ -286,8 +284,7 @@ class AuthorisationServiceInternalTest {
         aisConsent.setExternalId(parentId);
         when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
 
-        when(authService.getConfirmationExpirationService()).thenReturn(confirmationExpirationService);
-        when(confirmationExpirationService.checkAndUpdateOnConfirmationExpiration(aisConsent)).thenReturn(aisConsent);
+        when(authService.checkAndUpdateOnConfirmationExpiration(aisConsent)).thenReturn(aisConsent);
 
         AuthorisationEntity authorisationEntity = new AuthorisationEntity();
         authorisationEntity.setExternalId(AUTHORISATION_ID);
@@ -330,7 +327,6 @@ class AuthorisationServiceInternalTest {
         AisConsent aisConsent = new AisConsent();
         aisConsent.setExternalId(parentId);
         when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
-        when(authService.getConfirmationExpirationService()).thenReturn(confirmationExpirationService);
 
         AuthorisationEntity authorisationEntity = new AuthorisationEntity();
         authorisationEntity.setParentExternalId(parentId);
@@ -374,8 +370,7 @@ class AuthorisationServiceInternalTest {
         AisConsent aisConsent = new AisConsent();
         aisConsent.setExternalId(parentId);
         when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
-        when(authService.getConfirmationExpirationService()).thenReturn(confirmationExpirationService);
-        when(confirmationExpirationService.isConfirmationExpired(aisConsent)).thenReturn(true);
+        when(authService.isConfirmationExpired(aisConsent)).thenReturn(true);
 
         // When
         CmsResponse<ScaStatus> actualResult = authorisationServiceInternal.getAuthorisationScaStatus(AUTHORISATION_ID, authorisationParentHolder);
@@ -383,7 +378,7 @@ class AuthorisationServiceInternalTest {
         // Then
         assertTrue(actualResult.isSuccessful());
         assertEquals(ScaStatus.FAILED, actualResult.getPayload());
-        verify(confirmationExpirationService).updateOnConfirmationExpiration(aisConsent);
+        verify(authService).updateOnConfirmationExpiration(aisConsent);
     }
 
     @Test
@@ -397,7 +392,6 @@ class AuthorisationServiceInternalTest {
         AisConsent aisConsent = new AisConsent();
         aisConsent.setExternalId(parentId);
         when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
-        when(authService.getConfirmationExpirationService()).thenReturn(confirmationExpirationService);
 
         when(authService.getAuthorisationById(WRONG_AUTHORISATION_ID)).thenReturn(Optional.empty());
 
@@ -420,7 +414,6 @@ class AuthorisationServiceInternalTest {
         AisConsent aisConsent = new AisConsent();
         aisConsent.setExternalId(parentId);
         when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
-        when(authService.getConfirmationExpirationService()).thenReturn(confirmationExpirationService);
 
         AuthorisationEntity authorisationEntity = new AuthorisationEntity();
         authorisationEntity.setParentExternalId("wrong parent id");

@@ -24,6 +24,7 @@ import de.adorsys.psd2.consent.domain.Authorisable;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.repository.AuthorisationRepository;
+import de.adorsys.psd2.consent.service.ConfirmationExpirationService;
 import de.adorsys.psd2.consent.service.mapper.AuthorisationMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.psu.CmsPsuService;
@@ -38,13 +39,13 @@ import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
-public abstract class CmsAuthorisationService implements AuthService {
-
+public abstract class CmsAuthorisationService<T extends Authorisable> implements AuthService {
     protected final CmsPsuService cmsPsuService;
     protected final PsuDataMapper psuDataMapper;
     protected final AspspProfileService aspspProfileService;
     protected final AuthorisationMapper authorisationMapper;
     protected final AuthorisationRepository authorisationRepository;
+    protected final ConfirmationExpirationService<T> confirmationExpirationService;
 
     @Override
     public List<AuthorisationEntity> getAuthorisationsByParentId(String parentId) {
@@ -117,9 +118,26 @@ public abstract class CmsAuthorisationService implements AuthService {
         return authorisationRepository.save(authorisationEntity);
     }
 
+    @Override
+    public Authorisable checkAndUpdateOnConfirmationExpiration(Authorisable authorisable) {
+        return confirmationExpirationService.checkAndUpdateOnConfirmationExpiration(castToParent(authorisable));
+    }
+
+    @Override
+    public boolean isConfirmationExpired(Authorisable authorisable) {
+        return confirmationExpirationService.isConfirmationExpired(castToParent(authorisable));
+    }
+
+    @Override
+    public Authorisable updateOnConfirmationExpiration(Authorisable authorisable) {
+        return confirmationExpirationService.updateOnConfirmationExpiration(castToParent(authorisable));
+    }
+
     protected void updateAuthorisable(Object authorisable) { //NOPMD
         //do nothing
     }
 
     abstract AuthorisationType getAuthorisationType();
+
+    abstract T castToParent(Authorisable authorisable);
 }
