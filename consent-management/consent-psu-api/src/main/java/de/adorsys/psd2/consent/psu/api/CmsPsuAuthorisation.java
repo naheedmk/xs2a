@@ -29,7 +29,8 @@ public class CmsPsuAuthorisation {
     private String psuId;
     private String authorisationId;
     private ScaStatus scaStatus;
-    @Deprecated //todo #1152 remove `PaymentAuthorisationType` and rename field back to `authorisationType`
+    @Deprecated
+    //todo remove `PaymentAuthorisationType` and rename field back to `authorisationType` https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1197
     private PaymentAuthorisationType authorisationType;
     private AuthorisationType type;
     private OffsetDateTime redirectUrlExpirationTimestamp;

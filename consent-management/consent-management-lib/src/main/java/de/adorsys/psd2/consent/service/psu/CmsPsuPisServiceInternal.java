@@ -237,7 +237,8 @@ public class CmsPsuPisServiceInternal implements CmsPsuPisService {
                                                                auth.getExternalId(),
                                                                auth.getScaStatus(),
                                                                AuthorisationType.PIS_CREATION == auth.getAuthorisationType() ?
-                                                                   PaymentAuthorisationType.CREATED : PaymentAuthorisationType.CANCELLED))
+                                                                   PaymentAuthorisationType.CREATED : PaymentAuthorisationType.CANCELLED,
+                                                               auth.getAuthorisationType()))
                    .collect(Collectors.toList());
     }
 
