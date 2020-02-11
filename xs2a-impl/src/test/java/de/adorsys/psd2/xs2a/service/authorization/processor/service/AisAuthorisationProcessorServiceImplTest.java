@@ -1700,7 +1700,8 @@ class AisAuthorisationProcessorServiceImplTest {
     }
 
     private UpdateConsentPsuDataResponse buildDecoupledUpdateConsentPsuDataResponse() {
-        UpdateConsentPsuDataResponse decoupledResponse = new UpdateConsentPsuDataResponse(ScaStatus.SCAMETHODSELECTED, ENCRYPTED_CONSENT_ID, AUTHORISATION_ID);
+        PsuIdData psuIdData = new PsuIdData(PSU_ID, null, null, null, null);
+        UpdateConsentPsuDataResponse decoupledResponse = new UpdateConsentPsuDataResponse(ScaStatus.SCAMETHODSELECTED, ENCRYPTED_CONSENT_ID, AUTHORISATION_ID, psuIdData);
         decoupledResponse.setPsuMessage(DECOUPLED_PSU_MESSAGE);
         decoupledResponse.setChosenScaMethod(DECOUPLED_SCA_METHOD);
         return decoupledResponse;
