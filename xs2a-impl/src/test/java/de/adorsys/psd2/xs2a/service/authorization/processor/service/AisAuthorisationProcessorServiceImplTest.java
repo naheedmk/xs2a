@@ -516,6 +516,7 @@ class AisAuthorisationProcessorServiceImplTest {
         assertEquals(AUTHORISATION_ID, processorResponse.getAuthorisationId());
 
         verify(xs2aAisConsentService).updateConsentStatus(ENCRYPTED_CONSENT_ID, ConsentStatus.REJECTED);
+        verify(xs2aAisConsentService).updateConsentAuthorisationStatus(AUTHORISATION_ID, ScaStatus.FAILED);
         verify(aisConsentSpi, never()).requestAuthorisationCode(any(), any(), any(), any());
     }
 
