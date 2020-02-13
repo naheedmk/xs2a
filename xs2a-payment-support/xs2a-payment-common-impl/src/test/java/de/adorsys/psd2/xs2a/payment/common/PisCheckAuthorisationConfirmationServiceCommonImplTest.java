@@ -16,12 +16,13 @@
 
 package de.adorsys.psd2.xs2a.payment.common;
 
+import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiConfirmationCode;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPaymentInfo;
-import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiConfirmationCodeCheckingResponse;
+import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentConfirmationCodeValidationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.CommonPaymentSpi;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PisCheckAuthorisationConfirmationServiceCommonImplTest {
     private static final String PAYMENT_PRODUCT = "sepa-credit-transfers";
+    private static final String AUTHORISATION_ID = "a8fc1f02-3639-4528-bd19-3eacf1c67038";
 
     @Mock
     private CommonPaymentSpi commonPaymentSpi;
@@ -52,15 +54,15 @@ class PisCheckAuthorisationConfirmationServiceCommonImplTest {
         SpiConfirmationCode spiConfirmationCode = new SpiConfirmationCode("some code");
         SpiPaymentInfo payment = new SpiPaymentInfo(PAYMENT_PRODUCT);
 
-        SpiResponse<SpiConfirmationCodeCheckingResponse> commonServiceResponse = SpiResponse.<SpiConfirmationCodeCheckingResponse>builder()
-                                                                                     .payload(new SpiConfirmationCodeCheckingResponse(ScaStatus.FINALISED))
-                                                                                     .build();
-        when(commonPaymentSpi.checkConfirmationCode(spiContextData, spiConfirmationCode, payment, spiAspspConsentDataProvider))
+        SpiResponse<SpiPaymentConfirmationCodeValidationResponse> commonServiceResponse = SpiResponse.<SpiPaymentConfirmationCodeValidationResponse>builder()
+                                                                                              .payload(new SpiPaymentConfirmationCodeValidationResponse(ScaStatus.FINALISED, TransactionStatus.ACSP))
+                                                                                              .build();
+        when(commonPaymentSpi.checkConfirmationCode(spiContextData, spiConfirmationCode, AUTHORISATION_ID, spiAspspConsentDataProvider))
             .thenReturn(commonServiceResponse);
 
         // When
-        SpiResponse<SpiConfirmationCodeCheckingResponse> actualResponse =
-            pisCheckAuthorisationConfirmationServiceCommon.checkConfirmationCode(spiContextData, spiConfirmationCode, payment, spiAspspConsentDataProvider);
+        SpiResponse<SpiPaymentConfirmationCodeValidationResponse> actualResponse =
+            pisCheckAuthorisationConfirmationServiceCommon.checkConfirmationCode(spiContextData, spiConfirmationCode, payment, AUTHORISATION_ID, spiAspspConsentDataProvider);
 
         // Then
         assertEquals(commonServiceResponse, actualResponse);

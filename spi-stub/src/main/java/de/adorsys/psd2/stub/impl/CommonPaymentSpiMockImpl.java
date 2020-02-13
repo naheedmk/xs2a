@@ -95,17 +95,17 @@ public class CommonPaymentSpiMockImpl implements CommonPaymentSpi {
 
     @Override
     @NotNull
-    public SpiResponse<SpiConfirmationCodeCheckingResponse> checkConfirmationCode(@NotNull SpiContextData contextData, @NotNull SpiConfirmationCode spiConfirmationCode, @NotNull SpiPaymentInfo payment, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider) {
-        log.info("CommonPaymentSpi#checkConfirmationCode: contextData {}, spiConfirmationCode{}, spiPaymentInfo {}, aspspConsentData {}", contextData, spiConfirmationCode.getConfirmationCode(), payment, aspspConsentDataProvider.loadAspspConsentData());
+    public SpiResponse<SpiPaymentConfirmationCodeValidationResponse> checkConfirmationCode(@NotNull SpiContextData contextData, @NotNull SpiConfirmationCode spiConfirmationCode, @NotNull String authorisationId, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider) {
+        log.info("CommonPaymentSpi#checkConfirmationCode: contextData {}, spiConfirmationCode{}, authorisationId {}, aspspConsentData {}", contextData, spiConfirmationCode.getConfirmationCode(), authorisationId, aspspConsentDataProvider.loadAspspConsentData());
 
-        return SpiResponse.<SpiConfirmationCodeCheckingResponse>builder()
-                   .payload(new SpiConfirmationCodeCheckingResponse(ScaStatus.FINALISED))
+        return SpiResponse.<SpiPaymentConfirmationCodeValidationResponse>builder()
+                   .payload(new SpiPaymentConfirmationCodeValidationResponse(ScaStatus.FINALISED, TransactionStatus.ACSP))
                    .build();
     }
 
     @Override
     public @NotNull SpiResponse<SpiPaymentConfirmationCodeValidationResponse> notifyConfirmationCodeValidation(@NotNull SpiContextData contextData, boolean confirmationCodeValidationResult, @NotNull SpiPaymentInfo payment, boolean isCancellation, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider) {
-        ScaStatus scaStatus  = confirmationCodeValidationResult ? ScaStatus.FINALISED : ScaStatus.FAILED;
+        ScaStatus scaStatus = confirmationCodeValidationResult ? ScaStatus.FINALISED : ScaStatus.FAILED;
         TransactionStatus transactionStatus = isCancellation
                                                   ? confirmationCodeValidationResult ? TransactionStatus.CANC : payment.getPaymentStatus()
                                                   : confirmationCodeValidationResult ? TransactionStatus.ACSP : TransactionStatus.RJCT;

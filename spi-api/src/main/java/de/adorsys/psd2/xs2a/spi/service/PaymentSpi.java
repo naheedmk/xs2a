@@ -20,7 +20,6 @@ import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiConfirmationCode;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiScaConfirmation;
-import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiConfirmationCodeCheckingResponse;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiGetPaymentStatusResponse;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentConfirmationCodeValidationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentExecutionResponse;
@@ -94,21 +93,21 @@ public interface PaymentSpi<T extends SpiPayment, R> {
      *
      * @param contextData              holder of call's context data (e.g. about PSU and TPP)
      * @param spiConfirmationCode      object with confirmation code
-     * @param payment                  payment object
+     * @param authorisationId          authorisation ID
      * @param aspspConsentDataProvider Provides access to read/write encrypted data to be stored in the consent management system
      * @return Returns a response object, which contains checking result - if the confirmation data was correct or not
      */
     @NotNull
-    SpiResponse<SpiConfirmationCodeCheckingResponse> checkConfirmationCode(@NotNull SpiContextData contextData, @NotNull SpiConfirmationCode spiConfirmationCode, @NotNull T payment, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider);
+    SpiResponse<SpiPaymentConfirmationCodeValidationResponse> checkConfirmationCode(@NotNull SpiContextData contextData, @NotNull SpiConfirmationCode spiConfirmationCode, @NotNull String authorisationId, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider);
 
     /**
      * Notify ASPSP about validation result of confirmation code on XS2A side
      *
-     * @param contextData holder of call's context data (e.g. about PSU and TPP)
+     * @param contextData                      holder of call's context data (e.g. about PSU and TPP)
      * @param confirmationCodeValidationResult validation result of confirmation code on XS2A side
-     * @param payment payment object
-     * @param isCancellation boolean representing if the notification related to payment cancellation
-     * @param aspspConsentDataProvider Provides access to read/write encrypted data to be stored in the consent management system
+     * @param payment                          payment object
+     * @param isCancellation                   boolean representing if the notification related to payment cancellation
+     * @param aspspConsentDataProvider         Provides access to read/write encrypted data to be stored in the consent management system
      * @return Returns a response object, which contains SCA status of authorisation and Transaction status of payment
      */
     @NotNull
