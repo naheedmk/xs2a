@@ -20,7 +20,7 @@ import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiConfirmationCode;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiCheckConfirmationCodeRequest;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiScaConfirmation;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPaymentInfo;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.*;
@@ -95,8 +95,8 @@ public class CommonPaymentSpiMockImpl implements CommonPaymentSpi {
 
     @Override
     @NotNull
-    public SpiResponse<SpiPaymentConfirmationCodeValidationResponse> checkConfirmationCode(@NotNull SpiContextData contextData, @NotNull SpiConfirmationCode spiConfirmationCode, @NotNull String authorisationId, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider) {
-        log.info("CommonPaymentSpi#checkConfirmationCode: contextData {}, spiConfirmationCode{}, authorisationId {}, aspspConsentData {}", contextData, spiConfirmationCode.getConfirmationCode(), authorisationId, aspspConsentDataProvider.loadAspspConsentData());
+    public SpiResponse<SpiPaymentConfirmationCodeValidationResponse> checkConfirmationCode(@NotNull SpiContextData contextData, @NotNull SpiCheckConfirmationCodeRequest spiCheckConfirmationCodeRequest, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider) {
+        log.info("CommonPaymentSpi#checkConfirmationCode: contextData {}, spiCheckConfirmationCodeRequest{}, authorisationId {}, aspspConsentData {}", contextData, spiCheckConfirmationCodeRequest.getConfirmationCode(), spiCheckConfirmationCodeRequest.getAuthorisationId(), aspspConsentDataProvider.loadAspspConsentData());
 
         return SpiResponse.<SpiPaymentConfirmationCodeValidationResponse>builder()
                    .payload(new SpiPaymentConfirmationCodeValidationResponse(ScaStatus.FINALISED, TransactionStatus.ACSP))

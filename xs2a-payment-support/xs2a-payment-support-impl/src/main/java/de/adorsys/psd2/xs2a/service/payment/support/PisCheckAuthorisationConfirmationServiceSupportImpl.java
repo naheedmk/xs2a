@@ -22,7 +22,7 @@ import de.adorsys.psd2.xs2a.service.payment.support.mapper.spi.SpiPaymentMapper;
 import de.adorsys.psd2.xs2a.service.profile.StandardPaymentProductsResolver;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiConfirmationCode;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiCheckConfirmationCodeRequest;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPaymentInfo;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentConfirmationCodeValidationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentInitiationResponse;
@@ -42,17 +42,17 @@ public class PisCheckAuthorisationConfirmationServiceSupportImpl implements PisC
     private final SpiPaymentMapper spiPaymentMapper;
 
     @Override
-    public SpiResponse<SpiPaymentConfirmationCodeValidationResponse> checkConfirmationCode(SpiContextData contextData, SpiConfirmationCode spiConfirmationCode, SpiPayment payment, String authorisationId, SpiAspspConsentDataProvider aspspConsentDataProvider) {
+    public SpiResponse<SpiPaymentConfirmationCodeValidationResponse> checkConfirmationCode(SpiContextData contextData, SpiCheckConfirmationCodeRequest spiCheckConfirmationCodeRequest, SpiPayment payment, SpiAspspConsentDataProvider aspspConsentDataProvider) {
         if (standardPaymentProductsResolver.isRawPaymentProduct(payment.getPaymentProduct())) {
-            return checkConfirmationCode(commonPaymentSpi, authorisationId, contextData, spiConfirmationCode, aspspConsentDataProvider);
+            return checkConfirmationCode(commonPaymentSpi, contextData, spiCheckConfirmationCodeRequest, aspspConsentDataProvider);
         }
         PaymentType paymentType = payment.getPaymentType();
         if (PaymentType.SINGLE == paymentType) {
-            return checkConfirmationCode(singlePaymentSpi, authorisationId, contextData, spiConfirmationCode, aspspConsentDataProvider);
+            return checkConfirmationCode(singlePaymentSpi, contextData, spiCheckConfirmationCodeRequest, aspspConsentDataProvider);
         } else if (PaymentType.PERIODIC == paymentType) {
-            return checkConfirmationCode(periodicPaymentSpi, authorisationId, contextData, spiConfirmationCode, aspspConsentDataProvider);
+            return checkConfirmationCode(periodicPaymentSpi, contextData, spiCheckConfirmationCodeRequest, aspspConsentDataProvider);
         } else {
-            return checkConfirmationCode(bulkPaymentSpi, authorisationId, contextData, spiConfirmationCode, aspspConsentDataProvider);
+            return checkConfirmationCode(bulkPaymentSpi, contextData, spiCheckConfirmationCodeRequest, aspspConsentDataProvider);
         }
     }
 
@@ -81,10 +81,9 @@ public class PisCheckAuthorisationConfirmationServiceSupportImpl implements PisC
     }
 
     private <T extends SpiPayment> SpiResponse<SpiPaymentConfirmationCodeValidationResponse> checkConfirmationCode(PaymentSpi<T, ? extends SpiPaymentInitiationResponse> paymentSpi,
-                                                                                                                   String authorisationId,
                                                                                                                    SpiContextData contextData,
-                                                                                                                   SpiConfirmationCode spiConfirmationCode,
+                                                                                                                   SpiCheckConfirmationCodeRequest spiCheckConfirmationCodeRequest,
                                                                                                                    SpiAspspConsentDataProvider aspspConsentDataProvider) {
-        return paymentSpi.checkConfirmationCode(contextData, spiConfirmationCode, authorisationId, aspspConsentDataProvider);
+        return paymentSpi.checkConfirmationCode(contextData, spiCheckConfirmationCodeRequest, aspspConsentDataProvider);
     }
 }

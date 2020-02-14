@@ -20,7 +20,7 @@ import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiConfirmationCode;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiCheckConfirmationCodeRequest;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPaymentInfo;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentConfirmationCodeValidationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
@@ -51,18 +51,18 @@ class PisCheckAuthorisationConfirmationServiceCommonImplTest {
     void checkConfirmationCode() {
         // Given
         SpiContextData spiContextData = new SpiContextData(null, null, null, null, null);
-        SpiConfirmationCode spiConfirmationCode = new SpiConfirmationCode("some code");
+        SpiCheckConfirmationCodeRequest spiCheckConfirmationCodeRequest = new SpiCheckConfirmationCodeRequest("some code", AUTHORISATION_ID);
         SpiPaymentInfo payment = new SpiPaymentInfo(PAYMENT_PRODUCT);
 
         SpiResponse<SpiPaymentConfirmationCodeValidationResponse> commonServiceResponse = SpiResponse.<SpiPaymentConfirmationCodeValidationResponse>builder()
                                                                                               .payload(new SpiPaymentConfirmationCodeValidationResponse(ScaStatus.FINALISED, TransactionStatus.ACSP))
                                                                                               .build();
-        when(commonPaymentSpi.checkConfirmationCode(spiContextData, spiConfirmationCode, AUTHORISATION_ID, spiAspspConsentDataProvider))
+        when(commonPaymentSpi.checkConfirmationCode(spiContextData, spiCheckConfirmationCodeRequest, spiAspspConsentDataProvider))
             .thenReturn(commonServiceResponse);
 
         // When
         SpiResponse<SpiPaymentConfirmationCodeValidationResponse> actualResponse =
-            pisCheckAuthorisationConfirmationServiceCommon.checkConfirmationCode(spiContextData, spiConfirmationCode, payment, AUTHORISATION_ID, spiAspspConsentDataProvider);
+            pisCheckAuthorisationConfirmationServiceCommon.checkConfirmationCode(spiContextData, spiCheckConfirmationCodeRequest, payment, spiAspspConsentDataProvider);
 
         // Then
         assertEquals(commonServiceResponse, actualResponse);

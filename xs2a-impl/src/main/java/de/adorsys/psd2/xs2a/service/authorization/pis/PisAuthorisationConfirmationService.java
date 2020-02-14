@@ -41,7 +41,7 @@ import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiConfirmationCode;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiCheckConfirmationCodeRequest;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentConfirmationCodeValidationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.SpiPayment;
@@ -148,9 +148,9 @@ public class PisAuthorisationConfirmationService {
         SpiPayment payment = xs2aToSpiPaymentMapper.mapToSpiPayment(pisCommonPaymentResponseCmsResponse.getPayload());
 
         SpiAspspConsentDataProvider aspspConsentDataProvider = aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getPaymentId());
-        SpiConfirmationCode spiConfirmationCode = new SpiConfirmationCode(request.getConfirmationCode());
+        SpiCheckConfirmationCodeRequest spiCheckConfirmationCodeRequest = new SpiCheckConfirmationCodeRequest(request.getConfirmationCode(), authorisationResponse.getAuthorisationId());
 
-        SpiResponse<SpiPaymentConfirmationCodeValidationResponse> spiResponse = pisCheckAuthorisationConfirmationService.checkConfirmationCode(contextData, spiConfirmationCode, payment, authorisationResponse.getAuthorisationId(), aspspConsentDataProvider);
+        SpiResponse<SpiPaymentConfirmationCodeValidationResponse> spiResponse = pisCheckAuthorisationConfirmationService.checkConfirmationCode(contextData, spiCheckConfirmationCodeRequest, payment, aspspConsentDataProvider);
 
         boolean spiError = spiResponse.hasError();
 

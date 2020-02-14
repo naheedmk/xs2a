@@ -38,7 +38,7 @@ import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.account.SpiAccountConsent;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiConfirmationCode;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiCheckConfirmationCodeRequest;
 import de.adorsys.psd2.xs2a.spi.domain.consent.SpiConsentConfirmationCodeValidationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.AisConsentSpi;
@@ -160,11 +160,11 @@ public class AisAuthorisationConfirmationService {
         }
 
         SpiContextData contextData = spiContextDataProvider.provideWithPsuIdData(request.getPsuData());
-        SpiConfirmationCode spiConfirmationCode = new SpiConfirmationCode(request.getConfirmationCode());
+        SpiCheckConfirmationCodeRequest spiCheckConfirmationCodeRequest = new SpiCheckConfirmationCodeRequest(request.getConfirmationCode(), authorisationId);
 
         SpiAspspConsentDataProvider aspspDataProvider = aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId);
 
-        SpiResponse<SpiConsentConfirmationCodeValidationResponse> spiResponse = aisConsentSpi.checkConfirmationCode(contextData, spiConfirmationCode, authorisationId, aspspDataProvider);
+        SpiResponse<SpiConsentConfirmationCodeValidationResponse> spiResponse = aisConsentSpi.checkConfirmationCode(contextData, spiCheckConfirmationCodeRequest, aspspDataProvider);
 
         SpiConsentConfirmationCodeValidationResponse confirmationCodeValidationResponse = spiResponse.getPayload();
 

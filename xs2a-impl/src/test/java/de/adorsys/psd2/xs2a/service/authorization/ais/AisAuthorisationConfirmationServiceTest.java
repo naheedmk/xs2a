@@ -39,7 +39,7 @@ import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.account.SpiAccountConsent;
-import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiConfirmationCode;
+import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiCheckConfirmationCodeRequest;
 import de.adorsys.psd2.xs2a.spi.domain.consent.SpiConsentConfirmationCodeValidationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.AisConsentSpi;
@@ -96,7 +96,7 @@ class AisAuthorisationConfirmationServiceTest {
         UpdateConsentPsuDataResponse response = new UpdateConsentPsuDataResponse(ScaStatus.FINALISED, ConsentStatus.VALID, CONSENT_ID, AUTHORISATION_ID, psuIdData);
         ResponseObject<UpdateConsentPsuDataResponse> expectedResult = ResponseObject.<UpdateConsentPsuDataResponse>builder().body(response).build();
 
-        SpiConfirmationCode spiConfirmationCode = new SpiConfirmationCode(request.getConfirmationCode());
+        SpiCheckConfirmationCodeRequest spiCheckConfirmationCodeRequest = new SpiCheckConfirmationCodeRequest(request.getConfirmationCode(), AUTHORISATION_ID);
         SpiContextData contextData = getSpiContextData();
         AccountConsent consent = createConsent();
         Authorisation aisConsentAuthorizationResponse = getConsentAuthorisationResponse();
@@ -112,7 +112,7 @@ class AisAuthorisationConfirmationServiceTest {
             .thenReturn(contextData);
         when(aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID))
             .thenReturn(aspspConsentDataProvider);
-        when(aisConsentSpi.checkConfirmationCode(contextData, spiConfirmationCode, AUTHORISATION_ID, aspspConsentDataProvider))
+        when(aisConsentSpi.checkConfirmationCode(contextData, spiCheckConfirmationCodeRequest, aspspConsentDataProvider))
             .thenReturn(SpiResponse.<SpiConsentConfirmationCodeValidationResponse>builder()
                             .payload(new SpiConsentConfirmationCodeValidationResponse(ScaStatus.FINALISED, ConsentStatus.VALID))
                             .build());
@@ -264,7 +264,7 @@ class AisAuthorisationConfirmationServiceTest {
         ResponseObject<UpdateConsentPsuDataResponse> expectedResult = ResponseObject.<UpdateConsentPsuDataResponse>builder()
                                                                           .fail(errorHolder)
                                                                           .build();
-        SpiConfirmationCode spiConfirmationCode = new SpiConfirmationCode(request.getConfirmationCode());
+        SpiCheckConfirmationCodeRequest spiCheckConfirmationCodeRequest = new SpiCheckConfirmationCodeRequest(request.getConfirmationCode(), AUTHORISATION_ID);
         SpiContextData contextData = getSpiContextData();
         AccountConsent consent = createConsent();
         Authorisation aisConsentAuthorizationResponse = getConsentAuthorisationResponse();
@@ -280,7 +280,7 @@ class AisAuthorisationConfirmationServiceTest {
             .thenReturn(contextData);
         when(aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID))
             .thenReturn(aspspConsentDataProvider);
-        when(aisConsentSpi.checkConfirmationCode(contextData, spiConfirmationCode, AUTHORISATION_ID, aspspConsentDataProvider))
+        when(aisConsentSpi.checkConfirmationCode(contextData, spiCheckConfirmationCodeRequest, aspspConsentDataProvider))
             .thenReturn(spiResponse);
         when(spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS)).thenReturn(errorHolder);
 
