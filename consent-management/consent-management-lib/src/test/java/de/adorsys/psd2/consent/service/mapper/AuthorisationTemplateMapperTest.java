@@ -87,4 +87,10 @@ class AuthorisationTemplateMapperTest {
         //Then
         assertEquals(expectedAuthorisationTemplateEntity, authorisationTemplateEntity);
     }
+
+    @Test
+    void mapToAuthorisationTemplateEntity_nullValue() {
+        AuthorisationTemplateEntity authorisationTemplateEntity = mapper.mapToAuthorisationTemplateEntity(null);
+        assertNull(authorisationTemplateEntity);
+    }
 }
