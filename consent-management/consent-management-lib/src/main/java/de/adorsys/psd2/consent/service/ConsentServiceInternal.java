@@ -298,11 +298,6 @@ public class ConsentServiceInternal implements ConsentService {
     }
 
     private boolean setStatusAndSaveConsent(ConsentEntity consent, ConsentStatus status) throws WrongChecksumException {
-        if (consent.getConsentStatus().isFinalisedStatus()) {
-            log.info("Consent ID: [{}], Consent status [{}]. Update consent status by ID failed, because consent status is finalised",
-                     consent.getExternalId(), consent.getConsentStatus());
-            return false;
-        }
         consent.setLastActionDate(LocalDate.now());
         consent.setConsentStatus(status);
 

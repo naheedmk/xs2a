@@ -205,6 +205,20 @@ class ConsentServiceInternalTest {
     }
 
     @Test
+    void getConsentById_noConsent() {
+        // Given
+        when(consentJpaRepository.findByExternalId(EXTERNAL_CONSENT_ID))
+            .thenReturn(Optional.empty());
+
+        // When
+        CmsResponse<CmsConsent> response = consentServiceInternal.getConsentById(EXTERNAL_CONSENT_ID);
+
+        // Then
+        assertTrue(response.hasError());
+        assertEquals(CmsError.LOGICAL_ERROR, response.getError());
+    }
+
+    @Test
     void createConsent_shouldReturnCmsCreateConsentResponse() throws WrongChecksumException {
         // Given
         when(aisConsentVerifyingRepository.verifyAndSave(any(ConsentEntity.class)))
