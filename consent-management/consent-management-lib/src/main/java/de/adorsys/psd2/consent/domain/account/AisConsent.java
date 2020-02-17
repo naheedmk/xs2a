@@ -23,7 +23,6 @@ import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
-import de.adorsys.psd2.xs2a.core.profile.NotificationSupportedMode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -91,12 +90,6 @@ public class AisConsent extends InstanceDependableEntity implements Authorisable
 
     @Column(name = "tpp_ntfc_uri")
     private String tppNotificationUri;
-
-    @ElementCollection
-    @CollectionTable(name = "ais_consent_tpp_ntfc", joinColumns = @JoinColumn(name = "id"))
-    @Column(name = "notification_mode", nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private List<NotificationSupportedMode> tppNotificationContentPreferred;
 
     @Column(name = "consent_status", nullable = false)
     @Enumerated(value = EnumType.STRING)
