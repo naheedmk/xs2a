@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// ToDo: Cover with tests https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
 @Component
 public class AccessMapper {
     public AccountAccess mapToAccountAccess(AisAccountAccessInfo aisAccountAccessInfo) {

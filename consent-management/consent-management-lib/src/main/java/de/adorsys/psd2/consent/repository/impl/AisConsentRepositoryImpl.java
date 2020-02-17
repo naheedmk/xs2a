@@ -138,7 +138,7 @@ public class AisConsentRepositoryImpl implements AisConsentVerifyingRepository {
 
     private boolean wasStatusHoldBefore(ConsentEntity entity) {
         return getPreviousConsentStatus(entity) == VALID
-                   || getPreviousConsentStatus(entity).isFinalisedStatus(); // Fix possible NPE https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+                   || isFinalisedStatus(entity);
     }
 
     private AisConsent mapToAisConsent(ConsentEntity entity) {
@@ -155,5 +155,10 @@ public class AisConsentRepositoryImpl implements AisConsentVerifyingRepository {
                    .map(ConsentEntity::getConsentStatus)
                    .orElse(null);
 
+    }
+
+    private boolean isFinalisedStatus(ConsentEntity entity) {
+        ConsentStatus previousConsentStatus = getPreviousConsentStatus(entity);
+        return previousConsentStatus !=null && previousConsentStatus.isFinalisedStatus();
     }
 }
