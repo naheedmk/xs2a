@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -247,6 +248,13 @@ class CmsAspspAisExportServiceInternalTest {
         verify(aisConsentSpecification, times(1))
             .byCreationPeriodAndInstanceId(CREATION_DATE_FROM, CREATION_DATE_TO, DEFAULT_SERVICE_INSTANCE_ID);
         verify(consentFilteringService).filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID);
+    }
+
+    @Test
+    void exportConsentsByAccountId_success_withNoInstanceId() {
+        Collection<CmsAisAccountConsent> cmsAisAccountConsents = cmsAspspAisExportServiceInternal.exportConsentsByAccountId(ASPSP_ACCOUNT_ID, CREATION_DATE_FROM, CREATION_DATE_TO, null);
+
+        assertEquals(Collections.emptyList(), cmsAisAccountConsents);
     }
 
     @Test
