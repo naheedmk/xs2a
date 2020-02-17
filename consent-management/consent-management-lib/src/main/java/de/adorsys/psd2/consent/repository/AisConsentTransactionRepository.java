@@ -17,13 +17,18 @@
 package de.adorsys.psd2.consent.repository;
 
 import de.adorsys.psd2.consent.domain.account.AisConsentTransaction;
-import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface AisConsentTransactionRepository extends CrudRepository<AisConsentTransaction, Long> {
 
-    Optional<AisConsentTransaction> findByConsentIdAndResourceId(ConsentEntity aisConsent, String resourceId);
+    @Query(value = "SELECT act FROM AisConsentTransaction act WHERE act.consentId.id = :consentId AND act.resourceId = :resourceId")
+    List<AisConsentTransaction> findByConsentIdAndResourceId(@Param("consentId") Long consentId,
+                                                             @Param("resourceId") String resourceId,
+                                                             Pageable pageable);
 
 }

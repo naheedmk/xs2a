@@ -150,7 +150,7 @@ public class AisConsentServiceInternal implements AisConsentService {
         CmsConsent cmsConsent = mapToCmsConsent(consent);
 
         if (!consent.isRecurringIndicator() && consent.getFrequencyPerDay() == 1
-                && oneOffConsentExpirationService.isConsentExpired(consent, cmsConsent)) {
+                && oneOffConsentExpirationService.isConsentExpired(cmsConsent, consent.getId())) {
             consent.setConsentStatus(EXPIRED);
         }
 

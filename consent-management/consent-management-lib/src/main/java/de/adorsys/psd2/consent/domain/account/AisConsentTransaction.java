@@ -22,7 +22,8 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Data
-@Entity(name = "ais_consent_transaction")
+@Entity
+@Table(name = "ais_consent_transaction")
 public class AisConsentTransaction {
 
     @Id
