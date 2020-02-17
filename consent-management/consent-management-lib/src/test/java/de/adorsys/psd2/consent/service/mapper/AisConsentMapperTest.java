@@ -30,6 +30,7 @@ import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
+import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.authorisation.AccountConsentAuthorization;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationTemplate;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
@@ -124,6 +125,29 @@ class AisConsentMapperTest {
 
         // Then
         assertConsentsEquals(expectedAccess, authorisations, consent, result, AIS_CONSENT_DATA);
+    }
+
+    @Test
+    void mapToCmsAisAccountConsent_globalTppAccountAccessAndEmptyAspspAccountAccesses() {
+        when(psuDataMapper.mapToPsuIdDataList(PSU_DATA_LIST)).thenReturn(PSU_ID_DATA_LIST);
+        when(psuDataMapper.mapToPsuIdData(PSU_DATA)).thenReturn(PSU_ID_DATA);
+        when(tppInfoMapper.mapToTppInfo(TPP_INFO_ENTITY)).thenReturn(TPP_INFO);
+        AisConsentData aisConsentData = buildAisConsentData(buildAccountAccessAccounts(Collections.singletonList(new AccountReference(AccountReferenceType.IBAN, ACCOUNT_IBAN, CURRENCY)), Collections.emptyList(), Collections.emptyList(), true),
+                                                            buildAccountAccessAccounts(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), false));
+        when(consentDataMapper.mapToAisConsentData(any())).thenReturn(aisConsentData);
+
+        // Given
+        ConsentEntity consent = buildConsent();
+        AisAccountAccess expectedAccess = buildAisAccountAccessAccountWithoutResourceId(true);
+        when(aisConsentUsageService.getUsageCounterMap(consent)).thenReturn(USAGE_COUNTER);
+
+        List<AuthorisationEntity> authorisations = Collections.singletonList(buildAisConsentAuthorisation());
+
+        // When
+        CmsAisAccountConsent result = aisConsentMapper.mapToCmsAisAccountConsent(consent, authorisations);
+
+        // Then
+        assertConsentsEquals(expectedAccess, authorisations, consent, result, aisConsentData);
     }
 
     @Test
@@ -249,20 +273,20 @@ class AisConsentMapperTest {
     }
 
     private static AccountAccess buildAspspAccountAccessAccounts() {
-        return buildAccountAccessAccounts(Collections.singletonList(new AccountReference(AccountReferenceType.IBAN, ACCOUNT_IBAN, CURRENCY, RESOURCE_ID, ASPSP_ACCOUNT_ID)), Collections.emptyList(), Collections.emptyList());
+        return buildAccountAccessAccounts(Collections.singletonList(new AccountReference(AccountReferenceType.IBAN, ACCOUNT_IBAN, CURRENCY, RESOURCE_ID, ASPSP_ACCOUNT_ID)), Collections.emptyList(), Collections.emptyList(), false);
     }
 
     private static AccountAccess buildTppAccountAccessAccounts() {
-        return buildAccountAccessAccounts(Collections.singletonList(new AccountReference(AccountReferenceType.IBAN, ACCOUNT_IBAN, CURRENCY)), Collections.emptyList(), Collections.emptyList());
+        return buildAccountAccessAccounts(Collections.singletonList(new AccountReference(AccountReferenceType.IBAN, ACCOUNT_IBAN, CURRENCY)), Collections.emptyList(), Collections.emptyList(), false);
     }
 
-    private static AccountAccess buildAccountAccessAccounts(List<AccountReference> accounts, List<AccountReference> balances, List<AccountReference> transactions) {
+    private static AccountAccess buildAccountAccessAccounts(List<AccountReference> accounts, List<AccountReference> balances, List<AccountReference> transactions, boolean global) {
         return new AccountAccess(
             accounts,
             balances,
             transactions,
             null,
-            null,
+            global ? AccountAccessType.ALL_ACCOUNTS : null,
             null,
             null
         );
@@ -416,6 +440,12 @@ class AisConsentMapperTest {
         accountConsentAuthorization.setPsuIdData(PSU_ID_DATA);
         accountConsentAuthorization.setScaStatus(ScaStatus.RECEIVED);
         return accountConsentAuthorization;
+    }
+
+    private AisAccountAccess buildAisAccountAccessAccountWithoutResourceId(boolean global) {
+        AccountReference accountReference = new AccountReference(AccountReferenceType.IBAN, ACCOUNT_IBAN, CURRENCY);
+        List<AccountReference> accountReferences = Collections.singletonList(accountReference);
+        return new AisAccountAccess(accountReferences, Collections.emptyList(), Collections.emptyList(), null, global ? AccountAccessType.ALL_ACCOUNTS.toString() : null, null, null);
     }
 
     private AisAccountAccess buildAisAccountAccessAccountsWithResourceId() {
