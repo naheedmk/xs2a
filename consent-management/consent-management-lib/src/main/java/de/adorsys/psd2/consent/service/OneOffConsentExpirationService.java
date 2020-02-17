@@ -42,7 +42,7 @@ public class OneOffConsentExpirationService {
     public static final int READ_ONLY_ACCOUNT_DETAILS_COUNT = 1;
     public static final int READ_ACCOUNT_DETAILS_AND_BALANCES_COUNT = 2;
     public static final int READ_ACCOUNT_DETAILS_AND_TRANSACTIONS_COUNT = 2;
-    public static final int READ_ACCOUNT_DETAILS_AND_BALANCES_AND_TRANSACTIONS_COUNT = 3;
+    public static final int READ_ALL_DETAILS_COUNT = 3;
 
     private final AisConsentUsageRepository aisConsentUsageRepository;
     private final AisConsentTransactionRepository aisConsentTransactionRepository;
@@ -131,7 +131,7 @@ public class OneOffConsentExpirationService {
         }
 
         // Consent was given for accounts, balances and transactions.
-        return READ_ACCOUNT_DETAILS_AND_BALANCES_AND_TRANSACTIONS_COUNT + numberOfTransactions;
+        return READ_ALL_DETAILS_COUNT + numberOfTransactions;
     }
 
     private boolean isAccessForAccountReferencesEmpty(List<AccountReference> accounts, String resourceId) {

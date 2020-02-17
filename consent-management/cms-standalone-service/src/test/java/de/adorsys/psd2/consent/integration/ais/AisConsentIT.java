@@ -41,7 +41,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,10 +52,6 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration(classes = IntegrationTestConfiguration.class)
 @DataJpaTest
 public class AisConsentIT {
-    private static final String TPP_ID = "Test TppId";
-    private static final int FREQUENCY_PER_DAY = 5;
-    private static final LocalDate VALID_UNTIL = LocalDate.now().plusDays(1);
-    private static final String AUTHORITY_ID = "test authority ID";
     private static final String DEFAULT_SERVICE_INSTANCE_ID = "UNDEFINED";
 
     @Autowired
