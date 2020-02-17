@@ -76,32 +76,6 @@ interface ConsentServiceBase {
      */
     CmsResponse<Boolean> findAndTerminateOldConsentsByNewConsentId(String newConsentId);
 
-//    /**
-//     * Saves information about uses of consent
-//     *
-//     * @param request needed parameters for logging usage AIS consent
-//     */
-//    CmsResponse<CmsResponse.VoidResponse> checkConsentAndSaveActionLog(AisConsentActionRequest request) throws WrongChecksumException;
-//
-//
-//    /**
-//     * Updates AIS consent aspsp account access by id
-//     *
-//     * @param request   needed parameters for updating AIS consent
-//     * @param consentId id of the consent to be updated
-//     * @return String   consent id
-//     */
-//    CmsResponse<String> updateAspspAccountAccess(String consentId, AisAccountAccessInfo request) throws WrongChecksumException;
-//
-//    /**
-//     * Updates AIS consent aspsp account access by id and return consent
-//     *
-//     * @param request   needed parameters for updating AIS consent
-//     * @param consentId id of the consent to be updated
-//     * @return AisAccountConsent consent
-//     */
-//    CmsResponse<AisAccountConsent> updateAspspAccountAccessWithResponse(String consentId, AisAccountAccessInfo request) throws WrongChecksumException;
-
     CmsResponse<List<PsuIdData>> getPsuDataByConsentId(String consentId);
 
     /**
