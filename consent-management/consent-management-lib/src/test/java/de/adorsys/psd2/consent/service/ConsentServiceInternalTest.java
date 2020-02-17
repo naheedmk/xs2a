@@ -17,6 +17,10 @@
 
 package de.adorsys.psd2.consent.service;
 
+import de.adorsys.psd2.aspsp.profile.domain.AspspSettings;
+import de.adorsys.psd2.aspsp.profile.domain.ais.AisAspspProfileSetting;
+import de.adorsys.psd2.aspsp.profile.domain.ais.ConsentTypeSetting;
+import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.CmsError;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.WrongChecksumException;
@@ -73,6 +77,7 @@ class ConsentServiceInternalTest {
     private ConsentEntity consentEntity;
     private List<AuthorisationEntity> authorisationEntities = new ArrayList<>();
     private JsonReader jsonReader = new JsonReader();
+    private AspspSettings aspspSettings = buildMockAspspSettings();
 
     @InjectMocks
     private ConsentServiceInternal consentServiceInternal;
@@ -103,6 +108,8 @@ class ConsentServiceInternalTest {
     private AisConsentVerifyingRepository aisConsentVerifyingRepository;
     @Mock
     private AuthorisationRepository authorisationRepository;
+    @Mock
+    private AspspProfileService aspspProfileService;
 
     @BeforeEach
     void setUp() {
@@ -227,6 +234,7 @@ class ConsentServiceInternalTest {
             .thenReturn(buildFinalisedConsent());
         when(cmsConsentMapper.mapToCmsConsent(consentEntity, Collections.emptyList(), Collections.emptyMap()))
             .thenReturn(buildCmsConsent());
+        when(aspspProfileService.getAspspSettings()).thenReturn(aspspSettings);
 
         CmsCreateConsentResponse expected = new CmsCreateConsentResponse(EXTERNAL_CONSENT_ID, buildCmsConsent());
 
@@ -247,6 +255,7 @@ class ConsentServiceInternalTest {
             .thenReturn(consentEntity);
         when(cmsConsentMapper.mapToCmsConsent(consentEntity, Collections.emptyList(), Collections.emptyMap()))
             .thenReturn(buildCmsConsent());
+        when(aspspProfileService.getAspspSettings()).thenReturn(aspspSettings);
 
         CmsCreateConsentResponse expected = new CmsCreateConsentResponse(EXTERNAL_CONSENT_ID, buildCmsConsent());
         CmsConsent cmsConsent = buildCmsConsent();
@@ -281,6 +290,7 @@ class ConsentServiceInternalTest {
             .thenReturn(consentEntity);
         when(cmsConsentMapper.mapToNewConsentEntity(any()))
             .thenReturn(consentEntity);
+        when(aspspProfileService.getAspspSettings()).thenReturn(aspspSettings);
 
         // When
         CmsResponse<CmsCreateConsentResponse> actual = consentServiceInternal.createConsent(buildCmsConsent());
@@ -638,6 +648,12 @@ class ConsentServiceInternalTest {
         consentEntity.setValidUntil(LocalDate.now());
         consentEntity.setConsentStatus(ConsentStatus.REJECTED);
         return consentEntity;
+    }
+
+    private AspspSettings buildMockAspspSettings() {
+        ConsentTypeSetting consentTypeSettings = new ConsentTypeSetting(false, false, false, 0, 1L, 0, false);
+        AisAspspProfileSetting aisAspspProfileSettings = new AisAspspProfileSetting(consentTypeSettings, null, null, null, null);
+        return new AspspSettings(aisAspspProfileSettings, null, null, null);
     }
 }
 

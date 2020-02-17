@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.consent.service.mapper;
 
-import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
@@ -34,9 +33,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-// ToDo: cover with tests https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
 public class CmsConsentMapper {
-    private final AspspProfileService aspspProfileService;
     private final AuthorisationTemplateMapper authorisationTemplateMapper;
     private final ConsentTppInformationMapper consentTppInformationMapper;
     private final PsuDataMapper psuDataMapper;
@@ -74,8 +71,8 @@ public class CmsConsentMapper {
         entity.setFrequencyPerDay(cmsConsent.getFrequencyPerDay());
         entity.setMultilevelScaRequired(cmsConsent.isMultilevelScaRequired());
         entity.setRequestDateTime(LocalDateTime.now());
-        entity.setValidUntil(adjustExpireDate(cmsConsent.getValidUntil()));
-        entity.setExpireDate(adjustExpireDate(cmsConsent.getExpireDate()));
+        entity.setValidUntil(cmsConsent.getValidUntil());
+        entity.setExpireDate(cmsConsent.getExpireDate());
         entity.setPsuDataList(psuDataMapper.mapToPsuDataList(cmsConsent.getPsuIdDataList()));
         entity.setAuthorisationTemplate(authorisationTemplateMapper.mapToAuthorisationTemplateEntity(cmsConsent.getAuthorisationTemplate()));
         entity.setRecurringIndicator(cmsConsent.isRecurringIndicator());
@@ -83,17 +80,5 @@ public class CmsConsentMapper {
         entity.setInternalRequestId(cmsConsent.getInternalRequestId());
         entity.setTppInformation(consentTppInformationMapper.mapToConsentTppInformationEntity(cmsConsent.getTppInformation()));
         return entity;
-    }
-
-    private LocalDate adjustExpireDate(LocalDate validUntil) {
-        // ToDo: consider checking consent type here or moving adjustment to XS2A https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-        int lifetime = aspspProfileService.getAspspSettings().getAis().getConsentTypes().getMaxConsentValidityDays();
-        if (lifetime <= 0) {
-            return validUntil;
-        }
-
-        //Expire date is inclusive and TPP can access AIS consent from current date
-        LocalDate lifeTimeDate = LocalDate.now().plusDays(lifetime - 1L);
-        return lifeTimeDate.isBefore(validUntil) ? lifeTimeDate : validUntil;
     }
 }

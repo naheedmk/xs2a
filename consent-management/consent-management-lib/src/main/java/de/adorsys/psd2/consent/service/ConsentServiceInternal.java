@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.consent.service;
 
+import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.WrongChecksumException;
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
@@ -35,6 +36,7 @@ import de.adorsys.psd2.consent.service.migration.AisConsentMigrationService;
 import de.adorsys.psd2.consent.service.psu.CmsPsuService;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
+import de.adorsys.psd2.xs2a.core.consent.ConsentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +66,7 @@ public class ConsentServiceInternal implements ConsentService {
     private final AisConsentUsageService aisConsentUsageService;
     private final CmsConsentMapper cmsConsentMapper;
     private final AisConsentMigrationService aisConsentMigrationService;
+    private final AspspProfileService aspspProfileService;
 
     /**
      * Creates consent.
@@ -82,7 +85,8 @@ public class ConsentServiceInternal implements ConsentService {
                        .error(LOGICAL_ERROR)
                        .build();
         }
-        ConsentEntity consent = cmsConsentMapper.mapToNewConsentEntity(cmsConsent);
+        ConsentEntity consentEntityFromMapper = cmsConsentMapper.mapToNewConsentEntity(cmsConsent);
+        ConsentEntity consent = adjustConsentEntity(consentEntityFromMapper, cmsConsent.getConsentType());
         tppInfoRepository.findByAuthorisationNumber(cmsConsent.getTppInformation().getTppInfo().getAuthorisationNumber())
             .ifPresent(tppInfo -> consent.getTppInformation().setTppInfo(tppInfo));
 
@@ -311,5 +315,25 @@ public class ConsentServiceInternal implements ConsentService {
         aisConsent.setConsentStatus(aisConsent.getConsentStatus() == RECEIVED || aisConsent.getConsentStatus() == PARTIALLY_AUTHORISED
                                         ? REJECTED
                                         : TERMINATED_BY_TPP);
+    }
+
+    private ConsentEntity adjustConsentEntity(ConsentEntity consentEntity, ConsentType consentType) {
+        if (ConsentType.AIS == consentType) {
+            int lifetime = aspspProfileService.getAspspSettings().getAis().getConsentTypes().getMaxConsentValidityDays();
+            consentEntity.setValidUntil(adjustExpireDate(consentEntity.getValidUntil(), lifetime));
+            consentEntity.setExpireDate(adjustExpireDate(consentEntity.getExpireDate(), lifetime));
+        }
+
+        return consentEntity;
+    }
+
+    private LocalDate adjustExpireDate(LocalDate date, int lifetime) {
+        if (lifetime <= 0) {
+            return date;
+        }
+
+        //Expire date is inclusive and TPP can access AIS consent from current date
+        LocalDate lifeTimeDate = LocalDate.now().plusDays(lifetime - 1L);
+        return lifeTimeDate.isBefore(date) ? lifeTimeDate : date;
     }
 }
