@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018-2020 adorsys GmbH & Co KG
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.adorsys.psd2.consent.service.aspsp;
 
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
@@ -13,11 +29,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
-import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,8 +42,6 @@ public class ConsentFilteringServiceTest {
     private ConsentFilteringService consentFilteringService;
     @Mock
     private ConsentDataMapper consentDataMapper;
-
-    private static final Random RANDOM = new Random();
 
     private static final String ASPSP_ACCOUNT_ID_1 = "aspsp account id 1";
     private static final String ASPSP_ACCOUNT_ID_2 = "aspsp account id 2";
@@ -43,7 +57,7 @@ public class ConsentFilteringServiceTest {
 
         List<ConsentEntity> consentEntities = consentFilteringService.filterAisConsentsByAspspAccountId(consentEntitiesInput, null);
 
-        assertEquals(consentEntities, consentEntitiesInput);
+        assertEquals(consentEntitiesInput, consentEntities);
     }
 
     @Test
@@ -62,8 +76,8 @@ public class ConsentFilteringServiceTest {
 
         List<ConsentEntity> consentEntities = consentFilteringService.filterAisConsentsByAspspAccountId(consentEntitiesInput, ASPSP_ACCOUNT_ID_2);
 
-        assertEquals(consentEntities.size(), 1);
-        assertEquals(consentEntities.get(0), consentEntitiesInput.get(1));
+        assertEquals(1, consentEntities.size());
+        assertEquals(consentEntitiesInput.get(1), consentEntities.get(0));
     }
 
     @Test
@@ -82,8 +96,8 @@ public class ConsentFilteringServiceTest {
 
         List<ConsentEntity> consentEntities = consentFilteringService.filterAisConsentsByAspspAccountId(consentEntitiesInput, ASPSP_ACCOUNT_ID_2);
 
-        assertEquals(consentEntities.size(), 1);
-        assertEquals(consentEntities.get(0), consentEntitiesInput.get(1));
+        assertEquals(1, consentEntities.size());
+        assertEquals(consentEntitiesInput.get(1), consentEntities.get(0));
     }
 
 
@@ -98,7 +112,7 @@ public class ConsentFilteringServiceTest {
     }
 
     private List<AccountReference> buildAccountReferences(String aspspAccountId) {
-        return Arrays.asList(buildAccountReference(aspspAccountId));
+        return Collections.singletonList(buildAccountReference(aspspAccountId));
     }
 
     private AisConsentData buildAisConsentData(String aspspAccountId, boolean withAdditionalInformation) {
