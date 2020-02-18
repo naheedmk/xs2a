@@ -39,6 +39,7 @@ import de.adorsys.psd2.consent.service.AisConsentUsageService;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsPsuAuthorisationMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
+import de.adorsys.psd2.consent.service.migration.AisConsentMigrationService;
 import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
@@ -85,6 +86,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     private final CmsPsuAuthorisationMapper cmsPsuPisAuthorisationMapper;
     private final AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
     private final ConsentDataMapper consentDataMapper;
+    private final AisConsentMigrationService aisConsentMigrationService;
 
     @Override
     @Transactional
@@ -128,6 +130,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     @Transactional
     public @NotNull Optional<CmsAisAccountConsent> getConsent(@NotNull PsuIdData psuIdData, @NotNull String consentId, @NotNull String instanceId) {
         return consentJpaRepository.findOne(aisConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId))
+                   .map(aisConsentMigrationService::migrateIfNeeded)
                    .map(this::checkAndUpdateOnExpiration)
                    .map(this::mapToCmsAisAccountConsentWithAuthorisations);
     }
@@ -194,7 +197,9 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
             return Collections.emptyList();
         }
 
-        return consentJpaRepository.findAll(aisConsentSpecification.byPsuDataInListAndInstanceId(psuIdData, instanceId)).stream()
+        return consentJpaRepository.findAll(aisConsentSpecification.byPsuDataInListAndInstanceId(psuIdData, instanceId))
+                   .stream()
+                   .map(aisConsentMigrationService::migrateIfNeeded)
                    .map(this::mapToCmsAisAccountConsentWithAuthorisations)
                    .collect(Collectors.toList());
     }
@@ -299,7 +304,8 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
         Optional<ConsentEntity> aisConsentOptional = consentJpaRepository.findOne(aisConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId));
 
         if (aisConsentOptional.isPresent()) {
-            return updateConsentStatus(aisConsentOptional.get(), status);
+            ConsentEntity entity = aisConsentMigrationService.migrateIfNeeded(aisConsentOptional.get());
+            return updateConsentStatus(entity, status);
         }
 
         log.info("Consent ID [{}], Instance ID: [{}]. Change consent status failed, because AIS consent not found",
@@ -317,6 +323,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
 
     private Optional<ConsentEntity> getActualAisConsent(String consentId, String instanceId) {
         return consentJpaRepository.findOne(aisConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId))
+                   .map(aisConsentMigrationService::migrateIfNeeded)
                    .filter(c -> !c.getConsentStatus().isFinalisedStatus());
     }
 
@@ -358,6 +365,8 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
             }
 
             ConsentEntity aisConsent = consentOptional.get();
+            aisConsent = aisConsentMigrationService.migrateIfNeeded(aisConsent);
+
             List<PsuData> psuDataList = aisConsent.getPsuDataList();
             Optional<PsuData> psuDataOptional = cmsPsuService.definePsuDataForAuthorisation(newPsuData, psuDataList);
             if (psuDataOptional.isPresent()) {
@@ -402,14 +411,17 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     }
 
     private Optional<CmsAisConsentResponse> createCmsAisConsentResponseFromAuthorisation(AuthorisationEntity authorisation, String redirectId) {
-        Optional<ConsentEntity> aisConsent = consentJpaRepository.findByExternalId(authorisation.getParentExternalId());
-        if (!aisConsent.isPresent()) {
+        Optional<ConsentEntity> aisConsentOptional = consentJpaRepository.findByExternalId(authorisation.getParentExternalId());
+        if (!aisConsentOptional.isPresent()) {
             log.info("Authorisation ID [{}]. Check redirect URL and get consent failed in createCmsAisConsentResponseFromAisConsent method, because AIS consent is null",
                      redirectId);
             return Optional.empty();
         }
 
-        CmsAisAccountConsent aisAccountConsent = mapToCmsAisAccountConsentWithAuthorisations(aisConsent.get());
+        ConsentEntity aisConsent = aisConsentOptional.get();
+        aisConsent = aisConsentMigrationService.migrateIfNeeded(aisConsent);
+
+        CmsAisAccountConsent aisAccountConsent = mapToCmsAisAccountConsentWithAuthorisations(aisConsent);
         return Optional.of(new CmsAisConsentResponse(aisAccountConsent, redirectId, authorisation.getTppOkRedirectUri(),
                                                      authorisation.getTppNokRedirectUri()));
     }
