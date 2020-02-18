@@ -5,8 +5,8 @@
 
 == Consent refactoring
 
-From now on, consents are moved in `consent` table from `ais_consent` and do not have specific AIS consent data.
-All specific information is stored as byte array in consent. There is a new column `consent_type` that described its type.
+From now on, consents are moved to `consent` table from `ais_consent` and do not have specific AIS consent data.
+All specific information is stored as byte array in consent. There is a new column `consent_type` that describes its type.
 Another table `consent_tpp_information` is created for storing tpp specific information.
 
 New module `xs2a-core-consents` is responsible for models and mapper belonging to AIS specific consent data.
@@ -17,6 +17,6 @@ To support all operation with consent added `CmsConsentController`:
 * `GET /v1/consent/{encrypted-consent-id}` - reads consent by ID
 * `GET /v1/consent/{encrypted-consent-id}/status` - gets consent status by ID
 * `PUT /v1/consent/{encrypted-consent-id}/status/{status}` - updates consent status by ID
-* `DELETE /v1/consent/{encrypted-consent-id}/old-consents` - finds and terminate old consents for TPP and PSU by new consent ID
+* `DELETE /v1/consent/{encrypted-consent-id}/old-consents` - finds and terminates old consents for TPP and PSU by new consent ID
 * `PUT /v1/consent/{encrypted-consent-id}/multilevel-sca` - updates requirement for multilevel SCA for consent
 
