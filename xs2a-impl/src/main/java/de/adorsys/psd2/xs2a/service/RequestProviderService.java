@@ -120,6 +120,10 @@ public class RequestProviderService {
         return getHeader(Xs2aHeaderConstant.TPP_REDIRECT_URI);
     }
 
+    public String getTppRedirectPreferred() {
+        return getHeader(Xs2aHeaderConstant.TPP_REDIRECT_PREFERRED);
+    }
+
     public String getTppNokRedirectURI() {
         return getHeader(Xs2aHeaderConstant.TPP_NOK_REDIRECT_URI);
     }
