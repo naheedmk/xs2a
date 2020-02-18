@@ -35,6 +35,7 @@ public class ChecksumCalculatingFactory {
 
     @Autowired
     private AisChecksumCalculatingServiceV3 aisV3;
+    @Autowired
     private NoProcessingChecksumService  noProcessingService;
 
     @PostConstruct
