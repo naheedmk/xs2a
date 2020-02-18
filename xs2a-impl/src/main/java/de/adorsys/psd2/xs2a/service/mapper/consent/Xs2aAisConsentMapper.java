@@ -222,13 +222,9 @@ public class Xs2aAisConsentMapper {
     public AisConsent mapToAisConsent(CmsConsent ais) {
         return Optional.ofNullable(ais)
                    .map(ac -> {
-
-                       AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(ac.getConsentData());
-                       AisConsentData consentData = new AisConsentData(aisConsentData.getTppAccountAccess(), aisConsentData.getAspspAccountAccess(), aisConsentData.isCombinedServiceIndicator());
-
                        AisConsent aisConsent = new AisConsent();
                        aisConsent.setId(ac.getId());
-                       aisConsent.setConsentData(consentData);
+                       aisConsent.setConsentData(consentDataMapper.mapToAisConsentData(ac.getConsentData()));
                        aisConsent.setRecurringIndicator(ac.isRecurringIndicator());
                        aisConsent.setValidUntil(ac.getValidUntil());
                        aisConsent.setExpireDate(ac.getExpireDate());
