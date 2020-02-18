@@ -76,7 +76,7 @@ class AisConsentConfirmationExpirationServiceTest {
         ArgumentCaptor<ConsentEntity> aisConsentCaptor = ArgumentCaptor.forClass(ConsentEntity.class);
 
         // When
-        expirationService.updateOnConfirmationExpiration(buildConsent(ConsentStatus.RECEIVED, TOMORROW));
+        expirationService.updateOnConfirmationExpiration(buildConsent());
 
         // Then
         verify(consentJpaRepository).save(aisConsentCaptor.capture());
@@ -89,7 +89,7 @@ class AisConsentConfirmationExpirationServiceTest {
         ArgumentCaptor<ConsentEntity> aisConsentCaptor = ArgumentCaptor.forClass(ConsentEntity.class);
         when(aspspProfileService.getAspspSettings()).thenReturn(buildAspspSettings(100L));
 
-        ConsentEntity consent = buildConsent(ConsentStatus.RECEIVED, TOMORROW);
+        ConsentEntity consent = buildConsent();
         consent.setCreationTimestamp(OffsetDateTime.now().minusHours(1));
 
         // When
@@ -105,7 +105,7 @@ class AisConsentConfirmationExpirationServiceTest {
         // Given
         when(aspspProfileService.getAspspSettings()).thenReturn(buildAspspSettings(86400L));
 
-        ConsentEntity consent = buildConsent(ConsentStatus.RECEIVED, TOMORROW);
+        ConsentEntity consent = buildConsent();
         // When
         ConsentEntity actual = expirationService.checkAndUpdateOnConfirmationExpiration(consent);
 
@@ -119,17 +119,17 @@ class AisConsentConfirmationExpirationServiceTest {
         ArgumentCaptor<List<ConsentEntity>> aisConsentListCaptor = ArgumentCaptor.forClass(List.class);
 
         // When
-        expirationService.updateConsentListOnConfirmationExpiration(Collections.singletonList(buildConsent(ConsentStatus.RECEIVED, TOMORROW)));
+        expirationService.updateConsentListOnConfirmationExpiration(Collections.singletonList(buildConsent()));
 
         // Then
         verify(consentJpaRepository).saveAll(aisConsentListCaptor.capture());
         assertEquals(ConsentStatus.REJECTED, aisConsentListCaptor.getValue().get(0).getConsentStatus());
     }
 
-    private ConsentEntity buildConsent(ConsentStatus consentStatus, LocalDate validUntil) {
+    private ConsentEntity buildConsent() {
         ConsentEntity consent = new ConsentEntity();
-        consent.setConsentStatus(consentStatus);
-        consent.setValidUntil(validUntil);
+        consent.setConsentStatus(ConsentStatus.RECEIVED);
+        consent.setValidUntil(AisConsentConfirmationExpirationServiceTest.TOMORROW);
         return consent;
     }
 

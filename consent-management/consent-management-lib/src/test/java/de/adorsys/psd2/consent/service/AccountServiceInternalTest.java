@@ -36,8 +36,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AccountServiceInternalTest {
 
-    private static final String CONSENT_ID = "consent ID";
-    private static final String RESOURCE_ID = "resource ID";
+    private static final String CONSENT_ID = "fa6e687b-1ac9-4b1a-9c74-357c35c82ba1";
+    private static final String RESOURCE_ID = "LGCGDC4KTx0tgnpZGYTTr8";
 
     @InjectMocks
     private AccountServiceInternal accountServiceInternal;

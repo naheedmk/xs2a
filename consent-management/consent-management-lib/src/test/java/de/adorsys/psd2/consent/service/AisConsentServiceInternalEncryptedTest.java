@@ -40,8 +40,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AisConsentServiceInternalEncryptedTest {
-    private static final String ENCRYPTED_CONSENT_ID = "encrypted consent id";
-    private static final String UNDECRYPTABLE_CONSENT_ID = "undecryptable consent id";
+    private static final String ENCRYPTED_CONSENT_ID = "DfLtDOgo1tTK6WQlHlb-TMPL2pkxRlhZ4feMa5F4tOWwNN45XLNAVfWwoZUKlQwb_=_bS6p6XvTWI";
+    private static final String UNDECRYPTABLE_CONSENT_ID = "0000000000TK6WQlHlb-TMPL2pkxRlhZ4feMa5F4tOWwNN45XLNAVfWwoZUKlQwb_=_bS6p6XvTWI";
     private static final String DECRYPTED_CONSENT_ID = "255574b2-f115-4f3c-8d77-c1897749c060";
 
     @InjectMocks

@@ -57,18 +57,18 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthorisationServiceInternalTest {
-    private static final String PSU_ID = "psu-id-1";
+    private static final String PSU_ID = "anton.brueckner";
     private static final PsuIdData PSU_ID_DATA = new PsuIdData(PSU_ID, null, null, null, null);
-    private static final String AUTHORISATION_ID = "authorisation id";
-    private static final String WRONG_AUTHORISATION_ID = "Wrong authorisation id";
+    private static final String AUTHORISATION_ID = "9304a6a0-8f02-4b79-aeab-00aa7e03a06d";
+    private static final String WRONG_AUTHORISATION_ID = "00000000-0000-4b79-aeab-00aa7e03a06d";
     private static final ScaStatus SCA_STATUS = ScaStatus.RECEIVED;
     private static final ScaApproach SCA_APPROACH = ScaApproach.EMBEDDED;
-    private static final String AUTHENTICATION_METHOD_ID = "Method id";
-    private static final String WRONG_AUTHENTICATION_METHOD_ID = "Wrong method id";
+    private static final String AUTHENTICATION_METHOD_ID = "SMS";
+    private static final String WRONG_AUTHENTICATION_METHOD_ID = "EMAIL";
     private static final String TPP_REDIRECT_URI = "request/redirect_uri";
     private static final String TPP_NOK_REDIRECT_URI = "request/nok_redirect_uri";
     private static final TppRedirectUri TPP_REDIRECT_URIs = new TppRedirectUri(TPP_REDIRECT_URI, TPP_NOK_REDIRECT_URI);
-    private static final String INTERNAL_REQUEST_ID = "internal request id";
+    private static final String INTERNAL_REQUEST_ID = "5c2d5564-367f-4e03-a621-6bef76fa4208";
 
     private static final JsonReader jsonReader = new JsonReader();
 
