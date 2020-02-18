@@ -1,0 +1,50 @@
+{
+  "tppAccountAccess": {
+    "accounts": [
+      {
+        "iban": "DE89370400440532013000"
+      }
+    ],
+    "balances": [
+      {
+        "iban": "DE80760700240271232400"
+      }
+    ],
+    "transactions": [
+      {
+        "iban": "DE89370400440532015000"
+      }
+    ],
+    "additionalInformationAccess": {
+      "ownerName": [
+        {
+          "iban": "DE89370400440532013000"
+        }
+      ]
+    }
+  },
+  "aspspAccountAccess": {
+    "accounts": [
+      {
+        "iban": "DE89370400440532013000"
+      }
+    ],
+    "balances": [
+      {
+        "iban": "DE80760700240271232400"
+      }
+    ],
+    "transactions": [
+      {
+        "iban": "DE89370400440532015000"
+      }
+    ],
+    "additionalInformationAccess": {
+      "ownerName": [
+        {
+          "iban": "DE89370400440532013000"
+        }
+      ]
+    }
+  }
+}

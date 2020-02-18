@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// ToDo: cover with tests https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
 @Service
 @RequiredArgsConstructor
 public class ConsentFilteringService {

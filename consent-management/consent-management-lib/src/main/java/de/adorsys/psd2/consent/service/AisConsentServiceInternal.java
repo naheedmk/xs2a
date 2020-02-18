@@ -29,19 +29,15 @@ import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.AisConsentActionRepository;
 import de.adorsys.psd2.consent.repository.AisConsentVerifyingRepository;
 import de.adorsys.psd2.consent.repository.AuthorisationRepository;
-import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
+import de.adorsys.psd2.consent.service.account.AccountAccessUpdater;
 import de.adorsys.psd2.consent.service.mapper.AccessMapper;
-import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsConsentMapper;
 import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
-import de.adorsys.psd2.xs2a.core.profile.AccountReference;
-import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +45,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static de.adorsys.psd2.consent.api.CmsError.LOGICAL_ERROR;
 import static de.adorsys.psd2.xs2a.core.consent.ConsentStatus.EXPIRED;
@@ -59,18 +54,16 @@ import static de.adorsys.psd2.xs2a.core.consent.ConsentStatus.EXPIRED;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AisConsentServiceInternal implements AisConsentService {
-
-    private final ConsentJpaRepository consentJpaRepository;
     private final AisConsentVerifyingRepository aisConsentRepository;
     private final AisConsentActionRepository aisConsentActionRepository;
     private final AuthorisationRepository authorisationRepository;
-    private final AisConsentMapper consentMapper;
     private final AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
     private final AisConsentUsageService aisConsentUsageService;
     private final OneOffConsentExpirationService oneOffConsentExpirationService;
     private final CmsConsentMapper cmsConsentMapper;
     private final ConsentDataMapper consentDataMapper;
     private final AccessMapper accessMapper;
+    private final AccountAccessUpdater accountAccessUpdater;
 
     /**
      * Saves information about consent usage and consent's sub-resources usage.
@@ -80,16 +73,13 @@ public class AisConsentServiceInternal implements AisConsentService {
     @Override
     @Transactional(rollbackFor = WrongChecksumException.class)
     public CmsResponse<CmsResponse.VoidResponse> checkConsentAndSaveActionLog(AisConsentActionRequest request) throws WrongChecksumException {
-        Optional<ConsentEntity> consentOpt = getActualAisConsent(request.getConsentId());
+        Optional<ConsentEntity> consentOpt = aisConsentRepository.getActualAisConsent(request.getConsentId());
         if (consentOpt.isPresent()) {
             ConsentEntity consent = consentOpt.get();
             aisConsentConfirmationExpirationService.checkAndUpdateOnConfirmationExpiration(consent);
             checkAndUpdateOnExpiration(consent);
-            // In this method sonar claims that NPE is possible:
-            // https://rules.sonarsource.com/java/RSPEC-3655
-            // but we have isPresent in the code before.
-            updateAisConsentUsage(consent, request); //NOSONAR
-            logConsentAction(consent.getExternalId(), resolveConsentActionStatus(request, consent), request.getTppId()); //NOSONAR
+            updateAisConsentUsage(consent, request);
+            logConsentAction(consent.getExternalId(), resolveConsentActionStatus(request, consent), request.getTppId());
         }
 
         return CmsResponse.<CmsResponse.VoidResponse>builder()
@@ -120,17 +110,11 @@ public class AisConsentServiceInternal implements AisConsentService {
                    .build();
     }
 
-    private CmsConsent mapToCmsConsent(ConsentEntity consent) {
-        List<AuthorisationEntity> authorisations = authorisationRepository.findAllByParentExternalIdAndAuthorisationType(consent.getExternalId(), AuthorisationType.AIS);
-        Map<String, Integer> usageCounterMap = aisConsentUsageService.getUsageCounterMap(consent);
-        return cmsConsentMapper.mapToCmsConsent(consent, authorisations, usageCounterMap);
-    }
-
     private ConsentEntity updateConsentAccess(ConsentEntity consentEntity, AisAccountAccessInfo request) {
         AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consentEntity.getData());
         AccountAccess existingAccess = aisConsentData.getAspspAccountAccess();
         AccountAccess requestedAccess = accessMapper.mapToAccountAccess(request);
-        AccountAccess updatedAccesses = updateAccountReferencesInAccess(existingAccess, requestedAccess);
+        AccountAccess updatedAccesses = accountAccessUpdater.updateAccountReferencesInAccess(existingAccess, requestedAccess);
 
         AisConsentData updatedAisConsentData = new AisConsentData(aisConsentData.getTppAccountAccess(),
                                                                   updatedAccesses,
@@ -139,6 +123,14 @@ public class AisConsentServiceInternal implements AisConsentService {
         consentEntity.setData(updatedConsentData);
 
         return consentEntity;
+    }
+
+    private ConsentEntity checkAndUpdateOnExpiration(ConsentEntity consent) {
+        if (consent.shouldConsentBeExpired()) {
+            return aisConsentConfirmationExpirationService.expireConsent(consent);
+        }
+
+        return consent;
     }
 
     private void updateAisConsentUsage(ConsentEntity consent, AisConsentActionRequest request) throws WrongChecksumException {
@@ -159,9 +151,15 @@ public class AisConsentServiceInternal implements AisConsentService {
         aisConsentRepository.verifyAndSave(consent);
     }
 
-    private ActionStatus resolveConsentActionStatus(AisConsentActionRequest request, ConsentEntity consent) {
+    private CmsConsent mapToCmsConsent(ConsentEntity consent) {
+        List<AuthorisationEntity> authorisations = authorisationRepository.findAllByParentExternalIdAndAuthorisationType(consent.getExternalId(), AuthorisationType.AIS);
+        Map<String, Integer> usageCounterMap = aisConsentUsageService.getUsageCounterMap(consent);
+        return cmsConsentMapper.mapToCmsConsent(consent, authorisations, usageCounterMap);
+    }
 
+    private ActionStatus resolveConsentActionStatus(AisConsentActionRequest request, ConsentEntity consent) {
         if (consent == null) {
+            // ToDo: unreachable code, check whether bad payload should be logged https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1211
             log.info("Consent ID: [{}]. Consent action status resolver received null consent",
                      request.getConsentId());
             return ActionStatus.BAD_PAYLOAD;
@@ -176,73 +174,5 @@ public class AisConsentServiceInternal implements AisConsentService {
         action.setTppId(tppId);
         action.setRequestDate(LocalDate.now());
         aisConsentActionRepository.save(action);
-    }
-
-    private Optional<ConsentEntity> getActualAisConsent(String consentId) {
-        return consentJpaRepository.findByExternalId(consentId)
-                   .filter(c -> !c.getConsentStatus().isFinalisedStatus());
-    }
-
-    private ConsentEntity checkAndUpdateOnExpiration(ConsentEntity consent) {
-        if (consent != null && consent.shouldConsentBeExpired()) {
-            return aisConsentConfirmationExpirationService.expireConsent(consent);
-        }
-
-        return consent;
-    }
-
-    private AccountAccess updateAccountReferencesInAccess(AccountAccess existingAccess, AccountAccess requestedAccess) {
-        if (hasNoAccountReferences(existingAccess)) {
-            return requestedAccess;
-        }
-
-        List<AccountReference> updatedAccounts = existingAccess.getAccounts().stream()
-                                                     .map(ref -> updateAccountReference(ref, requestedAccess.getAccounts())).collect(Collectors.toList());
-        List<AccountReference> updatedBalances = existingAccess.getBalances().stream()
-                                                     .map(ref -> updateAccountReference(ref, requestedAccess.getBalances())).collect(Collectors.toList());
-        List<AccountReference> updatedTransactions = existingAccess.getTransactions().stream()
-                                                         .map(ref -> updateAccountReference(ref, requestedAccess.getTransactions())).collect(Collectors.toList());
-        AdditionalInformationAccess updatedAdditionalInformation = updateAccountReferencesInAdditionalInformation(existingAccess.getAdditionalInformationAccess(),
-                                                                                                                  requestedAccess.getAdditionalInformationAccess());
-
-        return new AccountAccess(updatedAccounts, updatedBalances, updatedTransactions, existingAccess.getAvailableAccounts(), existingAccess.getAllPsd2(),
-                                 existingAccess.getAvailableAccountsWithBalance(), updatedAdditionalInformation);
-    }
-
-    private boolean hasNoAccountReferences(AccountAccess accountAccess) {
-        AdditionalInformationAccess additionalInformationAccess = accountAccess.getAdditionalInformationAccess();
-        boolean hasNoAdditionalInformationReferences = additionalInformationAccess == null
-                                                           || CollectionUtils.isEmpty(additionalInformationAccess.getOwnerName());
-
-        return CollectionUtils.isEmpty(accountAccess.getAccounts())
-                   && CollectionUtils.isEmpty(accountAccess.getBalances())
-                   && CollectionUtils.isEmpty(accountAccess.getTransactions())
-                   && hasNoAdditionalInformationReferences;
-    }
-
-    private AdditionalInformationAccess updateAccountReferencesInAdditionalInformation(AdditionalInformationAccess existingAccess, AdditionalInformationAccess requestedAccess) {
-        if (isAdditionalInformationAbsent(existingAccess) || isAdditionalInformationAbsent(requestedAccess)) {
-            return existingAccess;
-        }
-
-        assert existingAccess.getOwnerName() != null;
-        assert requestedAccess.getOwnerName() != null;
-        List<AccountReference> updatedOwnerName = existingAccess.getOwnerName().stream()
-                                                      .map(ref -> updateAccountReference(ref, requestedAccess.getOwnerName()))
-                                                      .collect(Collectors.toList());
-
-        return new AdditionalInformationAccess(updatedOwnerName);
-    }
-
-    private boolean isAdditionalInformationAbsent(AdditionalInformationAccess additionalInformationAccess) {
-        return additionalInformationAccess == null || additionalInformationAccess.getOwnerName() == null;
-    }
-
-    private AccountReference updateAccountReference(AccountReference existingReference, List<AccountReference> requestedAspspReferences) {
-        return requestedAspspReferences.stream()
-                   .filter(aspsp -> aspsp.getUsedAccountReferenceSelector().equals(existingReference.getUsedAccountReferenceSelector()))
-                   .filter(aspsp -> aspsp.getCurrency().equals(existingReference.getCurrency()))
-                   .findFirst()
-                   .orElse(existingReference);
     }
 }
