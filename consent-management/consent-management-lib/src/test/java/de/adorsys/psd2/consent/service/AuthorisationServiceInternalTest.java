@@ -25,7 +25,7 @@ import de.adorsys.psd2.consent.api.authorisation.CreateAuthorisationResponse;
 import de.adorsys.psd2.consent.api.authorisation.UpdateAuthorisationRequest;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.ScaMethod;
-import de.adorsys.psd2.consent.domain.account.AisConsent;
+import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.AuthorisationRepository;
 import de.adorsys.psd2.consent.service.authorisation.AuthService;
 import de.adorsys.psd2.consent.service.authorisation.AuthServiceResolver;
@@ -97,16 +97,16 @@ class AuthorisationServiceInternalTest {
         CreateAuthorisationRequest createAuthorisationRequest = new CreateAuthorisationRequest(PSU_ID_DATA, ScaApproach.REDIRECT, TPP_REDIRECT_URIs);
         CreateAuthorisationResponse expectedResponse = new CreateAuthorisationResponse(AUTHORISATION_ID, ScaStatus.RECEIVED, INTERNAL_REQUEST_ID, PSU_ID_DATA);
 
-        AisConsent aisConsent = new AisConsent();
-        aisConsent.setInternalRequestId(INTERNAL_REQUEST_ID);
+        ConsentEntity consentEntity = new ConsentEntity();
+        consentEntity.setInternalRequestId(INTERNAL_REQUEST_ID);
 
         when(authServiceResolver.getAuthService(authorisationType)).thenReturn(authService);
-        when(authService.getNotFinalisedAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
+        when(authService.getNotFinalisedAuthorisationParent(parentId)).thenReturn(Optional.of(consentEntity));
 
         AuthorisationEntity newAuthorisation = new AuthorisationEntity();
         newAuthorisation.setExternalId(AUTHORISATION_ID);
         newAuthorisation.setScaStatus(ScaStatus.RECEIVED);
-        when(authService.saveAuthorisation(createAuthorisationRequest, aisConsent)).thenReturn(newAuthorisation);
+        when(authService.saveAuthorisation(createAuthorisationRequest, consentEntity)).thenReturn(newAuthorisation);
 
         // When
         CmsResponse<CreateAuthorisationResponse> actualResponse = authorisationServiceInternal.createAuthorisation(authorisationParentHolder, createAuthorisationRequest);
@@ -115,7 +115,7 @@ class AuthorisationServiceInternalTest {
         assertTrue(actualResponse.isSuccessful());
         assertEquals(expectedResponse, actualResponse.getPayload());
         verify(authorisationClosingService).closePreviousAuthorisationsByParent(parentId, authorisationType, PSU_ID_DATA);
-        verify(authService).saveAuthorisation(createAuthorisationRequest, aisConsent);
+        verify(authService).saveAuthorisation(createAuthorisationRequest, consentEntity);
     }
 
     @Test
@@ -280,11 +280,11 @@ class AuthorisationServiceInternalTest {
 
         when(authServiceResolver.getAuthService(AuthorisationType.AIS)).thenReturn(authService);
 
-        AisConsent aisConsent = new AisConsent();
-        aisConsent.setExternalId(parentId);
-        when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
+        ConsentEntity consentEntity = new ConsentEntity();
+        consentEntity.setExternalId(parentId);
+        when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(consentEntity));
 
-        when(authService.checkAndUpdateOnConfirmationExpiration(aisConsent)).thenReturn(aisConsent);
+        when(authService.checkAndUpdateOnConfirmationExpiration(consentEntity)).thenReturn(consentEntity);
 
         AuthorisationEntity authorisationEntity = new AuthorisationEntity();
         authorisationEntity.setExternalId(AUTHORISATION_ID);
@@ -324,9 +324,9 @@ class AuthorisationServiceInternalTest {
 
         when(authServiceResolver.getAuthService(AuthorisationType.AIS)).thenReturn(authService);
 
-        AisConsent aisConsent = new AisConsent();
-        aisConsent.setExternalId(parentId);
-        when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
+        ConsentEntity consentEntity = new ConsentEntity();
+        consentEntity.setExternalId(parentId);
+        when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(consentEntity));
 
         AuthorisationEntity authorisationEntity = new AuthorisationEntity();
         authorisationEntity.setParentExternalId(parentId);
@@ -367,10 +367,10 @@ class AuthorisationServiceInternalTest {
 
         when(authServiceResolver.getAuthService(AuthorisationType.AIS)).thenReturn(authService);
 
-        AisConsent aisConsent = new AisConsent();
-        aisConsent.setExternalId(parentId);
-        when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
-        when(authService.isConfirmationExpired(aisConsent)).thenReturn(true);
+        ConsentEntity consentEntity = new ConsentEntity();
+        consentEntity.setExternalId(parentId);
+        when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(consentEntity));
+        when(authService.isConfirmationExpired(consentEntity)).thenReturn(true);
 
         // When
         CmsResponse<ScaStatus> actualResult = authorisationServiceInternal.getAuthorisationScaStatus(AUTHORISATION_ID, authorisationParentHolder);
@@ -378,7 +378,7 @@ class AuthorisationServiceInternalTest {
         // Then
         assertTrue(actualResult.isSuccessful());
         assertEquals(ScaStatus.FAILED, actualResult.getPayload());
-        verify(authService).updateOnConfirmationExpiration(aisConsent);
+        verify(authService).updateOnConfirmationExpiration(consentEntity);
     }
 
     @Test
@@ -389,9 +389,9 @@ class AuthorisationServiceInternalTest {
 
         when(authServiceResolver.getAuthService(AuthorisationType.AIS)).thenReturn(authService);
 
-        AisConsent aisConsent = new AisConsent();
-        aisConsent.setExternalId(parentId);
-        when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
+        ConsentEntity consentEntity = new ConsentEntity();
+        consentEntity.setExternalId(parentId);
+        when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(consentEntity));
 
         when(authService.getAuthorisationById(WRONG_AUTHORISATION_ID)).thenReturn(Optional.empty());
 
@@ -411,9 +411,9 @@ class AuthorisationServiceInternalTest {
 
         when(authServiceResolver.getAuthService(AuthorisationType.AIS)).thenReturn(authService);
 
-        AisConsent aisConsent = new AisConsent();
-        aisConsent.setExternalId(parentId);
-        when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(aisConsent));
+        ConsentEntity consentEntity = new ConsentEntity();
+        consentEntity.setExternalId(parentId);
+        when(authService.getAuthorisationParent(parentId)).thenReturn(Optional.of(consentEntity));
 
         AuthorisationEntity authorisationEntity = new AuthorisationEntity();
         authorisationEntity.setParentExternalId("wrong parent id");
