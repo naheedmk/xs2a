@@ -35,9 +35,14 @@ public class ChecksumCalculatingFactory {
 
     @Autowired
     private AisChecksumCalculatingServiceV3 aisV3;
+    private NoProcessingChecksumService  noProcessingService;
 
     @PostConstruct
     public void init() {
+        // for deprecated services will use noProcessingService
+        services.put(new MultiKey("001", ConsentType.AIS), noProcessingService);
+        services.put(new MultiKey("002", ConsentType.AIS), noProcessingService);
+
         services.put(new MultiKey(aisV3.getVersion(), ConsentType.AIS), aisV3);
     }
 

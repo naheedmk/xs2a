@@ -43,6 +43,9 @@ class ChecksumCalculatingFactoryTest {
     @Mock
     private AisChecksumCalculatingServiceV3 aisV3;
 
+    @Mock
+    private NoProcessingChecksumService noProcessingChecksumService;
+
     @BeforeEach
     void init() {
         when(aisV3.getVersion()).thenReturn("003");
@@ -57,6 +60,26 @@ class ChecksumCalculatingFactoryTest {
         // Then
         assertTrue(actualResult.isPresent());
         assertEquals(aisV3.getVersion(), actualResult.get().getVersion());
+    }
+
+    @Test
+    void getServiceByChecksum_ais_noProcessingV001_success() {
+        // When
+        Optional<ChecksumCalculatingService> actualResult = factory.getServiceByChecksum(getCorrectChecksumV001().getBytes(), AIS_TYPE);
+
+        // Then
+        assertTrue(actualResult.isPresent());
+        assertEquals(noProcessingChecksumService.getVersion(), actualResult.get().getVersion());
+    }
+
+    @Test
+    void getServiceByChecksum_ais_noProcessingV002_success() {
+        // When
+        Optional<ChecksumCalculatingService> actualResult = factory.getServiceByChecksum(getCorrectChecksumV002().getBytes(), AIS_TYPE);
+
+        // Then
+        assertTrue(actualResult.isPresent());
+        assertEquals(noProcessingChecksumService.getVersion(), actualResult.get().getVersion());
     }
 
     @Test
@@ -98,5 +121,13 @@ class ChecksumCalculatingFactoryTest {
 
     private static String getCorrectChecksum() {
         return "003_%_dsuFMYCrZd1YWY7+3/zF7mgrO0PFjhkHn9foi2ylWZOzCWRaUBXNBXkllfmnQ8JXLFEZk3Ta7l+jbdRHHkYT0Q==_%_eyJpYmFuIjoidDg2OTRsdXd1RUkvQTRQM1NvYkh5c0NhMVRqdjJFbEk4cXltWjkwK3duN2o4cXdMcnBOck5VQWFpbWF2RlZ6OE0vZEhFbUlsbzZJNEZ5VGpaNUdIU3c9PSIsIm1hc2tlZFBhbiI6Ild6TG9rYjM1cXFaMElkcVdFZ09PSEtDSEtFMVg1dDY1amxQMURRREJ1UkQya2VJUDVrYmhUMFRKQ3YwWFQ0Sk9ueGxkYWljTzY2Tk9ZcFBsY1JhdmhnPT0ifQ==";
+    }
+
+    private static String getCorrectChecksumV001() {
+        return "001_%_old_deprecated_data";
+    }
+
+    private static String getCorrectChecksumV002() {
+        return "002_%_old_deprecated_data";
     }
 }

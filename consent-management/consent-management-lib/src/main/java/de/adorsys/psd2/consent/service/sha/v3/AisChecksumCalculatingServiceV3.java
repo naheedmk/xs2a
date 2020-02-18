@@ -22,8 +22,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import de.adorsys.psd2.consent.service.sha.ChecksumConstant;
 import de.adorsys.psd2.consent.service.sha.ChecksumCalculatingService;
+import de.adorsys.psd2.consent.service.sha.ChecksumConstant;
 import de.adorsys.psd2.consent.service.sha.Sha512HashingService;
 import de.adorsys.psd2.core.data.Consent;
 import de.adorsys.psd2.core.data.ais.AccountAccess;
@@ -34,7 +34,7 @@ import de.adorsys.psd2.xs2a.core.profile.AccountReferenceType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-@Component
+@Service
 public class AisChecksumCalculatingServiceV3 implements ChecksumCalculatingService {
     private static final String VERSION = "003";
     private static final Charset CHARSET = Charset.defaultCharset();
