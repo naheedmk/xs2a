@@ -24,7 +24,7 @@ import java.util.List;
 
 @Data
 public class ConsentTppInformation {
-    private boolean tppRedirectPreferred; //set somewhere
+    private boolean tppRedirectPreferred;
     private int tppFrequencyPerDay;
     private String tppNotificationUri;
     private TppInfo tppInfo;

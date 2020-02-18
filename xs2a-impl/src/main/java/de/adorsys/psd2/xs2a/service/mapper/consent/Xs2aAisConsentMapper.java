@@ -173,7 +173,7 @@ public class Xs2aAisConsentMapper {
         tppInformation.setTppFrequencyPerDay(request.getFrequencyPerDay());
         tppInformation.setTppNotificationUri(Optional.ofNullable(request.getTppNotificationData()).map(TppNotificationData::getTppNotificationUri).orElse(null));
         tppInformation.setTppNotificationSupportedModes(Optional.ofNullable(request.getTppNotificationData()).map(TppNotificationData::getNotificationModes).orElse(null));
-        tppInformation.setTppRedirectPreferred(Boolean.valueOf(requestProviderService.getTppRedirectPreferred()));
+        tppInformation.setTppRedirectPreferred(requestProviderService.resolveTppRedirectPreferred().orElse(false));
         cmsConsent.setTppInformation(tppInformation);
 
         AuthorisationTemplate authorisationTemplate = new AuthorisationTemplate();
