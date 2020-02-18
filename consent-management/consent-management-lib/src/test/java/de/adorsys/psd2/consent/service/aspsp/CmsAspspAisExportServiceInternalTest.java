@@ -24,6 +24,7 @@ import de.adorsys.psd2.consent.repository.AuthorisationRepository;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
+import de.adorsys.psd2.consent.service.migration.AisConsentMigrationService;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -52,11 +53,11 @@ class CmsAspspAisExportServiceInternalTest {
     private static final LocalDate CREATION_DATE_FROM = LocalDate.of(2019, 1, 1);
     private static final LocalDate CREATION_DATE_TO = LocalDate.of(2020, 12, 1);
     private static final String DEFAULT_SERVICE_INSTANCE_ID = "UNDEFINED";
-    private static final String PSU_ID = "psu id";
-    private static final String WRONG_PSU_ID = "wrong psu id";
+    private static final String PSU_ID = "anton.brueckner";
+    private static final String WRONG_PSU_ID = "max.musterman";
     private static final String EXTERNAL_CONSENT_ID = "4b112130-6a96-4941-a220-2da8a4af2c65";
-    private static final String ASPSP_ACCOUNT_ID = "aspsp account id";
-    private static final String WRONG_ASPSP_ACCOUNT_ID = "wrong aspsp account id";
+    private static final String ASPSP_ACCOUNT_ID = "3278921mxl-n2131-13nw";
+    private static final String WRONG_ASPSP_ACCOUNT_ID = "00000000aa-n2131-13nw";
     private static final OffsetDateTime CREATION_DATE_TIME = OffsetDateTime.now();
     private static final OffsetDateTime STATUS_CHANGE_DATE_TIME = OffsetDateTime.now();
 
@@ -76,6 +77,8 @@ class CmsAspspAisExportServiceInternalTest {
     private AuthorisationRepository authorisationRepository;
     @Mock
     private ConsentFilteringService consentFilteringService;
+    @Mock
+    private AisConsentMigrationService aisConsentMigrationService;
 
     @BeforeEach
     void setUp() {
@@ -87,6 +90,8 @@ class CmsAspspAisExportServiceInternalTest {
     @Test
     void exportConsentsByTpp_success() {
         // Given
+        ConsentEntity consentEntity = buildConsentEntity();
+
         when(aisConsentSpecification.byTppIdAndCreationPeriodAndPsuIdDataAndInstanceId(
             TPP_AUTHORISATION_NUMBER,
             CREATION_DATE_FROM,
@@ -96,14 +101,16 @@ class CmsAspspAisExportServiceInternalTest {
         )).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         //noinspection unchecked
         when(consentJpaRepository.findAll(any(Specification.class)))
-            .thenReturn(Collections.singletonList(buildAisConsent()));
+            .thenReturn(Collections.singletonList(consentEntity));
         CmsAisAccountConsent expectedConsent = buildAisAccountConsent();
 
         List<AuthorisationEntity> authorisations = Collections.singletonList(new AuthorisationEntity());
         when(authorisationRepository.findAllByParentExternalIdAndAuthorisationType(EXTERNAL_CONSENT_ID, AuthorisationType.AIS))
             .thenReturn(authorisations);
-
-        when(aisConsentMapper.mapToCmsAisAccountConsent(buildAisConsent(), authorisations)).thenReturn(buildAisAccountConsent());
+        when(aisConsentMigrationService.migrateIfNeeded(consentEntity))
+            .thenReturn(consentEntity);
+        when(aisConsentMapper.mapToCmsAisAccountConsent(consentEntity, authorisations))
+            .thenReturn(buildAisAccountConsent());
 
         // When
         Collection<CmsAisAccountConsent> aisConsents =
@@ -149,19 +156,23 @@ class CmsAspspAisExportServiceInternalTest {
     @Test
     void exportConsentsByPsu_success() {
         // Given
+        ConsentEntity consentEntity = buildConsentEntity();
+
         when(aisConsentSpecification.byPsuIdDataAndCreationPeriodAndInstanceId(psuIdData,
                                                                                CREATION_DATE_FROM,
                                                                                CREATION_DATE_TO,
                                                                                DEFAULT_SERVICE_INSTANCE_ID
         )).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        when(consentJpaRepository.findAll(any())).thenReturn(Collections.singletonList(buildAisConsent()));
+        when(consentJpaRepository.findAll(any())).thenReturn(Collections.singletonList(consentEntity));
         CmsAisAccountConsent expectedConsent = buildAisAccountConsent();
 
         List<AuthorisationEntity> authorisations = Collections.singletonList(new AuthorisationEntity());
         when(authorisationRepository.findAllByParentExternalIdAndAuthorisationType(EXTERNAL_CONSENT_ID, AuthorisationType.AIS))
             .thenReturn(authorisations);
-
-        when(aisConsentMapper.mapToCmsAisAccountConsent(buildAisConsent(), authorisations)).thenReturn(buildAisAccountConsent());
+        when(aisConsentMapper.mapToCmsAisAccountConsent(consentEntity, authorisations))
+            .thenReturn(buildAisAccountConsent());
+        when(aisConsentMigrationService.migrateIfNeeded(consentEntity))
+            .thenReturn(consentEntity);
 
         // When
         Collection<CmsAisAccountConsent> aisConsents =
@@ -224,15 +235,19 @@ class CmsAspspAisExportServiceInternalTest {
                                                                    CREATION_DATE_TO,
                                                                    DEFAULT_SERVICE_INSTANCE_ID
         )).thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        ConsentEntity aisConsent = buildAisConsent();
-        when(consentJpaRepository.findAll(any())).thenReturn(Collections.singletonList(aisConsent));
-        when(consentFilteringService.filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID))
-            .thenReturn(Collections.singletonList(aisConsent));
+        ConsentEntity consentEntity = buildConsentEntity();
+        when(consentJpaRepository.findAll(any()))
+            .thenReturn(Collections.singletonList(consentEntity));
+        when(consentFilteringService.filterAisConsentsByAspspAccountId(Collections.singletonList(consentEntity), ASPSP_ACCOUNT_ID))
+            .thenReturn(Collections.singletonList(consentEntity));
         List<AuthorisationEntity> authorisations = Collections.singletonList(new AuthorisationEntity());
         when(authorisationRepository.findAllByParentExternalIdAndAuthorisationType(EXTERNAL_CONSENT_ID, AuthorisationType.AIS))
             .thenReturn(authorisations);
+        when(aisConsentMigrationService.migrateIfNeeded(consentEntity))
+            .thenReturn(consentEntity);
 
-        when(aisConsentMapper.mapToCmsAisAccountConsent(aisConsent, authorisations)).thenReturn(buildAisAccountConsent());
+        when(aisConsentMapper.mapToCmsAisAccountConsent(consentEntity, authorisations))
+            .thenReturn(buildAisAccountConsent());
         CmsAisAccountConsent expectedConsent = buildAisAccountConsent();
 
         // When
@@ -245,7 +260,7 @@ class CmsAspspAisExportServiceInternalTest {
         assertTrue(aisConsents.contains(expectedConsent));
         verify(aisConsentSpecification, times(1))
             .byCreationPeriodAndInstanceId(CREATION_DATE_FROM, CREATION_DATE_TO, DEFAULT_SERVICE_INSTANCE_ID);
-        verify(consentFilteringService).filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID);
+        verify(consentFilteringService).filterAisConsentsByAspspAccountId(Collections.singletonList(consentEntity), ASPSP_ACCOUNT_ID);
     }
 
     @Test
@@ -258,8 +273,11 @@ class CmsAspspAisExportServiceInternalTest {
     @Test
     void exportConsentsByAccountId_failure_wrongAspspAccountId() {
         // Given
-        ConsentEntity aisConsent = buildAisConsent();
-        when(consentJpaRepository.findAll(any())).thenReturn(Collections.singletonList(aisConsent));
+        ConsentEntity consentEntity = buildConsentEntity();
+        when(consentJpaRepository.findAll(any()))
+            .thenReturn(Collections.singletonList(consentEntity));
+        when(aisConsentMigrationService.migrateIfNeeded(consentEntity))
+            .thenReturn(consentEntity);
 
         // When
         Collection<CmsAisAccountConsent> aisConsents =
@@ -270,7 +288,7 @@ class CmsAspspAisExportServiceInternalTest {
         assertTrue(aisConsents.isEmpty());
         verify(aisConsentSpecification, times(1))
             .byCreationPeriodAndInstanceId(CREATION_DATE_FROM, CREATION_DATE_TO, DEFAULT_SERVICE_INSTANCE_ID);
-        verify(consentFilteringService).filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), WRONG_ASPSP_ACCOUNT_ID);
+        verify(consentFilteringService).filterAisConsentsByAspspAccountId(Collections.singletonList(consentEntity), WRONG_ASPSP_ACCOUNT_ID);
     }
 
     private PsuIdData buildPsuIdData(String psuId) {
@@ -293,7 +311,7 @@ class CmsAspspAisExportServiceInternalTest {
                                         false, false, null, null, null, null, false, Collections.emptyList(), Collections.emptyMap(), CREATION_DATE_TIME, STATUS_CHANGE_DATE_TIME);
     }
 
-    private ConsentEntity buildAisConsent() {
+    private ConsentEntity buildConsentEntity() {
         ConsentEntity aisConsent = new ConsentEntity();
         aisConsent.setExternalId(EXTERNAL_CONSENT_ID);
         aisConsent.setValidUntil(LocalDate.now().plusDays(1));

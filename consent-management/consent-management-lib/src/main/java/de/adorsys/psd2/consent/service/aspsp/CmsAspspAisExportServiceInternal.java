@@ -24,6 +24,7 @@ import de.adorsys.psd2.consent.repository.AuthorisationRepository;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
+import de.adorsys.psd2.consent.service.migration.AisConsentMigrationService;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,7 @@ public class CmsAspspAisExportServiceInternal implements CmsAspspAisExportServic
     private final AisConsentMapper aisConsentMapper;
     private final AuthorisationRepository authorisationRepository;
     private final ConsentFilteringService consentFilteringService;
+    private final AisConsentMigrationService aisConsentMigrationService;
 
     @Override
     public Collection<CmsAisAccountConsent> exportConsentsByTpp(String tppAuthorisationNumber,
@@ -69,6 +71,7 @@ public class CmsAspspAisExportServiceInternal implements CmsAspspAisExportServic
             instanceId
         ))
                    .stream()
+                   .map(aisConsentMigrationService::migrateIfNeeded)
                    .map(this::mapToCmsAisAccountConsentWithAuthorisations)
                    .collect(Collectors.toList());
     }
@@ -89,6 +92,7 @@ public class CmsAspspAisExportServiceInternal implements CmsAspspAisExportServic
                                                                                                               instanceId
         ))
                    .stream()
+                   .map(aisConsentMigrationService::migrateIfNeeded)
                    .map(this::mapToCmsAisAccountConsentWithAuthorisations)
                    .collect(Collectors.toList());
     }
@@ -107,7 +111,11 @@ public class CmsAspspAisExportServiceInternal implements CmsAspspAisExportServic
 
         List<ConsentEntity> consents = consentJpaRepository.findAll(aisConsentSpecification.byCreationPeriodAndInstanceId(createDateFrom,
                                                                                                                           createDateTo,
-                                                                                                                          instanceId));
+                                                                                                                          instanceId))
+                                           .stream()
+                                           .map(aisConsentMigrationService::migrateIfNeeded)
+                                           .collect(Collectors.toList());
+
         List<ConsentEntity> filteredConsents = consentFilteringService.filterAisConsentsByAspspAccountId(consents, aspspAccountId);
         return filteredConsents
                    .stream()
