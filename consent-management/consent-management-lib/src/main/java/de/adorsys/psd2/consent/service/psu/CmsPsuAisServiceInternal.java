@@ -83,7 +83,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     private final PsuDataMapper psuDataMapper;
     private final AisConsentUsageService aisConsentUsageService;
     private final CmsPsuService cmsPsuService;
-    private final CmsPsuAuthorisationMapper cmsPsuPisAuthorisationMapper;
+    private final CmsPsuAuthorisationMapper cmsPsuAuthorisationMapper;
     private final AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
     private final ConsentDataMapper consentDataMapper;
     private final AisConsentMigrationService aisConsentMigrationService;
@@ -142,7 +142,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
 
         if (optionalAuthorisation.isPresent()) {
             AuthorisationEntity authorisation = optionalAuthorisation.get();
-            return Optional.of(cmsPsuPisAuthorisationMapper.mapToCmsPsuAuthorisation(authorisation));
+            return Optional.of(cmsPsuAuthorisationMapper.mapToCmsPsuAuthorisation(authorisation));
         }
 
         log.info("Authorisation ID: [{}], Instance ID: [{}]. Get authorisation failed, because authorisation not found",

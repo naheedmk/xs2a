@@ -27,6 +27,7 @@ import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.account.AisConsentUsage;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
+import de.adorsys.psd2.consent.psu.api.CmsPsuAuthorisation;
 import de.adorsys.psd2.consent.psu.api.ais.CmsAisConsentAccessRequest;
 import de.adorsys.psd2.consent.psu.api.ais.CmsAisPsuDataAuthorisation;
 import de.adorsys.psd2.consent.repository.AuthorisationRepository;
@@ -35,6 +36,7 @@ import de.adorsys.psd2.consent.repository.impl.AisConsentRepositoryImpl;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
 import de.adorsys.psd2.consent.repository.specification.AuthorisationSpecification;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
+import de.adorsys.psd2.consent.service.mapper.CmsPsuAuthorisationMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.migration.AisConsentMigrationService;
 import de.adorsys.psd2.consent.service.psu.CmsPsuAisServiceInternal;
@@ -117,6 +119,8 @@ class CmsPsuAisServiceTest {
     private ConsentDataMapper consentDataMapper;
     @Mock
     private AisConsentMigrationService aisConsentMigrationService;
+    @Mock
+    private CmsPsuAuthorisationMapper cmsPsuAuthorisationMapper;
 
     private ConsentEntity consentEntity;
     private List<ConsentEntity> consentEntityList;
@@ -255,6 +259,40 @@ class CmsPsuAisServiceTest {
         assertTrue(consent.isPresent());
         verify(aisConsentMapper).mapToCmsAisAccountConsent(argument.capture(), anyList());
         assertEquals(consentStatus, argument.getValue().getConsentStatus());
+    }
+
+    @Test
+    void getAuthorisationByAuthorisationId_success() {
+        // Given
+        //noinspection unchecked
+        when(authorisationRepository.findOne(any(Specification.class)))
+            .thenReturn(Optional.ofNullable(authorisationEntity));
+        when(authorisationSpecification.byExternalIdAndInstanceId(eq(AUTHORISATION_ID), eq(DEFAULT_SERVICE_INSTANCE_ID)))
+            .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
+        when(cmsPsuAuthorisationMapper.mapToCmsPsuAuthorisation(authorisationEntity))
+            .thenReturn(new CmsPsuAuthorisation());
+
+        // When
+        Optional<CmsPsuAuthorisation> cmsPsuAuthorisation = cmsPsuAisService.getAuthorisationByAuthorisationId(AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID);
+
+        // Then
+        assertTrue(cmsPsuAuthorisation.isPresent());
+    }
+
+    @Test
+    void getAuthorisationByAuthorisationId_no_authorisation() {
+        // Given
+        //noinspection unchecked
+        when(authorisationRepository.findOne(any(Specification.class)))
+            .thenReturn(Optional.empty());
+        when(authorisationSpecification.byExternalIdAndInstanceId(eq(AUTHORISATION_ID), eq(DEFAULT_SERVICE_INSTANCE_ID)))
+            .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
+
+        // When
+        Optional<CmsPsuAuthorisation> cmsPsuAuthorisation = cmsPsuAisService.getAuthorisationByAuthorisationId(AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID);
+
+        // Then
+        assertFalse(cmsPsuAuthorisation.isPresent());
     }
 
     @Test
