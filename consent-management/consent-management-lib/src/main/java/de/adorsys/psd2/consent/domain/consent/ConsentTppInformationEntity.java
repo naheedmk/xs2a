@@ -40,8 +40,7 @@ public class ConsentTppInformationEntity {
     @ApiModelProperty(name = "tppRedirectPreferred", value = "If it equals “true”, the TPP prefers a redirect over an embedded SCA approach.", required = true, example = "false")
     private boolean tppRedirectPreferred;
 
-    // ToDo: check whether the mapping should be ManyToOne instead https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "tpp_info_id", nullable = false)
     @ApiModelProperty(value = "Information about TPP", required = true)
     private TppInfoEntity tppInfo;
