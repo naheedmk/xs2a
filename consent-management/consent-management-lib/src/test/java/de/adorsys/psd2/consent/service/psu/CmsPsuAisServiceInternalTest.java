@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.consent.service;
+package de.adorsys.psd2.consent.service.psu;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.WrongChecksumException;
 import de.adorsys.psd2.consent.api.ais.AisAccountAccess;
@@ -26,6 +27,7 @@ import de.adorsys.psd2.consent.api.service.ConsentService;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.account.AisConsentUsage;
+import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.psu.api.CmsPsuAuthorisation;
 import de.adorsys.psd2.consent.psu.api.ais.CmsAisConsentAccessRequest;
@@ -35,12 +37,12 @@ import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.impl.AisConsentRepositoryImpl;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
 import de.adorsys.psd2.consent.repository.specification.AuthorisationSpecification;
+import de.adorsys.psd2.consent.service.AisConsentUsageService;
+import de.adorsys.psd2.consent.service.mapper.AccessMapper;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsPsuAuthorisationMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.migration.AisConsentMigrationService;
-import de.adorsys.psd2.consent.service.psu.CmsPsuAisServiceInternal;
-import de.adorsys.psd2.consent.service.psu.CmsPsuService;
 import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
@@ -73,7 +75,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CmsPsuAisServiceTest {
+class CmsPsuAisServiceInternalTest {
     private static final String EXTERNAL_CONSENT_ID = "4b112130-6a96-4941-a220-2da8a4af2c65";
     private static final String EXTERNAL_CONSENT_ID_NOT_EXIST = "4b112130-6a96-4941-a220-2da8a4af2c63";
     private static final String AUTHORISATION_ID = "9304a6a0-8f02-4b79-aeab-00aa7e03a06d";
@@ -121,6 +123,8 @@ class CmsPsuAisServiceTest {
     private AisConsentMigrationService aisConsentMigrationService;
     @Mock
     private CmsPsuAuthorisationMapper cmsPsuAuthorisationMapper;
+    @Mock
+    private AccessMapper accessMapper;
 
     private ConsentEntity consentEntity;
     private List<ConsentEntity> consentEntityList;
@@ -709,8 +713,13 @@ class CmsPsuAisServiceTest {
             .thenReturn(Optional.ofNullable(consentEntity));
         when(aisConsentSpecification.byConsentIdAndInstanceId(EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
+        AccountAccess mappedAccountAccess = jsonReader.getObjectFromFile("json/account-access-mapped.json", AccountAccess.class);
         when(aisConsentMapper.mapToAccountAccess(aisAccountAccess))
-            .thenReturn(jsonReader.getObjectFromFile("json/account-access-mapped.json", AccountAccess.class));
+            .thenReturn(mappedAccountAccess);
+        List<AspspAccountAccess> aspspAccountAccesses = jsonReader.getObjectFromFile("json/service/psu/aspsp-account-access-list.json", new TypeReference<List<AspspAccountAccess>>() {
+        });
+        when(accessMapper.mapToAspspAccountAccess(mappedAccountAccess))
+            .thenReturn(aspspAccountAccesses);
         when(aisConsentMigrationService.migrateIfNeeded(consentEntity))
             .thenReturn(consentEntity);
 
@@ -718,41 +727,18 @@ class CmsPsuAisServiceTest {
         boolean saved = cmsPsuAisService.updateAccountAccessInConsent(EXTERNAL_CONSENT_ID, accountAccessRequest, DEFAULT_SERVICE_INSTANCE_ID);
 
         // Then
-        verify(aisConsentRepositoryImpl).verifyAndUpdate(argument.capture());
-        assertSame(argument.getValue().getValidUntil(), validUntil);
-        assertEquals(argument.getValue().getFrequencyPerDay(), frequencyPerDay);
-        assertEquals(getUsageCounter(argument.getValue()), frequencyPerDay);
-        assertFalse(argument.getValue().isRecurringIndicator());
         assertTrue(saved);
+        verify(aisConsentRepositoryImpl).verifyAndUpdate(argument.capture());
+        ConsentEntity capturedConsentEntity = argument.getValue();
+        assertSame(capturedConsentEntity.getValidUntil(), validUntil);
+        assertEquals(capturedConsentEntity.getFrequencyPerDay(), frequencyPerDay);
+        assertEquals(getUsageCounter(capturedConsentEntity), frequencyPerDay);
+        assertFalse(capturedConsentEntity.isRecurringIndicator());
+        assertEquals(aspspAccountAccesses, capturedConsentEntity.getAspspAccountAccesses());
     }
 
     @Test
-    void updateAccountAccessInConsent_NoAdditionalAccountInformation_Success() throws WrongChecksumException {
-        // Given
-        AisAccountAccess aisAccountAccess = jsonReader.getObjectFromFile("json/ais-account-access.json", AisAccountAccess.class);
-
-        CmsAisConsentAccessRequest accountAccessRequest = new CmsAisConsentAccessRequest(aisAccountAccess, LocalDate.now(), 777, Boolean.TRUE, Boolean.TRUE);
-        ArgumentCaptor<ConsentEntity> argument = ArgumentCaptor.forClass(ConsentEntity.class);
-        //noinspection unchecked
-        when(consentJpaRepository.findOne(any(Specification.class)))
-            .thenReturn(Optional.ofNullable(consentEntity));
-        when(aisConsentSpecification.byConsentIdAndInstanceId(EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID))
-            .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        when(aisConsentMapper.mapToAccountAccess(aisAccountAccess))
-            .thenReturn(jsonReader.getObjectFromFile("json/account-access-mapped.json", AccountAccess.class));
-        when(aisConsentMigrationService.migrateIfNeeded(consentEntity))
-            .thenReturn(consentEntity);
-
-        // When
-        boolean saved = cmsPsuAisService.updateAccountAccessInConsent(EXTERNAL_CONSENT_ID, accountAccessRequest, DEFAULT_SERVICE_INSTANCE_ID);
-        // Then
-        verify(aisConsentRepositoryImpl).verifyAndUpdate(argument.capture());
-
-        assertTrue(saved);
-    }
-
-    @Test
-    void updateAccountAccessInConsent_AdditionalAccountInformation_Success() throws WrongChecksumException {
+    void updateAccountAccessInConsent_additionalAccountInformation_Success() throws WrongChecksumException {
         // Given
         AisAccountAccess aisAccountAccess = jsonReader.getObjectFromFile("json/ais-account-access-with-additional-information.json", AisAccountAccess.class);
 
@@ -763,8 +749,13 @@ class CmsPsuAisServiceTest {
             .thenReturn(Optional.ofNullable(consentEntity));
         when(aisConsentSpecification.byConsentIdAndInstanceId(EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
+        AccountAccess mappedAccountAccess = jsonReader.getObjectFromFile("json/account-access-with-additional-information.json", AccountAccess.class);
         when(aisConsentMapper.mapToAccountAccess(aisAccountAccess))
-            .thenReturn(jsonReader.getObjectFromFile("json/account-access-with-additional-information.json", AccountAccess.class));
+            .thenReturn(mappedAccountAccess);
+        List<AspspAccountAccess> aspspAccountAccesses = jsonReader.getObjectFromFile("json/service/psu/aspsp-account-access-list-owner-name.json", new TypeReference<List<AspspAccountAccess>>() {
+        });
+        when(accessMapper.mapToAspspAccountAccess(mappedAccountAccess))
+            .thenReturn(aspspAccountAccesses);
         when(aisConsentMigrationService.migrateIfNeeded(consentEntity))
             .thenReturn(consentEntity);
 
@@ -772,8 +763,10 @@ class CmsPsuAisServiceTest {
         boolean saved = cmsPsuAisService.updateAccountAccessInConsent(EXTERNAL_CONSENT_ID, accountAccessRequest, DEFAULT_SERVICE_INSTANCE_ID);
 
         // Then
-        verify(aisConsentRepositoryImpl).verifyAndUpdate(argument.capture());
         assertTrue(saved);
+        verify(aisConsentRepositoryImpl).verifyAndUpdate(argument.capture());
+        ConsentEntity capturedConsentEntity = argument.getValue();
+        assertEquals(aspspAccountAccesses, capturedConsentEntity.getAspspAccountAccesses());
     }
 
     @Test

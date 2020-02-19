@@ -24,6 +24,7 @@ import de.adorsys.psd2.consent.api.ais.CmsAisConsentResponse;
 import de.adorsys.psd2.consent.api.service.ConsentService;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
+import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.psu.api.CmsPsuAisService;
 import de.adorsys.psd2.consent.psu.api.CmsPsuAuthorisation;
@@ -36,6 +37,7 @@ import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
 import de.adorsys.psd2.consent.repository.specification.AuthorisationSpecification;
 import de.adorsys.psd2.consent.service.AisConsentConfirmationExpirationService;
 import de.adorsys.psd2.consent.service.AisConsentUsageService;
+import de.adorsys.psd2.consent.service.mapper.AccessMapper;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsPsuAuthorisationMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
@@ -43,6 +45,7 @@ import de.adorsys.psd2.consent.service.migration.AisConsentMigrationService;
 import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
+import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
@@ -52,6 +55,7 @@ import de.adorsys.psd2.xs2a.core.sca.AuthenticationDataHolder;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -86,6 +90,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     private final AisConsentConfirmationExpirationService aisConsentConfirmationExpirationService;
     private final ConsentDataMapper consentDataMapper;
     private final AisConsentMigrationService aisConsentMigrationService;
+    private final AccessMapper accessMapper;
 
     @Override
     @Transactional
@@ -263,27 +268,31 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
             return false;
         }
 
-        AisAccountAccess accountAccess = request.getAccountAccess();
-        if (accountAccess == null) {
+        AisAccountAccess requestedAisAccountAccess = request.getAccountAccess();
+        if (requestedAisAccountAccess == null) {
             log.info("Consent ID [{}]. Update account access in consent failed, because AIS Account Access is null",
                      consent.getExternalId());
             return false;
         }
 
-        // We save the old TPP accesses and put them to new entity after the ASPSP accesses updating.
-        AisConsentData aisConsentDataOld = consentDataMapper.mapToAisConsentData(consent.getData());
+        AisConsentData aisConsentDataNew = new AisConsentData(AccountAccessType
+                                                                  .getByDescription(requestedAisAccountAccess.getAvailableAccounts())
+                                                                  .orElse(null),
+                                                              AccountAccessType
+                                                                  .getByDescription(requestedAisAccountAccess.getAllPsd2())
+                                                                  .orElse(null),
+                                                              AccountAccessType
+                                                                  .getByDescription(requestedAisAccountAccess.getAvailableAccountsWithBalance())
+                                                                  .orElse(null),
+                                                              BooleanUtils.isTrue(request.getCombinedServiceIndicator()));
 
-        AccountAccess aspspAccountAccess = consentMapper.mapToAccountAccess(accountAccess);
+        byte[] data = consentDataMapper.getBytesFromAisConsentData(aisConsentDataNew);
 
-//        AisConsentData aisConsentDataNew = new AisConsentData(aisConsentDataOld.getTppAccountAccess(),
-//                                                              aspspAccountAccess,
-//                                                              BooleanUtils.isTrue(request.getCombinedServiceIndicator()));
-//
-//        byte[] data = consentDataMapper.getBytesFromAisConsentData(aisConsentDataNew);
-        // ToDo properly update accesses https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-        byte[] data = consentDataMapper.getBytesFromAisConsentData(aisConsentDataOld);
+        AccountAccess requestedAccountAccess = consentMapper.mapToAccountAccess(requestedAisAccountAccess);
+        List<AspspAccountAccess> aspspAccountAccesses = accessMapper.mapToAspspAccountAccess(requestedAccountAccess);
 
         consent.setData(data);
+        consent.setAspspAccountAccesses(aspspAccountAccesses);
         consent.setValidUntil(request.getValidUntil());
         consent.setFrequencyPerDay(request.getFrequencyPerDay());
 

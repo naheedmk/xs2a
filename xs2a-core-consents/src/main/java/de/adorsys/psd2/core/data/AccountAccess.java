@@ -37,6 +37,7 @@ public class AccountAccess {
     private List<AccountReference> transactions;
     private AdditionalInformationAccess additionalInformationAccess;
 
+    // TODO: no longer checks whether enum values are empty, double check usages https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
     @JsonIgnore
     public boolean isNotEmpty() {
         return !(CollectionUtils.isEmpty(accounts)
