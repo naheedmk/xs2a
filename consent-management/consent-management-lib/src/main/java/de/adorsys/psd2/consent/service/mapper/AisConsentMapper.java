@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.consent.service.mapper;
 
-import de.adorsys.psd2.consent.api.TypeAccess;
 import de.adorsys.psd2.consent.api.ais.AisAccountAccess;
 import de.adorsys.psd2.consent.api.ais.AisAccountConsentAuthorisation;
 import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
@@ -29,7 +28,6 @@ import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.authorisation.AccountConsentAuthorization;
-import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -50,10 +48,11 @@ public class AisConsentMapper {
     private final AuthorisationTemplateMapper authorisationTemplateMapper;
     private final ConsentDataMapper consentDataMapper;
     private final ConsentTppInformationMapper consentTppInformationMapper;
+    private final AccessMapper accessMapper;
 
-    private AisAccountAccess getAvailableAccess(ConsentEntity consent) {
-        AisAccountAccess tppAccountAccess = mapToAisAccountAccess(consent);
-        AisAccountAccess aspspAccountAccess = mapToAspspAisAccountAccess(consent);
+    private AisAccountAccess getAvailableAccess(AisConsent aisConsent) {
+        AisAccountAccess tppAccountAccess = mapToAisAccountAccess(aisConsent);
+        AisAccountAccess aspspAccountAccess = mapToAspspAisAccountAccess(aisConsent);
 
         if (tppAccountAccess.getAllPsd2() != null
                 || !aspspAccountAccess.isNotEmpty()) {
@@ -64,11 +63,8 @@ public class AisConsentMapper {
     }
 
     public CmsAisAccountConsent mapToCmsAisAccountConsent(ConsentEntity consent, List<AuthorisationEntity> authorisations) {
-        AisAccountAccess chosenAccess = getAvailableAccess(consent);
-
-        Map<String, Integer> usageCounterMap = aisConsentUsageService.getUsageCounterMap(consent);
-
-        boolean withBalance = consent.getTppAccountAccesses().stream().anyMatch(acc -> acc.getTypeAccess() == TypeAccess.BALANCE);
+        AisConsent aisConsent = mapToAisConsent(consent, authorisations);
+        AisAccountAccess chosenAccess = getAvailableAccess(aisConsent);
 
         return new CmsAisAccountConsent(
             consent.getExternalId(),
@@ -79,16 +75,15 @@ public class AisConsentMapper {
             consent.getFrequencyPerDay(),
             consent.getLastActionDate(),
             consent.getConsentStatus(),
-            withBalance,
+            aisConsent.isWithBalance(),
             consent.getTppInformation().isTppRedirectPreferred(),
-            // ToDo extract proper type https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-            AisConsentRequestType.DEDICATED_ACCOUNTS,
-            psuDataMapper.mapToPsuIdDataList(consent.getPsuDataList()),
+            aisConsent.getConsentRequestType(),
+            aisConsent.getPsuIdDataList(),
             tppInfoMapper.mapToTppInfo(consent.getTppInformation().getTppInfo()),
-            authorisationTemplateMapper.mapToAuthorisationTemplate(consent.getAuthorisationTemplate()),
+            aisConsent.getAuthorisationTemplate(),
             consent.isMultilevelScaRequired(),
             mapToAisAccountConsentAuthorisation(authorisations),
-            usageCounterMap,
+            aisConsent.getUsageCounterMap(),
             consent.getCreationTimestamp(),
             consent.getStatusChangeTimestamp());
     }
@@ -115,8 +110,8 @@ public class AisConsentMapper {
                               psuDataMapper.mapToPsuIdDataList(entity.getPsuDataList()),
                               mapToAccountConsentAuthorisations(authorisations),
                               usageCounterMap,
-                              AccountAccess.EMPTY_ACCESS,
-                              AccountAccess.EMPTY_ACCESS);
+                              accessMapper.mapTppAccessesToAccountAccess(entity.getTppAccountAccesses()),
+                              accessMapper.mapAspspAccessesToAccountAccess(entity.getAspspAccountAccesses()));
     }
 
     // TODO: 19.02.2020 Handle enum values not being mapped https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
@@ -128,35 +123,28 @@ public class AisConsentMapper {
                                  accountAccess.getAccountAdditionalInformationAccess());
     }
 
-    private AisAccountAccess mapToAisAccountAccess(ConsentEntity consent) {
-        // TODO: 19.02.2020 propely map https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-//        AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consent.getData());
-//        AccountAccess tppAccesses = consent.getTppAccountAccess();
-//
-//        return new AisAccountAccess(tppAccesses.getAccounts(),
-//                                    tppAccesses.getBalances(),
-//                                    tppAccesses.getTransactions(),
-//                                    getAccessType(tppAccesses.getAvailableAccounts()),
-//                                    getAccessType(tppAccesses.getAllPsd2()),
-//                                    getAccessType(tppAccesses.getAvailableAccountsWithBalance()),
-//                                    tppAccesses.getAdditionalInformationAccess()
-        return new AisAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null, null, null, null);
+    private AisAccountAccess mapToAisAccountAccess(AisConsent aisConsent) {
+        AccountAccess tppAccesses = aisConsent.getTppAccountAccesses();
+        AisConsentData consentData = aisConsent.getConsentData();
+        return new AisAccountAccess(tppAccesses.getAccounts(),
+                                    tppAccesses.getBalances(),
+                                    tppAccesses.getTransactions(),
+                                    getAccessType(consentData.getAvailableAccounts()),
+                                    getAccessType(consentData.getAllPsd2()),
+                                    getAccessType(consentData.getAvailableAccountsWithBalance()),
+                                    tppAccesses.getAdditionalInformationAccess());
     }
 
-    private AisAccountAccess mapToAspspAisAccountAccess(ConsentEntity consent) {
-        // TODO: 19.02.2020 propely map https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-//        AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consent.getData());
-//        AccountAccess aspspAccesses = aisConsentData.getAspspAccountAccess();
-//
-//        return new AisAccountAccess(aspspAccesses.getAccounts(),
-//                                    aspspAccesses.getBalances(),
-//                                    aspspAccesses.getTransactions(),
-//                                    getAccessType(aspspAccesses.getAvailableAccounts()),
-//                                    getAccessType(aspspAccesses.getAllPsd2()),
-//                                    getAccessType(aspspAccesses.getAvailableAccountsWithBalance()),
-//                                    aspspAccesses.getAdditionalInformationAccess()
-//        );
-        return new AisAccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null, null, null, null);
+    private AisAccountAccess mapToAspspAisAccountAccess(AisConsent aisConsent) {
+        AccountAccess aspspAccesses = aisConsent.getAspspAccountAccesses();
+        AisConsentData consentData = aisConsent.getConsentData();
+        return new AisAccountAccess(aspspAccesses.getAccounts(),
+                                    aspspAccesses.getBalances(),
+                                    aspspAccesses.getTransactions(),
+                                    getAccessType(consentData.getAvailableAccounts()),
+                                    getAccessType(consentData.getAllPsd2()),
+                                    getAccessType(consentData.getAvailableAccountsWithBalance()),
+                                    aspspAccesses.getAdditionalInformationAccess());
     }
 
     private String getAccessType(AccountAccessType type) {
