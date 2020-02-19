@@ -302,7 +302,7 @@ class CreateConsentRequestValidatorTest {
     @Test
     void validate_availableAccountWithOwnerName_shouldReturnConsentInvalid() {
         //Given
-        AccountAccess accountAccess = new AccountAccess(Collections.singletonList(buildAccountReference()), Collections.emptyList(), Collections.emptyList(), null);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null);
         CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null, null);
         when(aspspProfileService.isAvailableAccountsConsentSupported()).thenReturn(true);
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class)))
@@ -320,7 +320,7 @@ class CreateConsentRequestValidatorTest {
     void validate_availableAccountWithOwnerName_shouldReturnConsentValid() {
         //Given
         when(aspspProfileService.isAccountOwnerInformationSupported()).thenReturn(true);
-        AccountAccess accountAccess = new AccountAccess(Collections.singletonList(buildAccountReference()), Collections.emptyList(), Collections.emptyList(), null);
+        AccountAccess accountAccess = new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null);
         CreateConsentReq createConsentReq = buildCreateConsentReqWithAccess(accountAccess, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME, null, null);
         when(aspspProfileService.isAvailableAccountsConsentSupported()).thenReturn(true);
         when(psuDataInInitialRequestValidator.validate(any(PsuIdData.class)))
