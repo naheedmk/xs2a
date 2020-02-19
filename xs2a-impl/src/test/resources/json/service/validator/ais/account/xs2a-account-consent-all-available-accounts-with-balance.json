@@ -1,11 +1,5 @@
 {
   "consentData": {
-    "tppAccountAccess": {
-      "availableAccountsWithBalance": "allAccounts"
-    },
-    "aspspAccountAccess": {}
-  },
-  "recurringIndicator": true,
-  "validUntil": "2037-08-06",
-  "frequencyPerDay": "4"
+    "availableAccountsWithBalance": "allAccounts"
+  }
 }
