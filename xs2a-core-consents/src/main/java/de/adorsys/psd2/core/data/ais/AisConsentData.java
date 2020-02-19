@@ -25,4 +25,8 @@ public class AisConsentData {
     private AccountAccessType allPsd2;
     private AccountAccessType availableAccountsWithBalance;
     private final boolean combinedServiceIndicator;
+
+    public static AisConsentData buildDefaultAisConsentData() {
+        return new AisConsentData(null, null, null, false);
+    }
 }
