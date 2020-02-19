@@ -55,26 +55,46 @@
             <column name="consent_id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="external_id" type="VARCHAR(40)"/>
-            <column name="consent_type" type="VARCHAR(5)"/>
-            <column name="consent_status" type="VARCHAR(25)"/>
+            <column name="external_id" type="VARCHAR(40)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="consent_type" type="VARCHAR(5)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="consent_status" type="VARCHAR(25)">
+                <constraints nullable="false"/>
+            </column>
             <column name="expire_date" type="DATE"/>
-            <column name="valid_until" type="DATE"/>
-            <column name="frequency_per_day" type="INTEGER"/>
+            <column name="valid_until" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="frequency_per_day" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
             <column name="instance_id" type="VARCHAR(100)"/>
-            <column name="multilevel_sca_required" type="BOOLEAN"/>
+            <column name="multilevel_sca_required" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
             <column name="data" type="${blob.type}"/>
             <column name="checksum" type="${blob.type}"/>
             <column name="internal_request_id" type="VARCHAR(40)"/>
-            <column name="creation_timestamp" type="DATE"/>
+            <column name="creation_timestamp" type="DATE">
+                <constraints nullable="false"/>
+            </column>
             <column name="last_action_date" type="DATE"/>
-            <column name="request_date_time" type="DATE"/>
+            <column name="request_date_time" type="DATE">
+                <constraints nullable="false"/>
+            </column>
             <column name="status_change_timestamp" type="DATE"/>
-            <column name="authorisation_template_id" type="BIGINT"/>
+            <column name="authorisation_template_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
             <column name="consent_tpp_information_id" type="BIGINT">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="recurring_indicator" type="BOOLEAN"/>
+            <column name="recurring_indicator" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
     </changeSet>
