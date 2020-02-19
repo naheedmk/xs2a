@@ -112,7 +112,7 @@ public class CreateConsentRequestValidator implements BusinessValidator<CreateCo
     }
 
     private boolean isNotSupportedBankOfferedConsent(CreateConsentReq request) {
-        if (isNotEmptyAccess(request.getAccess())) {
+        if (isNotEmptyAccess(request.getAccess()) || Stream.of(request.getAvailableAccounts(), request.getAllPsd2(), request.getAvailableAccountsWithBalance()).anyMatch(EnumSet.of(ALL_ACCOUNTS, ALL_ACCOUNTS_WITH_OWNER_NAME)::contains)) {
             return false;
         }
 
@@ -124,7 +124,7 @@ public class CreateConsentRequestValidator implements BusinessValidator<CreateCo
     }
 
     private boolean isConsentGlobal(CreateConsentReq request) {
-        return isNotEmptyAccess(request.getAccess())
+        return !isNotEmptyAccess(request.getAccess())
                    && EnumSet.of(ALL_ACCOUNTS, ALL_ACCOUNTS_WITH_OWNER_NAME).contains(request.getAllPsd2());
     }
 
