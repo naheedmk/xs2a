@@ -31,7 +31,7 @@ public class PermittedAccountReferenceValidator {
     private final AccountReferenceAccessValidator accountReferenceAccessValidator;
 
     public ValidationResult validate(AisConsent aisConsent, String accountId, boolean withBalance) {
-        AccountAccess accountAccess = aisConsent.getAspspAccess();
+        AccountAccess accountAccess = aisConsent.getAspspAccountAccesses();
         List<AccountReference> accountReferences = withBalance
                                                        ? accountAccess.getBalances()
                                                        : accountAccess.getAccounts();

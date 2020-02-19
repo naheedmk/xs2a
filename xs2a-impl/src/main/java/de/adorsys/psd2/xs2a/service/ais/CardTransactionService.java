@@ -163,7 +163,7 @@ public class CardTransactionService {
     }
 
     private SpiAccountReference getRequestedAccountReference(AisConsent aisConsent, String accountId) {
-        AccountAccess access = aisConsent.getAspspAccess();
+        AccountAccess access = aisConsent.getAspspAccountAccesses();
         return accountHelperService.findAccountReference(access.getTransactions(), accountId);
     }
 

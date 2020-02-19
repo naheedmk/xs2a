@@ -56,7 +56,7 @@ public class GetBalancesReportValidator extends AbstractAccountTppValidator<GetA
             return ValidationResult.invalid(AIS_401, CONSENT_INVALID);
         }
 
-        AccountAccess accountAccess = aisConsent.getAspspAccess();
+        AccountAccess accountAccess = aisConsent.getAspspAccountAccesses();
         ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(aisConsent,
                                                                                                      accountAccess.getBalances(), consentObject.getAccountId(), aisConsent.getAisConsentRequestType());
 

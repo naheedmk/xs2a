@@ -68,12 +68,6 @@ public class AisConsent extends Consent<AisConsentData> {
         return getTppAccountAccesses();
     }
 
-    // TODO: inline https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-    @Deprecated
-    public AccountAccess getAspspAccess() {
-        return getAspspAccountAccesses();
-    }
-
     public boolean isWithBalance() {
         return CollectionUtils.isNotEmpty(getTppAccountAccesses().getBalances());
     }

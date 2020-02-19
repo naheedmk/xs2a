@@ -43,6 +43,6 @@ public class CardTransactionsReportByPeriodObject implements TppInfoProvider {
     }
 
     public List<AccountReference> getTransactions() {
-        return aisConsent.getAspspAccess().getTransactions();
+        return aisConsent.getAspspAccountAccesses().getTransactions();
     }
 }
