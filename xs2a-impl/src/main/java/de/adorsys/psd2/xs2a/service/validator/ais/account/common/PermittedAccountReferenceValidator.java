@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
@@ -36,6 +36,6 @@ public class PermittedAccountReferenceValidator {
                                                        ? accountAccess.getBalances()
                                                        : accountAccess.getAccounts();
 
-        return accountReferenceAccessValidator.validate(accountAccess, accountReferences, accountId, aisConsent.getAisConsentRequestType());
+        return accountReferenceAccessValidator.validate(aisConsent, accountReferences, accountId, aisConsent.getAisConsentRequestType());
     }
 }

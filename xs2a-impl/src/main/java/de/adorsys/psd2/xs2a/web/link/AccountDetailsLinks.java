@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 package de.adorsys.psd2.xs2a.web.link;
 
+import de.adorsys.psd2.core.data.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.xs2a.web.aspect.UrlHolder;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -25,9 +27,11 @@ import java.util.List;
 
 public class AccountDetailsLinks extends AbstractLinks {
 
-    public AccountDetailsLinks(String httpUrl, String accountId, AccountAccess accountAccess) {
+    public AccountDetailsLinks(String httpUrl, String accountId, AisConsent aisConsent) {
         super(httpUrl);
-        boolean isConsentGlobal = accountAccess.getAllPsd2() != null;
+        AisConsentData consentData = aisConsent.getConsentData();
+        AccountAccess accountAccess = aisConsent.getAccess();
+        boolean isConsentGlobal = consentData.getAllPsd2() != null;
         List<AccountReference> balances = accountAccess.getBalances();
         if (hasAccessToSource(balances) &&
                 isValidAccountByAccess(accountId, balances, isConsentGlobal)) {

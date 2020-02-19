@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class GetTransactionsReportValidator extends AbstractAccountTppValidator<
             return validationResult;
         }
 
-        ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(aisConsent.getAspspAccess(),
+        ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(aisConsent,
                                                                                                      requestObject.getTransactions(), requestObject.getAccountId(), aisConsent.getAisConsentRequestType());
         if (accountReferenceValidationResult.isNotValid()) {
             return accountReferenceValidationResult;

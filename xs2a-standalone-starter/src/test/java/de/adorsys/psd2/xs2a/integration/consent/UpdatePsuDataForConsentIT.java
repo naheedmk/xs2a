@@ -24,7 +24,6 @@ import de.adorsys.psd2.consent.api.service.AuthorisationServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppService;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
@@ -231,7 +230,8 @@ class UpdatePsuDataForConsentIT {
 
     @NotNull
     private CmsConsent buildCmsConsent() {
-        AisConsentData aisConsentData = new AisConsentData(AccountAccess.EMPTY_ACCESS, AccountAccess.EMPTY_ACCESS, false);
+        // TODO: Set proper enum values https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+        AisConsentData aisConsentData = new AisConsentData(null, null, null, false);
         byte[] bytes = consentDataMapper.getBytesFromAisConsentData(aisConsentData);
         PsuIdData psuIdData = new PsuIdData(PSU_ID, null, null, null, null);
         Authorisation authorisation = new Authorisation(AUTHORISATION_ID, psuIdData, ENCRYPTED_CONSENT_ID, AuthorisationType.AIS, ScaStatus.PSUIDENTIFIED);

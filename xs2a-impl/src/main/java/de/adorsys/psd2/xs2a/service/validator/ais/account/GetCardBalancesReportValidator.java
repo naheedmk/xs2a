@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account;
 
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.xs2a.service.validator.OauthConsentValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
@@ -57,7 +57,7 @@ public class GetCardBalancesReportValidator extends AbstractAccountTppValidator<
         }
 
         AccountAccess accountAccess = consentObject.getAisConsent().getAspspAccess();
-        ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(accountAccess,
+        ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(aisConsent,
                                                                                                      accountAccess.getBalances(), consentObject.getAccountId(), aisConsent.getAisConsentRequestType());
         if (accountReferenceValidationResult.isNotValid()) {
             return accountReferenceValidationResult;

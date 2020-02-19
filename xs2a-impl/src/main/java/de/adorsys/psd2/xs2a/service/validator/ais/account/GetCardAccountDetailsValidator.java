@@ -54,7 +54,7 @@ public class GetCardAccountDetailsValidator extends AbstractAccountTppValidator<
             return ValidationResult.invalid(AIS_401, CONSENT_INVALID);
         }
 
-        ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(aisConsent.getAccess(), requestObject.getAccounts(), requestObject.getAccountId(), aisConsent.getAisConsentRequestType());
+        ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(aisConsent, requestObject.getAccounts(), requestObject.getAccountId(), aisConsent.getAisConsentRequestType());
         if (accountReferenceValidationResult.isNotValid()) {
             return accountReferenceValidationResult;
         }

@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service;
 
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.event.core.model.EventType;
 import de.adorsys.psd2.logger.context.LoggingContextService;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
-import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
@@ -31,17 +31,17 @@ public class AccountAccessValidator {
 
     public ValidationResult validate(AisConsent aisConsent, boolean withBalance) {
         if (withBalance) {
-            AccountAccess accountAccess = aisConsent.getAccess();
+            AisConsentData aisConsentData = aisConsent.getConsentData();
 
-            if (accountAccess.getAllPsd2() != null) {
+            if (aisConsentData.getAllPsd2() != null) {
                 return ValidationResult.valid();
             }
 
-            if (accountAccess.getAvailableAccountsWithBalance() == AccountAccessType.ALL_ACCOUNTS) {
+            if (aisConsentData.getAvailableAccountsWithBalance() == AccountAccessType.ALL_ACCOUNTS) {
                 return ValidationResult.valid();
             }
 
-            if (CollectionUtils.isEmpty(accountAccess.getBalances())) {
+            if (CollectionUtils.isEmpty(aisConsent.getAccess().getBalances())) {
                 return ValidationResult.invalid(ErrorType.AIS_401, CONSENT_INVALID);
             }
         }

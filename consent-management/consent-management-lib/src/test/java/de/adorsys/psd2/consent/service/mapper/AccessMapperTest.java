@@ -17,7 +17,7 @@
 package de.adorsys.psd2.consent.service.mapper;
 
 import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.Test;

@@ -19,7 +19,7 @@ package de.adorsys.psd2.consent.service.mapper;
 import de.adorsys.psd2.consent.api.AccountInfo;
 import de.adorsys.psd2.consent.api.ais.AccountAdditionalInformationAccess;
 import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import org.jetbrains.annotations.NotNull;
@@ -38,12 +38,10 @@ public class AccessMapper {
 
         Set<AccountReference> allAccounts = addReferencesToAccounts(accounts, balances, transactions);
 
+        // ToDO fix enum values https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
         return new AccountAccess(new ArrayList<>(allAccounts),
                                  new ArrayList<>(balances),
                                  new ArrayList<>(transactions),
-                                 aisAccountAccessInfo.getAvailableAccounts(),
-                                 aisAccountAccessInfo.getAllPsd2(),
-                                 aisAccountAccessInfo.getAvailableAccountsWithBalance(),
                                  mapToAdditionalInformationAccess(aisAccountAccessInfo.getAccountAdditionalInformationAccess()));
     }
 

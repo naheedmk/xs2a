@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.web.aspect;
 
-import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
@@ -50,7 +49,7 @@ public class CardAccountAspect extends AbstractLinkAspect<CardAccountController>
             if (aisConsent.getAisConsentRequestType() == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS) {
                 cardAccountDetails.forEach(acc -> acc.setLinks(null));
             } else {
-                cardAccountDetails.forEach(acc -> setLinksForCardAccountDetails(acc, body.getAisConsent().getAccess()));
+                cardAccountDetails.forEach(acc -> setLinksForCardAccountDetails(acc, body.getAisConsent()));
             }
         }
         return result;
@@ -60,7 +59,7 @@ public class CardAccountAspect extends AbstractLinkAspect<CardAccountController>
     public ResponseObject<Xs2aCardAccountDetailsHolder> getCardAccountDetails(ResponseObject<Xs2aCardAccountDetailsHolder> result) {
         if (!result.hasError()) {
             Xs2aCardAccountDetailsHolder body = result.getBody();
-            setLinksForCardAccountDetails(body.getCardAccountDetails(), body.getAisConsent().getAccess());
+            setLinksForCardAccountDetails(body.getCardAccountDetails(), body.getAisConsent());
         }
         return result;
     }
@@ -81,10 +80,10 @@ public class CardAccountAspect extends AbstractLinkAspect<CardAccountController>
         return result;
     }
 
-    private void setLinksForCardAccountDetails(Xs2aCardAccountDetails cardAccountDetails, AccountAccess accountAccess) {
+    private void setLinksForCardAccountDetails(Xs2aCardAccountDetails cardAccountDetails, AisConsent aisConsent) {
         String url = getHttpUrl();
         String id = cardAccountDetails.getResourceId();
-        CardAccountDetailsLinks cardAccountDetailsLinks = new CardAccountDetailsLinks(url,id, accountAccess);
+        CardAccountDetailsLinks cardAccountDetailsLinks = new CardAccountDetailsLinks(url, id, aisConsent);
         cardAccountDetails.setLinks(cardAccountDetailsLinks);
     }
 }

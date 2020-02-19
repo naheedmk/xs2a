@@ -40,7 +40,7 @@ import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsPsuAuthorisationMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.migration.AisConsentMigrationService;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
@@ -52,7 +52,6 @@ import de.adorsys.psd2.xs2a.core.sca.AuthenticationDataHolder;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -276,11 +275,13 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
 
         AccountAccess aspspAccountAccess = consentMapper.mapToAccountAccess(accountAccess);
 
-        AisConsentData aisConsentDataNew = new AisConsentData(aisConsentDataOld.getTppAccountAccess(),
-                                                              aspspAccountAccess,
-                                                              BooleanUtils.isTrue(request.getCombinedServiceIndicator()));
-
-        byte[] data = consentDataMapper.getBytesFromAisConsentData(aisConsentDataNew);
+//        AisConsentData aisConsentDataNew = new AisConsentData(aisConsentDataOld.getTppAccountAccess(),
+//                                                              aspspAccountAccess,
+//                                                              BooleanUtils.isTrue(request.getCombinedServiceIndicator()));
+//
+//        byte[] data = consentDataMapper.getBytesFromAisConsentData(aisConsentDataNew);
+        // ToDo properly update accesses https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+        byte[] data = consentDataMapper.getBytesFromAisConsentData(aisConsentDataOld);
 
         consent.setData(data);
         consent.setValidUntil(request.getValidUntil());

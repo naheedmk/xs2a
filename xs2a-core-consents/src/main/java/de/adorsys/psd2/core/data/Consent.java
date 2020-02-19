@@ -54,6 +54,8 @@ public abstract class Consent<T> {
     private List<PsuIdData> psuIdDataList;
     private List<AccountConsentAuthorization> authorisations;
     private Map<String, Integer> usages;
+    private AccountAccess tppAccountAccesses;
+    private AccountAccess aspspAccountAccesses;
 
     public abstract ConsentType getConsentType();
 

@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.service.account;
 
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.Test;
 

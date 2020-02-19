@@ -32,8 +32,6 @@ import de.adorsys.psd2.consent.repository.AuthorisationRepository;
 import de.adorsys.psd2.consent.service.account.AccountAccessUpdater;
 import de.adorsys.psd2.consent.service.mapper.AccessMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsConsentMapper;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
-import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
 import lombok.RequiredArgsConstructor;
@@ -111,16 +109,17 @@ public class AisConsentServiceInternal implements AisConsentService {
     }
 
     private ConsentEntity updateConsentAccess(ConsentEntity consentEntity, AisAccountAccessInfo request) {
-        AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consentEntity.getData());
-        AccountAccess existingAccess = aisConsentData.getAspspAccountAccess();
-        AccountAccess requestedAccess = accessMapper.mapToAccountAccess(request);
-        AccountAccess updatedAccesses = accountAccessUpdater.updateAccountReferencesInAccess(existingAccess, requestedAccess);
-
-        AisConsentData updatedAisConsentData = new AisConsentData(aisConsentData.getTppAccountAccess(),
-                                                                  updatedAccesses,
-                                                                  aisConsentData.isCombinedServiceIndicator());
-        byte[] updatedConsentData = consentDataMapper.getBytesFromAisConsentData(updatedAisConsentData);
-        consentEntity.setData(updatedConsentData);
+        // ToDo Fix update https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+//        AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consentEntity.getData());
+//        AccountAccess existingAccess = aisConsentData.getAspspAccountAccess();
+//        AccountAccess requestedAccess = accessMapper.mapToAccountAccess(request);
+//        AccountAccess updatedAccesses = accountAccessUpdater.updateAccountReferencesInAccess(existingAccess, requestedAccess);
+//
+//        AisConsentData updatedAisConsentData = new AisConsentData(aisConsentData.getTppAccountAccess(),
+//                                                                  updatedAccesses,
+//                                                                  aisConsentData.isCombinedServiceIndicator());
+//        byte[] updatedConsentData = consentDataMapper.getBytesFromAisConsentData(updatedAisConsentData);
+//        consentEntity.setData(updatedConsentData);
 
         return consentEntity;
     }

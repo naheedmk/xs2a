@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.core.data.ais;
+package de.adorsys.psd2.core.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import lombok.Value;
@@ -31,27 +30,18 @@ public class AccountAccess {
     public static final AccountAccess EMPTY_ACCESS = new AccountAccess(Collections.emptyList(),
                                                                        Collections.emptyList(),
                                                                        Collections.emptyList(),
-                                                                       null,
-                                                                       null,
-                                                                       null,
                                                                        new AdditionalInformationAccess(null));
 
     private List<AccountReference> accounts;
     private List<AccountReference> balances;
     private List<AccountReference> transactions;
-    private AccountAccessType availableAccounts;
-    private AccountAccessType allPsd2;
-    private AccountAccessType availableAccountsWithBalance;
     private AdditionalInformationAccess additionalInformationAccess;
 
     @JsonIgnore
     public boolean isNotEmpty() {
         return !(CollectionUtils.isEmpty(accounts)
                      && CollectionUtils.isEmpty(balances)
-                     && CollectionUtils.isEmpty(transactions)
-                     && allPsd2 == null
-                     && availableAccounts == null
-                     && availableAccountsWithBalance == null);
+                     && CollectionUtils.isEmpty(transactions));
     }
 
     @JsonIgnore

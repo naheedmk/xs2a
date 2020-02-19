@@ -25,8 +25,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.adorsys.psd2.consent.service.sha.ChecksumCalculatingService;
 import de.adorsys.psd2.consent.service.sha.ChecksumConstant;
 import de.adorsys.psd2.consent.service.sha.Sha512HashingService;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.Consent;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.xs2a.core.consent.ConsentType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
@@ -101,7 +101,7 @@ public class AisChecksumCalculatingServiceV3 implements ChecksumCalculatingServi
             return false;
         }
 
-        return isAspspAccessesChecksumValid(elements, aisConsent.getConsentData().getAspspAccountAccess());
+        return isAspspAccessesChecksumValid(elements, aisConsent.getAspspAccountAccesses());
     }
 
     private boolean isAspspAccessesChecksumValid(String[] elements, AccountAccess aspspAccess) {
@@ -124,7 +124,7 @@ public class AisChecksumCalculatingServiceV3 implements ChecksumCalculatingServi
         String aisConsentChecksumCommon = calculateChecksumForAisConsentCommon(aisConsent);
         sb.append(aisConsentChecksumCommon);
 
-        AccountAccess aspspAccountAccess = aisConsent.getConsentData().getAspspAccountAccess();
+        AccountAccess aspspAccountAccess = aisConsent.getAspspAccess();
         if (aspspAccountAccess.isNotEmpty()) {
 
             Map<AccountReferenceType, String> checksumMap = calculateChecksumMapByReferenceType(aspspAccountAccess);
@@ -152,7 +152,7 @@ public class AisChecksumCalculatingServiceV3 implements ChecksumCalculatingServi
         map.put("combinedServiceIndicator", aisConsent.getConsentData().isCombinedServiceIndicator());
         map.put("validUntil", aisConsent.getValidUntil());
         map.put("tppFrequencyPerDay", aisConsent.getFrequencyPerDay());
-        map.put("accesses", aisConsent.getConsentData().getTppAccountAccess());
+        map.put("accesses", aisConsent.getTppAccountAccesses());
 
         byte[] consentAsBytes = getBytesFromObject(map);
 

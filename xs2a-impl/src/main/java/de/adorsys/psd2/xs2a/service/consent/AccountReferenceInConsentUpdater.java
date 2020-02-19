@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
 package de.adorsys.psd2.xs2a.service.consent;
 
 import de.adorsys.psd2.consent.api.CmsResponse;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
-import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.AccountReferenceType;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
@@ -74,17 +73,18 @@ public class AccountReferenceInConsentUpdater {
         List<AccountReference> ownerName = new ArrayList<>();
         AdditionalInformationAccess additionalInformationAccess = existingAccess.getAdditionalInformationAccess();
 
-        if (existingAccess.getAllPsd2() == AccountAccessType.ALL_ACCOUNTS) {
-            accounts.addAll(enrichAccountReferencesGlobal(accountDetails));
-            transactions.addAll(enrichAccountReferencesGlobal(accountDetails));
-            balances.addAll(enrichAccountReferencesGlobal(accountDetails));
-        } else {
-            for (Xs2aAccountDetails accountDetail : accountDetails) {
-                accounts.addAll(enrichAccountReferences(accountDetail, existingAccess.getAccounts()));
-                balances.addAll(enrichAccountReferences(accountDetail, existingAccess.getBalances()));
-                transactions.addAll(enrichAccountReferences(accountDetail, existingAccess.getTransactions()));
-            }
-        }
+        // ToDo fix https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+//        if (existingAccess.getAllPsd2() == AccountAccessType.ALL_ACCOUNTS) {
+//            accounts.addAll(enrichAccountReferencesGlobal(accountDetails));
+//            transactions.addAll(enrichAccountReferencesGlobal(accountDetails));
+//            balances.addAll(enrichAccountReferencesGlobal(accountDetails));
+//        } else {
+//            for (Xs2aAccountDetails accountDetail : accountDetails) {
+//                accounts.addAll(enrichAccountReferences(accountDetail, existingAccess.getAccounts()));
+//                balances.addAll(enrichAccountReferences(accountDetail, existingAccess.getBalances()));
+//                transactions.addAll(enrichAccountReferences(accountDetail, existingAccess.getTransactions()));
+//            }
+//        }
 
         for (Xs2aAccountDetails accountDetail : accountDetails) {
             if (additionalInformationAccess != null && additionalInformationAccess.getOwnerName() != null) {
@@ -114,17 +114,18 @@ public class AccountReferenceInConsentUpdater {
         List<AccountReference> ownerName = new ArrayList<>();
         AdditionalInformationAccess additionalInformationAccess = existingAccess.getAdditionalInformationAccess();
 
-        if (existingAccess.getAllPsd2() == AccountAccessType.ALL_ACCOUNTS) {
-            accounts.addAll(enrichCardAccountReferencesGlobal(accountDetails));
-            transactions.addAll(enrichCardAccountReferencesGlobal(accountDetails));
-            balances.addAll(enrichCardAccountReferencesGlobal(accountDetails));
-        } else {
-            for (Xs2aCardAccountDetails accountDetail : accountDetails) {
-                accounts.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getAccounts()));
-                balances.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getBalances()));
-                transactions.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getTransactions()));
-            }
-        }
+        // ToDo fix https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+//        if (existingAccess.getAllPsd2() == AccountAccessType.ALL_ACCOUNTS) {
+//            accounts.addAll(enrichCardAccountReferencesGlobal(accountDetails));
+//            transactions.addAll(enrichCardAccountReferencesGlobal(accountDetails));
+//            balances.addAll(enrichCardAccountReferencesGlobal(accountDetails));
+//        } else {
+//            for (Xs2aCardAccountDetails accountDetail : accountDetails) {
+//                accounts.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getAccounts()));
+//                balances.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getBalances()));
+//                transactions.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getTransactions()));
+//            }
+//        }
 
         for (Xs2aCardAccountDetails accountDetail : accountDetails) {
             if (additionalInformationAccess != null && additionalInformationAccess.getOwnerName() != null) {
@@ -143,11 +144,10 @@ public class AccountReferenceInConsentUpdater {
                                                List<AccountReference> transactions, List<AccountReference> balances,
                                                List<AccountReference> ownerName, AdditionalInformationAccess additionalInformationAccess) {
 
-        return new AccountAccess(accounts, balances, transactions, existingAccess.getAvailableAccounts(),
-                                 existingAccess.getAllPsd2(), existingAccess.getAvailableAccountsWithBalance(),
+        return new AccountAccess(accounts, balances, transactions,
                                  Optional.ofNullable(additionalInformationAccess)
-                                         .map(info -> new AdditionalInformationAccess(ownerName))
-                                         .orElse(null));
+                                     .map(info -> new AdditionalInformationAccess(ownerName))
+                                     .orElse(null));
     }
 
     /**

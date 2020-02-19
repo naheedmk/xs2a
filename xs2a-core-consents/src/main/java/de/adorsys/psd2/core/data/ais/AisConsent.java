@@ -17,7 +17,9 @@
 package de.adorsys.psd2.core.data.ais;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.Consent;
+import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.authorisation.AccountConsentAuthorization;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationTemplate;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
@@ -25,6 +27,7 @@ import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.consent.ConsentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
@@ -34,15 +37,16 @@ import java.util.stream.Stream;
 
 public class AisConsent extends Consent<AisConsentData> {
 
-    public AisConsent() {}
+    public AisConsent() {
+    }
 
     public AisConsent(AisConsentData consentData, String id, String internalRequestId, ConsentStatus consentStatus, Integer frequencyPerDay, boolean recurringIndicator, boolean multilevelScaRequired,
                       LocalDate validUntil, LocalDate expireDate, LocalDate lastActionDate, OffsetDateTime creationTimestamp, OffsetDateTime statusChangeTimestamp, ConsentTppInformation consentTppInformation,
-                      AuthorisationTemplate authorisationTemplate, List<PsuIdData> psuIdDataList, List<AccountConsentAuthorization> authorisations, Map<String, Integer> usages) {
+                      AuthorisationTemplate authorisationTemplate, List<PsuIdData> psuIdDataList, List<AccountConsentAuthorization> authorisations, Map<String, Integer> usages, AccountAccess tppAccountAccess, AccountAccess aspspAccountAccess) {
 
         super(consentData, id, internalRequestId, consentStatus, frequencyPerDay, recurringIndicator, multilevelScaRequired,
               validUntil, expireDate, lastActionDate, creationTimestamp, statusChangeTimestamp, consentTppInformation,
-              authorisationTemplate, psuIdDataList, authorisations, usages);
+              authorisationTemplate, psuIdDataList, authorisations, usages, tppAccountAccess, aspspAccountAccess);
     }
 
     @Override
@@ -52,15 +56,26 @@ public class AisConsent extends Consent<AisConsentData> {
 
     @JsonIgnore
     public AccountAccess getAccess() {
-        return getConsentData().getUsedAccess();
+        if (getConsentData().getAllPsd2() != null) {
+            return getTppAccountAccesses();
+        }
+
+        AccountAccess aspspAccountAccesses = getAspspAccountAccesses();
+        if (aspspAccountAccesses.isNotEmpty()) {
+            return aspspAccountAccesses;
+        }
+
+        return getTppAccountAccesses();
     }
 
+    // TODO: inline https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+    @Deprecated
     public AccountAccess getAspspAccess() {
-        return getConsentData().getAspspAccountAccess();
+        return getAspspAccountAccesses();
     }
 
     public boolean isWithBalance() {
-        return getConsentData().isWithBalance();
+        return CollectionUtils.isNotEmpty(getTppAccountAccesses().getBalances());
     }
 
     @JsonIgnore
@@ -70,17 +85,17 @@ public class AisConsent extends Consent<AisConsentData> {
 
     @JsonIgnore
     public boolean isGlobalConsent() {
-        return getConsentData().getConsentRequestType() == AisConsentRequestType.GLOBAL;
+        return getConsentRequestType() == AisConsentRequestType.GLOBAL;
     }
 
     @JsonIgnore
     public boolean isConsentForAllAvailableAccounts() {
-        return getConsentData().getConsentRequestType() == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS;
+        return getConsentRequestType() == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS;
     }
 
     @JsonIgnore
     public boolean isConsentForDedicatedAccounts() {
-        return getConsentData().getConsentRequestType() == AisConsentRequestType.DEDICATED_ACCOUNTS;
+        return getConsentRequestType() == AisConsentRequestType.DEDICATED_ACCOUNTS;
     }
 
     public Optional<AccountConsentAuthorization> findAuthorisationInConsent(String authorisationId) {
@@ -124,6 +139,34 @@ public class AisConsent extends Consent<AisConsentData> {
     }
 
     public AisConsentRequestType getAisConsentRequestType() {
-        return getConsentData().getConsentRequestType();
+        return getConsentRequestType();
+    }
+
+    @JsonIgnore
+    public AisConsentRequestType getConsentRequestType() {
+        AccountAccess usedAccess = getAccess();
+        return getRequestType(getConsentData().getAllPsd2(),
+                              getConsentData().getAvailableAccounts(),
+                              getConsentData().getAvailableAccountsWithBalance(),
+                              !usedAccess.isNotEmpty());
+    }
+
+    private AisConsentRequestType getRequestType(AccountAccessType allPsd2,
+                                                 AccountAccessType availableAccounts,
+                                                 AccountAccessType availableAccountsWithBalance,
+                                                 boolean isAccessesEmpty) {
+
+        List<AccountAccessType> allAccountsType = Arrays.asList(AccountAccessType.ALL_ACCOUNTS, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME);
+
+        if (allAccountsType.contains(allPsd2)) {
+            return AisConsentRequestType.GLOBAL;
+        } else if (allAccountsType.contains(availableAccounts)) {
+            return AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS;
+        } else if (allAccountsType.contains(availableAccountsWithBalance)) {
+            return AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS;
+        } else if (isAccessesEmpty) {
+            return AisConsentRequestType.BANK_OFFERED;
+        }
+        return AisConsentRequestType.DEDICATED_ACCOUNTS;
     }
 }

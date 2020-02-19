@@ -77,7 +77,7 @@ public class GetCardTransactionsReportValidator extends AbstractAccountTppValida
             return validationResult;
         }
 
-        ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(aisConsent.getAspspAccess(),
+        ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(aisConsent,
                                                                                                      requestObject.getTransactions(), requestObject.getAccountId(), aisConsent.getAisConsentRequestType());
         if (accountReferenceValidationResult.isNotValid()) {
             return accountReferenceValidationResult;

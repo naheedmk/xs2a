@@ -17,7 +17,7 @@
 package de.adorsys.psd2.xs2a.web.mapper;
 
 
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
@@ -350,7 +350,7 @@ class ConsentModelMapperTest {
 
     private AisConsent getAisConsent() {
         AisConsent aisConsent = jsonReader.getObjectFromFile("json/service/ais-consent.json", AisConsent.class);
-        AisConsentData consentData = new AisConsentData(createAccountAccess(), createAccountAccess(), false);
+        AisConsentData consentData = new AisConsentData(null, null, null, false);
         aisConsent.setConsentData(consentData);
         return aisConsent;
     }
@@ -385,6 +385,6 @@ class ConsentModelMapperTest {
 
     private static AccountAccess createAccountAccess() {
         AccountReference accountReference = buildXs2aAccountReference();
-        return new AccountAccess(Collections.singletonList(accountReference), Collections.singletonList(accountReference), Collections.singletonList(accountReference), null, null, null, null);
+        return new AccountAccess(Collections.singletonList(accountReference), Collections.singletonList(accountReference), Collections.singletonList(accountReference), null);
     }
 }

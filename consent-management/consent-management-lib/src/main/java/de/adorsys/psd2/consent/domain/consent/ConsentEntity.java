@@ -21,6 +21,8 @@ import de.adorsys.psd2.consent.domain.AuthorisationTemplateEntity;
 import de.adorsys.psd2.consent.domain.InstanceDependableEntity;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.account.AisConsentUsage;
+import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
+import de.adorsys.psd2.consent.domain.account.TppAccountAccess;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import lombok.Data;
@@ -113,6 +115,14 @@ public class ConsentEntity extends InstanceDependableEntity implements Authorisa
 
     @OneToMany(mappedBy = "consent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AisConsentUsage> usages = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "ais_account_access", joinColumns = @JoinColumn(name = "consent_id"))
+    private List<TppAccountAccess> tppAccountAccesses = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "ais_aspsp_account_access", joinColumns = @JoinColumn(name = "consent_id"))
+    private List<AspspAccountAccess> aspspAccountAccesses = new ArrayList<>();
 
     @Transient
     private ConsentStatus previousConsentStatus;

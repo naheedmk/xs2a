@@ -16,7 +16,8 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
@@ -36,12 +37,12 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 @RequiredArgsConstructor
 public class AccountReferenceAccessValidator {
 
-    public ValidationResult validate(AccountAccess accountAccess, List<AccountReference> references, String accountId, AisConsentRequestType consentRequestType) {
+    public ValidationResult validate(AisConsent aisConsent, List<AccountReference> references, String accountId, AisConsentRequestType consentRequestType) {
         if (AisConsentRequestType.GLOBAL == consentRequestType) {
             return ValidationResult.valid();
         }
 
-        if (isConsentForAllAvailableAccounts(accountAccess)
+        if (isConsentForAllAvailableAccounts(aisConsent)
                 || !isValidAccountByAccess(accountId, references)) {
             return ValidationResult.invalid(ErrorType.AIS_401, CONSENT_INVALID);
         }
@@ -52,11 +53,12 @@ public class AccountReferenceAccessValidator {
     private boolean isValidAccountByAccess(String accountId, List<AccountReference> allowedAccountData) {
         return CollectionUtils.isNotEmpty(allowedAccountData)
                    && allowedAccountData.stream()
-                                  .anyMatch(a -> StringUtils.equals(a.getResourceId(), accountId));
+                          .anyMatch(a -> StringUtils.equals(a.getResourceId(), accountId));
     }
 
-    private boolean isConsentForAllAvailableAccounts(AccountAccess accountAccess) {
-        return Arrays.asList(accountAccess.getAvailableAccounts(), accountAccess.getAvailableAccountsWithBalance())
+    private boolean isConsentForAllAvailableAccounts(AisConsent aisConsent) {
+        AisConsentData consentData = aisConsent.getConsentData();
+        return Arrays.asList(consentData.getAvailableAccounts(), consentData.getAvailableAccountsWithBalance())
                    .contains(AccountAccessType.ALL_ACCOUNTS);
     }
 }

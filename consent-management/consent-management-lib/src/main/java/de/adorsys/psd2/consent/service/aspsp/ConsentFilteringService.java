@@ -17,20 +17,13 @@
 package de.adorsys.psd2.consent.service.aspsp;
 
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
-import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
-import de.adorsys.psd2.xs2a.core.profile.AccountReference;
-import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +31,8 @@ import java.util.stream.Collectors;
 public class ConsentFilteringService {
     private final ConsentDataMapper consentDataMapper;
 
+    // ToDo remove usages, filter on database level https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+    @Deprecated
     public List<ConsentEntity> filterAisConsentsByAspspAccountId(List<ConsentEntity> consentEntities, @Nullable String aspspAccountId) {
         if (aspspAccountId == null) {
             return consentEntities;
@@ -49,18 +44,19 @@ public class ConsentFilteringService {
     }
 
     private boolean containsAccountReferenceWithAccountId(@NotNull ConsentEntity consentEntity, @NotNull String aspspAccountId) {
-        AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consentEntity.getData());
-        AccountAccess aspspAccountAccess = aisConsentData.getAspspAccountAccess();
-        Set<AccountReference> accountReferences = new HashSet<>(CollectionUtils.emptyIfNull(aspspAccountAccess.getAccounts()));
-        accountReferences.addAll(CollectionUtils.emptyIfNull(aspspAccountAccess.getBalances()));
-        accountReferences.addAll(CollectionUtils.emptyIfNull(aspspAccountAccess.getTransactions()));
-        AdditionalInformationAccess additionalInformationAccess = aspspAccountAccess.getAdditionalInformationAccess();
-        if (additionalInformationAccess != null
-                && CollectionUtils.isNotEmpty(additionalInformationAccess.getOwnerName())) {
-            accountReferences.addAll(additionalInformationAccess.getOwnerName());
-        }
-
-        return accountReferences.stream()
-                   .anyMatch(reference -> aspspAccountId.equals(reference.getAspspAccountId()));
+        return false;
+//        AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consentEntity.getData());
+//        AccountAccess aspspAccountAccess = aisConsentData.getAspspAccountAccess();
+//        Set<AccountReference> accountReferences = new HashSet<>(CollectionUtils.emptyIfNull(aspspAccountAccess.getAccounts()));
+//        accountReferences.addAll(CollectionUtils.emptyIfNull(aspspAccountAccess.getBalances()));
+//        accountReferences.addAll(CollectionUtils.emptyIfNull(aspspAccountAccess.getTransactions()));
+//        AdditionalInformationAccess additionalInformationAccess = aspspAccountAccess.getAdditionalInformationAccess();
+//        if (additionalInformationAccess != null
+//                && CollectionUtils.isNotEmpty(additionalInformationAccess.getOwnerName())) {
+//            accountReferences.addAll(additionalInformationAccess.getOwnerName());
+//        }
+//
+//        return accountReferences.stream()
+//                   .anyMatch(reference -> aspspAccountId.equals(reference.getAspspAccountId()));
     }
 }

@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.web.aspect;
 
-import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountDetails;
@@ -47,7 +46,7 @@ public class AccountAspect extends AbstractLinkAspect<AccountController> {
             Xs2aAccountDetailsHolder body = result.getBody();
             Xs2aAccountDetails accountDetails = body.getAccountDetails();
             accountDetails.setLinks(new AccountDetailsLinks(getHttpUrl(), accountDetails.getResourceId(),
-                                                            body.getAisConsent().getAccess()));
+                                                            body.getAisConsent()));
         }
         return result;
     }
@@ -57,12 +56,11 @@ public class AccountAspect extends AbstractLinkAspect<AccountController> {
         if (!result.hasError()) {
             Xs2aAccountListHolder body = result.getBody();
             List<Xs2aAccountDetails> accountDetails = body.getAccountDetails();
-            AccountAccess accountAccess = body.getAisConsent().getAccess();
             if (body.getAisConsent().getAisConsentRequestType() == AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS) {
                 accountDetails.forEach(acc -> acc.setLinks(null));
             } else {
                 accountDetails.forEach(acc -> acc.setLinks(new AccountDetailsLinks(getHttpUrl(), acc.getResourceId(),
-                                                                                   accountAccess)));
+                                                                                   body.getAisConsent())));
             }
         }
         return result;

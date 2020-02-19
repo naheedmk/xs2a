@@ -18,7 +18,6 @@ package de.adorsys.psd2.xs2a.integration.builder.ais;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
@@ -67,27 +66,28 @@ public class CmsConsentBuilder {
     private static CmsConsent buildCmsConsent(CreateConsentReq consentReq, String consentId, ScaApproach scaApproach, Authorisation authorisation) {
         return Optional.ofNullable(consentReq)
                    .map(cr -> {
-                            AisConsentData aisConsentData = new AisConsentData(cr.getAccess(), AccountAccess.EMPTY_ACCESS, cr.isCombinedServiceIndicator());
-                            byte[] bytes = consentDataMapper.getBytesFromAisConsentData(aisConsentData);
-                            OffsetDateTime now = OffsetDateTime.now();
-                            ConsentTppInformation tppInformation = new ConsentTppInformation();
-                            tppInformation.setTppRedirectPreferred(ScaApproach.REDIRECT.equals(scaApproach));
-                            tppInformation.setTppInfo(TPP_INFO);
+                       // TODO: Set proper enum values https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+                       AisConsentData aisConsentData = new AisConsentData(null, null, null, cr.isCombinedServiceIndicator());
+                       byte[] bytes = consentDataMapper.getBytesFromAisConsentData(aisConsentData);
+                       OffsetDateTime now = OffsetDateTime.now();
+                       ConsentTppInformation tppInformation = new ConsentTppInformation();
+                       tppInformation.setTppRedirectPreferred(ScaApproach.REDIRECT.equals(scaApproach));
+                       tppInformation.setTppInfo(TPP_INFO);
 
-                            CmsConsent cmsConsent = new CmsConsent();
-                            cmsConsent.setConsentData(bytes);
-                            cmsConsent.setId(consentId);
-                            cmsConsent.setRecurringIndicator(cr.isRecurringIndicator());
-                            cmsConsent.setValidUntil(cr.getValidUntil());
-                            cmsConsent.setFrequencyPerDay(cr.getFrequencyPerDay());
-                            cmsConsent.setLastActionDate(LocalDate.now());
-                            cmsConsent.setConsentStatus(ConsentStatus.RECEIVED);
-                            cmsConsent.setPsuIdDataList(Collections.singletonList(PSU_DATA));
-                            cmsConsent.setAuthorisationTemplate(AUTHORISATION_TEMPLATE);
-                            cmsConsent.setAuthorisations(Collections.singletonList(authorisation != null ? authorisation : new Authorisation(AUTHORISATION_ID, PSU_DATA, consentId, AuthorisationType.AIS, ScaStatus.RECEIVED)));
-                            cmsConsent.setUsages(Collections.emptyMap());
-                            cmsConsent.setCreationTimestamp(now);
-                            cmsConsent.setStatusChangeTimestamp(now);
+                       CmsConsent cmsConsent = new CmsConsent();
+                       cmsConsent.setConsentData(bytes);
+                       cmsConsent.setId(consentId);
+                       cmsConsent.setRecurringIndicator(cr.isRecurringIndicator());
+                       cmsConsent.setValidUntil(cr.getValidUntil());
+                       cmsConsent.setFrequencyPerDay(cr.getFrequencyPerDay());
+                       cmsConsent.setLastActionDate(LocalDate.now());
+                       cmsConsent.setConsentStatus(ConsentStatus.RECEIVED);
+                       cmsConsent.setPsuIdDataList(Collections.singletonList(PSU_DATA));
+                       cmsConsent.setAuthorisationTemplate(AUTHORISATION_TEMPLATE);
+                       cmsConsent.setAuthorisations(Collections.singletonList(authorisation != null ? authorisation : new Authorisation(AUTHORISATION_ID, PSU_DATA, consentId, AuthorisationType.AIS, ScaStatus.RECEIVED)));
+                       cmsConsent.setUsages(Collections.emptyMap());
+                       cmsConsent.setCreationTimestamp(now);
+                       cmsConsent.setStatusChangeTimestamp(now);
                             cmsConsent.setTppInformation(tppInformation);
 
                             return cmsConsent;

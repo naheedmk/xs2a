@@ -20,7 +20,7 @@ import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.domain.account.AisConsentTransaction;
 import de.adorsys.psd2.consent.repository.AisConsentTransactionRepository;
 import de.adorsys.psd2.consent.repository.AisConsentUsageRepository;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
@@ -59,7 +59,8 @@ public class OneOffConsentExpirationService {
     public boolean isConsentExpired(CmsConsent cmsConsent, Long consentId) {
         byte[] consentData = cmsConsent.getConsentData();
         AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consentData);
-        AisConsentRequestType consentRequestType = aisConsentData.getConsentRequestType();
+        // ToDo fix consentRequestType resolution https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+        AisConsentRequestType consentRequestType = AisConsentRequestType.DEDICATED_ACCOUNTS;
 
         // We omit all bank offered consents until they are not populated with accounts.
         if (consentRequestType == AisConsentRequestType.BANK_OFFERED) {
@@ -71,8 +72,8 @@ public class OneOffConsentExpirationService {
             return true;
         }
 
-        AccountAccess aspspAccess = aisConsentData.getAspspAccountAccess();
-        List<AccountReference> references = Stream.of(aspspAccess.getAccounts(), aspspAccess.getBalances(), aspspAccess.getTransactions())
+        AccountAccess aspspAccountAccesses = cmsConsent.getAspspAccountAccesses();
+        List<AccountReference> references = Stream.of(aspspAccountAccesses.getAccounts(), aspspAccountAccesses.getBalances(), aspspAccountAccesses.getTransactions())
                                                 .flatMap(Collection::stream).collect(Collectors.toList());
 
         List<String> consentResourceIds = references.stream()
@@ -88,7 +89,7 @@ public class OneOffConsentExpirationService {
 
             int numberOfTransactions = CollectionUtils.isNotEmpty(consentTransactions) ? consentTransactions.get(0).getNumberOfTransactions() : 0;
 
-            int maximumNumberOfGetRequestsForConsent = getMaximumNumberOfGetRequestsForConsentsAccount(aspspAccess, resourceId, numberOfTransactions);
+            int maximumNumberOfGetRequestsForConsent = getMaximumNumberOfGetRequestsForConsentsAccount(aspspAccountAccesses, resourceId, numberOfTransactions);
             int numberOfUsedGetRequestsForConsent = aisConsentUsageRepository.countByConsentIdAndResourceId(consentId, resourceId);
 
             // There are some available not used get requests - omit all other iterations.

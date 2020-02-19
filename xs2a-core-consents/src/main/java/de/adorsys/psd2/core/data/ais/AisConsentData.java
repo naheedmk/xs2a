@@ -16,67 +16,13 @@
 
 package de.adorsys.psd2.core.data.ais;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
-import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import lombok.Value;
-import org.apache.commons.collections4.CollectionUtils;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Value
 public class AisConsentData {
-    @NotNull
-    private final AccountAccess tppAccountAccess;
-    @NotNull
-    private final AccountAccess aspspAccountAccess;
+    private AccountAccessType availableAccounts;
+    private AccountAccessType allPsd2;
+    private AccountAccessType availableAccountsWithBalance;
     private final boolean combinedServiceIndicator;
-
-    @JsonIgnore
-    public AisConsentRequestType getConsentRequestType() {
-        AccountAccess usedAccess = getUsedAccess();
-        return getRequestType(usedAccess.getAllPsd2(),
-                              usedAccess.getAvailableAccounts(),
-                              usedAccess.getAvailableAccountsWithBalance(),
-                              !usedAccess.isNotEmpty());
-    }
-
-    @JsonIgnore
-    public boolean isWithBalance() {
-        return CollectionUtils.isNotEmpty(tppAccountAccess.getBalances());
-    }
-
-    @JsonIgnore
-    public AccountAccess getUsedAccess() {
-        if (tppAccountAccess.getAllPsd2() != null) {
-            return tppAccountAccess;
-        }
-
-        if (aspspAccountAccess.isNotEmpty()) {
-            return aspspAccountAccess;
-        }
-
-        return tppAccountAccess;
-    }
-
-    private AisConsentRequestType getRequestType(AccountAccessType allPsd2,
-                                                 AccountAccessType availableAccounts,
-                                                 AccountAccessType availableAccountsWithBalance,
-                                                 boolean isAccessesEmpty) {
-
-        List<AccountAccessType> allAccountsType = Arrays.asList(AccountAccessType.ALL_ACCOUNTS, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME);
-
-        if (allAccountsType.contains(allPsd2)) {
-            return AisConsentRequestType.GLOBAL;
-        } else if (allAccountsType.contains(availableAccounts)) {
-            return AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS;
-        } else if (allAccountsType.contains(availableAccountsWithBalance)) {
-            return AisConsentRequestType.ALL_AVAILABLE_ACCOUNTS;
-        } else if (isAccessesEmpty) {
-            return AisConsentRequestType.BANK_OFFERED;
-        }
-        return AisConsentRequestType.DEDICATED_ACCOUNTS;
-    }
 }

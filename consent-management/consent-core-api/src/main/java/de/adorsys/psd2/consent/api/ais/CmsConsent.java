@@ -17,6 +17,7 @@
 package de.adorsys.psd2.consent.api.ais;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.xs2a.core.authorisation.Authorisation;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationTemplate;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
@@ -52,4 +53,6 @@ public class CmsConsent {
     private OffsetDateTime statusChangeTimestamp;
     private List<Authorisation> authorisations;
     private Map<String, Integer> usages;
+    private AccountAccess tppAccountAccesses;
+    private AccountAccess aspspAccountAccesses;
 }

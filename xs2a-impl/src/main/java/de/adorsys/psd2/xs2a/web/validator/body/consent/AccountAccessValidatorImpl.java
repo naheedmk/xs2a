@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.xs2a.web.validator.body.consent;
 
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.model.AccountReference;
 import de.adorsys.psd2.model.Consents;
@@ -24,7 +25,6 @@ import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import de.adorsys.psd2.xs2a.domain.consent.CreateConsentReq;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
 import de.adorsys.psd2.xs2a.web.validator.body.AbstractBodyValidatorImpl;
 import de.adorsys.psd2.xs2a.web.validator.body.AccountReferenceValidator;
@@ -48,6 +48,7 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
     private AccountReferenceValidator accountReferenceValidator;
     private DateFieldValidator dateFieldValidator;
     private FieldExtractor fieldExtractor;
+
     @Autowired
     public AccountAccessValidatorImpl(ErrorBuildingService errorBuildingService, Xs2aObjectMapper xs2aObjectMapper,
                                       AccountReferenceValidator accountReferenceValidator, DateFieldValidator dateFieldValidator,
@@ -115,13 +116,13 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
     private boolean areFlagsAndAccountsInvalid(CreateConsentReq request) {
         AccountAccess access = request.getAccess();
         if (access.isNotEmpty()) {
-            return !(CollectionUtils.isEmpty(request.getAccountReferences()) || areFlagsEmpty(access));
+            return !(CollectionUtils.isEmpty(request.getAccountReferences()) || areFlagsEmpty(request));
         }
         return false;
     }
 
-    private boolean areFlagsEmpty(AccountAccess access) {
-        return Objects.isNull(access.getAvailableAccounts()) && Objects.isNull(access.getAllPsd2());
+    private boolean areFlagsEmpty(CreateConsentReq createConsentReq) {
+        return Objects.isNull(createConsentReq.getAvailableAccounts()) && Objects.isNull(createConsentReq.getAllPsd2());
     }
 
     private CreateConsentReq mapToCreateConsentReq(Consents consent, MessageError messageError) {
@@ -129,6 +130,9 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
                    .map(cnst -> {
                        CreateConsentReq createAisConsentRequest = new CreateConsentReq();
                        createAisConsentRequest.setAccess(mapToAccountAccessInner(cnst.getAccess(), messageError));
+                       createAisConsentRequest.setAvailableAccounts(mapToAccountAccessTypeFromAvailableAccounts(cnst.getAccess().getAvailableAccounts()));
+                       createAisConsentRequest.setAvailableAccountsWithBalance(mapToAccountAccessTypeFromAvailableAccountsWithBalance(cnst.getAccess().getAvailableAccountsWithBalance()));
+                       createAisConsentRequest.setAllPsd2(mapToAccountAccessTypeFromAllPsd2Enum(cnst.getAccess().getAllPsd2()));
                        return createAisConsentRequest;
                    })
                    .orElse(null);
@@ -141,9 +145,6 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
                                 mapToXs2aAccountReferences(acs.getAccounts(), messageError),
                                 mapToXs2aAccountReferences(acs.getBalances(), messageError),
                                 mapToXs2aAccountReferences(acs.getTransactions(), messageError),
-                                mapToAccountAccessTypeFromAvailableAccounts(acs.getAvailableAccounts()),
-                                mapToAccountAccessTypeFromAllPsd2Enum(acs.getAllPsd2()),
-                                mapToAccountAccessTypeFromAvailableAccountsWithBalance(acs.getAvailableAccountsWithBalance()),
                                 mapToAdditionalInformationAccess(acs.getAdditionalInformation(), messageError)
                             ))
                    .orElse(null);

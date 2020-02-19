@@ -18,7 +18,10 @@ package de.adorsys.psd2.consent.service.mapper;
 
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
+import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
+import de.adorsys.psd2.consent.domain.account.TppAccountAccess;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.consent.ConsentType;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -58,6 +62,9 @@ public class CmsConsentMapper {
         cmsConsent.setLastActionDate(entity.getLastActionDate());
         cmsConsent.setAuthorisations(authorisationMapper.mapToAuthorisations(authorisations));
         cmsConsent.setUsages(usages);
+        // ToDo properly map https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+//        cmsConsent.setTppAccountAccesses(entity.getTppAccountAccesses());
+//        cmsConsent.setAspspAccountAccesses(entity.getAspspAccountAccesses());
         return cmsConsent;
     }
 
@@ -79,6 +86,18 @@ public class CmsConsentMapper {
         entity.setLastActionDate(LocalDate.now());
         entity.setInternalRequestId(cmsConsent.getInternalRequestId());
         entity.setTppInformation(consentTppInformationMapper.mapToConsentTppInformationEntity(cmsConsent.getTppInformation()));
+        entity.setTppAccountAccesses(mapToTppAccountAccess(cmsConsent.getTppAccountAccesses()));
+        entity.setAspspAccountAccesses(mapToAspspAccountAccess(cmsConsent.getAspspAccountAccesses()));
         return entity;
+    }
+
+    private List<TppAccountAccess> mapToTppAccountAccess(AccountAccess accountAccess) {
+        // ToDo properly map TppAccountAccess https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+        return Collections.emptyList();
+    }
+
+    private List<AspspAccountAccess> mapToAspspAccountAccess(AccountAccess accountAccess) {
+        // ToDo properly map TppAccountAccess https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+        return Collections.emptyList();
     }
 }

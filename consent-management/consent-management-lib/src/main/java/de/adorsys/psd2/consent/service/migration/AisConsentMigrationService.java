@@ -16,23 +16,16 @@
 
 package de.adorsys.psd2.consent.service.migration;
 
-import de.adorsys.psd2.consent.api.TypeAccess;
 import de.adorsys.psd2.consent.domain.account.AisConsent;
-import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.ObsoleteAisConsentJpaRepository;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
-import de.adorsys.psd2.xs2a.core.profile.AccountReference;
-import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -58,46 +51,47 @@ public class AisConsentMigrationService {
     }
 
     private byte[] getConsentData(AisConsent aisConsent) {
-        AisConsentData aisConsentData = new AisConsentData(getAccountAccess(aisConsent, false),
-                                                           getAccountAccess(aisConsent, true),
+        AisConsentData aisConsentData = new AisConsentData(aisConsent.getAvailableAccounts(), aisConsent.getAllPsd2(), aisConsent.getAvailableAccountsWithBalance(),
                                                            aisConsent.isCombinedServiceIndicator());
 
 
         return consentDataMapper.getBytesFromAisConsentData(aisConsentData);
     }
-
-    private AccountAccess getAccountAccess(AisConsent aisConsent, boolean isAspspAccountAccess) {
-        List<AccountReference> accounts = new ArrayList<>();
-        List<AccountReference> balances = new ArrayList<>();
-        List<AccountReference> transactions = new ArrayList<>();
-        List<AccountReference> ownerName = new ArrayList<>();
-
-        List<? extends de.adorsys.psd2.consent.domain.account.AccountAccess> accountAccesses = isAspspAccountAccess ?
-                                                                                                   aisConsent.getAspspAccountAccesses() : aisConsent.getAccesses();
-
-        accountAccesses.forEach(a -> {
-            AccountReference accountReference = isAspspAccountAccess ?
-                                                    new AccountReference(a.getAccountReferenceType(),
-                                                                         a.getAccountIdentifier(),
-                                                                         a.getCurrency(),
-                                                                         ((AspspAccountAccess) a).getResourceId(),
-                                                                         ((AspspAccountAccess) a).getAspspAccountId()) :
-                                                    new AccountReference(a.getAccountReferenceType(),
-                                                                         a.getAccountIdentifier(),
-                                                                         a.getCurrency());
-            if (TypeAccess.ACCOUNT == a.getTypeAccess()) {
-                accounts.add(accountReference);
-            } else if (TypeAccess.BALANCE == a.getTypeAccess()) {
-                balances.add(accountReference);
-            } else if (TypeAccess.TRANSACTION == a.getTypeAccess()) {
-                transactions.add(accountReference);
-            } else if (TypeAccess.OWNER_NAME == a.getTypeAccess()) {
-                ownerName.add(accountReference);
-            }
-        });
-        AdditionalInformationAccess additionalInformationAccess = new AdditionalInformationAccess(ownerName);
-        return new AccountAccess(accounts, balances, transactions,
-                                 aisConsent.getAvailableAccounts(), aisConsent.getAllPsd2(), aisConsent.getAvailableAccountsWithBalance(),
-                                 additionalInformationAccess);
-    }
+    // ToDo use for mapping https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+//
+//    private AccountAccess getAccountAccess(AisConsent aisConsent, boolean isAspspAccountAccess) {
+//        List<AccountReference> accounts = new ArrayList<>();
+//        List<AccountReference> balances = new ArrayList<>();
+//        List<AccountReference> transactions = new ArrayList<>();
+//        List<AccountReference> ownerName = new ArrayList<>();
+//
+//        List<? extends de.adorsys.psd2.consent.domain.account.AccountAccess> accountAccesses = isAspspAccountAccess ?
+//                                                                                                   aisConsent.getAspspAccountAccesses() : aisConsent.getAccesses();
+//
+//        accountAccesses.forEach(a -> {
+//            AccountReference accountReference = isAspspAccountAccess ?
+//                                                    new AccountReference(a.getAccountReferenceType(),
+//                                                                         a.getAccountIdentifier(),
+//                                                                         a.getCurrency(),
+//                                                                         ((AspspAccountAccess) a).getResourceId(),
+//                                                                         ((AspspAccountAccess) a).getAspspAccountId()) :
+//                                                    new AccountReference(a.getAccountReferenceType(),
+//                                                                         a.getAccountIdentifier(),
+//                                                                         a.getCurrency());
+//            if (TypeAccess.ACCOUNT == a.getTypeAccess()) {
+//                accounts.add(accountReference);
+//            } else if (TypeAccess.BALANCE == a.getTypeAccess()) {
+//                balances.add(accountReference);
+//            } else if (TypeAccess.TRANSACTION == a.getTypeAccess()) {
+//                transactions.add(accountReference);
+//            } else if (TypeAccess.OWNER_NAME == a.getTypeAccess()) {
+//                ownerName.add(accountReference);
+//            }
+//        });
+//        AdditionalInformationAccess additionalInformationAccess = new AdditionalInformationAccess(ownerName);
+//
+//        return new AccountAccess(accounts, balances, transactions,
+//                                 aisConsent.getAvailableAccounts(), aisConsent.getAllPsd2(), aisConsent.getAvailableAccountsWithBalance(),
+//                                 additionalInformationAccess);
+//    }
 }

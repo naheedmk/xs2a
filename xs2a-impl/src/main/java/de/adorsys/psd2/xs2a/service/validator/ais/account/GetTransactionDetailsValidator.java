@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account;
 
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.xs2a.service.validator.OauthConsentValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
@@ -48,7 +48,7 @@ public class GetTransactionDetailsValidator extends AbstractAccountTppValidator<
     protected ValidationResult executeBusinessValidation(CommonAccountTransactionsRequestObject consentObject) {
         AisConsent aisConsent = consentObject.getAisConsent();
         AccountAccess accountAccess = consentObject.getAisConsent().getAccess();
-        ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(accountAccess,
+        ValidationResult accountReferenceValidationResult = accountReferenceAccessValidator.validate(aisConsent,
                                                                                                      accountAccess.getTransactions(), consentObject.getAccountId(), aisConsent.getAisConsentRequestType());
         if (accountReferenceValidationResult.isNotValid()) {
             return accountReferenceValidationResult;

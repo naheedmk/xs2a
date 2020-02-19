@@ -21,11 +21,10 @@ import de.adorsys.psd2.consent.api.ais.AccountAdditionalInformationAccess;
 import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.api.ais.CreateAisConsentRequest;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
-import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.authorisation.*;
 import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.consent.ConsentType;
@@ -90,7 +89,7 @@ public class Xs2aAisConsentMapper {
         return Optional.ofNullable(aisConsent)
                    .map(ac -> new SpiAccountConsent(
                             ac.getId(),
-                            xs2aToSpiAccountAccessMapper.mapToAccountAccess(ac.getAccess()),
+                            xs2aToSpiAccountAccessMapper.mapToAccountAccess(ac),
                             ac.isRecurringIndicator(),
                             ac.getValidUntil(),
                             ac.getExpireDate(),
@@ -142,17 +141,18 @@ public class Xs2aAisConsentMapper {
         accessInfo.setBalances(mapToListAccountInfo(access.getBalances()));
         accessInfo.setTransactions(mapToListAccountInfo(access.getTransactions()));
 
-        accessInfo.setAvailableAccounts(Optional.ofNullable(access.getAvailableAccounts())
-                                            .map(accessType -> AccountAccessType.valueOf(accessType.name()))
-                                            .orElse(null));
-
-        accessInfo.setAllPsd2(Optional.ofNullable(access.getAllPsd2())
-                                  .map(accessType -> AccountAccessType.valueOf(accessType.name()))
-                                  .orElse(null));
-
-        accessInfo.setAvailableAccountsWithBalance(Optional.ofNullable(access.getAvailableAccountsWithBalance())
-                                                       .map(accessType -> AccountAccessType.valueOf(accessType.name()))
-                                                       .orElse(null));
+        // ToDo: fix https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+//        accessInfo.setAvailableAccounts(Optional.ofNullable(access.getAvailableAccounts())
+//                                            .map(accessType -> AccountAccessType.valueOf(accessType.name()))
+//                                            .orElse(null));
+//
+//        accessInfo.setAllPsd2(Optional.ofNullable(access.getAllPsd2())
+//                                  .map(accessType -> AccountAccessType.valueOf(accessType.name()))
+//                                  .orElse(null));
+//
+//        accessInfo.setAvailableAccountsWithBalance(Optional.ofNullable(access.getAvailableAccountsWithBalance())
+//                                                       .map(accessType -> AccountAccessType.valueOf(accessType.name()))
+//                                                       .orElse(null));
 
         accessInfo.setAccountAdditionalInformationAccess(Optional.ofNullable(access.getAdditionalInformationAccess())
                                                              .map(this::mapToAccountAdditionalInformationAccess)
@@ -164,7 +164,7 @@ public class Xs2aAisConsentMapper {
     public CmsConsent mapToCmsConsent(CreateConsentReq request, PsuIdData psuData, TppInfo tppInfo, int allowedFrequencyPerDay) {
         CmsConsent cmsConsent = new CmsConsent();
 
-        AisConsentData aisConsentData = new AisConsentData(request.getAccess(), AccountAccess.EMPTY_ACCESS, request.isCombinedServiceIndicator());
+        AisConsentData aisConsentData = new AisConsentData(request.getAvailableAccounts(), request.getAllPsd2(), request.getAvailableAccountsWithBalance(), request.isCombinedServiceIndicator());
         byte[] aisConsentDataBytes = consentDataMapper.getBytesFromAisConsentData(aisConsentData);
         cmsConsent.setConsentData(aisConsentDataBytes);
 
@@ -186,6 +186,8 @@ public class Xs2aAisConsentMapper {
         cmsConsent.setRecurringIndicator(request.isRecurringIndicator());
         cmsConsent.setPsuIdDataList(Collections.singletonList(psuData));
         cmsConsent.setConsentType(ConsentType.AIS);
+        cmsConsent.setTppAccountAccesses(request.getAccess());
+        cmsConsent.setAspspAccountAccesses(AccountAccess.EMPTY_ACCESS);
 
         return cmsConsent;
     }

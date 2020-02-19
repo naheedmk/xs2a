@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2018 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package de.adorsys.psd2.xs2a.domain.consent;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.adorsys.psd2.core.data.ais.AccountAccess;
+import de.adorsys.psd2.core.data.AccountAccess;
+import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.tpp.TppNotificationData;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
@@ -40,6 +41,10 @@ public class CreateConsentReq implements AccountReferenceCollector {
     @ApiModelProperty(value = "Requested access services.", required = true)
     @NotNull
     private AccountAccess access;
+
+    private AccountAccessType availableAccounts;
+    private AccountAccessType allPsd2;
+    private AccountAccessType availableAccountsWithBalance;
 
     @ApiModelProperty(value = "'true', if the consent is for recurring access to the account data , 'false', if the consent is for one access to the account data", required = true)
     @NotNull
@@ -88,13 +93,13 @@ public class CreateConsentReq implements AccountReferenceCollector {
 
     private boolean isConsentGlobal() {
         return access.isNotEmpty()
-                   && access.getAllPsd2() == ALL_ACCOUNTS;
+                   && allPsd2 == ALL_ACCOUNTS;
     }
 
     @JsonIgnore
     public boolean isConsentForAllAvailableAccounts() {
-        return access.getAvailableAccounts() == ALL_ACCOUNTS
-                   || access.getAvailableAccountsWithBalance() == ALL_ACCOUNTS;
+        return availableAccounts == ALL_ACCOUNTS
+                   || availableAccountsWithBalance == ALL_ACCOUNTS;
     }
 
     @JsonIgnore
