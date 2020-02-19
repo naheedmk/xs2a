@@ -22,9 +22,9 @@ import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,55 +32,42 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {CmsConsentMapper.class, AuthorisationTemplateMapperImpl.class, ConsentTppInformationMapperImpl.class,
+    TppInfoMapperImpl.class, PsuDataMapper.class, AuthorisationMapperImpl.class, AccessMapper.class})
 class CmsConsentMapperTest {
-    @InjectMocks
+    @Autowired
     private CmsConsentMapper cmsConsentMapper;
-    @Mock
-    private AuthorisationTemplateMapper authorisationTemplateMapper;
-    @Mock
-    private ConsentTppInformationMapper consentTppInformationMapper;
-    @Mock
-    private PsuDataMapper psuDataMapper;
-    @Mock
-    private AuthorisationMapper authorisationMapper;
 
     private JsonReader jsonReader = new JsonReader();
 
     @Test
     void mapToCmsConsent() {
         //Given
-        List<AuthorisationEntity> authorisations = Collections.emptyList();
+        AuthorisationEntity authorisationEntity = jsonReader.getObjectFromFile("json/service/mapper/cms-consent-mapper/authorisation-entity.json", AuthorisationEntity.class);
+        List<AuthorisationEntity> authorisations = Collections.singletonList(authorisationEntity);
         ConsentEntity consentEntity = jsonReader.getObjectFromFile("json/service/mapper/cms-consent-mapper/consent-entity.json", ConsentEntity.class);
-        CmsConsent cmsConsentExpected = jsonReader.getObjectFromFile("json/service/mapper/cms-consent-mapper/cms-consent.json", CmsConsent.class);
-        when(consentTppInformationMapper.mapToConsentTppInformation(consentEntity.getTppInformation())).thenReturn(cmsConsentExpected.getTppInformation());
-        when(authorisationTemplateMapper.mapToAuthorisationTemplate(consentEntity.getAuthorisationTemplate())).thenReturn(cmsConsentExpected.getAuthorisationTemplate());
-        when(psuDataMapper.mapToPsuIdDataList(consentEntity.getPsuDataList())).thenReturn(cmsConsentExpected.getPsuIdDataList());
-        when(authorisationMapper.mapToAuthorisations(authorisations)).thenReturn(cmsConsentExpected.getAuthorisations());
         //When
-        CmsConsent cmsConsent = cmsConsentMapper.mapToCmsConsent(consentEntity, authorisations, getUsages());
+        CmsConsent actual = cmsConsentMapper.mapToCmsConsent(consentEntity, authorisations, getUsages());
         //Then
-        assertEquals(cmsConsentExpected, cmsConsent);
+        CmsConsent expected = jsonReader.getObjectFromFile("json/service/mapper/cms-consent-mapper/cms-consent.json", CmsConsent.class);
+        assertEquals(expected, actual);
     }
 
     @Test
     void mapToNewConsentEntity() {
         //Given
-        ConsentEntity consentEntityExpected = jsonReader.getObjectFromFile("json/service/mapper/cms-consent-mapper/new-consent-entity.json", ConsentEntity.class);
         CmsConsent cmsConsent = jsonReader.getObjectFromFile("json/service/mapper/cms-consent-mapper/new-cms-consent.json", CmsConsent.class);
-        when(authorisationTemplateMapper.mapToAuthorisationTemplateEntity(cmsConsent.getAuthorisationTemplate())).thenReturn(consentEntityExpected.getAuthorisationTemplate());
-        when(consentTppInformationMapper.mapToConsentTppInformationEntity(cmsConsent.getTppInformation())).thenReturn(consentEntityExpected.getTppInformation());
-        when(psuDataMapper.mapToPsuDataList(cmsConsent.getPsuIdDataList())).thenReturn(consentEntityExpected.getPsuDataList());
         //When
-        ConsentEntity consentEntity = cmsConsentMapper.mapToNewConsentEntity(cmsConsent);
-        consentEntityExpected.setExternalId(consentEntity.getExternalId());
-        consentEntityExpected.setLastActionDate(consentEntity.getLastActionDate());
-        consentEntityExpected.setRequestDateTime(consentEntity.getRequestDateTime());
-        consentEntityExpected.setCreationTimestamp(consentEntity.getCreationTimestamp());
+        ConsentEntity actual = cmsConsentMapper.mapToNewConsentEntity(cmsConsent);
         //Then
-        assertEquals(consentEntityExpected, consentEntity);
+        ConsentEntity expected = jsonReader.getObjectFromFile("json/service/mapper/cms-consent-mapper/new-consent-entity.json", ConsentEntity.class);
+        expected.setExternalId(actual.getExternalId());
+        expected.setLastActionDate(actual.getLastActionDate());
+        expected.setRequestDateTime(actual.getRequestDateTime());
+        expected.setCreationTimestamp(actual.getCreationTimestamp());
+        assertEquals(expected, actual);
     }
 
     private Map<String, Integer> getUsages() {

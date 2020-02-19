@@ -54,5 +54,21 @@
   "consentData": "ZGF0YQ==",
   "usages": {
     "/v1/accounts": 12
+  },
+  "tppAccountAccesses": {
+    "accounts": [],
+    "balances": [],
+    "transactions": [],
+    "additionalInformationAccess": {
+      "ownerName": []
+    }
+  },
+  "aspspAccountAccesses": {
+    "accounts": [],
+    "balances": [],
+    "transactions": [],
+    "additionalInformationAccess": {
+      "ownerName": []
+    }
   }
 }

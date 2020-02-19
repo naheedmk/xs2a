@@ -25,6 +25,7 @@ import de.adorsys.psd2.consent.domain.account.TppAccountAccess;
 import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
+import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -37,47 +38,49 @@ import java.util.stream.Stream;
 public class AccessMapper {
 
     public AccountAccess mapTppAccessesToAccountAccess(List<TppAccountAccess> tppAccountAccesses) {
-        AccountAccess accountAccess = AccountAccess.EMPTY_ACCESS;
+        AccountAccessListHolder holder = new AccountAccessListHolder();
         tppAccountAccesses.forEach(a -> {
             AccountReference accountReference = new AccountReference(a.getAccountReferenceType(),
                                                                      a.getAccountIdentifier(),
                                                                      a.getCurrency());
-            populateAccountAccesses(accountAccess, accountReference, a.getTypeAccess());
+            holder.addAccountReference(accountReference, a.getTypeAccess());
         });
-        return accountAccess;
+        return new AccountAccess(holder.getAccounts(), holder.getBalances(), holder.getTransactions(),
+                                 new AdditionalInformationAccess(holder.getOwnerNames()));
     }
 
     public AccountAccess mapAspspAccessesToAccountAccess(List<AspspAccountAccess> aspspAccountAccesses) {
-        AccountAccess accountAccess = AccountAccess.EMPTY_ACCESS;
+        AccountAccessListHolder holder = new AccountAccessListHolder();
         aspspAccountAccesses.forEach(a -> {
             AccountReference accountReference = new AccountReference(a.getAccountReferenceType(),
                                                                      a.getAccountIdentifier(),
                                                                      a.getCurrency(),
                                                                      a.getResourceId(),
                                                                      a.getAspspAccountId());
-            populateAccountAccesses(accountAccess, accountReference, a.getTypeAccess());
+            holder.addAccountReference(accountReference, a.getTypeAccess());
         });
-        return accountAccess;
+        return new AccountAccess(holder.getAccounts(), holder.getBalances(), holder.getTransactions(),
+                                 new AdditionalInformationAccess(holder.getOwnerNames()));
     }
 
     public List<TppAccountAccess> mapToTppAccountAccess(AccountAccess accountAccess) {
         List<TppAccountAccess> tppAccountAccesses = new ArrayList<>();
-        tppAccountAccesses.addAll(accountAccess.getAccounts().stream().map(a -> new TppAccountAccess(a.getAccountReferenceType().getValue(),
+        tppAccountAccesses.addAll(accountAccess.getAccounts().stream().map(a -> new TppAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
                                                                                                      TypeAccess.ACCOUNT,
-                                                                                                     a.getAccountReferenceType(),
+                                                                                                     a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                      a.getCurrency())).collect(Collectors.toList()));
-        tppAccountAccesses.addAll(accountAccess.getBalances().stream().map(a -> new TppAccountAccess(a.getAccountReferenceType().getValue(),
+        tppAccountAccesses.addAll(accountAccess.getBalances().stream().map(a -> new TppAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
                                                                                                      TypeAccess.BALANCE,
-                                                                                                     a.getAccountReferenceType(),
+                                                                                                     a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                      a.getCurrency())).collect(Collectors.toList()));
-        tppAccountAccesses.addAll(accountAccess.getTransactions().stream().map(a -> new TppAccountAccess(a.getAccountReferenceType().getValue(),
+        tppAccountAccesses.addAll(accountAccess.getTransactions().stream().map(a -> new TppAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
                                                                                                          TypeAccess.TRANSACTION,
-                                                                                                         a.getAccountReferenceType(),
+                                                                                                         a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                          a.getCurrency())).collect(Collectors.toList()));
         if (CollectionUtils.isNotEmpty(accountAccess.getAdditionalInformationAccess().getOwnerName())) {
-            tppAccountAccesses.addAll(accountAccess.getAdditionalInformationAccess().getOwnerName().stream().map(a -> new TppAccountAccess(a.getAccountReferenceType().getValue(),
+            tppAccountAccesses.addAll(accountAccess.getAdditionalInformationAccess().getOwnerName().stream().map(a -> new TppAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
                                                                                                                                            TypeAccess.OWNER_NAME,
-                                                                                                                                           a.getAccountReferenceType(),
+                                                                                                                                           a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                                                            a.getCurrency())).collect(Collectors.toList()));
         }
         return tppAccountAccesses;
@@ -85,28 +88,28 @@ public class AccessMapper {
 
     public List<AspspAccountAccess> mapToAspspAccountAccess(AccountAccess accountAccess) {
         List<AspspAccountAccess> aspspAccountAccesses = new ArrayList<>();
-        aspspAccountAccesses.addAll(accountAccess.getAccounts().stream().map(a -> new AspspAccountAccess(a.getAccountReferenceType().getValue(),
+        aspspAccountAccesses.addAll(accountAccess.getAccounts().stream().map(a -> new AspspAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
                                                                                                          TypeAccess.ACCOUNT,
-                                                                                                         a.getAccountReferenceType(),
+                                                                                                         a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                          a.getCurrency(),
                                                                                                          a.getResourceId(),
                                                                                                          a.getAspspAccountId())).collect(Collectors.toList()));
-        aspspAccountAccesses.addAll(accountAccess.getBalances().stream().map(a -> new AspspAccountAccess(a.getAccountReferenceType().getValue(),
+        aspspAccountAccesses.addAll(accountAccess.getBalances().stream().map(a -> new AspspAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
                                                                                                          TypeAccess.BALANCE,
-                                                                                                         a.getAccountReferenceType(),
+                                                                                                         a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                          a.getCurrency(),
                                                                                                          a.getResourceId(),
                                                                                                          a.getAspspAccountId())).collect(Collectors.toList()));
-        aspspAccountAccesses.addAll(accountAccess.getTransactions().stream().map(a -> new AspspAccountAccess(a.getAccountReferenceType().getValue(),
+        aspspAccountAccesses.addAll(accountAccess.getTransactions().stream().map(a -> new AspspAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
                                                                                                              TypeAccess.TRANSACTION,
-                                                                                                             a.getAccountReferenceType(),
+                                                                                                             a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                              a.getCurrency(),
                                                                                                              a.getResourceId(),
                                                                                                              a.getAspspAccountId())).collect(Collectors.toList()));
         if (CollectionUtils.isNotEmpty(accountAccess.getAdditionalInformationAccess().getOwnerName())) {
-            aspspAccountAccesses.addAll(accountAccess.getAdditionalInformationAccess().getOwnerName().stream().map(a -> new AspspAccountAccess(a.getAccountReferenceType().getValue(),
+            aspspAccountAccesses.addAll(accountAccess.getAdditionalInformationAccess().getOwnerName().stream().map(a -> new AspspAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
                                                                                                                                                TypeAccess.OWNER_NAME,
-                                                                                                                                               a.getAccountReferenceType(),
+                                                                                                                                               a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                                                                a.getCurrency(),
                                                                                                                                                a.getResourceId(),
                                                                                                                                                a.getAspspAccountId())).collect(Collectors.toList()));
@@ -120,7 +123,6 @@ public class AccessMapper {
         Set<AccountReference> transactions = mapToAccountReferences(aisAccountAccessInfo.getTransactions());
 
         Set<AccountReference> allAccounts = addReferencesToAccounts(accounts, balances, transactions);
-
         return new AccountAccess(new ArrayList<>(allAccounts),
                                  new ArrayList<>(balances),
                                  new ArrayList<>(transactions),
@@ -169,15 +171,23 @@ public class AccessMapper {
                    .collect(Collectors.toSet());
     }
 
-    private void populateAccountAccesses(AccountAccess accountAccess, AccountReference accountReference, TypeAccess typeAccess) {
-        if (TypeAccess.ACCOUNT == typeAccess) {
-            accountAccess.getAccounts().add(accountReference);
-        } else if (TypeAccess.BALANCE == typeAccess) {
-            accountAccess.getBalances().add(accountReference);
-        } else if (TypeAccess.TRANSACTION == typeAccess) {
-            accountAccess.getTransactions().add(accountReference);
-        } else if (TypeAccess.OWNER_NAME == typeAccess) {
-            accountAccess.getAdditionalInformationAccess().getOwnerName().add(accountReference);
+    @Getter
+    private static class AccountAccessListHolder {
+        List<AccountReference> accounts = new ArrayList<>();
+        List<AccountReference> balances = new ArrayList<>();
+        List<AccountReference> transactions = new ArrayList<>();
+        List<AccountReference> ownerNames = new ArrayList<>();
+
+        void addAccountReference(AccountReference accountReference, TypeAccess typeAccess) {
+            if (TypeAccess.ACCOUNT == typeAccess) {
+                accounts.add(accountReference);
+            } else if (TypeAccess.BALANCE == typeAccess) {
+                balances.add(accountReference);
+            } else if (TypeAccess.TRANSACTION == typeAccess) {
+                transactions.add(accountReference);
+            } else if (TypeAccess.OWNER_NAME == typeAccess) {
+                ownerNames.add(accountReference);
+            }
         }
     }
 }

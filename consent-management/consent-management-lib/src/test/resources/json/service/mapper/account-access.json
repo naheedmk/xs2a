@@ -38,8 +38,5 @@
         "currency": "UAH"
       }
     ]
-  },
-  "availableAccounts": "allAccounts",
-  "allPsd2": "allAccounts",
-  "availableAccountsWithBalance": "allAccounts"
+  }
 }

@@ -6,10 +6,7 @@
   "multilevelScaRequired": true,
   "psuDataList": [
     {
-      "psuId": "marion.mueller",
-      "psuIdType": "",
-      "psuCorporateId": "",
-      "psuCorporateIdType": ""
+      "psuId": "marion.mueller"
     }
   ],
   "tppInformation": {
@@ -31,11 +28,15 @@
       "organisationUnit": "Information Technology",
       "city": "Nuremberg",
       "state": "Bayern"
-    }
+    },
+    "tppNotificationContentPreferred": [
+      "SCA",
+      "PROCESS"
+    ]
   },
   "authorisationTemplate": {
-    "redirectUri": "Mock tppOkRedirectUri",
-    "nokRedirectUri": "Mock tppNokRedirectUri"
+    "redirectUri": "http://test.com",
+    "nokRedirectUri": "http://test.nok.com"
   },
   "expireDate": "2025-12-31",
   "validUntil": "2030-12-31",
