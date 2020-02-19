@@ -32,26 +32,24 @@ public class AccountAccessUpdater {
     @NotNull
     public AccountAccess updateAccountReferencesInAccess(@NotNull AccountAccess existingAccess,
                                                          @NotNull AccountAccess newAccess) {
-//        if (hasNoAccountReferences(existingAccess)) {
-//            return new AccountAccess(newAccess.getAccounts(), newAccess.getBalances(), newAccess.getTransactions(),
-//                                     existingAccess.getAvailableAccounts(), existingAccess.getAllPsd2(),
-//                                     existingAccess.getAvailableAccountsWithBalance(), newAccess.getAdditionalInformationAccess());
-//        }
-//
-//        List<AccountReference> updatedAccounts = existingAccess.getAccounts().stream()
-//                                                     .map(ref -> updateAccountReference(ref, newAccess.getAccounts())).collect(Collectors.toList());
-//        List<AccountReference> updatedBalances = existingAccess.getBalances().stream()
-//                                                     .map(ref -> updateAccountReference(ref, newAccess.getBalances())).collect(Collectors.toList());
-//        List<AccountReference> updatedTransactions = existingAccess.getTransactions().stream()
-//                                                         .map(ref -> updateAccountReference(ref, newAccess.getTransactions())).collect(Collectors.toList());
-//        AdditionalInformationAccess updatedAdditionalInformation = updateAccountReferencesInAdditionalInformation(existingAccess.getAdditionalInformationAccess(),
-//                                                                                                                  newAccess.getAdditionalInformationAccess());
-//
-//        return new AccountAccess(updatedAccounts, updatedBalances, updatedTransactions,
-//                                 existingAccess.getAvailableAccounts(), existingAccess.getAllPsd2(),
-//                                 existingAccess.getAvailableAccountsWithBalance(), updatedAdditionalInformation);
-        // ToDo fix update https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-        return existingAccess;
+        if (hasNoAccountReferences(existingAccess)) {
+            return new AccountAccess(newAccess.getAccounts(), newAccess.getBalances(), newAccess.getTransactions(), newAccess.getAdditionalInformationAccess());
+        }
+
+        List<AccountReference> updatedAccounts = existingAccess.getAccounts().stream()
+                                                     .map(ref -> updateAccountReference(ref, newAccess.getAccounts()))
+                                                     .collect(Collectors.toList());
+        List<AccountReference> updatedBalances = existingAccess.getBalances().stream()
+                                                     .map(ref -> updateAccountReference(ref, newAccess.getBalances()))
+                                                     .collect(Collectors.toList());
+        List<AccountReference> updatedTransactions = existingAccess.getTransactions().stream()
+                                                         .map(ref -> updateAccountReference(ref, newAccess.getTransactions()))
+                                                         .collect(Collectors.toList());
+
+        AdditionalInformationAccess updatedAdditionalInformation = updateAccountReferencesInAdditionalInformation(existingAccess.getAdditionalInformationAccess(),
+                                                                                                                  newAccess.getAdditionalInformationAccess());
+
+        return new AccountAccess(updatedAccounts, updatedBalances, updatedTransactions, updatedAdditionalInformation);
     }
 
     private boolean hasNoAccountReferences(AccountAccess accountAccess) {

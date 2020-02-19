@@ -121,7 +121,6 @@ public class AccessMapper {
 
         Set<AccountReference> allAccounts = addReferencesToAccounts(accounts, balances, transactions);
 
-        // ToDO fix enum values https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
         return new AccountAccess(new ArrayList<>(allAccounts),
                                  new ArrayList<>(balances),
                                  new ArrayList<>(transactions),

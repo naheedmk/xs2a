@@ -25,6 +25,7 @@ import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.api.service.AisConsentService;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.account.AisConsentAction;
+import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.AisConsentActionRepository;
 import de.adorsys.psd2.consent.repository.AisConsentVerifyingRepository;
@@ -32,7 +33,7 @@ import de.adorsys.psd2.consent.repository.AuthorisationRepository;
 import de.adorsys.psd2.consent.service.account.AccountAccessUpdater;
 import de.adorsys.psd2.consent.service.mapper.AccessMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsConsentMapper;
-import de.adorsys.psd2.core.mapper.ConsentDataMapper;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +60,6 @@ public class AisConsentServiceInternal implements AisConsentService {
     private final AisConsentUsageService aisConsentUsageService;
     private final OneOffConsentExpirationService oneOffConsentExpirationService;
     private final CmsConsentMapper cmsConsentMapper;
-    private final ConsentDataMapper consentDataMapper;
     private final AccessMapper accessMapper;
     private final AccountAccessUpdater accountAccessUpdater;
 
@@ -109,18 +109,12 @@ public class AisConsentServiceInternal implements AisConsentService {
     }
 
     private ConsentEntity updateConsentAccess(ConsentEntity consentEntity, AisAccountAccessInfo request) {
-        // ToDo Fix update https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-//        AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consentEntity.getData());
-//        AccountAccess existingAccess = aisConsentData.getAspspAccountAccess();
-//        AccountAccess requestedAccess = accessMapper.mapToAccountAccess(request);
-//        AccountAccess updatedAccesses = accountAccessUpdater.updateAccountReferencesInAccess(existingAccess, requestedAccess);
-//
-//        AisConsentData updatedAisConsentData = new AisConsentData(aisConsentData.getTppAccountAccess(),
-//                                                                  updatedAccesses,
-//                                                                  aisConsentData.isCombinedServiceIndicator());
-//        byte[] updatedConsentData = consentDataMapper.getBytesFromAisConsentData(updatedAisConsentData);
-//        consentEntity.setData(updatedConsentData);
-
+        List<AspspAccountAccess> aspspAccountAccesses = consentEntity.getAspspAccountAccesses();
+        AccountAccess existingAccess = accessMapper.mapAspspAccessesToAccountAccess(aspspAccountAccesses);
+        AccountAccess requestedAccess = accessMapper.mapToAccountAccess(request);
+        AccountAccess updatedAccesses = accountAccessUpdater.updateAccountReferencesInAccess(existingAccess, requestedAccess);
+        List<AspspAccountAccess> updatedAspspAccountAccesses = accessMapper.mapToAspspAccountAccess(updatedAccesses);
+        consentEntity.setAspspAccountAccesses(updatedAspspAccountAccesses);
         return consentEntity;
     }
 

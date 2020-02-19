@@ -49,9 +49,9 @@ class AccountAccessUpdaterTest {
 
     @Test
     void updateAccountReferencesInAccess_noExistingReferences() {
-        AccountAccess existingAccess = jsonReader.getObjectFromFile("json/service/account/account-access-global.json", AccountAccess.class);
+        AccountAccess existingAccess = jsonReader.getObjectFromFile("json/service/account/account-access-no-references.json", AccountAccess.class);
         AccountAccess newAccess = jsonReader.getObjectFromFile("json/service/account/account-access-aspsp.json", AccountAccess.class);
-        AccountAccess expectedAccess = jsonReader.getObjectFromFile("json/service/account/account-access-global-aspsp.json", AccountAccess.class);
+        AccountAccess expectedAccess = jsonReader.getObjectFromFile("json/service/account/account-access-aspsp.json", AccountAccess.class);
 
         AccountAccess updatedAccess = accountAccessUpdater.updateAccountReferencesInAccess(existingAccess, newAccess);
 

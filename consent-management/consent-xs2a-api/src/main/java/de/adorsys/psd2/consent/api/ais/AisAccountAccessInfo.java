@@ -18,7 +18,6 @@ package de.adorsys.psd2.consent.api.ais;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.adorsys.psd2.consent.api.AccountInfo;
-import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -38,21 +37,6 @@ public class AisAccountAccessInfo {
 
     @ApiModelProperty(value = "Access to transactions")
     private List<AccountInfo> transactions;
-
-    // TODO: Check whether it's needed https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-    @Deprecated
-    @ApiModelProperty(value = "Consent on all available accounts of psu", example = "ALL_ACCOUNTS")
-    private AccountAccessType availableAccounts;
-
-    // TODO: Check whether it's needed https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-    @Deprecated
-    @ApiModelProperty(value = "Consent on all accounts, balances and transactions of psu", example = "ALL_ACCOUNTS")
-    private AccountAccessType allPsd2;
-
-    // TODO: Check whether it's needed https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-    @Deprecated
-    @ApiModelProperty(value = "Consent on all available accounts with balances of psu", example = "ALL_ACCOUNTS")
-    private AccountAccessType availableAccountsWithBalance;
 
     @ApiModelProperty(value = "Additional account information")
     private AccountAdditionalInformationAccess accountAdditionalInformationAccess;

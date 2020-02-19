@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.consent.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import de.adorsys.psd2.consent.api.ActionStatus;
 import de.adorsys.psd2.consent.api.CmsError;
 import de.adorsys.psd2.consent.api.CmsResponse;
@@ -24,6 +25,7 @@ import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
 import de.adorsys.psd2.consent.api.ais.AisConsentActionRequest;
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.domain.account.AisConsentAction;
+import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.AisConsentActionRepository;
 import de.adorsys.psd2.consent.repository.AisConsentVerifyingRepository;
@@ -32,8 +34,6 @@ import de.adorsys.psd2.consent.service.account.AccountAccessUpdater;
 import de.adorsys.psd2.consent.service.mapper.AccessMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsConsentMapper;
 import de.adorsys.psd2.core.data.AccountAccess;
-import de.adorsys.psd2.core.data.ais.AisConsentData;
-import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.Test;
@@ -43,6 +43,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -71,8 +72,6 @@ class AisConsentServiceInternalTest {
     private OneOffConsentExpirationService oneOffConsentExpirationService;
     @Mock
     private CmsConsentMapper cmsConsentMapper;
-    @Mock
-    private ConsentDataMapper consentDataMapper;
     @Mock
     private AccessMapper accessMapper;
     @Mock
@@ -170,16 +169,15 @@ class AisConsentServiceInternalTest {
     void updateAspspAccountAccess() throws WrongChecksumException {
         ConsentEntity consentEntity = jsonReader.getObjectFromFile("json/service/ais-consent-service/consent-entity.json", ConsentEntity.class);
         when(aisConsentRepository.getActualAisConsent(CONSENT_ID)).thenReturn(Optional.of(consentEntity));
-        AisConsentData aisConsentData = jsonReader.getObjectFromFile("json/service/ais-consent-service/ais-consent-data.json", AisConsentData.class);
-        when(consentDataMapper.mapToAisConsentData(any())).thenReturn(aisConsentData);
+        List<AspspAccountAccess> aspspAccountAccesses = jsonReader.getObjectFromFile("json/service/ais-consent-service/aspsp-account-accesses.json", new TypeReference<List<AspspAccountAccess>>() {
+        });
+        AccountAccess existingAccountAccess = jsonReader.getObjectFromFile("json/service/ais-consent-service/account-access-existing.json", AccountAccess.class);
+        when(accessMapper.mapAspspAccessesToAccountAccess(aspspAccountAccesses)).thenReturn(existingAccountAccess);
         AisAccountAccessInfo aisAccountAccessInfo = jsonReader.getObjectFromFile("json/service/ais-consent-service/ais-account-access-info.json", AisAccountAccessInfo.class);
         AccountAccess requestedAccountAccess = jsonReader.getObjectFromFile("json/service/ais-consent-service/account-access-requested.json", AccountAccess.class);
         when(accessMapper.mapToAccountAccess(aisAccountAccessInfo)).thenReturn(requestedAccountAccess);
-        AccountAccess existingAccountAccess = jsonReader.getObjectFromFile("json/service/ais-consent-service/account-access-existing.json", AccountAccess.class);
         AccountAccess updatedAccountAccess = jsonReader.getObjectFromFile("json/service/ais-consent-service/account-access-updated.json", AccountAccess.class);
         when(accountAccessUpdater.updateAccountReferencesInAccess(existingAccountAccess, requestedAccountAccess)).thenReturn(updatedAccountAccess);
-        AisConsentData updatedAisConsentData = jsonReader.getObjectFromFile("json/service/ais-consent-service/ais-consent-data-updated.json", AisConsentData.class);
-        when(consentDataMapper.getBytesFromAisConsentData(updatedAisConsentData)).thenReturn(jsonReader.getBytesFromFile("json/service/ais-consent-service/ais-consent-data-updated.json"));
         CmsConsent cmsConsent = jsonReader.getObjectFromFile("json/service/ais-consent-service/cms-consent.json", CmsConsent.class);
         when(cmsConsentMapper.mapToCmsConsent(eq(consentEntity), anyList(), anyMap())).thenReturn(cmsConsent);
         when(aisConsentRepository.verifyAndUpdate(consentEntity)).thenReturn(consentEntity);
