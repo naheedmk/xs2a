@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -147,7 +148,7 @@ public class ConsentEntity extends InstanceDependableEntity implements Authorisa
     }
 
     public boolean isConfirmationExpired(long expirationPeriodMs) {
-        if (ConsentStatus.RECEIVED == consentStatus) {
+        if (EnumSet.of(ConsentStatus.RECEIVED, ConsentStatus.PARTIALLY_AUTHORISED).contains(consentStatus)) {
             return creationTimestamp.plus(expirationPeriodMs, ChronoUnit.MILLIS)
                        .isBefore(OffsetDateTime.now());
         }

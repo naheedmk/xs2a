@@ -53,19 +53,23 @@ class NotConfirmedConsentExpirationScheduleTaskTest {
 
     @Test
     void obsoleteNotConfirmedConsentIfExpired() {
+        // Given
         List<ConsentEntity> aisConsents = new ArrayList<>();
         aisConsents.add(new ConsentEntity());
         aisConsents.add(new ConsentEntity());
 
-        when(consentJpaRepository.findByConsentStatusIn(EnumSet.of(ConsentStatus.RECEIVED)))
+        when(consentJpaRepository.findByConsentStatusIn(EnumSet.of(ConsentStatus.RECEIVED, ConsentStatus.PARTIALLY_AUTHORISED)))
             .thenReturn(aisConsents);
-        when(aisConsentConfirmationExpirationService.isConfirmationExpired(any(ConsentEntity.class))).thenReturn(true, false);
+        when(aisConsentConfirmationExpirationService.isConfirmationExpired(any(ConsentEntity.class)))
+            .thenReturn(true, false);
         when(aisConsentConfirmationExpirationService.updateConsentListOnConfirmationExpiration(consentsCaptor.capture()))
             .thenReturn(Collections.emptyList());
 
+        // When
         scheduleTask.obsoleteNotConfirmedConsentIfExpired();
 
-        verify(consentJpaRepository, times(1)).findByConsentStatusIn(EnumSet.of(ConsentStatus.RECEIVED));
+        // Then
+        verify(consentJpaRepository, times(1)).findByConsentStatusIn(EnumSet.of(ConsentStatus.RECEIVED, ConsentStatus.PARTIALLY_AUTHORISED));
         verify(aisConsentConfirmationExpirationService, times(2)).isConfirmationExpired(any(ConsentEntity.class));
         verify(aisConsentConfirmationExpirationService, times(1)).updateConsentListOnConfirmationExpiration(anyList());
 
@@ -74,12 +78,15 @@ class NotConfirmedConsentExpirationScheduleTaskTest {
 
     @Test
     void obsoleteNotConfirmedConsentIfExpired_emptyList() {
-        when(consentJpaRepository.findByConsentStatusIn(EnumSet.of(ConsentStatus.RECEIVED)))
+        // Given
+        when(consentJpaRepository.findByConsentStatusIn(EnumSet.of(ConsentStatus.RECEIVED, ConsentStatus.PARTIALLY_AUTHORISED)))
             .thenReturn(Collections.emptyList());
 
+        // When
         scheduleTask.obsoleteNotConfirmedConsentIfExpired();
 
-        verify(consentJpaRepository, times(1)).findByConsentStatusIn(EnumSet.of(ConsentStatus.RECEIVED));
+        // Then
+        verify(consentJpaRepository, times(1)).findByConsentStatusIn(EnumSet.of(ConsentStatus.RECEIVED, ConsentStatus.PARTIALLY_AUTHORISED));
         verify(aisConsentConfirmationExpirationService, never()).isConfirmationExpired(any(ConsentEntity.class));
         verify(aisConsentConfirmationExpirationService, never()).updateConsentListOnConfirmationExpiration(anyList());
     }
