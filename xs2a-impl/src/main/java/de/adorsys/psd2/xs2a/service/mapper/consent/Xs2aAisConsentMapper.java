@@ -241,7 +241,8 @@ public class Xs2aAisConsentMapper {
                        aisConsent.setStatusChangeTimestamp(ac.getStatusChangeTimestamp());
                        aisConsent.setUsages(ac.getUsages());
                        aisConsent.setCreationTimestamp(ac.getCreationTimestamp());
-
+                       aisConsent.setTppAccountAccesses(ais.getTppAccountAccesses());
+                       aisConsent.setAspspAccountAccesses(ais.getAspspAccountAccesses());
                        return aisConsent;
                    })
                    .orElse(null);
