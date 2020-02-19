@@ -1,8 +1,9 @@
 {
-  "tppAccountAccess": {
-    "allPsd2": "allAccounts"
+  "consentData": {
   },
-  "aspspAccountAccess": {
+  "tppAccountAccesses": {
+  },
+  "aspspAccountAccesses": {
     "accounts": [
       {
         "iban": "DE98500105171757213183"
@@ -17,7 +18,6 @@
       {
         "iban": "DE98500105171757213183"
       }
-    ],
-    "allPsd2": "allAccounts"
+    ]
   }
 }

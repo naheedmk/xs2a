@@ -1,5 +1,6 @@
 {
-  "tppAccountAccess": {
+  "consentData": {},
+  "tppAccountAccesses": {
     "accounts": [
     ],
     "balances": [
@@ -7,6 +8,6 @@
     "transactions": [
     ]
   },
-  "aspspAccountAccess": {
+  "aspspAccountAccesses": {
   }
 }
