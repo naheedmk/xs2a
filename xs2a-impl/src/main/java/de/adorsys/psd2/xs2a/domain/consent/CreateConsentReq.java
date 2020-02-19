@@ -42,6 +42,7 @@ public class CreateConsentReq implements AccountReferenceCollector {
     @NotNull
     private AccountAccess access;
 
+    // ToDo add proper annotations https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
     private AccountAccessType availableAccounts;
     private AccountAccessType allPsd2;
     private AccountAccessType availableAccountsWithBalance;

@@ -19,6 +19,7 @@ package de.adorsys.psd2.xs2a.service.consent;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
+import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.AccountReferenceType;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
@@ -62,29 +63,29 @@ public class AccountReferenceInConsentUpdater {
      * will be ignored.
      *
      * @param consentId      an external ID of consent, where account access to be stored
-     * @param existingAccess existing account access of the consent
+     * @param aisConsent     consent for which references are being updated
      * @param accountDetails list of account details with referenceId set
      * @return Response containing AIS Consent
      */
-    public CmsResponse<AisConsent> updateAccountReferences(@NotNull String consentId, @NotNull AccountAccess existingAccess, @NotNull List<Xs2aAccountDetails> accountDetails) {
+    public CmsResponse<AisConsent> updateAccountReferences(@NotNull String consentId, @NotNull AisConsent aisConsent, @NotNull List<Xs2aAccountDetails> accountDetails) {
         List<AccountReference> accounts = new ArrayList<>();
         List<AccountReference> transactions = new ArrayList<>();
         List<AccountReference> balances = new ArrayList<>();
         List<AccountReference> ownerName = new ArrayList<>();
+        AccountAccess existingAccess = aisConsent.getAccess();
         AdditionalInformationAccess additionalInformationAccess = existingAccess.getAdditionalInformationAccess();
 
-        // ToDo fix https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-//        if (existingAccess.getAllPsd2() == AccountAccessType.ALL_ACCOUNTS) {
-//            accounts.addAll(enrichAccountReferencesGlobal(accountDetails));
-//            transactions.addAll(enrichAccountReferencesGlobal(accountDetails));
-//            balances.addAll(enrichAccountReferencesGlobal(accountDetails));
-//        } else {
-//            for (Xs2aAccountDetails accountDetail : accountDetails) {
-//                accounts.addAll(enrichAccountReferences(accountDetail, existingAccess.getAccounts()));
-//                balances.addAll(enrichAccountReferences(accountDetail, existingAccess.getBalances()));
-//                transactions.addAll(enrichAccountReferences(accountDetail, existingAccess.getTransactions()));
-//            }
-//        }
+        if (aisConsent.getConsentData().getAllPsd2() == AccountAccessType.ALL_ACCOUNTS) {
+            accounts.addAll(enrichAccountReferencesGlobal(accountDetails));
+            transactions.addAll(enrichAccountReferencesGlobal(accountDetails));
+            balances.addAll(enrichAccountReferencesGlobal(accountDetails));
+        } else {
+            for (Xs2aAccountDetails accountDetail : accountDetails) {
+                accounts.addAll(enrichAccountReferences(accountDetail, existingAccess.getAccounts()));
+                balances.addAll(enrichAccountReferences(accountDetail, existingAccess.getBalances()));
+                transactions.addAll(enrichAccountReferences(accountDetail, existingAccess.getTransactions()));
+            }
+        }
 
         for (Xs2aAccountDetails accountDetail : accountDetails) {
             if (additionalInformationAccess != null && additionalInformationAccess.getOwnerName() != null) {
@@ -93,7 +94,7 @@ public class AccountReferenceInConsentUpdater {
         }
 
         AccountAccess accountAccess =
-            getXs2aAccountAccess(existingAccess, accounts, transactions, balances, ownerName, additionalInformationAccess);
+            getXs2aAccountAccess(accounts, transactions, balances, ownerName, additionalInformationAccess);
 
         return aisConsentService.updateAspspAccountAccess(consentId, consentMapper.mapToAisAccountAccessInfo(accountAccess));
     }
@@ -103,29 +104,29 @@ public class AccountReferenceInConsentUpdater {
      * will be ignored. Masked PAN and PAN corresponding is implemented here.
      *
      * @param consentId      an external ID of consent, where account access to be stored
-     * @param existingAccess existing account access of the consent
+     * @param aisConsent     consent for which references are being updated
      * @param accountDetails list of account details with referenceId set
      * @return Response containing AIS Consent
      */
-    public CmsResponse<AisConsent> updateCardAccountReferences(String consentId, AccountAccess existingAccess, List<Xs2aCardAccountDetails> accountDetails) {
+    public CmsResponse<AisConsent> updateCardAccountReferences(String consentId, AisConsent aisConsent, List<Xs2aCardAccountDetails> accountDetails) {
         List<AccountReference> accounts = new ArrayList<>();
         List<AccountReference> transactions = new ArrayList<>();
         List<AccountReference> balances = new ArrayList<>();
         List<AccountReference> ownerName = new ArrayList<>();
+        AccountAccess existingAccess = aisConsent.getAccess();
         AdditionalInformationAccess additionalInformationAccess = existingAccess.getAdditionalInformationAccess();
 
-        // ToDo fix https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-//        if (existingAccess.getAllPsd2() == AccountAccessType.ALL_ACCOUNTS) {
-//            accounts.addAll(enrichCardAccountReferencesGlobal(accountDetails));
-//            transactions.addAll(enrichCardAccountReferencesGlobal(accountDetails));
-//            balances.addAll(enrichCardAccountReferencesGlobal(accountDetails));
-//        } else {
-//            for (Xs2aCardAccountDetails accountDetail : accountDetails) {
-//                accounts.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getAccounts()));
-//                balances.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getBalances()));
-//                transactions.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getTransactions()));
-//            }
-//        }
+        if (aisConsent.getConsentData().getAllPsd2() == AccountAccessType.ALL_ACCOUNTS) {
+            accounts.addAll(enrichCardAccountReferencesGlobal(accountDetails));
+            transactions.addAll(enrichCardAccountReferencesGlobal(accountDetails));
+            balances.addAll(enrichCardAccountReferencesGlobal(accountDetails));
+        } else {
+            for (Xs2aCardAccountDetails accountDetail : accountDetails) {
+                accounts.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getAccounts()));
+                balances.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getBalances()));
+                transactions.addAll(enrichCardAccountReferences(accountDetail, existingAccess.getTransactions()));
+            }
+        }
 
         for (Xs2aCardAccountDetails accountDetail : accountDetails) {
             if (additionalInformationAccess != null && additionalInformationAccess.getOwnerName() != null) {
@@ -134,13 +135,12 @@ public class AccountReferenceInConsentUpdater {
         }
 
         AccountAccess accountAccess =
-            getXs2aAccountAccess(existingAccess, accounts, transactions, balances, ownerName, additionalInformationAccess);
+            getXs2aAccountAccess(accounts, transactions, balances, ownerName, additionalInformationAccess);
 
         return aisConsentService.updateAspspAccountAccess(consentId, consentMapper.mapToAisAccountAccessInfo(accountAccess));
-
     }
 
-    private AccountAccess getXs2aAccountAccess(AccountAccess existingAccess, List<AccountReference> accounts,
+    private AccountAccess getXs2aAccountAccess(List<AccountReference> accounts,
                                                List<AccountReference> transactions, List<AccountReference> balances,
                                                List<AccountReference> ownerName, AdditionalInformationAccess additionalInformationAccess) {
 

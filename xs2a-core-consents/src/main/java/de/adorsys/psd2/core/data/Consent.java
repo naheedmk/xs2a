@@ -26,6 +26,7 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -54,8 +55,10 @@ public abstract class Consent<T> {
     private List<PsuIdData> psuIdDataList;
     private List<AccountConsentAuthorization> authorisations;
     private Map<String, Integer> usages;
-    private AccountAccess tppAccountAccesses;
-    private AccountAccess aspspAccountAccesses;
+    @NotNull
+    private AccountAccess tppAccountAccesses = AccountAccess.EMPTY_ACCESS;
+    @NotNull
+    private AccountAccess aspspAccountAccesses = AccountAccess.EMPTY_ACCESS;
 
     public abstract ConsentType getConsentType();
 

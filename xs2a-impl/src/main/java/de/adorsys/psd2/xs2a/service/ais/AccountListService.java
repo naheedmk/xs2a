@@ -123,7 +123,7 @@ public class AccountListService {
         List<Xs2aAccountDetails> accountDetails = accountDetailsMapper.mapToXs2aAccountDetailsList(spiResponse.getPayload());
 
         CmsResponse<AisConsent> aisConsentUpdated =
-            accountReferenceUpdater.updateAccountReferences(consentId, aisConsent.getAccess(), accountDetails);
+            accountReferenceUpdater.updateAccountReferences(consentId, aisConsent, accountDetails);
 
         if (aisConsentUpdated.hasError()) {
             log.info("Consent-ID: [{}]. Get account list failed: couldn't update account consent access.", consentId);

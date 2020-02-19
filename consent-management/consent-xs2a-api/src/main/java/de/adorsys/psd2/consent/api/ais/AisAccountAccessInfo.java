@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2018 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,18 @@ public class AisAccountAccessInfo {
     @ApiModelProperty(value = "Access to transactions")
     private List<AccountInfo> transactions;
 
+    // TODO: Check whether it's needed https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+    @Deprecated
     @ApiModelProperty(value = "Consent on all available accounts of psu", example = "ALL_ACCOUNTS")
     private AccountAccessType availableAccounts;
 
+    // TODO: Check whether it's needed https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+    @Deprecated
     @ApiModelProperty(value = "Consent on all accounts, balances and transactions of psu", example = "ALL_ACCOUNTS")
     private AccountAccessType allPsd2;
 
+    // TODO: Check whether it's needed https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
+    @Deprecated
     @ApiModelProperty(value = "Consent on all available accounts with balances of psu", example = "ALL_ACCOUNTS")
     private AccountAccessType availableAccountsWithBalance;
 

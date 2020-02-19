@@ -65,7 +65,6 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_VALIDATIO
 @Service
 @AllArgsConstructor
 public class CardAccountService {
-
     private final CardAccountSpi cardAccountSpi;
 
     private final SpiToXs2aAccountDetailsMapper accountDetailsMapper;
@@ -128,7 +127,7 @@ public class CardAccountService {
         List<Xs2aCardAccountDetails> accountDetails = accountDetailsMapper.mapToXs2aCardAccountDetailsList(spiResponse.getPayload());
 
         CmsResponse<AisConsent> aisConsentUpdated =
-            accountReferenceUpdater.updateCardAccountReferences(consentId, aisConsent.getAccess(), accountDetails);
+            accountReferenceUpdater.updateCardAccountReferences(consentId, aisConsent, accountDetails);
 
         if (aisConsentUpdated.hasError()) {
             log.info("Consent-ID: [{}]. Get card account list failed: couldn't update account consent access.",
