@@ -19,11 +19,9 @@ package de.adorsys.psd2.xs2a.service.ais;
 import de.adorsys.psd2.consent.api.ActionStatus;
 import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
-import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.event.core.model.EventType;
 import de.adorsys.psd2.logger.context.LoggingContextService;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
-import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
@@ -32,7 +30,6 @@ import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.error.TppMessage;
 import de.adorsys.psd2.xs2a.core.mapper.ServiceType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
-import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountDetails;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountDetailsHolder;
@@ -64,12 +61,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.Optional;
-import java.util.UUID;
 
 import static de.adorsys.psd2.xs2a.core.domain.TppMessageInformation.of;
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
@@ -133,7 +127,8 @@ class AccountDetailsServiceTest {
 
     @BeforeEach
     void setUp() {
-        aisConsent = createConsent();
+        aisConsent = jsonReader.getObjectFromFile("json/service/ais-consent.json", AisConsent.class);
+        aisConsent.setTppAccountAccesses(createAccountAccess());
         spiAccountReference = jsonReader.getObjectFromFile("json/service/mapper/spi_xs2a_mappers/spi-account-reference.json", SpiAccountReference.class);
         commonAccountRequestObject = buildCommonAccountRequestObject();
         spiAspspConsentDataProvider = spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID);
@@ -339,34 +334,6 @@ class AccountDetailsServiceTest {
 
     private static AccountReference buildXs2aAccountReference() {
         return new AccountReference(ASPSP_ACCOUNT_ID, ACCOUNT_ID, IBAN, BBAN, PAN, MASKED_PAN, MSISDN, EUR_CURRENCY);
-    }
-
-    private AisConsent createConsent() {
-        AisConsent aisConsent = new AisConsent();
-        aisConsent.setConsentData(AisConsentData.buildDefaultAisConsentData());
-        aisConsent.setId(CONSENT_ID);
-        aisConsent.setValidUntil(LocalDate.now());
-        aisConsent.setFrequencyPerDay(4);
-        aisConsent.setConsentStatus(ConsentStatus.VALID);
-        aisConsent.setAuthorisations(Collections.emptyList());
-        aisConsent.setConsentTppInformation(buildConsentTppInformation());
-        aisConsent.setStatusChangeTimestamp(OffsetDateTime.now());
-        aisConsent.setUsages(Collections.emptyMap());
-        aisConsent.setStatusChangeTimestamp(OffsetDateTime.now());
-        aisConsent.setTppAccountAccesses(createAccountAccess());
-        return aisConsent;
-    }
-
-    private static ConsentTppInformation buildConsentTppInformation() {
-        ConsentTppInformation consentTppInformation = new ConsentTppInformation();
-        consentTppInformation.setTppInfo(createTppInfo());
-        return consentTppInformation;
-    }
-
-    private static TppInfo createTppInfo() {
-        TppInfo tppInfo = new TppInfo();
-        tppInfo.setAuthorisationNumber(UUID.randomUUID().toString());
-        return tppInfo;
     }
 
     private AccountAccess createAccountAccess() {
