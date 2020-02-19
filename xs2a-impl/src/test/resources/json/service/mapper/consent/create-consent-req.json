@@ -20,11 +20,11 @@
         "iban": "DE89370400440532013000",
         "currency": "EUR"
       }
-    ],
-    "availableAccounts": "allAccounts",
-    "allPsd2": "allAccounts",
-    "availableAccountsWithBalance": "allAccounts"
+    ]
   },
+  "availableAccounts": "allAccounts",
+  "allPsd2": "allAccounts",
+  "availableAccountsWithBalance": "allAccounts",
   "frequencyPerDay": 11,
   "recurringIndicator": true,
   "combinedServiceIndicator": true,

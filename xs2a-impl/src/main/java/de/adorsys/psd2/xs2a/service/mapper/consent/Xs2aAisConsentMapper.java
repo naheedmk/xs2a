@@ -140,24 +140,9 @@ public class Xs2aAisConsentMapper {
         accessInfo.setAccounts(mapToListAccountInfo(access.getAccounts()));
         accessInfo.setBalances(mapToListAccountInfo(access.getBalances()));
         accessInfo.setTransactions(mapToListAccountInfo(access.getTransactions()));
-
-        // ToDo: fix https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-//        accessInfo.setAvailableAccounts(Optional.ofNullable(access.getAvailableAccounts())
-//                                            .map(accessType -> AccountAccessType.valueOf(accessType.name()))
-//                                            .orElse(null));
-//
-//        accessInfo.setAllPsd2(Optional.ofNullable(access.getAllPsd2())
-//                                  .map(accessType -> AccountAccessType.valueOf(accessType.name()))
-//                                  .orElse(null));
-//
-//        accessInfo.setAvailableAccountsWithBalance(Optional.ofNullable(access.getAvailableAccountsWithBalance())
-//                                                       .map(accessType -> AccountAccessType.valueOf(accessType.name()))
-//                                                       .orElse(null));
-
         accessInfo.setAccountAdditionalInformationAccess(Optional.ofNullable(access.getAdditionalInformationAccess())
                                                              .map(this::mapToAccountAdditionalInformationAccess)
                                                              .orElse(null));
-
         return accessInfo;
     }
 
