@@ -20,9 +20,8 @@ import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.domain.account.AisConsentTransaction;
 import de.adorsys.psd2.consent.repository.AisConsentTransactionRepository;
 import de.adorsys.psd2.consent.repository.AisConsentUsageRepository;
+import de.adorsys.psd2.consent.service.mapper.CmsAisConsentMapper;
 import de.adorsys.psd2.core.data.AccountAccess;
-import de.adorsys.psd2.core.data.ais.AisConsentData;
-import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +45,7 @@ public class OneOffConsentExpirationService {
 
     private final AisConsentUsageRepository aisConsentUsageRepository;
     private final AisConsentTransactionRepository aisConsentTransactionRepository;
-    private final ConsentDataMapper consentDataMapper;
+    private final CmsAisConsentMapper cmsAisConsentMapper;
 
     /**
      * Checks, should the one-off consent be expired after using its all GET endpoints (accounts, balances, transactions)
@@ -57,10 +56,7 @@ public class OneOffConsentExpirationService {
      * @return true if the consent should be expired, false otherwise.
      */
     public boolean isConsentExpired(CmsConsent cmsConsent, Long consentId) {
-        byte[] consentData = cmsConsent.getConsentData();
-        AisConsentData aisConsentData = consentDataMapper.mapToAisConsentData(consentData);
-        // ToDo fix consentRequestType resolution https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-        AisConsentRequestType consentRequestType = AisConsentRequestType.DEDICATED_ACCOUNTS;
+        AisConsentRequestType consentRequestType = cmsAisConsentMapper.mapToAisConsent(cmsConsent).getConsentRequestType();
 
         // We omit all bank offered consents until they are not populated with accounts.
         if (consentRequestType == AisConsentRequestType.BANK_OFFERED) {
