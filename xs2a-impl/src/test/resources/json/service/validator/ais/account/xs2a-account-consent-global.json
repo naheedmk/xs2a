@@ -1,32 +1,31 @@
 {
   "consentData": {
-    "tppAccountAccess": {
-      "allPsd2": "allAccounts"
-    },
-    "aspspAccountAccess": {
-      "accounts": [
-        {
-          "resourceId": "11111-999999999",
-          "iban": "DE89370400440532013000",
-          "currency": "EUR"
-        }
-      ],
-      "balances": [
-        {
-          "resourceId": "11111-999999999",
-          "iban": "DE89370400440532013000",
-          "currency": "EUR"
-        }
-      ],
-      "transactions": [
-        {
-          "resourceId": "11111-999999999",
-          "iban": "DE89370400440532013000",
-          "currency": "EUR"
-        }
-      ],
-      "allPsd2": "allAccounts"
-    }
+    "allPsd2": "allAccounts"
+  },
+  "tppAccountAccesses": {
+  },
+  "aspspAccountAccesses": {
+    "accounts": [
+      {
+        "resourceId": "11111-999999999",
+        "iban": "DE89370400440532013000",
+        "currency": "EUR"
+      }
+    ],
+    "balances": [
+      {
+        "resourceId": "11111-999999999",
+        "iban": "DE89370400440532013000",
+        "currency": "EUR"
+      }
+    ],
+    "transactions": [
+      {
+        "resourceId": "11111-999999999",
+        "iban": "DE89370400440532013000",
+        "currency": "EUR"
+      }
+    ]
   },
   "recurringIndicator": true,
   "validUntil": "2037-08-06",
