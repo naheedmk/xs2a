@@ -1,79 +1,7 @@
 {
-  "consentData":{
-    "tppAccountAccess": {
-      "accounts": [
-        {
-          "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
-          "iban": "Test IBAN",
-          "bban": "Test BBAN",
-          "pan": "Test PAN",
-          "maskedPan": "Test MASKED_PAN",
-          "msisdn": "Test MSISDN",
-          "currency": "EUR"
-        }
-      ],
-      "balances": [
-        {
-          "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
-          "iban": "Test IBAN",
-          "bban": "Test BBAN",
-          "pan": "Test PAN",
-          "maskedPan": "Test MASKED_PAN",
-          "msisdn": "Test MSISDN",
-          "currency": "EUR"
-        }
-      ],
-      "transactions": [
-        {
-          "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
-          "iban": "Test IBAN",
-          "bban": "Test BBAN",
-          "pan": "Test PAN",
-          "maskedPan": "Test MASKED_PAN",
-          "msisdn": "Test MSISDN",
-          "currency": "EUR"
-        }
-      ],
-      "availableAccounts": "allAccounts",
-      "allPsd2": "allAccounts"
-    },
-    "aspspAccountAccess": {
-      "accounts": [
-        {
-          "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
-          "iban": "Test IBAN",
-          "bban": "Test BBAN",
-          "pan": "Test PAN",
-          "maskedPan": "Test MASKED_PAN",
-          "msisdn": "Test MSISDN",
-          "currency": "EUR"
-        }
-      ],
-      "balances": [
-        {
-          "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
-          "iban": "Test IBAN",
-          "bban": "Test BBAN",
-          "pan": "Test PAN",
-          "maskedPan": "Test MASKED_PAN",
-          "msisdn": "Test MSISDN",
-          "currency": "EUR"
-        }
-      ],
-      "transactions": [
-        {
-          "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
-          "iban": "Test IBAN",
-          "bban": "Test BBAN",
-          "pan": "Test PAN",
-          "maskedPan": "Test MASKED_PAN",
-          "msisdn": "Test MSISDN",
-          "currency": "EUR"
-        }
-      ],
-      "availableAccounts": "allAccounts",
-      "allPsd2": "allAccounts"
-    },
+  "consentData": {
+    "availableAccounts": "allAccounts",
+    "allPsd2": "allAccounts",
     "combinedServiceIndicator": false
   },
   "recurringIndicator": true,
@@ -84,5 +12,75 @@
     "tppInfo": {
       "authorisationNumber": "fc488759-d8a2-4a51-b797-7d4cf7ac0447"
     }
+  },
+  "tppAccountAccesses": {
+    "accounts": [
+      {
+        "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
+        "iban": "Test IBAN",
+        "bban": "Test BBAN",
+        "pan": "Test PAN",
+        "maskedPan": "Test MASKED_PAN",
+        "msisdn": "Test MSISDN",
+        "currency": "EUR"
+      }
+    ],
+    "balances": [
+      {
+        "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
+        "iban": "Test IBAN",
+        "bban": "Test BBAN",
+        "pan": "Test PAN",
+        "maskedPan": "Test MASKED_PAN",
+        "msisdn": "Test MSISDN",
+        "currency": "EUR"
+      }
+    ],
+    "transactions": [
+      {
+        "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
+        "iban": "Test IBAN",
+        "bban": "Test BBAN",
+        "pan": "Test PAN",
+        "maskedPan": "Test MASKED_PAN",
+        "msisdn": "Test MSISDN",
+        "currency": "EUR"
+      }
+    ]
+  },
+  "aspspAccountAccesses": {
+    "accounts": [
+      {
+        "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
+        "iban": "Test IBAN",
+        "bban": "Test BBAN",
+        "pan": "Test PAN",
+        "maskedPan": "Test MASKED_PAN",
+        "msisdn": "Test MSISDN",
+        "currency": "EUR"
+      }
+    ],
+    "balances": [
+      {
+        "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
+        "iban": "Test IBAN",
+        "bban": "Test BBAN",
+        "pan": "Test PAN",
+        "maskedPan": "Test MASKED_PAN",
+        "msisdn": "Test MSISDN",
+        "currency": "EUR"
+      }
+    ],
+    "transactions": [
+      {
+        "resourceId": "3276159a-27ad-46db-8491-71e629d82baa",
+        "iban": "Test IBAN",
+        "bban": "Test BBAN",
+        "pan": "Test PAN",
+        "maskedPan": "Test MASKED_PAN",
+        "msisdn": "Test MSISDN",
+        "currency": "EUR"
+      }
+    ]
   }
 }
