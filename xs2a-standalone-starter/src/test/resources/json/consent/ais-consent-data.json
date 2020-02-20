@@ -1,8 +1,4 @@
 {
-  "tppAccountAccess": {},
-  "aspspAccountAccess": {
-    "accounts": [],
-    "balances": [],
-    "transactions": []
-  }
+  "combinedServiceIndicator": false,
+  "allPsd2": "allAccounts"
 }

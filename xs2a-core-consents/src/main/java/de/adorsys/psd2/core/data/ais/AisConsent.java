@@ -56,7 +56,10 @@ public class AisConsent extends Consent<AisConsentData> {
 
     @JsonIgnore
     public AccountAccess getAccess() {
-        if (getConsentData().getAllPsd2() != null) {
+        Optional<AccountAccessType> allPsd2Optional = Optional.ofNullable(getConsentData())
+                                              .map(AisConsentData::getAllPsd2);
+
+        if (allPsd2Optional.isPresent()) {
             return getTppAccountAccesses();
         }
 
