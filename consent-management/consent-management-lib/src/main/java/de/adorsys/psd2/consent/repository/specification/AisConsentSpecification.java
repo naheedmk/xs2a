@@ -17,6 +17,7 @@
 package de.adorsys.psd2.consent.repository.specification;
 
 import de.adorsys.psd2.consent.domain.TppInfoEntity;
+import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.consent.ConsentType;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.Join;
 import java.time.LocalDate;
+import java.util.List;
 
 import static de.adorsys.psd2.consent.repository.specification.EntityAttribute.*;
 import static de.adorsys.psd2.consent.repository.specification.EntityAttributeSpecificationProvider.provideSpecificationForEntityAttribute;
@@ -92,15 +94,18 @@ public class AisConsentSpecification extends GenericSpecification {
     /**
      * Returns specification for ConsentEntity entity for filtering data by ASPSP account ID, creation date and instance ID.
      *
+     * @param aspspAccountId bank-specific account identifier
      * @param createDateFrom optional creation date that limits resulting data to AIS consents created after this date(inclusive)
      * @param createDateTo   optional creation date that limits resulting data to AIS consents created before this date(inclusive)
      * @param instanceId     optional instance ID
      * @return specification for AisCoConsentEntitynsent entity
      */
-    public Specification<ConsentEntity> byCreationPeriodAndInstanceId(@Nullable LocalDate createDateFrom,
-                                                                      @Nullable LocalDate createDateTo,
-                                                                      @Nullable String instanceId) {
+    public Specification<ConsentEntity> byAspspAccountIdAndCreationPeriodAndInstanceId(@NotNull String aspspAccountId,
+                                                                                       @Nullable LocalDate createDateFrom,
+                                                                                       @Nullable LocalDate createDateTo,
+                                                                                       @Nullable String instanceId) {
         return Specification.where(byAisConsentType())
+                   .and(byAspspAccountIdInAspspAccountAccess(aspspAccountId))
                    .and(byCreationTimestamp(createDateFrom, createDateTo))
                    .and(byInstanceId(instanceId));
     }
@@ -108,15 +113,18 @@ public class AisConsentSpecification extends GenericSpecification {
     /**
      * Returns specification for ConsentEntity entity for filtering data by ASPSP account ID and PSU ID Data and instance ID.
      *
-     * @param psuIdData  mandatory PSU ID data
-     * @param instanceId optional instance ID
+     * @param psuIdData      mandatory PSU ID data
+     * @param aspspAccountId bank-specific account identifier
+     * @param instanceId     optional instance ID
      * @return specification for ConsentEntity entity
      */
-    public Specification<ConsentEntity> byAndPsuIdDataAndInstanceId(@NotNull PsuIdData psuIdData,
-                                                                    @Nullable String instanceId) {
+    public Specification<ConsentEntity> byPsuIdDataAndAspspAccountIdAndInstanceId(@NotNull PsuIdData psuIdData,
+                                                                                  @Nullable String aspspAccountId,
+                                                                                  @Nullable String instanceId) {
 
         return Specification.where(byAisConsentType())
                    .and(byPsuIdDataInList(psuIdData))
+                   .and(byAspspAccountIdInAspspAccountAccess(aspspAccountId))
                    .and(byInstanceId(instanceId));
     }
 
@@ -131,5 +139,14 @@ public class AisConsentSpecification extends GenericSpecification {
 
     private Specification<ConsentEntity> byAisConsentType() {
         return provideSpecificationForEntityAttribute(CONSENT_TYPE_ATTRIBUTE, ConsentType.AIS.getName());
+    }
+
+    private Specification<ConsentEntity> byAspspAccountIdInAspspAccountAccess(@Nullable String aspspAccountId) {
+        return (root, query, cb) -> {
+            Join<ConsentEntity, List<AspspAccountAccess>> aspspAccountAccessJoin = root.join(ASPSP_ACCOUNT_ACCESSES_ATTRIBUTE);
+            query.distinct(true);
+            return provideSpecificationForJoinedEntityAttribute(aspspAccountAccessJoin, ASPSP_ACCOUNT_ID_ATTRIBUTE, aspspAccountId)
+                       .toPredicate(root, query, cb);
+        };
     }
 }

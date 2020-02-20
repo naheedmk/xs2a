@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +51,6 @@ public class CmsAspspAisExportServiceInternal implements CmsAspspAisExportServic
     private final ConsentJpaRepository consentJpaRepository;
     private final AisConsentMapper aisConsentMapper;
     private final AuthorisationRepository authorisationRepository;
-    private final ConsentFilteringService consentFilteringService;
     private final AisConsentMigrationService aisConsentMigrationService;
 
     @Override
@@ -109,15 +109,16 @@ public class CmsAspspAisExportServiceInternal implements CmsAspspAisExportServic
             return Collections.emptyList();
         }
 
-        List<ConsentEntity> consents = consentJpaRepository.findAll(aisConsentSpecification.byCreationPeriodAndInstanceId(createDateFrom,
-                                                                                                                          createDateTo,
-                                                                                                                          instanceId))
+        Specification<ConsentEntity> specification = aisConsentSpecification.byAspspAccountIdAndCreationPeriodAndInstanceId(aspspAccountId,
+                                                                                                                            createDateFrom,
+                                                                                                                            createDateTo,
+                                                                                                                            instanceId);
+        List<ConsentEntity> consents = consentJpaRepository.findAll(specification)
                                            .stream()
                                            .map(aisConsentMigrationService::migrateIfNeeded)
                                            .collect(Collectors.toList());
 
-        List<ConsentEntity> filteredConsents = consentFilteringService.filterAisConsentsByAspspAccountId(consents, aspspAccountId);
-        return filteredConsents
+        return consents
                    .stream()
                    .map(this::mapToCmsAisAccountConsentWithAuthorisations)
                    .collect(Collectors.toList());

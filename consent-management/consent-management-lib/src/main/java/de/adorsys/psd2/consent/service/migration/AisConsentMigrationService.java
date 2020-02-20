@@ -57,41 +57,4 @@ public class AisConsentMigrationService {
 
         return consentDataMapper.getBytesFromAisConsentData(aisConsentData);
     }
-    // ToDo use for mapping https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
-//
-//    private AccountAccess getAccountAccess(AisConsent aisConsent, boolean isAspspAccountAccess) {
-//        List<AccountReference> accounts = new ArrayList<>();
-//        List<AccountReference> balances = new ArrayList<>();
-//        List<AccountReference> transactions = new ArrayList<>();
-//        List<AccountReference> ownerName = new ArrayList<>();
-//
-//        List<? extends de.adorsys.psd2.consent.domain.account.AccountAccess> accountAccesses = isAspspAccountAccess ?
-//                                                                                                   aisConsent.getAspspAccountAccesses() : aisConsent.getAccesses();
-//
-//        accountAccesses.forEach(a -> {
-//            AccountReference accountReference = isAspspAccountAccess ?
-//                                                    new AccountReference(a.getAccountReferenceType(),
-//                                                                         a.getAccountIdentifier(),
-//                                                                         a.getCurrency(),
-//                                                                         ((AspspAccountAccess) a).getResourceId(),
-//                                                                         ((AspspAccountAccess) a).getAspspAccountId()) :
-//                                                    new AccountReference(a.getAccountReferenceType(),
-//                                                                         a.getAccountIdentifier(),
-//                                                                         a.getCurrency());
-//            if (TypeAccess.ACCOUNT == a.getTypeAccess()) {
-//                accounts.add(accountReference);
-//            } else if (TypeAccess.BALANCE == a.getTypeAccess()) {
-//                balances.add(accountReference);
-//            } else if (TypeAccess.TRANSACTION == a.getTypeAccess()) {
-//                transactions.add(accountReference);
-//            } else if (TypeAccess.OWNER_NAME == a.getTypeAccess()) {
-//                ownerName.add(accountReference);
-//            }
-//        });
-//        AdditionalInformationAccess additionalInformationAccess = new AdditionalInformationAccess(ownerName);
-//
-//        return new AccountAccess(accounts, balances, transactions,
-//                                 aisConsent.getAvailableAccounts(), aisConsent.getAllPsd2(), aisConsent.getAvailableAccountsWithBalance(),
-//                                 additionalInformationAccess);
-//    }
 }

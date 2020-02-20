@@ -43,18 +43,16 @@ public class CmsAspspPsuAccountServiceInternal implements CmsAspspPsuAccountServ
     private final ConsentJpaRepository consentJpaRepository;
     private final PiisConsentRepository piisConsentRepository;
     private final PiisConsentEntitySpecification piisConsentEntitySpecification;
-    private final ConsentFilteringService consentFilteringService;
 
     @Override
     @Transactional
     public boolean revokeAllConsents(@Nullable String aspspAccountId, @NotNull PsuIdData psuIdData, @Nullable String instanceId) {
         List<ConsentEntity> aisConsents = consentJpaRepository
-                                              .findAll(aisConsentSpecification.byAndPsuIdDataAndInstanceId(psuIdData, instanceId));
-        List<ConsentEntity> aisConsentsByAccountId = consentFilteringService.filterAisConsentsByAspspAccountId(aisConsents, aspspAccountId);
+                                              .findAll(aisConsentSpecification.byPsuIdDataAndAspspAccountIdAndInstanceId(psuIdData, aspspAccountId, instanceId));
         List<PiisConsentEntity> piisConsents = piisConsentRepository
                                                    .findAll(piisConsentEntitySpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(aspspAccountId, psuIdData, instanceId));
 
-        List<ConsentEntity> filteredAisConsents = aisConsentsByAccountId.stream()
+        List<ConsentEntity> filteredAisConsents = aisConsents.stream()
                                                       .filter(cst -> !cst.getConsentStatus().isFinalisedStatus())
                                                       .collect(Collectors.toList());
 
