@@ -21,6 +21,7 @@ import de.adorsys.psd2.consent.api.ActionStatus;
 import de.adorsys.psd2.consent.api.CmsError;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.WrongChecksumException;
+import de.adorsys.psd2.consent.api.ais.AdditionalAccountInformationType;
 import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
 import de.adorsys.psd2.consent.api.ais.AisConsentActionRequest;
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
@@ -172,7 +173,7 @@ class AisConsentServiceInternalTest {
         List<AspspAccountAccess> aspspAccountAccesses = jsonReader.getObjectFromFile("json/service/ais-consent-service/aspsp-account-accesses.json", new TypeReference<List<AspspAccountAccess>>() {
         });
         AccountAccess existingAccountAccess = jsonReader.getObjectFromFile("json/service/ais-consent-service/account-access-existing.json", AccountAccess.class);
-        when(accessMapper.mapAspspAccessesToAccountAccess(aspspAccountAccesses)).thenReturn(existingAccountAccess);
+        when(accessMapper.mapAspspAccessesToAccountAccess(aspspAccountAccesses, AdditionalAccountInformationType.DEDICATED_ACCOUNTS)).thenReturn(existingAccountAccess);
         AisAccountAccessInfo aisAccountAccessInfo = jsonReader.getObjectFromFile("json/service/ais-consent-service/ais-account-access-info.json", AisAccountAccessInfo.class);
         AccountAccess requestedAccountAccess = jsonReader.getObjectFromFile("json/service/ais-consent-service/account-access-requested.json", AccountAccess.class);
         when(accessMapper.mapToAccountAccess(aisAccountAccessInfo)).thenReturn(requestedAccountAccess);

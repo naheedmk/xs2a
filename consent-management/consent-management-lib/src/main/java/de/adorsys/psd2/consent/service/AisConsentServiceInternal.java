@@ -110,7 +110,7 @@ public class AisConsentServiceInternal implements AisConsentService {
 
     private ConsentEntity updateConsentAccess(ConsentEntity consentEntity, AisAccountAccessInfo request) {
         List<AspspAccountAccess> aspspAccountAccesses = consentEntity.getAspspAccountAccesses();
-        AccountAccess existingAccess = accessMapper.mapAspspAccessesToAccountAccess(aspspAccountAccesses);
+        AccountAccess existingAccess = accessMapper.mapAspspAccessesToAccountAccess(aspspAccountAccesses, consentEntity.getOwnerNameType());
         AccountAccess requestedAccess = accessMapper.mapToAccountAccess(request);
         AccountAccess updatedAccesses = accountAccessUpdater.updateAccountReferencesInAccess(existingAccess, requestedAccess);
         List<AspspAccountAccess> updatedAspspAccountAccesses = accessMapper.mapToAspspAccountAccess(updatedAccesses);

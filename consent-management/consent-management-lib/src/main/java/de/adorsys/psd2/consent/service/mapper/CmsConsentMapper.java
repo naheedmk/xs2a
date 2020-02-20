@@ -59,8 +59,8 @@ public class CmsConsentMapper {
         cmsConsent.setLastActionDate(entity.getLastActionDate());
         cmsConsent.setAuthorisations(authorisationMapper.mapToAuthorisations(authorisations));
         cmsConsent.setUsages(usages);
-        cmsConsent.setTppAccountAccesses(accessMapper.mapTppAccessesToAccountAccess(entity.getTppAccountAccesses()));
-        cmsConsent.setAspspAccountAccesses(accessMapper.mapAspspAccessesToAccountAccess(entity.getAspspAccountAccesses()));
+        cmsConsent.setTppAccountAccesses(accessMapper.mapTppAccessesToAccountAccess(entity.getTppAccountAccesses(), entity.getOwnerNameType()));
+        cmsConsent.setAspspAccountAccesses(accessMapper.mapAspspAccessesToAccountAccess(entity.getAspspAccountAccesses(), entity.getOwnerNameType()));
         return cmsConsent;
     }
 

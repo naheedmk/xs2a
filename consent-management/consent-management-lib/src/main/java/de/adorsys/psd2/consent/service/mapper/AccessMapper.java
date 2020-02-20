@@ -19,6 +19,7 @@ package de.adorsys.psd2.consent.service.mapper;
 import de.adorsys.psd2.consent.api.AccountInfo;
 import de.adorsys.psd2.consent.api.TypeAccess;
 import de.adorsys.psd2.consent.api.ais.AccountAdditionalInformationAccess;
+import de.adorsys.psd2.consent.api.ais.AdditionalAccountInformationType;
 import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
 import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.account.TppAccountAccess;
@@ -37,7 +38,7 @@ import java.util.stream.Stream;
 @Component
 public class AccessMapper {
 
-    public AccountAccess mapTppAccessesToAccountAccess(List<TppAccountAccess> tppAccountAccesses) {
+    public AccountAccess mapTppAccessesToAccountAccess(List<TppAccountAccess> tppAccountAccesses, AdditionalAccountInformationType additionalAccountInformationType) {
         AccountAccessListHolder holder = new AccountAccessListHolder();
         tppAccountAccesses.forEach(a -> {
             AccountReference accountReference = new AccountReference(a.getAccountReferenceType(),
@@ -46,10 +47,10 @@ public class AccessMapper {
             holder.addAccountReference(accountReference, a.getTypeAccess());
         });
         return new AccountAccess(holder.getAccounts(), holder.getBalances(), holder.getTransactions(),
-                                 new AdditionalInformationAccess(holder.getOwnerNames()));
+                                 new AdditionalInformationAccess(additionalAccountInformationType.getReferencesByType(holder.getOwnerNames())));
     }
 
-    public AccountAccess mapAspspAccessesToAccountAccess(List<AspspAccountAccess> aspspAccountAccesses) {
+    public AccountAccess mapAspspAccessesToAccountAccess(List<AspspAccountAccess> aspspAccountAccesses, AdditionalAccountInformationType additionalAccountInformationType) {
         AccountAccessListHolder holder = new AccountAccessListHolder();
         aspspAccountAccesses.forEach(a -> {
             AccountReference accountReference = new AccountReference(a.getAccountReferenceType(),
@@ -60,7 +61,7 @@ public class AccessMapper {
             holder.addAccountReference(accountReference, a.getTypeAccess());
         });
         return new AccountAccess(holder.getAccounts(), holder.getBalances(), holder.getTransactions(),
-                                 new AdditionalInformationAccess(holder.getOwnerNames()));
+                                 new AdditionalInformationAccess(additionalAccountInformationType.getReferencesByType(holder.getOwnerNames())));
     }
 
     public List<TppAccountAccess> mapToTppAccountAccess(AccountAccess accountAccess) {

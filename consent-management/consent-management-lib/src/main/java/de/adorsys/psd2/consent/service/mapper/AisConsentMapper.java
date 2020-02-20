@@ -110,8 +110,8 @@ public class AisConsentMapper {
                               psuDataMapper.mapToPsuIdDataList(entity.getPsuDataList()),
                               mapToAccountConsentAuthorisations(authorisations),
                               usageCounterMap,
-                              accessMapper.mapTppAccessesToAccountAccess(entity.getTppAccountAccesses()),
-                              accessMapper.mapAspspAccessesToAccountAccess(entity.getAspspAccountAccesses()));
+                              accessMapper.mapTppAccessesToAccountAccess(entity.getTppAccountAccesses(), entity.getOwnerNameType()),
+                              accessMapper.mapAspspAccessesToAccountAccess(entity.getAspspAccountAccesses(), entity.getOwnerNameType()));
     }
 
     public AccountAccess mapToAccountAccess(AisAccountAccess accountAccess) {

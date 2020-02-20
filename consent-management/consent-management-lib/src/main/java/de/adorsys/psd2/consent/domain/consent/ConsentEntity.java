@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.consent.domain.consent;
 
+import de.adorsys.psd2.consent.api.ais.AdditionalAccountInformationType;
 import de.adorsys.psd2.consent.domain.Authorisable;
 import de.adorsys.psd2.consent.domain.AuthorisationTemplateEntity;
 import de.adorsys.psd2.consent.domain.InstanceDependableEntity;
@@ -124,6 +125,10 @@ public class ConsentEntity extends InstanceDependableEntity implements Authorisa
     @ElementCollection
     @CollectionTable(name = "ais_aspsp_account_access", joinColumns = @JoinColumn(name = "consent_id"))
     private List<AspspAccountAccess> aspspAccountAccesses = new ArrayList<>();
+
+    @Column(name = "owner_name_type", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private AdditionalAccountInformationType ownerNameType = AdditionalAccountInformationType.NONE;
 
     @Transient
     private ConsentStatus previousConsentStatus;

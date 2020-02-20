@@ -99,6 +99,9 @@
             <column name="recurring_indicator" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="owner_name_type" type="VARCHAR(40)" defaultValue="NONE">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
     </changeSet>
@@ -153,14 +156,15 @@
             INSERT INTO consent (consent_id, external_id, consent_type, consent_status, expire_date, valid_until,
             frequency_per_day, multilevel_sca_required, recurring_indicator, internal_request_id, creation_timestamp,
             last_action_date, request_date_time,
-            status_change_timestamp, authorisation_template_id, consent_tpp_information_id, checksum, instance_id)
+            status_change_timestamp, authorisation_template_id, consent_tpp_information_id, checksum, instance_id,
+            owner_name_type)
             SELECT consent.id, consent.external_id, consent.consent_type, consent.consent_status, consent.expire_date,
             consent.valid_until,
             consent.expected_frequency_per_day as frequency_per_day, consent.multilevel_sca_required,
             consent.recurring_indicator, consent.int_req_id as internal_request_id,
             consent.creation_timestamp, consent.last_action_date, consent.request_date_time,
             consent.status_change_timestamp, consent.authorisation_template_id,
-            info.consent_tpp_information_id, consent.checksum, consent.instance_id
+            info.consent_tpp_information_id, consent.checksum, consent.instance_id, consent.owner_name_type
             from ais_consent consent
             INNER JOIN consent_tpp_information info
             ON consent.id = info.consent_id
@@ -170,14 +174,15 @@
             INSERT INTO consent (consent_id, external_id, consent_type, consent_status, expire_date, valid_until,
             frequency_per_day, multilevel_sca_required, recurring_indicator, internal_request_id, creation_timestamp,
             last_action_date, request_date_time,
-            status_change_timestamp, authorisation_template_id, consent_tpp_information_id, checksum, instance_id)
+            status_change_timestamp, authorisation_template_id, consent_tpp_information_id, checksum, instance_id,
+            owner_name_type)
             SELECT consent.id, consent.external_id, consent.consent_type, consent.consent_status, consent.expire_date,
             consent.valid_until,
             consent.expected_frequency_per_day as frequency_per_day, consent.multilevel_sca_required,
             consent.recurring_indicator, consent.int_req_id as internal_request_id,
             consent.creation_timestamp, consent.last_action_date, consent.request_date_time,
             consent.status_change_timestamp, consent.authorisation_template_id,
-            info.consent_tpp_information_id, consent.checksum, consent.instance_id
+            info.consent_tpp_information_id, consent.checksum, consent.instance_id, consent.owner_name_type
             from ais_consent consent
             INNER JOIN consent_tpp_information info
             ON consent.id = info.consent_id
@@ -187,14 +192,15 @@
             INSERT INTO consent (consent_id, external_id, consent_type, consent_status, expire_date, valid_until,
             frequency_per_day, multilevel_sca_required, recurring_indicator, internal_request_id, creation_timestamp,
             last_action_date, request_date_time,
-            status_change_timestamp, authorisation_template_id, consent_tpp_information_id, checksum, instance_id)
+            status_change_timestamp, authorisation_template_id, consent_tpp_information_id, checksum, instance_id,
+            owner_name_type)
             SELECT consent.id, consent.external_id, consent.consent_type, consent.consent_status, consent.expire_date,
             consent.valid_until,
             consent.expected_frequency_per_day as frequency_per_day, consent.multilevel_sca_required,
             consent.recurring_indicator, consent.int_req_id as internal_request_id,
             consent.creation_timestamp, consent.last_action_date, consent.request_date_time,
             consent.status_change_timestamp, consent.authorisation_template_id,
-            info.consent_tpp_information_id, consent.checksum, consent.instance_id
+            info.consent_tpp_information_id, consent.checksum, consent.instance_id, consent.owner_name_type
             from ais_consent consent
             INNER JOIN consent_tpp_information info
             ON consent.id = info.consent_id
