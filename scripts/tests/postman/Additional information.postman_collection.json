@@ -1,19 +1,19 @@
 {
-  "info": {
-    "_postman_id": "289fd0d5-7adc-436f-b5bc-5aa75ed6653e",
-    "name": "Additional information",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "Preparations",
-      "item": [
-        {
-          "name": "1. Set embedded SCA approach",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
+	"info": {
+		"_postman_id": "0de3e2bf-ab6e-4149-86d9-7f9167d1b9ee",
+		"name": "Additional information",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Preparations",
+			"item": [
+				{
+					"name": "1. Set embedded SCA approach",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
 								"id": "e875b7ad-3c8b-4f08-b713-0ab4ebb3dbbb",
 								"exec": [
 									"pm.test(\"Status code is 200\", () => {",
@@ -91,7 +91,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"ais\": {\n        \"consentTypes\": {\n            \"bankOfferedConsentSupported\": false,\n            \"globalConsentSupported\": false,\n            \"availableAccountsConsentSupported\": true,\n            \"accountAccessFrequencyPerDay\": 4,\n            \"notConfirmedConsentExpirationTimeMs\": 86400000,\n            \"maxConsentValidityDays\": 0,\n            \"accountOwnerInformationSupported\": false\n        },\n        \"redirectLinkToOnlineBanking\": {\n            \"aisRedirectUrlToAspsp\": \"http://localhost:4200/ais/{redirect-id}/{encrypted-consent-id}\"\n        },\n        \"transactionParameters\": {\n            \"availableBookingStatuses\": [\n                \"both\"\n            ],\n            \"transactionsWithoutBalancesSupported\": false,\n            \"supportedTransactionApplicationTypes\": [\n                \"application/json\"\n            ]\n        },\n        \"deltaReportSettings\": {\n            \"entryReferenceFromSupported\": false,\n            \"deltaListSupported\": false\n        },\n        \"scaRequirementsForOneTimeConsents\": {\n            \"scaByOneTimeAvailableAccountsConsentRequired\": true,\n            \"scaByOneTimeGlobalConsentRequired\": true\n        }\n    },\n    \"pis\": {\n        \"supportedPaymentTypeAndProductMatrix\": {\n            \"payments\": [\n                \"sepa-credit-transfers\",\n                \"instant-sepa-credit-transfers\"\n            ]\n        },\n        \"maxTransactionValidityDays\": 0,\n        \"notConfirmedPaymentExpirationTimeMs\": 86400000,\n        \"paymentCancellationAuthorisationMandated\": false,\n        \"redirectLinkToOnlineBanking\": {\n            \"pisRedirectUrlToAspsp\": \"http://localhost:4200/pis/{redirect-id}/{encrypted-payment-id}\",\n            \"pisPaymentCancellationRedirectUrlToAspsp\": \"http://localhost:4200/pis/cancellation/{redirect-id}/{encrypted-payment-id}\",\n            \"paymentCancellationRedirectUrlExpirationTimeMs\": 600000\n        },\n        \"supportedTransactionStatusFormats\": [\n            \"application/json\"\n        ]\n    },\n    \"piis\": {\n        \"piisConsentSupported\": false\n    },\n    \"common\": {\n        \"scaRedirectFlow\": \"REDIRECT\",\n        \"startAuthorisationMode\": \"auto\",\n        \"tppSignatureRequired\": false,\n        \"psuInInitialRequestMandated\": false,\n        \"redirectUrlExpirationTimeMs\": 600000,\n        \"authorisationExpirationTimeMs\": 86400000,\n        \"forceXs2aBaseLinksUrl\": false,\n        \"xs2aBaseLinksUrl\": \"http://myhost.com/\",\n        \"supportedAccountReferenceFields\": [\n            \"IBAN\"\n        ],\n        \"multicurrencyAccountLevelSupported\": \"SUBACCOUNT\",\n        \"aisPisSessionsSupported\": false,\n        \"signingBasketSupported\": false,\n        \"aspspNotificationsSupported\": [\n        \t\"NONE\"\t\n        ]\n    }\n}",
+							"raw": "{\n    \"ais\": {\n        \"consentTypes\": {\n            \"bankOfferedConsentSupported\": false,\n            \"globalConsentSupported\": true,\n            \"availableAccountsConsentSupported\": true,\n            \"accountAccessFrequencyPerDay\": 4,\n            \"notConfirmedConsentExpirationTimeMs\": 86400000,\n            \"maxConsentValidityDays\": 0,\n            \"accountOwnerInformationSupported\": false\n        },\n        \"redirectLinkToOnlineBanking\": {\n            \"aisRedirectUrlToAspsp\": \"http://localhost:4200/ais/{redirect-id}/{encrypted-consent-id}\"\n        },\n        \"transactionParameters\": {\n            \"availableBookingStatuses\": [\n                \"both\"\n            ],\n            \"transactionsWithoutBalancesSupported\": false,\n            \"supportedTransactionApplicationTypes\": [\n                \"application/json\"\n            ]\n        },\n        \"deltaReportSettings\": {\n            \"entryReferenceFromSupported\": false,\n            \"deltaListSupported\": false\n        },\n        \"scaRequirementsForOneTimeConsents\": {\n            \"scaByOneTimeAvailableAccountsConsentRequired\": true,\n            \"scaByOneTimeGlobalConsentRequired\": true\n        }\n    },\n    \"pis\": {\n        \"supportedPaymentTypeAndProductMatrix\": {\n            \"payments\": [\n                \"sepa-credit-transfers\",\n                \"instant-sepa-credit-transfers\"\n            ]\n        },\n        \"maxTransactionValidityDays\": 0,\n        \"notConfirmedPaymentExpirationTimeMs\": 86400000,\n        \"paymentCancellationAuthorisationMandated\": false,\n        \"redirectLinkToOnlineBanking\": {\n            \"pisRedirectUrlToAspsp\": \"http://localhost:4200/pis/{redirect-id}/{encrypted-payment-id}\",\n            \"pisPaymentCancellationRedirectUrlToAspsp\": \"http://localhost:4200/pis/cancellation/{redirect-id}/{encrypted-payment-id}\",\n            \"paymentCancellationRedirectUrlExpirationTimeMs\": 600000\n        },\n        \"supportedTransactionStatusFormats\": [\n            \"application/json\"\n        ]\n    },\n    \"piis\": {\n        \"piisConsentSupported\": false\n    },\n    \"common\": {\n        \"scaRedirectFlow\": \"REDIRECT\",\n        \"startAuthorisationMode\": \"auto\",\n        \"tppSignatureRequired\": false,\n        \"psuInInitialRequestMandated\": false,\n        \"redirectUrlExpirationTimeMs\": 600000,\n        \"authorisationExpirationTimeMs\": 86400000,\n        \"forceXs2aBaseLinksUrl\": false,\n        \"xs2aBaseLinksUrl\": \"http://myhost.com/\",\n        \"supportedAccountReferenceFields\": [\n            \"IBAN\"\n        ],\n        \"multicurrencyAccountLevelSupported\": \"SUBACCOUNT\",\n        \"aisPisSessionsSupported\": false,\n        \"signingBasketSupported\": false,\n        \"aspspNotificationsSupported\": [\n        \t\"NONE\"\t\n        ]\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -581,7 +581,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"ais\": {\n        \"consentTypes\": {\n            \"bankOfferedConsentSupported\": false,\n            \"globalConsentSupported\": false,\n            \"availableAccountsConsentSupported\": true,\n            \"accountAccessFrequencyPerDay\": 4,\n            \"notConfirmedConsentExpirationTimeMs\": 86400000,\n            \"maxConsentValidityDays\": 0,\n            \"accountOwnerInformationSupported\": true\n        },\n        \"redirectLinkToOnlineBanking\": {\n            \"aisRedirectUrlToAspsp\": \"http://localhost:4200/ais/{redirect-id}/{encrypted-consent-id}\"\n        },\n        \"transactionParameters\": {\n            \"availableBookingStatuses\": [\n                \"both\"\n            ],\n            \"transactionsWithoutBalancesSupported\": false,\n            \"supportedTransactionApplicationTypes\": [\n                \"application/json\"\n            ]\n        },\n        \"deltaReportSettings\": {\n            \"entryReferenceFromSupported\": false,\n            \"deltaListSupported\": false\n        },\n        \"scaRequirementsForOneTimeConsents\": {\n            \"scaByOneTimeAvailableAccountsConsentRequired\": true,\n            \"scaByOneTimeGlobalConsentRequired\": true\n        }\n    },\n    \"pis\": {\n        \"supportedPaymentTypeAndProductMatrix\": {\n            \"payments\": [\n                \"sepa-credit-transfers\",\n                \"instant-sepa-credit-transfers\"\n            ]\n        },\n        \"maxTransactionValidityDays\": 0,\n        \"notConfirmedPaymentExpirationTimeMs\": 86400000,\n        \"paymentCancellationAuthorisationMandated\": false,\n        \"redirectLinkToOnlineBanking\": {\n            \"pisRedirectUrlToAspsp\": \"http://localhost:4200/pis/{redirect-id}/{encrypted-payment-id}\",\n            \"pisPaymentCancellationRedirectUrlToAspsp\": \"http://localhost:4200/pis/cancellation/{redirect-id}/{encrypted-payment-id}\",\n            \"paymentCancellationRedirectUrlExpirationTimeMs\": 600000\n        },\n        \"supportedTransactionStatusFormats\": [\n            \"application/json\"\n        ]\n    },\n    \"piis\": {\n        \"piisConsentSupported\": false\n    },\n    \"common\": {\n        \"scaRedirectFlow\": \"REDIRECT\",\n        \"startAuthorisationMode\": \"auto\",\n        \"tppSignatureRequired\": false,\n        \"psuInInitialRequestMandated\": false,\n        \"redirectUrlExpirationTimeMs\": 600000,\n        \"authorisationExpirationTimeMs\": 86400000,\n        \"forceXs2aBaseLinksUrl\": false,\n        \"xs2aBaseLinksUrl\": \"http://myhost.com/\",\n        \"supportedAccountReferenceFields\": [\n            \"IBAN\"\n        ],\n        \"multicurrencyAccountLevelSupported\": \"SUBACCOUNT\",\n        \"aisPisSessionsSupported\": false,\n        \"signingBasketSupported\": false,\n        \"aspspNotificationsSupported\": [\n        \t\"NONE\"\t\n        ]\n    }\n}",
+							"raw": "{\n    \"ais\": {\n        \"consentTypes\": {\n            \"bankOfferedConsentSupported\": false,\n            \"globalConsentSupported\": true,\n            \"availableAccountsConsentSupported\": true,\n            \"accountAccessFrequencyPerDay\": 4,\n            \"notConfirmedConsentExpirationTimeMs\": 86400000,\n            \"maxConsentValidityDays\": 0,\n            \"accountOwnerInformationSupported\": true\n        },\n        \"redirectLinkToOnlineBanking\": {\n            \"aisRedirectUrlToAspsp\": \"http://localhost:4200/ais/{redirect-id}/{encrypted-consent-id}\"\n        },\n        \"transactionParameters\": {\n            \"availableBookingStatuses\": [\n                \"both\"\n            ],\n            \"transactionsWithoutBalancesSupported\": false,\n            \"supportedTransactionApplicationTypes\": [\n                \"application/json\"\n            ]\n        },\n        \"deltaReportSettings\": {\n            \"entryReferenceFromSupported\": false,\n            \"deltaListSupported\": false\n        },\n        \"scaRequirementsForOneTimeConsents\": {\n            \"scaByOneTimeAvailableAccountsConsentRequired\": true,\n            \"scaByOneTimeGlobalConsentRequired\": true\n        }\n    },\n    \"pis\": {\n        \"supportedPaymentTypeAndProductMatrix\": {\n            \"payments\": [\n                \"sepa-credit-transfers\",\n                \"instant-sepa-credit-transfers\"\n            ]\n        },\n        \"maxTransactionValidityDays\": 0,\n        \"notConfirmedPaymentExpirationTimeMs\": 86400000,\n        \"paymentCancellationAuthorisationMandated\": false,\n        \"redirectLinkToOnlineBanking\": {\n            \"pisRedirectUrlToAspsp\": \"http://localhost:4200/pis/{redirect-id}/{encrypted-payment-id}\",\n            \"pisPaymentCancellationRedirectUrlToAspsp\": \"http://localhost:4200/pis/cancellation/{redirect-id}/{encrypted-payment-id}\",\n            \"paymentCancellationRedirectUrlExpirationTimeMs\": 600000\n        },\n        \"supportedTransactionStatusFormats\": [\n            \"application/json\"\n        ]\n    },\n    \"piis\": {\n        \"piisConsentSupported\": false\n    },\n    \"common\": {\n        \"scaRedirectFlow\": \"REDIRECT\",\n        \"startAuthorisationMode\": \"auto\",\n        \"tppSignatureRequired\": false,\n        \"psuInInitialRequestMandated\": false,\n        \"redirectUrlExpirationTimeMs\": 600000,\n        \"authorisationExpirationTimeMs\": 86400000,\n        \"forceXs2aBaseLinksUrl\": false,\n        \"xs2aBaseLinksUrl\": \"http://myhost.com/\",\n        \"supportedAccountReferenceFields\": [\n            \"IBAN\"\n        ],\n        \"multicurrencyAccountLevelSupported\": \"SUBACCOUNT\",\n        \"aisPisSessionsSupported\": false,\n        \"signingBasketSupported\": false,\n        \"aspspNotificationsSupported\": [\n        \t\"NONE\"\t\n        ]\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -947,12 +947,12 @@
 								{
 									"listen": "prerequest",
 									"script": {
-                    "id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
-                    "exec": [
-                      ""
-                    ],
-                    "type": "text/javascript"
-                  }
+										"id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
 								}
 							],
 							"request": {
@@ -972,22 +972,22 @@
 									}
 								],
 								"url": {
-                  "raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
-                  "protocol": "{{protocol}}",
-                  "host": [
-                    "{{url_xs2a}}"
-                  ],
-                  "path": [
-                    "v1",
-                    "accounts"
-                  ],
-                  "query": [
-                    {
-                      "key": "withBalance",
-                      "value": "false"
-                    }
-                  ]
-                },
+									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{url_xs2a}}"
+									],
+									"path": [
+										"v1",
+										"accounts"
+									],
+									"query": [
+										{
+											"key": "withBalance",
+											"value": "false"
+										}
+									]
+								},
 								"description": "Read the identifiers of the available payment account together with  booking balance information, depending on the consent granted.  It is assumed that a consent of the PSU to this access is already given and stored on the ASPSP system.  The addressed list of accounts depends then on the PSU ID and the stored consent addressed by consentId,  respectively the OAuth2 access token.   Returns all identifiers of the accounts, to which an account access has been granted to through  the /consents endpoint by the PSU.  In addition, relevant information about the accounts and hyperlinks to corresponding account  information resources are provided if a related consent has been already granted.  Remark: Note that the /consents endpoint optionally offers to grant an access on all available  payment accounts of a PSU.  In this case, this endpoint will deliver the information about all available payment accounts  of the PSU at this ASPSP. "
 							},
 							"response": []
@@ -1332,12 +1332,12 @@
 								{
 									"listen": "prerequest",
 									"script": {
-                    "id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
-                    "exec": [
-                      ""
-                    ],
-                    "type": "text/javascript"
-                  }
+										"id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
 								}
 							],
 							"request": {
@@ -1357,22 +1357,22 @@
 									}
 								],
 								"url": {
-                  "raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
-                  "protocol": "{{protocol}}",
-                  "host": [
-                    "{{url_xs2a}}"
-                  ],
-                  "path": [
-                    "v1",
-                    "accounts"
-                  ],
-                  "query": [
-                    {
-                      "key": "withBalance",
-                      "value": "false"
-                    }
-                  ]
-                },
+									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{url_xs2a}}"
+									],
+									"path": [
+										"v1",
+										"accounts"
+									],
+									"query": [
+										{
+											"key": "withBalance",
+											"value": "false"
+										}
+									]
+								},
 								"description": "Read the identifiers of the available payment account together with  booking balance information, depending on the consent granted.  It is assumed that a consent of the PSU to this access is already given and stored on the ASPSP system.  The addressed list of accounts depends then on the PSU ID and the stored consent addressed by consentId,  respectively the OAuth2 access token.   Returns all identifiers of the accounts, to which an account access has been granted to through  the /consents endpoint by the PSU.  In addition, relevant information about the accounts and hyperlinks to corresponding account  information resources are provided if a related consent has been already granted.  Remark: Note that the /consents endpoint optionally offers to grant an access on all available  payment accounts of a PSU.  In this case, this endpoint will deliver the information about all available payment accounts  of the PSU at this ASPSP. "
 							},
 							"response": []
@@ -1717,12 +1717,12 @@
 								{
 									"listen": "prerequest",
 									"script": {
-                    "id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
-                    "exec": [
-                      ""
-                    ],
-                    "type": "text/javascript"
-                  }
+										"id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
 								}
 							],
 							"request": {
@@ -1742,22 +1742,22 @@
 									}
 								],
 								"url": {
-                  "raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
-                  "protocol": "{{protocol}}",
-                  "host": [
-                    "{{url_xs2a}}"
-                  ],
-                  "path": [
-                    "v1",
-                    "accounts"
-                  ],
-                  "query": [
-                    {
-                      "key": "withBalance",
-                      "value": "false"
-                    }
-                  ]
-                },
+									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{url_xs2a}}"
+									],
+									"path": [
+										"v1",
+										"accounts"
+									],
+									"query": [
+										{
+											"key": "withBalance",
+											"value": "false"
+										}
+									]
+								},
 								"description": "Read the identifiers of the available payment account together with  booking balance information, depending on the consent granted.  It is assumed that a consent of the PSU to this access is already given and stored on the ASPSP system.  The addressed list of accounts depends then on the PSU ID and the stored consent addressed by consentId,  respectively the OAuth2 access token.   Returns all identifiers of the accounts, to which an account access has been granted to through  the /consents endpoint by the PSU.  In addition, relevant information about the accounts and hyperlinks to corresponding account  information resources are provided if a related consent has been already granted.  Remark: Note that the /consents endpoint optionally offers to grant an access on all available  payment accounts of a PSU.  In this case, this endpoint will deliver the information about all available payment accounts  of the PSU at this ASPSP. "
 							},
 							"response": []
@@ -2103,12 +2103,12 @@
 								{
 									"listen": "prerequest",
 									"script": {
-                    "id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
-                    "exec": [
-                      ""
-                    ],
-                    "type": "text/javascript"
-                  }
+										"id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
 								}
 							],
 							"request": {
@@ -2128,22 +2128,22 @@
 									}
 								],
 								"url": {
-                  "raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
-                  "protocol": "{{protocol}}",
-                  "host": [
-                    "{{url_xs2a}}"
-                  ],
-                  "path": [
-                    "v1",
-                    "accounts"
-                  ],
-                  "query": [
-                    {
-                      "key": "withBalance",
-                      "value": "false"
-                    }
-                  ]
-                },
+									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{url_xs2a}}"
+									],
+									"path": [
+										"v1",
+										"accounts"
+									],
+									"query": [
+										{
+											"key": "withBalance",
+											"value": "false"
+										}
+									]
+								},
 								"description": "Read the identifiers of the available payment account together with  booking balance information, depending on the consent granted.  It is assumed that a consent of the PSU to this access is already given and stored on the ASPSP system.  The addressed list of accounts depends then on the PSU ID and the stored consent addressed by consentId,  respectively the OAuth2 access token.   Returns all identifiers of the accounts, to which an account access has been granted to through  the /consents endpoint by the PSU.  In addition, relevant information about the accounts and hyperlinks to corresponding account  information resources are provided if a related consent has been already granted.  Remark: Note that the /consents endpoint optionally offers to grant an access on all available  payment accounts of a PSU.  In this case, this endpoint will deliver the information about all available payment accounts  of the PSU at this ASPSP. "
 							},
 							"response": []
@@ -2489,12 +2489,12 @@
 								{
 									"listen": "prerequest",
 									"script": {
-                    "id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
-                    "exec": [
-                      ""
-                    ],
-                    "type": "text/javascript"
-                  }
+										"id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
 								}
 							],
 							"request": {
@@ -2514,22 +2514,22 @@
 									}
 								],
 								"url": {
-                  "raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
-                  "protocol": "{{protocol}}",
-                  "host": [
-                    "{{url_xs2a}}"
-                  ],
-                  "path": [
-                    "v1",
-                    "accounts"
-                  ],
-                  "query": [
-                    {
-                      "key": "withBalance",
-                      "value": "false"
-                    }
-                  ]
-                },
+									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{url_xs2a}}"
+									],
+									"path": [
+										"v1",
+										"accounts"
+									],
+									"query": [
+										{
+											"key": "withBalance",
+											"value": "false"
+										}
+									]
+								},
 								"description": "Read the identifiers of the available payment account together with  booking balance information, depending on the consent granted.  It is assumed that a consent of the PSU to this access is already given and stored on the ASPSP system.  The addressed list of accounts depends then on the PSU ID and the stored consent addressed by consentId,  respectively the OAuth2 access token.   Returns all identifiers of the accounts, to which an account access has been granted to through  the /consents endpoint by the PSU.  In addition, relevant information about the accounts and hyperlinks to corresponding account  information resources are provided if a related consent has been already granted.  Remark: Note that the /consents endpoint optionally offers to grant an access on all available  payment accounts of a PSU.  In this case, this endpoint will deliver the information about all available payment accounts  of the PSU at this ASPSP. "
 							},
 							"response": []
