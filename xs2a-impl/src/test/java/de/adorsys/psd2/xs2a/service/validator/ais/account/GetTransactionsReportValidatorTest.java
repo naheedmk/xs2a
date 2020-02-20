@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account;
 
-import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
@@ -25,7 +24,6 @@ import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
-import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.OauthConsentValidator;
@@ -36,6 +34,7 @@ import de.adorsys.psd2.xs2a.service.validator.ais.account.common.PermittedAccoun
 import de.adorsys.psd2.xs2a.service.validator.ais.account.common.TransactionReportAcceptHeaderValidator;
 import de.adorsys.psd2.xs2a.service.validator.ais.account.dto.TransactionsReportByPeriodObject;
 import de.adorsys.psd2.xs2a.service.validator.tpp.AisAccountTppInfoValidator;
+import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +45,6 @@ import org.springframework.http.MediaType;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.List;
 
 import static de.adorsys.psd2.xs2a.core.ais.BookingStatus.PENDING;
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
@@ -99,11 +97,11 @@ class GetTransactionsReportValidatorTest {
     @Mock
     private TransactionReportAcceptHeaderValidator transactionReportAcceptHeaderValidator;
     @Mock
-    private AccountReference accountReference;
-    @Mock
     private AspspProfileServiceWrapper aspspProfileService;
     @Mock
     private OauthConsentValidator oauthConsentValidator;
+
+    private JsonReader jsonReader = new JsonReader();
 
     @BeforeEach
     void setUp() {
@@ -116,12 +114,16 @@ class GetTransactionsReportValidatorTest {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
 
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(false);
-        when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(false);
-
-        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE)).thenReturn(ValidationResult.valid());
-        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS)).thenReturn(ValidationResult.valid());
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(false);
+        when(aspspProfileService.isEntryReferenceFromSupported())
+            .thenReturn(false);
+        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
+            .thenReturn(ValidationResult.valid());
+        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+            .thenReturn(ValidationResult.valid());
         when(permittedAccountReferenceValidator.validate(aisConsent, ACCOUNT_ID, WITH_BALANCE))
             .thenReturn(ValidationResult.invalid(PERMITTED_ACCOUNT_REFERENCE_VALIDATION_ERROR));
 
@@ -141,13 +143,18 @@ class GetTransactionsReportValidatorTest {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
 
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(false);
-        when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(false);
-        when(aspspProfileService.getAvailableBookingStatuses()).thenReturn(Collections.singletonList(BOOKING_STATUS));
-
-        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE)).thenReturn(ValidationResult.valid());
-        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS)).thenReturn(ValidationResult.valid());
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(false);
+        when(aspspProfileService.isEntryReferenceFromSupported())
+            .thenReturn(false);
+        when(aspspProfileService.getAvailableBookingStatuses())
+            .thenReturn(Collections.singletonList(BOOKING_STATUS));
+        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
+            .thenReturn(ValidationResult.valid());
+        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+            .thenReturn(ValidationResult.valid());
         when(permittedAccountReferenceValidator.validate(aisConsent, ACCOUNT_ID, WITH_BALANCE))
             .thenReturn(ValidationResult.valid());
         when(accountConsentValidator.validate(aisConsent, REQUEST_URI))
@@ -171,8 +178,8 @@ class GetTransactionsReportValidatorTest {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
 
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
-
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
         when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_ATOM_XML_VALUE))
             .thenReturn(ValidationResult.invalid(REQUESTED_FORMATS_INVALID_ERROR));
 
@@ -194,11 +201,14 @@ class GetTransactionsReportValidatorTest {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
 
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(false);
-        when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(false);
-
-        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE)).thenReturn(ValidationResult.valid());
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(false);
+        when(aspspProfileService.isEntryReferenceFromSupported())
+            .thenReturn(false);
+        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
+            .thenReturn(ValidationResult.valid());
         when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
             .thenReturn(ValidationResult.invalid(ErrorType.AIS_401, CONSENT_INVALID));
 
@@ -220,7 +230,8 @@ class GetTransactionsReportValidatorTest {
         // Given
         AisConsent aisConsent = buildAccountConsent(INVALID_TPP_INFO);
 
-        when(aisAccountTppInfoValidator.validateTpp(INVALID_TPP_INFO)).thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
+        when(aisAccountTppInfoValidator.validateTpp(INVALID_TPP_INFO))
+            .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
 
         // When
         ValidationResult validationResult = getTransactionsReportValidator.validate(new TransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, ENTRY_REFERENCE_FROM, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now()));
@@ -237,12 +248,16 @@ class GetTransactionsReportValidatorTest {
     void validate_withDeltaListNoSupported_shouldReturnInvalid() {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
-        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(false);
-
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(false);
-        when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(false);
+        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(false);
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(false);
+        when(aspspProfileService.isEntryReferenceFromSupported())
+            .thenReturn(false);
 
         // When
         ValidationResult validationResult = getTransactionsReportValidator.validate(new TransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, ENTRY_REFERENCE_FROM, Boolean.TRUE, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, null));
@@ -259,19 +274,25 @@ class GetTransactionsReportValidatorTest {
     void validate_withDeltaListNoSupportedDateFromPresent_shouldReturnValid() {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
-        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS)).thenReturn(ValidationResult.valid());
+
+        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+            .thenReturn(ValidationResult.valid());
         when(permittedAccountReferenceValidator.validate(aisConsent, ACCOUNT_ID, WITH_BALANCE))
             .thenReturn(ValidationResult.valid());
         when(oauthConsentValidator.validate(aisConsent))
             .thenReturn(ValidationResult.valid());
         when(accountConsentValidator.validate(aisConsent, REQUEST_URI))
             .thenReturn(ValidationResult.valid());
-        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(false);
-
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(false);
-        when(aspspProfileService.getAvailableBookingStatuses()).thenReturn(Collections.singletonList(BOOKING_STATUS));
+        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(false);
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isEntryReferenceFromSupported())
+            .thenReturn(false);
+        when(aspspProfileService.getAvailableBookingStatuses())
+            .thenReturn(Collections.singletonList(BOOKING_STATUS));
 
         // When
         ValidationResult validationResult = getTransactionsReportValidator.validate(new TransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, ENTRY_REFERENCE_FROM, Boolean.TRUE, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now()));
@@ -287,11 +308,14 @@ class GetTransactionsReportValidatorTest {
     void validate_withEntryReferenceFromNoSupported_shouldReturnInvalid() {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
-        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(false);
-
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(false);
+        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isEntryReferenceFromSupported())
+            .thenReturn(false);
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(false);
 
         // When
         ValidationResult validationResult = getTransactionsReportValidator.validate(new TransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, "777", DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, null));
@@ -308,19 +332,25 @@ class GetTransactionsReportValidatorTest {
     void validate_withEntryReferenceFromNoSupportedDateFromPresent_shouldReturnValid() {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
-        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS)).thenReturn(ValidationResult.valid());
+
+        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+            .thenReturn(ValidationResult.valid());
         when(permittedAccountReferenceValidator.validate(aisConsent, ACCOUNT_ID, WITH_BALANCE))
             .thenReturn(ValidationResult.valid());
         when(oauthConsentValidator.validate(aisConsent))
             .thenReturn(ValidationResult.valid());
         when(accountConsentValidator.validate(aisConsent, REQUEST_URI))
             .thenReturn(ValidationResult.valid());
-        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(false);
-
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(false);
-        when(aspspProfileService.getAvailableBookingStatuses()).thenReturn(Collections.singletonList(BOOKING_STATUS));
+        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isEntryReferenceFromSupported())
+            .thenReturn(false);
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(false);
+        when(aspspProfileService.getAvailableBookingStatuses())
+            .thenReturn(Collections.singletonList(BOOKING_STATUS));
 
         // When
         ValidationResult validationResult = getTransactionsReportValidator.validate(new TransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, "777", DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now()));
@@ -336,11 +366,14 @@ class GetTransactionsReportValidatorTest {
     void validate_withDeltaListAndEntryReferenceFromNoSupported_shouldReturnInvalid() {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
-        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(false);
-        when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(false);
-
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
+        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(false);
+        when(aspspProfileService.isEntryReferenceFromSupported())
+            .thenReturn(false);
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
 
         // When
         ValidationResult validationResult = getTransactionsReportValidator.validate(new TransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, "777", Boolean.TRUE, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, null));
@@ -360,11 +393,14 @@ class GetTransactionsReportValidatorTest {
     void validate_withOneDeltaReportParameterCanBePresent_shouldReturnInvalid() {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
-        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(true);
-        when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(true);
-
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
+        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(true);
+        when(aspspProfileService.isEntryReferenceFromSupported())
+            .thenReturn(true);
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
 
         // When
         ValidationResult validationResult = getTransactionsReportValidator.validate(new TransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, "777", Boolean.TRUE, MediaType.APPLICATION_JSON_VALUE, BOOKING_STATUS, LocalDate.now()));
@@ -381,15 +417,21 @@ class GetTransactionsReportValidatorTest {
     void validate_withNotSupportedBookingStatus_shouldReturnBookingStatusValidationError() {
         // Given
         AisConsent aisConsent = buildAccountConsent(TPP_INFO);
-        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE)).thenReturn(ValidationResult.valid());
-        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS)).thenReturn(ValidationResult.valid());
+
+        when(transactionReportAcceptHeaderValidator.validate(MediaType.APPLICATION_JSON_VALUE))
+            .thenReturn(ValidationResult.valid());
+        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+            .thenReturn(ValidationResult.valid());
         when(permittedAccountReferenceValidator.validate(aisConsent, ACCOUNT_ID, WITH_BALANCE))
             .thenReturn(ValidationResult.valid());
-
-        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
-        when(aspspProfileService.isDeltaListSupported()).thenReturn(false);
-        when(aspspProfileService.isEntryReferenceFromSupported()).thenReturn(false);
-        when(aspspProfileService.getAvailableBookingStatuses()).thenReturn(Collections.singletonList(BOOKING_STATUS));
+        when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
+            .thenReturn(ValidationResult.valid());
+        when(aspspProfileService.isDeltaListSupported())
+            .thenReturn(false);
+        when(aspspProfileService.isEntryReferenceFromSupported())
+            .thenReturn(false);
+        when(aspspProfileService.getAvailableBookingStatuses())
+            .thenReturn(Collections.singletonList(BOOKING_STATUS));
 
         // When
         ValidationResult validationResult = getTransactionsReportValidator.validate(new TransactionsReportByPeriodObject(aisConsent, ACCOUNT_ID, WITH_BALANCE, REQUEST_URI, ENTRY_REFERENCE_FROM, DELTA_LIST, MediaType.APPLICATION_JSON_VALUE, PENDING, LocalDate.now()));
@@ -409,22 +451,12 @@ class GetTransactionsReportValidatorTest {
     }
 
     private AisConsent buildAccountConsent(TppInfo tppInfo) {
-        AisConsent aisConsent = new AisConsent();
+        AisConsent aisConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/ais-consent-with-iban.json", AisConsent.class);
         ConsentTppInformation consentTppInformation = new ConsentTppInformation();
         consentTppInformation.setTppInfo(tppInfo);
         aisConsent.setConsentTppInformation(consentTppInformation);
-        AccountAccess accountAccess = buildXs2aAccountAccess();
-        aisConsent.setTppAccountAccesses(accountAccess);
-        aisConsent.setAspspAccountAccesses(accountAccess);
-        aisConsent.setConsentData(new AisConsentData(null, null, null, false));
+        aisConsent.setConsentData(AisConsentData.buildDefaultAisConsentData());
+
         return aisConsent;
-    }
-
-    private AccountAccess buildXs2aAccountAccess() {
-        AccountReference ibanAccountReference = new AccountReference();
-        ibanAccountReference.setIban("DE69760700240340283600");
-        List<AccountReference> accountReferences = Collections.singletonList(ibanAccountReference);
-
-        return new AccountAccess(accountReferences, accountReferences, accountReferences, null);
     }
 }

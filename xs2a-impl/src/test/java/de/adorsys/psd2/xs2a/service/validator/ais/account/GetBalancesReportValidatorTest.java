@@ -76,7 +76,7 @@ class GetBalancesReportValidatorTest {
     @Test
     void validate_withValidConsentObject_shouldReturnValid() {
         // Given
-        AisConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent accountConsent = buildAisConsent(TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
         when(accountReferenceAccessValidator.validate(accountConsent, accountConsent.getAccess().getBalances(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
@@ -100,7 +100,7 @@ class GetBalancesReportValidatorTest {
     @Test
     void validate_withInvalidAccountReferenceAccess_error() {
         // Given
-        AisConsent accountConsent = buildAccountConsent(TPP_INFO);
+        AisConsent accountConsent = buildAisConsent(TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
         when(accountReferenceAccessValidator.validate(accountConsent, accountConsent.getAccess().getBalances(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
@@ -121,7 +121,7 @@ class GetBalancesReportValidatorTest {
     @Test
     void validate_withInvalidTppInConsent_shouldReturnTppValidationError() {
         // Given
-        AisConsent accountConsent = buildAccountConsent(INVALID_TPP_INFO);
+        AisConsent accountConsent = buildAisConsent(INVALID_TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(INVALID_TPP_INFO))
             .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
 
@@ -142,13 +142,13 @@ class GetBalancesReportValidatorTest {
         return tppInfo;
     }
 
-    private AisConsent buildAccountConsent(TppInfo tppInfo) {
+    private AisConsent buildAisConsent(TppInfo tppInfo) {
         AisConsent aisConsent = jsonReader.getObjectFromFile("json/service/ais-consent.json", AisConsent.class);
         AccountAccess accountAccess = jsonReader.getObjectFromFile("json/aspect/account-access.json", AccountAccess.class);
 
         aisConsent.setTppAccountAccesses(accountAccess);
         aisConsent.setAspspAccountAccesses(accountAccess);
-        aisConsent.setConsentData(new AisConsentData(null, null, null, false));
+        aisConsent.setConsentData(AisConsentData.buildDefaultAisConsentData());
         aisConsent.getConsentTppInformation().setTppInfo(tppInfo);
 
         return aisConsent;
