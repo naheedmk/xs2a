@@ -215,8 +215,18 @@
             SELECT SETVAL('consent_id_seq', MAX(consent_id)+1) FROM consent
         </sql>
 
-        <sql dbms="oracle">
-            ALTER SEQUENCE customers_seq MAXVALUE (SELECT MAX(consent_id)+1 FROM consent));
+        <sql dbms="oracle" endDelimiter="/">
+            DECLARE
+            l_new_seq INTEGER;
+            BEGIN
+            EXECUTE IMMEDIATE 'DROP SEQUENCE CONSENT_ID_SEQ';
+
+            SELECT COALESCE(MAX(consent_id),0) + 1
+            INTO l_new_seq
+            FROM consent;
+
+            EXECUTE IMMEDIATE 'Create sequence CONSENT_ID_SEQ start with ' || l_new_seq;
+            END;
         </sql>
     </changeSet>
 

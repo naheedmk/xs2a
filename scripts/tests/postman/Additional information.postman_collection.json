@@ -1,19 +1,19 @@
 {
-	"info": {
-		"_postman_id": "f275cd25-215c-423f-ad54-f67cfb4e6356",
-		"name": "Additional information",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Preparations",
-			"item": [
-				{
-					"name": "1. Set embedded SCA approach",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
+  "info": {
+    "_postman_id": "289fd0d5-7adc-436f-b5bc-5aa75ed6653e",
+    "name": "Additional information",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Preparations",
+      "item": [
+        {
+          "name": "1. Set embedded SCA approach",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
 								"id": "e875b7ad-3c8b-4f08-b713-0ab4ebb3dbbb",
 								"exec": [
 									"pm.test(\"Status code is 200\", () => {",
@@ -947,12 +947,12 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
-										"exec": [
-											"pm.globals.set(\"with_balance\", false);"
-										],
-										"type": "text/javascript"
-									}
+                    "id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
@@ -972,22 +972,22 @@
 									}
 								],
 								"url": {
-									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance={{with_balance}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_xs2a}}"
-									],
-									"path": [
-										"v1",
-										"accounts"
-									],
-									"query": [
-										{
-											"key": "withBalance",
-											"value": "{{with_balance}}"
-										}
-									]
-								},
+                  "raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_xs2a}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "query": [
+                    {
+                      "key": "withBalance",
+                      "value": "false"
+                    }
+                  ]
+                },
 								"description": "Read the identifiers of the available payment account together with  booking balance information, depending on the consent granted.  It is assumed that a consent of the PSU to this access is already given and stored on the ASPSP system.  The addressed list of accounts depends then on the PSU ID and the stored consent addressed by consentId,  respectively the OAuth2 access token.   Returns all identifiers of the accounts, to which an account access has been granted to through  the /consents endpoint by the PSU.  In addition, relevant information about the accounts and hyperlinks to corresponding account  information resources are provided if a related consent has been already granted.  Remark: Note that the /consents endpoint optionally offers to grant an access on all available  payment accounts of a PSU.  In this case, this endpoint will deliver the information about all available payment accounts  of the PSU at this ASPSP. "
 							},
 							"response": []
@@ -1332,12 +1332,12 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
-										"exec": [
-											"pm.globals.set(\"with_balance\", false);"
-										],
-										"type": "text/javascript"
-									}
+                    "id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
@@ -1357,22 +1357,22 @@
 									}
 								],
 								"url": {
-									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance={{with_balance}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_xs2a}}"
-									],
-									"path": [
-										"v1",
-										"accounts"
-									],
-									"query": [
-										{
-											"key": "withBalance",
-											"value": "{{with_balance}}"
-										}
-									]
-								},
+                  "raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_xs2a}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "query": [
+                    {
+                      "key": "withBalance",
+                      "value": "false"
+                    }
+                  ]
+                },
 								"description": "Read the identifiers of the available payment account together with  booking balance information, depending on the consent granted.  It is assumed that a consent of the PSU to this access is already given and stored on the ASPSP system.  The addressed list of accounts depends then on the PSU ID and the stored consent addressed by consentId,  respectively the OAuth2 access token.   Returns all identifiers of the accounts, to which an account access has been granted to through  the /consents endpoint by the PSU.  In addition, relevant information about the accounts and hyperlinks to corresponding account  information resources are provided if a related consent has been already granted.  Remark: Note that the /consents endpoint optionally offers to grant an access on all available  payment accounts of a PSU.  In this case, this endpoint will deliver the information about all available payment accounts  of the PSU at this ASPSP. "
 							},
 							"response": []
@@ -1717,12 +1717,12 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
-										"exec": [
-											"pm.globals.set(\"with_balance\", false);"
-										],
-										"type": "text/javascript"
-									}
+                    "id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
@@ -1742,22 +1742,22 @@
 									}
 								],
 								"url": {
-									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance={{with_balance}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_xs2a}}"
-									],
-									"path": [
-										"v1",
-										"accounts"
-									],
-									"query": [
-										{
-											"key": "withBalance",
-											"value": "{{with_balance}}"
-										}
-									]
-								},
+                  "raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_xs2a}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "query": [
+                    {
+                      "key": "withBalance",
+                      "value": "false"
+                    }
+                  ]
+                },
 								"description": "Read the identifiers of the available payment account together with  booking balance information, depending on the consent granted.  It is assumed that a consent of the PSU to this access is already given and stored on the ASPSP system.  The addressed list of accounts depends then on the PSU ID and the stored consent addressed by consentId,  respectively the OAuth2 access token.   Returns all identifiers of the accounts, to which an account access has been granted to through  the /consents endpoint by the PSU.  In addition, relevant information about the accounts and hyperlinks to corresponding account  information resources are provided if a related consent has been already granted.  Remark: Note that the /consents endpoint optionally offers to grant an access on all available  payment accounts of a PSU.  In this case, this endpoint will deliver the information about all available payment accounts  of the PSU at this ASPSP. "
 							},
 							"response": []
@@ -2103,12 +2103,12 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
-										"exec": [
-											"pm.globals.set(\"with_balance\", false);"
-										],
-										"type": "text/javascript"
-									}
+                    "id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
@@ -2128,22 +2128,22 @@
 									}
 								],
 								"url": {
-									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance={{with_balance}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_xs2a}}"
-									],
-									"path": [
-										"v1",
-										"accounts"
-									],
-									"query": [
-										{
-											"key": "withBalance",
-											"value": "{{with_balance}}"
-										}
-									]
-								},
+                  "raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_xs2a}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "query": [
+                    {
+                      "key": "withBalance",
+                      "value": "false"
+                    }
+                  ]
+                },
 								"description": "Read the identifiers of the available payment account together with  booking balance information, depending on the consent granted.  It is assumed that a consent of the PSU to this access is already given and stored on the ASPSP system.  The addressed list of accounts depends then on the PSU ID and the stored consent addressed by consentId,  respectively the OAuth2 access token.   Returns all identifiers of the accounts, to which an account access has been granted to through  the /consents endpoint by the PSU.  In addition, relevant information about the accounts and hyperlinks to corresponding account  information resources are provided if a related consent has been already granted.  Remark: Note that the /consents endpoint optionally offers to grant an access on all available  payment accounts of a PSU.  In this case, this endpoint will deliver the information about all available payment accounts  of the PSU at this ASPSP. "
 							},
 							"response": []
@@ -2489,12 +2489,12 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
-										"exec": [
-											"pm.globals.set(\"with_balance\", false);"
-										],
-										"type": "text/javascript"
-									}
+                    "id": "3745092a-a8c1-4018-9519-9cd65359e8fe",
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
 								}
 							],
 							"request": {
@@ -2514,22 +2514,22 @@
 									}
 								],
 								"url": {
-									"raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance={{with_balance}}",
-									"protocol": "{{protocol}}",
-									"host": [
-										"{{url_xs2a}}"
-									],
-									"path": [
-										"v1",
-										"accounts"
-									],
-									"query": [
-										{
-											"key": "withBalance",
-											"value": "{{with_balance}}"
-										}
-									]
-								},
+                  "raw": "{{protocol}}://{{url_xs2a}}/v1/accounts?withBalance=false",
+                  "protocol": "{{protocol}}",
+                  "host": [
+                    "{{url_xs2a}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "accounts"
+                  ],
+                  "query": [
+                    {
+                      "key": "withBalance",
+                      "value": "false"
+                    }
+                  ]
+                },
 								"description": "Read the identifiers of the available payment account together with  booking balance information, depending on the consent granted.  It is assumed that a consent of the PSU to this access is already given and stored on the ASPSP system.  The addressed list of accounts depends then on the PSU ID and the stored consent addressed by consentId,  respectively the OAuth2 access token.   Returns all identifiers of the accounts, to which an account access has been granted to through  the /consents endpoint by the PSU.  In addition, relevant information about the accounts and hyperlinks to corresponding account  information resources are provided if a related consent has been already granted.  Remark: Note that the /consents endpoint optionally offers to grant an access on all available  payment accounts of a PSU.  In this case, this endpoint will deliver the information about all available payment accounts  of the PSU at this ASPSP. "
 							},
 							"response": []
