@@ -54,6 +54,15 @@ class AccountAccessValidatorTest {
     }
 
     @Test
+    void testValidate_allAccountConsentWithBalances_withOwnerName_shouldReturnValid(){
+        aisConsent = jsonReader.getObjectFromFile( "json/service/validator/ais/account/xs2a-account-consent-all-available-accounts-with-balance_with_owner_name.json", AisConsent.class);
+
+        ValidationResult actual = accountAccessValidator.validate(aisConsent, true);
+
+        assertTrue(actual.isValid());
+    }
+
+    @Test
     void testValidate_withoutBalance_shouldReturnValid() {
         // Given
         aisConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-consent.json", AisConsent.class);

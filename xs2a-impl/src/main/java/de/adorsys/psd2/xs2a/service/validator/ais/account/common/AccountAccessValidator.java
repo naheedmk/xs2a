@@ -24,6 +24,8 @@ import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
+
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 
 @Component
@@ -37,7 +39,9 @@ public class AccountAccessValidator {
                 return ValidationResult.valid();
             }
 
-            if (aisConsentData.getAvailableAccountsWithBalance() == AccountAccessType.ALL_ACCOUNTS) {
+            if (EnumSet.of(AccountAccessType.ALL_ACCOUNTS, AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME)
+                    .contains(aisConsentData.getAvailableAccountsWithBalance())) {
+
                 return ValidationResult.valid();
             }
 
