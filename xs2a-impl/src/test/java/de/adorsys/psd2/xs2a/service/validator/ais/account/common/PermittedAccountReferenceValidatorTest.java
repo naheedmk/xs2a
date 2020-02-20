@@ -16,32 +16,19 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account.common;
 
-import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
-import de.adorsys.psd2.xs2a.core.authorisation.AccountConsentAuthorization;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
-import de.adorsys.psd2.xs2a.core.profile.AccountReference;
-import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.Currency;
-import java.util.List;
-
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PermittedAccountReferenceValidatorTest {
-    private static final String ASPSP_ACCOUNT_ID = "3278921mxl-n2131-13nw";
 
-    private static final String IBAN = "DE89370400440532013000";
-    private static final String BBAN = "89370400440532013000";
-    private static final Currency EUR_CURRENCY = Currency.getInstance("EUR");
-    private final static String AUTHORISATION_ID = "authorisation ID";
     private static final String ACCOUNT_ID = "11111-999999999";
     private static final String WRONG_ACCOUNT_ID = "wrong_account_id";
     private PermittedAccountReferenceValidator validator;
@@ -84,33 +71,10 @@ class PermittedAccountReferenceValidatorTest {
     }
 
     private AisConsent buildAccountConsent() {
-        AisConsent aisConsent = jsonReader.getObjectFromFile("json/service/ais-consent.json", AisConsent.class);
-
-        AccountAccess accountAccess = createAccountAccess();
-        aisConsent.setTppAccountAccesses(accountAccess);
-        aisConsent.setAspspAccountAccesses(accountAccess);
-        AisConsentData consentData = new AisConsentData(null, null, null, false);
+        AisConsent aisConsent = jsonReader.getObjectFromFile("json/service/ais-consent-with-iban.json", AisConsent.class);
+        AisConsentData consentData = AisConsentData.buildDefaultAisConsentData();
         aisConsent.setConsentData(consentData);
-        aisConsent.setAuthorisations(buildAuthorization());
+
         return aisConsent;
-    }
-
-    private static AccountAccess createAccountAccess() {
-        AccountReference accountReference = buildIbanAccountReference();
-        return new AccountAccess(Collections.singletonList(accountReference),
-                                 Collections.singletonList(accountReference),
-                                 Collections.singletonList(accountReference),
-                                 null);
-    }
-
-    private static AccountReference buildIbanAccountReference() {
-        return new AccountReference(ASPSP_ACCOUNT_ID, ACCOUNT_ID, IBAN, BBAN, null, null, null, EUR_CURRENCY);
-    }
-
-    private List<AccountConsentAuthorization> buildAuthorization() {
-        AccountConsentAuthorization authorization = new AccountConsentAuthorization();
-        authorization.setId(AUTHORISATION_ID);
-        authorization.setScaStatus(ScaStatus.RECEIVED);
-        return Collections.singletonList(authorization);
     }
 }
