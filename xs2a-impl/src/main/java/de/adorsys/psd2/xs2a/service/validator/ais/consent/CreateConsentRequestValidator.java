@@ -126,7 +126,7 @@ public class CreateConsentRequestValidator implements BusinessValidator<CreateCo
     }
 
     private boolean isConsentGlobal(CreateConsentReq request) {
-        return !isNotEmptyAccess(request.getAccess(), request.getAisConsentData())
+        return isNotEmptyAccess(request.getAccess(), request.getAisConsentData())
                    && EnumSet.of(ALL_ACCOUNTS, ALL_ACCOUNTS_WITH_OWNER_NAME).contains(request.getAllPsd2());
     }
 
