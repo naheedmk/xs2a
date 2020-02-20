@@ -24,7 +24,6 @@ import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.tpp.TppNotificationData;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import de.adorsys.psd2.xs2a.domain.AccountReferenceCollector;
-import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -35,7 +34,6 @@ import java.util.stream.Collectors;
 import static de.adorsys.psd2.xs2a.core.ais.AccountAccessType.ALL_ACCOUNTS;
 
 @Data
-@ApiModel(description = "Request creates an account information consent resource at the ASPSP regarding access to accounts specified in this request")
 public class CreateConsentReq implements AccountReferenceCollector {
     @NotNull
     private AccountAccess access;
