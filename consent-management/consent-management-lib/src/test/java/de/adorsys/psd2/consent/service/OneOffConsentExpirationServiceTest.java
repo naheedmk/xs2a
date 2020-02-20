@@ -46,8 +46,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OneOffConsentExpirationServiceTest {
-    public static final Long CONSENT_ID = 123358L;
-    public static final String RESOURCE_ID = "LGCGDC4KTx0tgnpZGYTTr8";
+    private static final Long CONSENT_ID = 123358L;
+    private static final String RESOURCE_ID = "LGCGDC4KTx0tgnpZGYTTr8";
 
     @InjectMocks
     private OneOffConsentExpirationService oneOffConsentExpirationService;
@@ -83,11 +83,13 @@ class OneOffConsentExpirationServiceTest {
 
         when(aisConsentTransactionRepository.findByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID, PageRequest.of(0, 1)))
             .thenReturn(Collections.singletonList(aisConsentTransaction));
-        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID)).thenReturn(0);
+        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID))
+            .thenReturn(0);
 
         AisConsent aisConsent = buildAisConsent(accountReference, null, null, null, null);
         cmsConsent.setAspspAccountAccesses(aisConsent.getAspspAccountAccesses());
-        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent)).thenReturn(aisConsent);
+        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent))
+            .thenReturn(aisConsent);
 
         // When
         boolean isExpired = oneOffConsentExpirationService.isConsentExpired(cmsConsent, CONSENT_ID);
@@ -104,10 +106,12 @@ class OneOffConsentExpirationServiceTest {
 
         when(aisConsentTransactionRepository.findByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID, PageRequest.of(0, 1)))
             .thenReturn(Collections.singletonList(aisConsentTransaction));
-        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID)).thenReturn(1);
+        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID))
+            .thenReturn(1);
 
         AisConsent aisConsent = buildAisConsent(accountReference, null, null, null, null);
-        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent)).thenReturn(aisConsent);
+        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent))
+            .thenReturn(aisConsent);
         cmsConsent.setAspspAccountAccesses(aisConsent.getAspspAccountAccesses());
 
         // When
@@ -122,7 +126,8 @@ class OneOffConsentExpirationServiceTest {
         // Given
         AisConsent aisConsent = buildAisConsent(accountReference, null, null, AccountAccessType.ALL_ACCOUNTS, null);
         cmsConsent.setAspspAccountAccesses(aisConsent.getAspspAccountAccesses());
-        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent)).thenReturn(aisConsent);
+        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent))
+            .thenReturn(aisConsent);
 
         // When
         boolean isExpired = oneOffConsentExpirationService.isConsentExpired(cmsConsent, CONSENT_ID);
@@ -136,7 +141,8 @@ class OneOffConsentExpirationServiceTest {
         // Given
         AisConsent aisConsent = buildAisConsent(null, null, null, null, null);
         cmsConsent.setAspspAccountAccesses(aisConsent.getAspspAccountAccesses());
-        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent)).thenReturn(aisConsent);
+        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent))
+            .thenReturn(aisConsent);
 
         // When
         boolean isExpired = oneOffConsentExpirationService.isConsentExpired(cmsConsent, CONSENT_ID);
@@ -152,11 +158,13 @@ class OneOffConsentExpirationServiceTest {
 
         when(aisConsentTransactionRepository.findByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID, PageRequest.of(0, 1)))
             .thenReturn(Collections.singletonList(aisConsentTransaction));
-        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID)).thenReturn(0);
+        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID))
+            .thenReturn(0);
 
         AisConsent aisConsent = buildAisConsent(accountReference, null, null, null, AccountAccessType.ALL_ACCOUNTS);
         cmsConsent.setAspspAccountAccesses(aisConsent.getAspspAccountAccesses());
-        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent)).thenReturn(aisConsent);
+        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent))
+            .thenReturn(aisConsent);
 
         // When
         boolean isExpired = oneOffConsentExpirationService.isConsentExpired(cmsConsent, CONSENT_ID);
@@ -172,11 +180,13 @@ class OneOffConsentExpirationServiceTest {
 
         when(aisConsentTransactionRepository.findByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID, PageRequest.of(0, 1)))
             .thenReturn(Collections.singletonList(aisConsentTransaction));
-        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID)).thenReturn(1);
+        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID))
+            .thenReturn(1);
 
         AisConsent aisConsent = buildAisConsent(accountReference, null, null, null, AccountAccessType.ALL_ACCOUNTS);
         cmsConsent.setAspspAccountAccesses(aisConsent.getAspspAccountAccesses());
-        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent)).thenReturn(aisConsent);
+        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent))
+            .thenReturn(aisConsent);
 
         // When
         boolean isExpired = oneOffConsentExpirationService.isConsentExpired(cmsConsent, CONSENT_ID);
@@ -192,11 +202,13 @@ class OneOffConsentExpirationServiceTest {
 
         when(aisConsentTransactionRepository.findByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID, PageRequest.of(0, 1)))
             .thenReturn(Collections.singletonList(aisConsentTransaction));
-        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID)).thenReturn(1);
+        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID))
+            .thenReturn(1);
 
         AisConsent aisConsent = buildAisConsent(null, accountReference, null, null, null);
         cmsConsent.setAspspAccountAccesses(aisConsent.getAspspAccountAccesses());
-        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent)).thenReturn(aisConsent);
+        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent))
+            .thenReturn(aisConsent);
 
         // When
         boolean isExpired = oneOffConsentExpirationService.isConsentExpired(cmsConsent, CONSENT_ID);
@@ -212,11 +224,13 @@ class OneOffConsentExpirationServiceTest {
 
         when(aisConsentTransactionRepository.findByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID, PageRequest.of(0, 1)))
             .thenReturn(Collections.singletonList(aisConsentTransaction));
-        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID)).thenReturn(2);
+        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID))
+            .thenReturn(2);
 
         AisConsent aisConsent = buildAisConsent(null, accountReference, null, null, null);
         cmsConsent.setAspspAccountAccesses(aisConsent.getAspspAccountAccesses());
-        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent)).thenReturn(aisConsent);
+        when(cmsAisConsentMapper.mapToAisConsent(cmsConsent))
+            .thenReturn(aisConsent);
 
         // When
         boolean isExpired = oneOffConsentExpirationService.isConsentExpired(cmsConsent, CONSENT_ID);
@@ -232,7 +246,8 @@ class OneOffConsentExpirationServiceTest {
 
         when(aisConsentTransactionRepository.findByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID, PageRequest.of(0, 1)))
             .thenReturn(Collections.singletonList(aisConsentTransaction));
-        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID)).thenReturn(1);
+        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID))
+            .thenReturn(1);
 
         AisConsent aisConsent = buildAisConsent(null, null, accountReference, null, null);
         cmsConsent.setAspspAccountAccesses(aisConsent.getAspspAccountAccesses());
@@ -252,7 +267,8 @@ class OneOffConsentExpirationServiceTest {
 
         when(aisConsentTransactionRepository.findByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID, PageRequest.of(0, 1)))
             .thenReturn(Collections.singletonList(aisConsentTransaction));
-        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID)).thenReturn(4);
+        when(aisConsentUsageRepository.countByConsentIdAndResourceId(CONSENT_ID, RESOURCE_ID))
+            .thenReturn(4);
 
         AisConsent aisConsent = buildAisConsent(null, null, accountReference, null, null);
         cmsConsent.setAspspAccountAccesses(aisConsent.getAspspAccountAccesses());

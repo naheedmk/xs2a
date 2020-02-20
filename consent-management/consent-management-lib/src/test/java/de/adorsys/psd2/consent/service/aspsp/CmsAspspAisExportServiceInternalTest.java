@@ -18,7 +18,6 @@ package de.adorsys.psd2.consent.service.aspsp;
 
 import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
-import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.AuthorisationRepository;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
@@ -26,8 +25,8 @@ import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
 import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
 import de.adorsys.psd2.consent.service.migration.AisConsentMigrationService;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
-import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
+import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +37,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -63,10 +61,11 @@ class CmsAspspAisExportServiceInternalTest {
 
     private PsuIdData psuIdData;
     private PsuIdData wrongPsuIdData;
-    private PsuData psuData;
+    private JsonReader jsonReader = new JsonReader();
 
     @InjectMocks
     private CmsAspspAisExportServiceInternal cmsAspspAisExportServiceInternal;
+
     @Mock
     private AisConsentSpecification aisConsentSpecification;
     @Mock
@@ -82,7 +81,6 @@ class CmsAspspAisExportServiceInternalTest {
     void setUp() {
         psuIdData = buildPsuIdData(PSU_ID);
         wrongPsuIdData = buildPsuIdData(WRONG_PSU_ID);
-        psuData = buildPsuData();
     }
 
     @Test
@@ -214,7 +212,7 @@ class CmsAspspAisExportServiceInternalTest {
     @Test
     void exportConsentsByPsu_failure_emptyPsuIdData() {
         // Given
-        PsuIdData emptyPsuIdData = buildEmptyPsuIdData();
+        PsuIdData emptyPsuIdData = new PsuIdData(null, null, null, null, null);
 
         // When
         Collection<CmsAisAccountConsent> aisConsents =
@@ -282,14 +280,6 @@ class CmsAspspAisExportServiceInternalTest {
         return new PsuIdData(psuId, null, null, null, null);
     }
 
-    private PsuIdData buildEmptyPsuIdData() {
-        return new PsuIdData(null, null, null, null, null);
-    }
-
-    private PsuData buildPsuData() {
-        return new PsuData(PSU_ID, null, null, null, null);
-    }
-
     private CmsAisAccountConsent buildAisAccountConsent() {
         return new CmsAisAccountConsent(EXTERNAL_CONSENT_ID,
                                         null, false,
@@ -299,13 +289,6 @@ class CmsAspspAisExportServiceInternalTest {
     }
 
     private ConsentEntity buildConsentEntity() {
-        ConsentEntity aisConsent = new ConsentEntity();
-        aisConsent.setExternalId(EXTERNAL_CONSENT_ID);
-        aisConsent.setValidUntil(LocalDate.now().plusDays(1));
-        aisConsent.setLastActionDate(LocalDate.now());
-        aisConsent.setPsuDataList(Collections.singletonList(psuData));
-        aisConsent.setConsentStatus(ConsentStatus.RECEIVED);
-        aisConsent.setCreationTimestamp(OffsetDateTime.of(2018, 10, 10, 10, 10, 10, 10, ZoneOffset.UTC));
-        return aisConsent;
+        return jsonReader.getObjectFromFile("json/consent-entity.json", ConsentEntity.class);
     }
 }
