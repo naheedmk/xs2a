@@ -114,7 +114,6 @@ public class AisConsentMapper {
                               accessMapper.mapAspspAccessesToAccountAccess(entity.getAspspAccountAccesses()));
     }
 
-    // TODO: 19.02.2020 Handle enum values not being mapped https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
     public AccountAccess mapToAccountAccess(AisAccountAccess accountAccess) {
 
         return new AccountAccess(ListUtils.emptyIfNull(accountAccess.getAccounts()),
