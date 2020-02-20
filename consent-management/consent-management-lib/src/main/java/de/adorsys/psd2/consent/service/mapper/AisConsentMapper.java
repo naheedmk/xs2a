@@ -115,7 +115,6 @@ public class AisConsentMapper {
     }
 
     public AccountAccess mapToAccountAccess(AisAccountAccess accountAccess) {
-
         return new AccountAccess(ListUtils.emptyIfNull(accountAccess.getAccounts()),
                                  ListUtils.emptyIfNull(accountAccess.getBalances()),
                                  ListUtils.emptyIfNull(accountAccess.getTransactions()),
