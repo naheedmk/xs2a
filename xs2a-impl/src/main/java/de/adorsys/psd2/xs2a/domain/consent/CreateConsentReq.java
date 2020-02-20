@@ -18,13 +18,13 @@ package de.adorsys.psd2.xs2a.domain.consent;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.adorsys.psd2.core.data.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.tpp.TppNotificationData;
 import de.adorsys.psd2.xs2a.core.tpp.TppRedirectUri;
 import de.adorsys.psd2.xs2a.domain.AccountReferenceCollector;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -87,8 +87,13 @@ public class CreateConsentReq implements AccountReferenceCollector {
     }
 
     private boolean isConsentGlobal() {
-        return access.isNotEmpty()
+        return access.isNotEmpty(getAisConsentData())
                    && allPsd2 == ALL_ACCOUNTS;
+    }
+
+    @JsonIgnore
+    public AisConsentData getAisConsentData() {
+        return new AisConsentData(availableAccounts, allPsd2, availableAccountsWithBalance, combinedServiceIndicator);
     }
 
     @JsonIgnore

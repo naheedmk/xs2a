@@ -125,7 +125,7 @@ public class AisChecksumCalculatingServiceV3 implements ChecksumCalculatingServi
         sb.append(aisConsentChecksumCommon);
 
         AccountAccess aspspAccountAccess = aisConsent.getAspspAccountAccesses();
-        if (aspspAccountAccess.isNotEmpty()) {
+        if (aspspAccountAccess.isNotEmpty(aisConsent.getConsentData())) {
 
             Map<AccountReferenceType, String> checksumMap = calculateChecksumMapByReferenceType(aspspAccountAccess);
 

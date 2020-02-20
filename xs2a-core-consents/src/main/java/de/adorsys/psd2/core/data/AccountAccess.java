@@ -17,6 +17,7 @@
 package de.adorsys.psd2.core.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import lombok.Value;
@@ -37,16 +38,13 @@ public class AccountAccess {
     private List<AccountReference> transactions;
     private AdditionalInformationAccess additionalInformationAccess;
 
-    // TODO: no longer checks whether enum values are empty, double check usages https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1170
     @JsonIgnore
-    public boolean isNotEmpty() {
+    public boolean isNotEmpty(AisConsentData aisConsentData) {
         return !(CollectionUtils.isEmpty(accounts)
                      && CollectionUtils.isEmpty(balances)
-                     && CollectionUtils.isEmpty(transactions));
-    }
-
-    @JsonIgnore
-    public boolean isEmpty() {
-        return !isNotEmpty();
+                     && CollectionUtils.isEmpty(transactions)
+                     && aisConsentData.getAllPsd2() == null
+                     && aisConsentData.getAvailableAccounts() == null
+                     && aisConsentData.getAvailableAccountsWithBalance() == null);
     }
 }

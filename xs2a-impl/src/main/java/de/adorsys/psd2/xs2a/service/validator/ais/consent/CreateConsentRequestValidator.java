@@ -17,6 +17,7 @@
 package de.adorsys.psd2.xs2a.service.validator.ais.consent;
 
 import de.adorsys.psd2.core.data.AccountAccess;
+import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
@@ -112,7 +113,8 @@ public class CreateConsentRequestValidator implements BusinessValidator<CreateCo
     }
 
     private boolean isNotSupportedBankOfferedConsent(CreateConsentReq request) {
-        if (isNotEmptyAccess(request.getAccess()) || Stream.of(request.getAvailableAccounts(), request.getAllPsd2(), request.getAvailableAccountsWithBalance()).anyMatch(EnumSet.of(ALL_ACCOUNTS, ALL_ACCOUNTS_WITH_OWNER_NAME)::contains)) {
+        if (isNotEmptyAccess(request.getAccess(), request.getAisConsentData())
+                || Stream.of(request.getAvailableAccounts(), request.getAllPsd2(), request.getAvailableAccountsWithBalance()).anyMatch(EnumSet.of(ALL_ACCOUNTS, ALL_ACCOUNTS_WITH_OWNER_NAME)::contains)) {
             return false;
         }
 
@@ -124,13 +126,13 @@ public class CreateConsentRequestValidator implements BusinessValidator<CreateCo
     }
 
     private boolean isConsentGlobal(CreateConsentReq request) {
-        return !isNotEmptyAccess(request.getAccess())
+        return !isNotEmptyAccess(request.getAccess(), request.getAisConsentData())
                    && EnumSet.of(ALL_ACCOUNTS, ALL_ACCOUNTS_WITH_OWNER_NAME).contains(request.getAllPsd2());
     }
 
-    private boolean isNotEmptyAccess(AccountAccess access) {
+    private boolean isNotEmptyAccess(AccountAccess access, AisConsentData aisConsentData) {
         return Optional.ofNullable(access)
-                   .map(AccountAccess::isNotEmpty)
+                   .map(ac -> ac.isNotEmpty(aisConsentData))
                    .orElse(false);
     }
 

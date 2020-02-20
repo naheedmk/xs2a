@@ -115,7 +115,7 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
 
     private boolean areFlagsAndAccountsInvalid(CreateConsentReq request) {
         AccountAccess access = request.getAccess();
-        if (access.isNotEmpty()) {
+        if (access.isNotEmpty(request.getAisConsentData())) {
             return !(CollectionUtils.isEmpty(request.getAccountReferences()) || areFlagsEmpty(request));
         }
         return false;

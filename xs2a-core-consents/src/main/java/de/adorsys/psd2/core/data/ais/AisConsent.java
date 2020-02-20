@@ -61,7 +61,7 @@ public class AisConsent extends Consent<AisConsentData> {
         }
 
         AccountAccess aspspAccountAccesses = getAspspAccountAccesses();
-        if (aspspAccountAccesses.isNotEmpty()) {
+        if (aspspAccountAccesses.isNotEmpty(getConsentData())) {
             return aspspAccountAccesses;
         }
 
@@ -142,7 +142,7 @@ public class AisConsent extends Consent<AisConsentData> {
         return getRequestType(getConsentData().getAllPsd2(),
                               getConsentData().getAvailableAccounts(),
                               getConsentData().getAvailableAccountsWithBalance(),
-                              !usedAccess.isNotEmpty());
+                              !usedAccess.isNotEmpty(getConsentData()));
     }
 
     private AisConsentRequestType getRequestType(AccountAccessType allPsd2,
