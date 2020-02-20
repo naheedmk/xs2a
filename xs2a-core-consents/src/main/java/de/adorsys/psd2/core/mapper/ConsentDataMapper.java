@@ -33,6 +33,9 @@ public class ConsentDataMapper {
     private final ObjectMapper objectMapper = buildObjectMapper();
 
     public AisConsentData mapToAisConsentData(byte[] consentData) {
+        if (consentData == null) {
+            return AisConsentData.buildDefaultAisConsentData();
+        }
         try {
             return objectMapper.readValue(consentData, AisConsentData.class);
         } catch (IOException e) {

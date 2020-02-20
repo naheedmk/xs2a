@@ -1,5 +1,4 @@
 {
-  "tppAccountAccess": {
-  },
-  "aspspAccountAccess": {}
+  "combinedServiceIndicator": false,
+  "allPsd2": "allAccounts"
 }

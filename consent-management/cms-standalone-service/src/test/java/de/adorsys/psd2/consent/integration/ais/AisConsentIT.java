@@ -26,6 +26,7 @@ import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.integration.config.IntegrationTestConfiguration;
 import de.adorsys.psd2.consent.psu.api.CmsPsuAisService;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.xs2a.reader.JsonReader;
@@ -193,6 +194,8 @@ public class AisConsentIT {
 
     private CmsConsent buildCreateAisConsentRequest() {
         CmsConsent cmsConsent = jsonReader.getObjectFromFile("json/consent/integration/ais/cms-consent.json", CmsConsent.class);
+        cmsConsent.setAspspAccountAccesses(AccountAccess.EMPTY_ACCESS);
+        cmsConsent.setTppAccountAccesses(AccountAccess.EMPTY_ACCESS);
         cmsConsent.setConsentData(jsonReader.getBytesFromFile("json/consent/integration/ais/ais-consent-data.json"));
         return cmsConsent;
     }
