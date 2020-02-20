@@ -99,10 +99,18 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
                                                                 .map(Collection::stream)
                                                                 .orElseGet(Stream::empty);
 
-            Stream.concat(allReferences, additionalReferences)
+            List<AccountReference> allReferencesList = allReferences.collect(Collectors.toList());
+            List<AccountReference> additionalReferencesList = additionalReferences.collect(Collectors.toList());
+
+            Stream.of(allReferencesList, additionalReferencesList)
+                .flatMap(Collection::stream)
                 .distinct()
-                .filter(Objects::nonNull)
                 .forEach(ar -> accountReferenceValidator.validate(ar, messageError));
+
+            // checks for correspondence between additionalReferences and addressed by at least one of the attributes "accounts", "transactions" or "balances"
+            if (areAdditionalReferencesIncorrect(additionalReferencesList, allReferencesList)) { //NOSONAR
+                errorBuildingService.enrichMessageError(messageError, TppMessageInformation.of(SERVICE_INVALID_400));
+            }
 
             CreateConsentReq createConsent = mapToCreateConsentReq(consents, messageError);
 
@@ -111,6 +119,15 @@ public class AccountAccessValidatorImpl extends AbstractBodyValidatorImpl implem
                 errorBuildingService.enrichMessageError(messageError, TppMessageInformation.of(FORMAT_ERROR_CONSENT_INCORRECT));
             }
         }
+    }
+
+    private boolean areAdditionalReferencesIncorrect(List<AccountReference> additionalReferencesList, List<AccountReference> allReferencesList) {
+        if (CollectionUtils.isEmpty(additionalReferencesList)) {
+            return false;
+        }
+
+        return !additionalReferencesList.stream()
+                    .allMatch(allReferencesList::contains);
     }
 
     private boolean areFlagsAndAccountsInvalid(CreateConsentReq request) {
