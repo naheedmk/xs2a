@@ -24,6 +24,7 @@ import de.adorsys.psd2.consent.api.service.AuthorisationServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.ConsentServiceEncrypted;
 import de.adorsys.psd2.consent.api.service.TppService;
 import de.adorsys.psd2.consent.api.service.TppStopListService;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.event.service.Xs2aEventServiceEncrypted;
@@ -247,6 +248,8 @@ class UpdatePsuDataForConsentIT {
         cmsConsent.setTppInformation(consentTppInformation);
         cmsConsent.setConsentStatus(ConsentStatus.VALID);
         cmsConsent.setFrequencyPerDay(0);
+        cmsConsent.setTppAccountAccesses(AccountAccess.EMPTY_ACCESS);
+        cmsConsent.setAspspAccountAccesses(AccountAccess.EMPTY_ACCESS);
 
         return cmsConsent;
     }
