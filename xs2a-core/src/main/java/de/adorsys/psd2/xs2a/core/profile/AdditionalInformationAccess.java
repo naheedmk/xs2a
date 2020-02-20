@@ -17,7 +17,6 @@
 package de.adorsys.psd2.xs2a.core.profile;
 
 import lombok.Value;
-import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -28,6 +27,6 @@ public class AdditionalInformationAccess {
     private List<AccountReference> ownerName;
 
     public boolean noAdditionalInformationAccess() {
-        return CollectionUtils.isEmpty(ownerName);
+        return ownerName == null;
     }
 }
