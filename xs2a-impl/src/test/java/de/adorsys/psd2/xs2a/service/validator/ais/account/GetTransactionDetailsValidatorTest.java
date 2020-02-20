@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.xs2a.service.validator.ais.account;
 
-import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
@@ -66,12 +65,9 @@ class GetTransactionDetailsValidatorTest {
     private OauthConsentValidator oauthConsentValidator;
 
     private JsonReader jsonReader = new JsonReader();
-    private AccountAccess accountAccess;
 
     @BeforeEach
     void setUp() {
-        accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", AccountAccess.class);
-
         // Inject pisTppInfoValidator via setter
         getTransactionDetailsValidator.setAisAccountTppInfoValidator(aisAccountTppInfoValidator);
     }
@@ -82,7 +78,8 @@ class GetTransactionDetailsValidatorTest {
         AisConsent aisConsent = getAisConsent();
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
-        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS)).thenReturn(ValidationResult.valid());
+        when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getTransactions(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
+            .thenReturn(ValidationResult.valid());
         when(accountConsentValidator.validate(aisConsent, REQUEST_URI))
             .thenReturn(ValidationResult.valid());
         when(oauthConsentValidator.validate(aisConsent))
@@ -147,10 +144,8 @@ class GetTransactionDetailsValidatorTest {
     }
 
     private AisConsent getAisConsent() {
-        AisConsent aisConsent = jsonReader.getObjectFromFile("json/service/ais-consent.json", AisConsent.class);
-        aisConsent.setTppAccountAccesses(accountAccess);
-        aisConsent.setAspspAccountAccesses(accountAccess);
-        aisConsent.setConsentData(new AisConsentData(null, null, null, false));
+        AisConsent aisConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/ais-consent-with-iban.json", AisConsent.class);
+        aisConsent.setConsentData(AisConsentData.buildDefaultAisConsentData());
 
         return aisConsent;
     }

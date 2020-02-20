@@ -20,7 +20,6 @@ import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
-import de.adorsys.psd2.xs2a.core.consent.ConsentTppInformation;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
@@ -38,9 +37,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.OffsetDateTime;
-import java.util.Collections;
 
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.UNAUTHORIZED;
@@ -74,11 +70,9 @@ class GetCardBalancesReportValidatorTest {
 
     private JsonReader jsonReader = new JsonReader();
     private AccountAccess accountAccess;
-    private AccountAccess cardAccountAccess;
 
     @BeforeEach
     void setUp() {
-        cardAccountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access-pan.json", AccountAccess.class);
         accountAccess = jsonReader.getObjectFromFile("json/service/validator/ais/account/xs2a-account-access.json", AccountAccess.class);
 
         // Inject pisTppInfoValidator via setter
@@ -88,7 +82,7 @@ class GetCardBalancesReportValidatorTest {
     @Test
     void validate_withValidConsentObject_shouldReturnValid() {
         // Given
-        AisConsent aisConsent = buildCardAccountConsent(TPP_INFO, cardAccountAccess);
+        AisConsent aisConsent = buildCardAccountConsent(TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
         when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getBalances(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS)).thenReturn(ValidationResult.valid());
@@ -111,7 +105,7 @@ class GetCardBalancesReportValidatorTest {
     @Test
     void validate_withInvalidAccountReferenceAccess_error() {
         // Given
-        AisConsent aisConsent = buildCardAccountConsent(TPP_INFO, cardAccountAccess);
+        AisConsent aisConsent = buildCardAccountConsent(TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
         when(accountReferenceAccessValidator.validate(aisConsent, aisConsent.getAccess().getBalances(), ACCOUNT_ID, AisConsentRequestType.DEDICATED_ACCOUNTS))
@@ -132,7 +126,7 @@ class GetCardBalancesReportValidatorTest {
     @Test
     void validate_withInvalidTppInConsent_shouldReturnTppValidationError() {
         // Given
-        AisConsent aisConsent = buildCardAccountConsent(INVALID_TPP_INFO, cardAccountAccess);
+        AisConsent aisConsent = buildCardAccountConsent(INVALID_TPP_INFO);
         when(aisAccountTppInfoValidator.validateTpp(INVALID_TPP_INFO))
             .thenReturn(ValidationResult.invalid(TPP_VALIDATION_ERROR));
 
@@ -150,7 +144,10 @@ class GetCardBalancesReportValidatorTest {
     @Test
     void validate_withInvalidAccessInConsent_shouldReturnConsentInvalidError() {
         // Given
-        AisConsent aisConsent = buildCardAccountConsent(TPP_INFO, accountAccess);
+        AisConsent aisConsent = buildCardAccountConsent(TPP_INFO);
+        aisConsent.setTppAccountAccesses(accountAccess);
+        aisConsent.setAspspAccountAccesses(accountAccess);
+
         when(aisAccountTppInfoValidator.validateTpp(TPP_INFO))
             .thenReturn(ValidationResult.valid());
 
@@ -171,20 +168,10 @@ class GetCardBalancesReportValidatorTest {
         return tppInfo;
     }
 
-    private AisConsent buildCardAccountConsent(TppInfo tppInfo, AccountAccess accountAccess) {
-        AisConsent aisConsent = new AisConsent();
-        aisConsent.setId("id");
-        aisConsent.setTppAccountAccesses(accountAccess);
-        aisConsent.setAspspAccountAccesses(accountAccess);
+    private AisConsent buildCardAccountConsent(TppInfo tppInfo) {
+        AisConsent aisConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/ais-consent-with-masked-pan.json", AisConsent.class);
+        aisConsent.getConsentTppInformation().setTppInfo(tppInfo);
         aisConsent.setConsentData(AisConsentData.buildDefaultAisConsentData());
-        aisConsent.setFrequencyPerDay(0);
-        aisConsent.setPsuIdDataList(Collections.emptyList());
-        ConsentTppInformation consentTppInformation = new ConsentTppInformation();
-        consentTppInformation.setTppInfo(tppInfo);
-        aisConsent.setConsentTppInformation(consentTppInformation);
-        aisConsent.setAuthorisations(Collections.emptyList());
-        aisConsent.setUsages(Collections.emptyMap());
-        aisConsent.setCreationTimestamp(OffsetDateTime.now());
 
         return aisConsent;
     }

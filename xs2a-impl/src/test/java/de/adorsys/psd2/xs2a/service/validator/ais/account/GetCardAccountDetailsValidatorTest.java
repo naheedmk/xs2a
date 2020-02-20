@@ -19,7 +19,6 @@ package de.adorsys.psd2.xs2a.service.validator.ais.account;
 import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
-import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.consent.AisConsentRequestType;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
@@ -212,11 +211,9 @@ class GetCardAccountDetailsValidatorTest {
     }
 
     private AisConsent getCardAccountConsent(TppInfo tppInfo) {
-        AisConsent aisConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/ais-consent.json", AisConsent.class);
-
+        AisConsent aisConsent = jsonReader.getObjectFromFile("json/service/validator/ais/account/ais-consent-all-accounts.json", AisConsent.class);
         aisConsent.getConsentTppInformation().setTppInfo(tppInfo);
 
-        aisConsent.setConsentData(new AisConsentData(null, AccountAccessType.ALL_ACCOUNTS, null, false));
         return aisConsent;
     }
 
