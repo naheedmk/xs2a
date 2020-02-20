@@ -18,6 +18,7 @@ package de.adorsys.psd2.xs2a.integration.builder.ais;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
+import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
@@ -93,6 +94,8 @@ public class CmsConsentBuilder {
                             cmsConsent.setCreationTimestamp(now);
                             cmsConsent.setStatusChangeTimestamp(now);
                             cmsConsent.setTppInformation(tppInformation);
+                            cmsConsent.setTppAccountAccesses(cr.getAccess());
+                            cmsConsent.setAspspAccountAccesses(AccountAccess.EMPTY_ACCESS);
 
                             return cmsConsent;
                         }
