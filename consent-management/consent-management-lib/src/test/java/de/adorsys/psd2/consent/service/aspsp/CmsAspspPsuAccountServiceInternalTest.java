@@ -59,8 +59,6 @@ class CmsAspspPsuAccountServiceInternalTest {
     private PiisConsentRepository piisConsentRepository;
     @Mock
     private PiisConsentEntitySpecification piisConsentEntitySpecification;
-    @Mock
-    private ConsentFilteringService consentFilteringService;
 
     @BeforeEach
     void setUp() {
@@ -71,11 +69,9 @@ class CmsAspspPsuAccountServiceInternalTest {
     @Test
     void revokeAllConsents_Success_closeBothType() {
         // given
-        when(aisConsentSpecification.byAndPsuIdDataAndInstanceId(PSU_ID_DATA, INSTANCE_ID))
+        when(aisConsentSpecification.byPsuIdDataAndAspspAccountIdAndInstanceId(PSU_ID_DATA, ASPSP_ACCOUNT_ID, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         when(consentJpaRepository.findAll((any()))).thenReturn(Collections.singletonList(aisConsent));
-        when(consentFilteringService.filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID))
-            .thenReturn(Collections.singletonList(aisConsent));
 
         when(piisConsentEntitySpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(ASPSP_ACCOUNT_ID, PSU_ID_DATA, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
@@ -88,17 +84,15 @@ class CmsAspspPsuAccountServiceInternalTest {
         assertTrue(actualResult);
         verify(consentJpaRepository, times(1)).save(aisConsent);
         verify(piisConsentRepository, times(1)).save(piisConsentEntity);
-        verify(consentFilteringService).filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID);
+        verify(aisConsentSpecification).byPsuIdDataAndAspspAccountIdAndInstanceId(PSU_ID_DATA, ASPSP_ACCOUNT_ID, INSTANCE_ID);
     }
 
     @Test
     void revokeAllConsents_Success_closeAis() {
         // given
-        when(aisConsentSpecification.byAndPsuIdDataAndInstanceId(PSU_ID_DATA, INSTANCE_ID))
+        when(aisConsentSpecification.byPsuIdDataAndAspspAccountIdAndInstanceId(PSU_ID_DATA, ASPSP_ACCOUNT_ID, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         when(consentJpaRepository.findAll((any()))).thenReturn(Collections.singletonList(aisConsent));
-        when(consentFilteringService.filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID))
-            .thenReturn(Collections.singletonList(aisConsent));
 
         when(piisConsentEntitySpecification.byAspspAccountIdAndPsuIdDataAndInstanceId(ASPSP_ACCOUNT_ID, PSU_ID_DATA, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
@@ -111,13 +105,13 @@ class CmsAspspPsuAccountServiceInternalTest {
         assertTrue(actualResult);
         verify(consentJpaRepository, times(1)).save(aisConsent);
         verify(piisConsentRepository, never()).save(any());
-        verify(consentFilteringService).filterAisConsentsByAspspAccountId(Collections.singletonList(aisConsent), ASPSP_ACCOUNT_ID);
+        verify(aisConsentSpecification).byPsuIdDataAndAspspAccountIdAndInstanceId(PSU_ID_DATA, ASPSP_ACCOUNT_ID, INSTANCE_ID);
     }
 
     @Test
     void revokeAllConsents_Success_closePiis() {
         // given
-        when(aisConsentSpecification.byAndPsuIdDataAndInstanceId(PSU_ID_DATA, INSTANCE_ID))
+        when(aisConsentSpecification.byPsuIdDataAndAspspAccountIdAndInstanceId(PSU_ID_DATA, ASPSP_ACCOUNT_ID, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         when(consentJpaRepository.findAll((any()))).thenReturn(Collections.emptyList());
 
@@ -137,7 +131,7 @@ class CmsAspspPsuAccountServiceInternalTest {
     @Test
     void revokeAllConsents_NoConsents() {
         // given
-        when(aisConsentSpecification.byAndPsuIdDataAndInstanceId(PSU_ID_DATA, INSTANCE_ID))
+        when(aisConsentSpecification.byPsuIdDataAndAspspAccountIdAndInstanceId(PSU_ID_DATA, ASPSP_ACCOUNT_ID, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         when(consentJpaRepository.findAll((any()))).thenReturn(Collections.emptyList());
 
