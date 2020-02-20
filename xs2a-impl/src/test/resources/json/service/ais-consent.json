@@ -48,5 +48,37 @@
     {
       "id": "a8fc1f02-3639-4528-bd19-3eacf1c67038"
     }
-  ]
+  ],
+  "tppAccountAccesses": {
+    "accounts": [
+      {
+        "iban": "Test IBAN",
+        "bban": "Test BBAN",
+        "pan": "Test PAN",
+        "maskedPan": "Test MASKED_PAN",
+        "msisdn": "Test MSISDN",
+        "currency": "EUR"
+      }
+    ],
+    "balances": [
+      {
+        "iban": "Test IBAN",
+        "bban": "Test BBAN",
+        "pan": "Test PAN",
+        "maskedPan": "Test MASKED_PAN",
+        "msisdn": "Test MSISDN",
+        "currency": "EUR"
+      }
+    ],
+    "transactions": [
+      {
+        "iban": "Test IBAN",
+        "bban": "Test BBAN",
+        "pan": "Test PAN",
+        "maskedPan": "Test MASKED_PAN",
+        "msisdn": "Test MSISDN",
+        "currency": "EUR"
+      }
+    ]
+  }
 }
