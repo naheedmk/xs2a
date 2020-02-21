@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2018 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package de.adorsys.psd2.xs2a.spi.service;
 
-import de.adorsys.psd2.xs2a.core.piis.PiisConsent;
 import de.adorsys.psd2.xs2a.spi.domain.SpiAspspConsentDataProvider;
 import de.adorsys.psd2.xs2a.spi.domain.SpiContextData;
 import de.adorsys.psd2.xs2a.spi.domain.fund.SpiFundsConfirmationRequest;
 import de.adorsys.psd2.xs2a.spi.domain.fund.SpiFundsConfirmationResponse;
+import de.adorsys.psd2.xs2a.spi.domain.piis.SpiPiisConsent;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +39,7 @@ public interface FundsConfirmationSpi {
      */
     @NotNull
     SpiResponse<SpiFundsConfirmationResponse> performFundsSufficientCheck(@NotNull SpiContextData contextData,
-                                                                          @Nullable PiisConsent piisConsent,
+                                                                          @Nullable SpiPiisConsent piisConsent,
                                                                           @NotNull SpiFundsConfirmationRequest spiFundsConfirmationRequest,
                                                                           @Nullable SpiAspspConsentDataProvider aspspConsentDataProvider);
 }

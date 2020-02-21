@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
+import de.adorsys.psd2.core.data.piis.v1.PiisConsentData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -44,11 +45,23 @@ public class ConsentDataMapper {
         }
     }
 
-    public byte[] getBytesFromAisConsentData(AisConsentData aisConsentData) {
+    public PiisConsentData mapToPiisConsentData(byte[] consentData) {
+        if (consentData == null) {
+            return PiisConsentData.buildDefaultConsentData();
+        }
         try {
-            return objectMapper.writeValueAsBytes(aisConsentData);
+            return objectMapper.readValue(consentData, PiisConsentData.class);
+        } catch (IOException e) {
+            log.info("Can't convert byte[] to PiisConsentData: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public byte[] getBytesFromConsentData(Object consentData) {
+        try {
+            return objectMapper.writeValueAsBytes(consentData);
         } catch (JsonProcessingException e) {
-            log.info("Can't convert aisConsentData to byte[]: {}", e.getMessage());
+            log.info("Can't convert consentData to byte[]: {}", e.getMessage());
             return new byte[0];
         }
     }

@@ -27,6 +27,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -45,6 +46,7 @@ public abstract class Consent<T> {
     private Integer frequencyPerDay;
     private boolean recurringIndicator;
     private boolean multilevelScaRequired;
+    @Nullable
     private LocalDate validUntil;
     private LocalDate expireDate;
     private LocalDate lastActionDate;
