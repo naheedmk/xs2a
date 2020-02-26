@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.consent.service.psu;
 
+import de.adorsys.psd2.consent.api.piis.CmsPiisConsent;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.psu.api.CmsPsuPiisService;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
@@ -24,7 +25,6 @@ import de.adorsys.psd2.consent.service.mapper.PiisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.migration.PiisConsentLazyMigrationService;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
-import de.adorsys.psd2.consent.api.piis.CmsPiisConsent;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +93,7 @@ public class CmsPsuPiisServiceInternal implements CmsPsuPiisService {
         }
 
         return psuIdDataInConsent.stream()
-                   .anyMatch(consentPsu -> consentPsu.equals(psuIdData));
+                   .anyMatch(consentPsu -> consentPsu.contentEquals(psuIdData));
     }
 
     private void revokeConsent(ConsentEntity consent) {
