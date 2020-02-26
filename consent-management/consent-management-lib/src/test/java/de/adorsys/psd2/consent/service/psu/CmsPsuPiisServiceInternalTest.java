@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.consent.service.psu;
 
+import de.adorsys.psd2.consent.api.piis.CmsPiisConsent;
 import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
@@ -24,7 +25,6 @@ import de.adorsys.psd2.consent.service.mapper.PiisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.migration.PiisConsentLazyMigrationService;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
-import de.adorsys.psd2.consent.api.piis.CmsPiisConsent;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
@@ -99,6 +99,26 @@ class CmsPsuPiisServiceInternalTest {
     }
 
     @Test
+    void getConsent_shouldIgnoreIpAddressDifferenceInPsu() {
+        // Given
+        when(psuDataMapper.mapToPsuIdData(psuData)).thenReturn(psuIdData);
+        when(piisConsentMapper.mapToCmsPiisConsent(piisConsentEntity)).thenReturn(cmsPiisConsent);
+
+        when(piisConsentEntitySpecification.byConsentIdAndInstanceId(EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID))
+            .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
+        when(consentJpaRepository.findOne(any())).thenReturn(Optional.ofNullable(piisConsentEntity));
+        when(piisConsentLazyMigrationService.migrateIfNeeded(piisConsentEntity)).thenReturn(piisConsentEntity);
+        PsuIdData psuIdDataWithIp = jsonReader.getObjectFromFile("json/service/psu/piis/psu-data-ip-address.json", PsuIdData.class);
+
+        // When
+        Optional<CmsPiisConsent> consent = cmsPsuPiisServiceInternal.getConsent(psuIdDataWithIp, EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID);
+
+        // Then
+        assertTrue(consent.isPresent());
+        assertEquals(consent.get(), cmsPiisConsent);
+    }
+
+    @Test
     void getConsent_wrongPsu_shouldReturnEmpty() {
         // Given
         when(piisConsentEntitySpecification.byConsentIdAndInstanceId(EXTERNAL_CONSENT_ID, DEFAULT_SERVICE_INSTANCE_ID))
@@ -148,6 +168,23 @@ class CmsPsuPiisServiceInternalTest {
         when(consentJpaRepository.findAll(any())).thenReturn(Collections.singletonList(piisConsentEntity));
         // When
         List<CmsPiisConsent> consents = cmsPsuPiisServiceInternal.getConsentsForPsu(psuIdData, DEFAULT_SERVICE_INSTANCE_ID);
+        // Then
+        assertFalse(consents.isEmpty());
+        assertEquals(1, consents.size());
+    }
+
+    @Test
+    void getConsentsForPsu_success_shouldIgnoreIpAddressDifferenceInPsu() {
+        // Given
+        when(psuDataMapper.mapToPsuIdData(psuData)).thenReturn(psuIdData);
+        PsuIdData psuIdDataWithIp = jsonReader.getObjectFromFile("json/service/psu/piis/psu-data-ip-address.json", PsuIdData.class);
+        when(piisConsentEntitySpecification.byPsuDataAndInstanceId(psuIdDataWithIp, DEFAULT_SERVICE_INSTANCE_ID))
+            .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
+        when(consentJpaRepository.findAll(any())).thenReturn(Collections.singletonList(piisConsentEntity));
+
+        // When
+        List<CmsPiisConsent> consents = cmsPsuPiisServiceInternal.getConsentsForPsu(psuIdDataWithIp, DEFAULT_SERVICE_INSTANCE_ID);
+
         // Then
         assertFalse(consents.isEmpty());
         assertEquals(1, consents.size());
