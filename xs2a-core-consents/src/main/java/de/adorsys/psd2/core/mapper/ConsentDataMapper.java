@@ -16,13 +16,11 @@
 
 package de.adorsys.psd2.core.mapper;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.data.piis.v1.PiisConsentData;
+import de.adorsys.psd2.mapper.config.ObjectMapperConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -67,10 +65,7 @@ public class ConsentDataMapper {
     }
 
     private ObjectMapper buildObjectMapper() {
-        ObjectMapper localObjectMapper = new ObjectMapper();
-        localObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
-        localObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        localObjectMapper.registerModule(new JavaTimeModule()); // add support for java.time types
-        return localObjectMapper;
+        ObjectMapperConfig objectMapperConfig = new ObjectMapperConfig();
+        return objectMapperConfig.xs2aObjectMapper();
     }
 }
