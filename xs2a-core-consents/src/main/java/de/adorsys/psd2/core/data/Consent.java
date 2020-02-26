@@ -41,21 +41,32 @@ import java.util.Optional;
 public abstract class Consent<T> {
     private T consentData;
     private String id;
+    @Nullable
     private String internalRequestId;
     private ConsentStatus consentStatus;
+    @NotNull
     private Integer frequencyPerDay;
     private boolean recurringIndicator;
     private boolean multilevelScaRequired;
     @Nullable
     private LocalDate validUntil;
+    @Nullable
     private LocalDate expireDate;
+    @Nullable
     private LocalDate lastActionDate;
+    @Nullable
     private OffsetDateTime creationTimestamp;
+    @Nullable
     private OffsetDateTime statusChangeTimestamp;
+    @NotNull
     private ConsentTppInformation consentTppInformation;
+    @NotNull
     private AuthorisationTemplate authorisationTemplate;
+    @NotNull
     private List<PsuIdData> psuIdDataList;
+    @NotNull
     private List<AccountConsentAuthorization> authorisations;
+    @NotNull
     private Map<String, Integer> usages;
     @NotNull
     private AccountAccess tppAccountAccesses = AccountAccess.EMPTY_ACCESS;
