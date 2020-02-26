@@ -33,9 +33,9 @@ import org.springframework.stereotype.Service;
 public class FundsConfirmationSpiMockImpl implements FundsConfirmationSpi {
     @Override
     @NotNull
-    public SpiResponse<SpiFundsConfirmationResponse> performFundsSufficientCheck(@NotNull SpiContextData contextData, @Nullable SpiPiisConsent piisConsent, @NotNull SpiFundsConfirmationRequest spiFundsConfirmationRequest, @Nullable SpiAspspConsentDataProvider aspspConsentDataProvider) {
-        log.info("FundsConfirmationSpi#performFundsSufficientCheck: contextData {}, piisConsent {}, spiFundsConfirmationRequest {}, aspspConsentData {}",
-                 contextData, piisConsent, spiFundsConfirmationRequest, aspspConsentDataProvider != null ? aspspConsentDataProvider.loadAspspConsentData() : null);
+    public SpiResponse<SpiFundsConfirmationResponse> performFundsSufficientCheck(@NotNull SpiContextData contextData, @Nullable SpiPiisConsent spiPiisConsent, @NotNull SpiFundsConfirmationRequest spiFundsConfirmationRequest, @Nullable SpiAspspConsentDataProvider aspspConsentDataProvider) {
+        log.info("FundsConfirmationSpi#performFundsSufficientCheck: contextData {}, spiPiisConsent {}, spiFundsConfirmationRequest {}, aspspConsentData {}",
+                 contextData, spiPiisConsent, spiFundsConfirmationRequest, aspspConsentDataProvider != null ? aspspConsentDataProvider.loadAspspConsentData() : null);
         SpiFundsConfirmationResponse response = new SpiFundsConfirmationResponse();
         response.setFundsAvailable(true);
 

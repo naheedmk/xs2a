@@ -30,7 +30,7 @@ public interface FundsConfirmationSpi {
      * Queries ASPSP to check the sufficiency of requested account funds
      *
      * @param contextData                 holder of call's context data (e.g. about PSU and TPP)
-     * @param piisConsent                 PIIS Consent object. May be null if the request is done from a workflow without a consent.
+     * @param spiPiisConsent              PIIS Consent object. May be null if the request is done from a workflow without a consent.
      * @param spiFundsConfirmationRequest Object, that contains all request data from TPP
      * @param aspspConsentDataProvider    Provides access to read/write encrypted data to be stored in the consent
      *                                    management system. May be null if PIIS consent is null, because we can't save
@@ -39,7 +39,7 @@ public interface FundsConfirmationSpi {
      */
     @NotNull
     SpiResponse<SpiFundsConfirmationResponse> performFundsSufficientCheck(@NotNull SpiContextData contextData,
-                                                                          @Nullable SpiPiisConsent piisConsent,
+                                                                          @Nullable SpiPiisConsent spiPiisConsent,
                                                                           @NotNull SpiFundsConfirmationRequest spiFundsConfirmationRequest,
                                                                           @Nullable SpiAspspConsentDataProvider aspspConsentDataProvider);
 }
