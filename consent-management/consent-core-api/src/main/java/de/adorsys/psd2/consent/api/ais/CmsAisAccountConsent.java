@@ -53,4 +53,5 @@ public class CmsAisAccountConsent {
     private Map<String, Integer> usageCounterMap;
     private OffsetDateTime creationTimestamp;
     private OffsetDateTime statusChangeTimestamp;
+    private String tppBrandLoggingInformation;
 }

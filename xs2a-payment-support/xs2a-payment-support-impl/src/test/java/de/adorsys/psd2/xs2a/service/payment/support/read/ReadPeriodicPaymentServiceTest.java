@@ -64,7 +64,7 @@ class ReadPeriodicPaymentServiceTest {
     private static final String PRODUCT = "sepa-credit-transfers";
     private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType", "psuIpAddress");
     private static final List<PisPayment> PIS_PAYMENTS = Collections.singletonList(new PisPayment());
-    private static final SpiContextData SPI_CONTEXT_DATA = new SpiContextData(null, null, null, null, null);
+    private static final SpiContextData SPI_CONTEXT_DATA = SpiContextData.defaultSpiContextData();
     private static final SpiPeriodicPayment SPI_PERIODIC_PAYMENT = new SpiPeriodicPayment(PRODUCT);
     private static final PeriodicPayment PERIODIC_PAYMENT = buildPeriodicPayment();
     private static final String SOME_ENCRYPTED_PAYMENT_ID = "Encrypted Payment Id";

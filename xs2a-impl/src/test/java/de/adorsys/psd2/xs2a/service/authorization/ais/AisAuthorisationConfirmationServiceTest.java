@@ -303,7 +303,7 @@ class AisAuthorisationConfirmationServiceTest {
     }
 
     private SpiContextData getSpiContextData() {
-        return new SpiContextData(null, null, null, null, null);
+        return SpiContextData.defaultSpiContextData();
     }
 
     private AisConsent createConsent() {

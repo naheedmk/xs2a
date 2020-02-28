@@ -55,7 +55,7 @@ class SinglePaymentInitiationServiceTest {
     private static final String ASPSP_ACCOUNT_ID = "3278921mxl-n2131-13nw";
     private static final String PRODUCT = "sepa-credit-transfers";
     private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType", "psuIpAddress");
-    private static final SpiContextData SPI_CONTEXT_DATA = new SpiContextData(null, null, null, null, null);
+    private static final SpiContextData SPI_CONTEXT_DATA = SpiContextData.defaultSpiContextData();
 
     private static final SinglePayment SINGLE_PAYMENT = new SinglePayment();
     private static final SpiSinglePayment SPI_SINGLE_PAYMENT = new SpiSinglePayment(PRODUCT);

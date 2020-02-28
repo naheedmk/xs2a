@@ -61,7 +61,7 @@ class ReadBulkPaymentServiceTest {
     private static final PsuIdData PSU_DATA = new PsuIdData("psuId", "psuIdType", "psuCorporateId", "psuCorporateIdType", "psuIpAddress");
     private static final List<PisPayment> PIS_PAYMENTS = Collections.singletonList(new PisPayment());
     private static final BulkPayment BULK_PAYMENT = new BulkPayment();
-    private static final SpiContextData SPI_CONTEXT_DATA = new SpiContextData(null, null, null, null, null);
+    private static final SpiContextData SPI_CONTEXT_DATA = SpiContextData.defaultSpiContextData();
     private static final SpiBulkPayment SPI_BULK_PAYMENT = new SpiBulkPayment();
     private static final SpiResponse<SpiBulkPayment> BULK_PAYMENT_SPI_RESPONSE = buildSpiResponse();
     private static final String SOME_ENCRYPTED_PAYMENT_ID = "Encrypted Payment Id";

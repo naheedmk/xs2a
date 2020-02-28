@@ -47,6 +47,7 @@ public class HeadersLengthValidatorImpl extends AbstractHeaderValidatorImpl
         // These 2 values are limited by CMS columns length:
         maxLengthsHolder.put(TPP_REDIRECT_URI, 255);
         maxLengthsHolder.put(TPP_NOK_REDIRECT_URI, 255);
+        maxLengthsHolder.put(TPP_BRAND_LOGGING_INFORMATION, 255);
 
         maxLengthsHolder.put(PSU_IP_ADDRESS, 140);
 

@@ -36,4 +36,13 @@ public class SpiContextData {
     private UUID xRequestId;
     private UUID internalRequestId;
     private String oAuth2Token;
+    private String tppBrandLoggingInformation;
+
+    public static SpiContextData defaultSpiContextData() {
+        return new SpiContextData(null, null, null, null, null, null);
+    }
+
+    public static SpiContextData buildWithPsuTppAuthToken(SpiPsuData psuData, TppInfo tppInfo, String oAuth2Token) {
+        return new SpiContextData(psuData, tppInfo, UUID.randomUUID(), UUID.randomUUID(), oAuth2Token, null);
+    }
 }

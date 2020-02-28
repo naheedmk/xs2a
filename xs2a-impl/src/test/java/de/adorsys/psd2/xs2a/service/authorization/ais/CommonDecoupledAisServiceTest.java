@@ -45,8 +45,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -60,7 +58,7 @@ class CommonDecoupledAisServiceTest {
     private static final ScaStatus FAILED_SCA_STATUS = ScaStatus.FAILED;
     private static final SpiPsuData SPI_PSU_DATA = SpiPsuData.builder().build();
     private static final PsuIdData PSU_ID_DATA = new PsuIdData(PSU_ID, null, null, null, null);
-    private static final SpiContextData SPI_CONTEXT_DATA = new SpiContextData(SPI_PSU_DATA, new TppInfo(), UUID.randomUUID(), UUID.randomUUID(), AUTHORISATION);
+    private static final SpiContextData SPI_CONTEXT_DATA = SpiContextData.buildWithPsuTppAuthToken(SPI_PSU_DATA, new TppInfo(), AUTHORISATION);
     private static final String PSU_ERROR_MESSAGE = "Test psuErrorMessage";
     private static final ScaStatus METHOD_SELECTED_SCA_STATUS = ScaStatus.SCAMETHODSELECTED;
     private static final String AUTHENTICATION_METHOD_ID = "Test authentication method id";

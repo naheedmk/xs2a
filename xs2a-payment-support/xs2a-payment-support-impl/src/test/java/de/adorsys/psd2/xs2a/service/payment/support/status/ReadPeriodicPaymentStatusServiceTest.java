@@ -54,7 +54,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ReadPeriodicPaymentStatusServiceTest {
     private static final String PRODUCT = "sepa-credit-transfers";
-    private static final SpiContextData SPI_CONTEXT_DATA = new SpiContextData(null, null, null, null, null);
+    private static final SpiContextData SPI_CONTEXT_DATA = SpiContextData.defaultSpiContextData();
     private static final SpiPeriodicPayment SPI_PERIODIC_PAYMENT = new SpiPeriodicPayment(PRODUCT);
     private static final String JSON_MEDIA_TYPE = ContentType.JSON.getType();
     private static final String PSU_MESSAGE = "PSU message";

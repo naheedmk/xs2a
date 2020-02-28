@@ -64,7 +64,6 @@ import org.springframework.http.MediaType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static de.adorsys.psd2.xs2a.core.domain.TppMessageInformation.of;
 import static de.adorsys.psd2.xs2a.core.error.ErrorType.PIS_400;
@@ -83,7 +82,7 @@ class PaymentServiceTest {
     private static final PsuIdData PSU_ID_DATA = new PsuIdData(null, null, null, null, null);
     private static final SpiPsuData SPI_PSU_DATA = SpiPsuData.builder().build();
     private static final MessageError VALIDATION_ERROR = new MessageError(ErrorType.PIS_401, TppMessageInformation.of(UNAUTHORIZED));
-    private static final SpiContextData SPI_CONTEXT_DATA = new SpiContextData(SPI_PSU_DATA, new TppInfo(), UUID.randomUUID(), UUID.randomUUID(), AUTHORISATION);
+    private static final SpiContextData SPI_CONTEXT_DATA = SpiContextData.buildWithPsuTppAuthToken(SPI_PSU_DATA, new TppInfo(), AUTHORISATION);
     private static final String JSON_MEDIA_TYPE = ContentType.JSON.getType();
     private static final String XS2A_SINGLE_PAYMENT_JSON_PATH = "json/service/mapper/spi_xs2a_mappers/xs2a-single-payment.json";
     private static final String XS2A_BULK_PAYMNENT_JSON_PATH = "json/service/mapper/spi_xs2a_mappers/xs2a-bulk-payment.json";
