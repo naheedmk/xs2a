@@ -38,6 +38,7 @@ import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthorisationDecoupledSc
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.AisConsentSpi;
+import de.adorsys.psd2.xs2a.util.reader.TestSpiDataProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +59,7 @@ class CommonDecoupledAisServiceTest {
     private static final ScaStatus FAILED_SCA_STATUS = ScaStatus.FAILED;
     private static final SpiPsuData SPI_PSU_DATA = SpiPsuData.builder().build();
     private static final PsuIdData PSU_ID_DATA = new PsuIdData(PSU_ID, null, null, null, null);
-    private static final SpiContextData SPI_CONTEXT_DATA = SpiContextData.buildWithPsuTppAuthToken(SPI_PSU_DATA, new TppInfo(), AUTHORISATION);
+    private static final SpiContextData SPI_CONTEXT_DATA = TestSpiDataProvider.buildWithPsuTppAuthToken(SPI_PSU_DATA, new TppInfo(), AUTHORISATION);
     private static final String PSU_ERROR_MESSAGE = "Test psuErrorMessage";
     private static final ScaStatus METHOD_SELECTED_SCA_STATUS = ScaStatus.SCAMETHODSELECTED;
     private static final String AUTHENTICATION_METHOD_ID = "Test authentication method id";
