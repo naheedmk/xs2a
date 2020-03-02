@@ -189,7 +189,7 @@
         <classmate.version>1.4.0</classmate.version>
         <jackson.version>2.10.1</jackson.version>
 
-        <pmd.plugin.version>3.12.0</pmd.plugin.version>
+        <maven-pmd-plugin.version>3.12.0</maven-pmd-plugin.version>
         <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.0.0-M4</maven-failsafe-plugin.version>
@@ -746,7 +746,7 @@ Use it manually to generate javadocs. Don't commit it
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>${pmd.plugin.version}</version>
+                <version>${maven-pmd-plugin.version}</version>
 
                 <configuration>
                     <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
