@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +81,9 @@ public class PaymentInitiationJson {
 
     @JsonProperty("remittanceInformationStructured")
     private RemittanceInformationStructured remittanceInformationStructured = null;
+
+    @JsonProperty("remittanceInformationStructuredArray")
+    private RemittanceInformationStructuredArray remittanceInformationStructuredArray = null;
 
     @JsonProperty("requestedExecutionDate")
     private LocalDate requestedExecutionDate = null;
@@ -443,6 +446,30 @@ public class PaymentInitiationJson {
         this.remittanceInformationStructured = remittanceInformationStructured;
     }
 
+    public PaymentInitiationJson remittanceInformationStructuredArray(RemittanceInformationStructuredArray remittanceInformationStructuredArray) {
+        this.remittanceInformationStructuredArray = remittanceInformationStructuredArray;
+        return this;
+    }
+
+    /**
+     * Get remittanceInformationStructuredArray
+     *
+     * @return remittanceInformationStructuredArray
+     **/
+    @ApiModelProperty(value = "")
+
+    @Valid
+
+
+    @JsonProperty("remittanceInformationStructuredArray")
+    public RemittanceInformationStructuredArray getRemittanceInformationStructuredArray() {
+        return remittanceInformationStructuredArray;
+    }
+
+    public void setRemittanceInformationStructuredArray(RemittanceInformationStructuredArray remittanceInformationStructuredArray) {
+        this.remittanceInformationStructuredArray = remittanceInformationStructuredArray;
+    }
+
     public PaymentInitiationJson requestedExecutionDate(LocalDate requestedExecutionDate) {
         this.requestedExecutionDate = requestedExecutionDate;
         return this;
@@ -515,13 +542,14 @@ public class PaymentInitiationJson {
                    Objects.equals(this.purposeCode, paymentInitiationJson.purposeCode) &&
                    Objects.equals(this.remittanceInformationUnstructured, paymentInitiationJson.remittanceInformationUnstructured) &&
                    Objects.equals(this.remittanceInformationStructured, paymentInitiationJson.remittanceInformationStructured) &&
+                   Objects.equals(this.remittanceInformationStructuredArray, paymentInitiationJson.remittanceInformationStructuredArray) &&
                    Objects.equals(this.requestedExecutionDate, paymentInitiationJson.requestedExecutionDate) &&
                    Objects.equals(this.debtorName, paymentInitiationJson.debtorName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(endToEndIdentification, instructionIdentification, debtorAccount, ultimateDebtor, instructedAmount, creditorAccount, creditorAgent, creditorAgentName, creditorName, creditorAddress, creditorId, ultimateCreditor, purposeCode, remittanceInformationUnstructured, remittanceInformationStructured, requestedExecutionDate, debtorName);
+        return Objects.hash(endToEndIdentification, instructionIdentification, debtorAccount, ultimateDebtor, instructedAmount, creditorAccount, creditorAgent, creditorAgentName, creditorName, creditorAddress, creditorId, ultimateCreditor, purposeCode, remittanceInformationUnstructured, remittanceInformationStructured, remittanceInformationStructuredArray, requestedExecutionDate, debtorName);
     }
 
     @Override
@@ -544,6 +572,7 @@ public class PaymentInitiationJson {
         sb.append("    purposeCode: ").append(toIndentedString(purposeCode)).append("\n");
         sb.append("    remittanceInformationUnstructured: ").append(toIndentedString(remittanceInformationUnstructured)).append("\n");
         sb.append("    remittanceInformationStructured: ").append(toIndentedString(remittanceInformationStructured)).append("\n");
+        sb.append("    remittanceInformationStructuredArray: ").append(toIndentedString(remittanceInformationStructuredArray)).append("\n");
         sb.append("    requestedExecutionDate: ").append(toIndentedString(requestedExecutionDate)).append("\n");
         sb.append("    debtorName: ").append(toIndentedString(debtorName)).append("\n");
         sb.append("}");
