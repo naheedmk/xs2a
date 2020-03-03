@@ -159,10 +159,9 @@ public class PisAuthorisationConfirmationService {
                                                                  : new Xs2aUpdatePisCommonPaymentPsuDataResponse(spiResponse.getPayload().getScaStatus(), request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
 
         if (!spiError) {
-            response.setTransactionStatus(spiResponse.getPayload().getTransactionStatus());
             UpdateAuthorisationRequest updatePaymentRequest = pisCommonPaymentMapper.mapToUpdateAuthorisationRequest(response, authorisationResponse.getAuthorisationType());
             authorisationServiceEncrypted.updateAuthorisation(request.getAuthorisationId(), updatePaymentRequest);
-            xs2aUpdatePaymentAfterSpiService.updatePaymentStatus(request.getPaymentId(), response.getTransactionStatus());
+            xs2aUpdatePaymentAfterSpiService.updatePaymentStatus(request.getPaymentId(), spiResponse.getPayload().getTransactionStatus());
         }
 
         return response;
