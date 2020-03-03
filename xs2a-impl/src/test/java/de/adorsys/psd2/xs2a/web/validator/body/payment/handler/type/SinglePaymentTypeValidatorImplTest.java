@@ -402,7 +402,7 @@ class SinglePaymentTypeValidatorImplTest {
     }
 
     @Test
-    void doValidation_remittanceInformationStructuredArray_reference_error() {
+    void doSingleValidation_remittanceInformationStructuredArray_reference_error() {
         Remittance remittance = new Remittance();
         remittance.setReference(VALUE_36_LENGHT);
         singlePayment.setRemittanceInformationStructuredArray(Collections.singletonList(remittance));
@@ -413,7 +413,7 @@ class SinglePaymentTypeValidatorImplTest {
     }
 
     @Test
-    void doValidation_remittanceInformationStructuredArray_reference_type_error() {
+    void doSingleValidation_remittanceInformationStructuredArray_reference_type_error() {
         Remittance remittance = new Remittance();
         remittance.setReference("reference");
         remittance.setReferenceType(VALUE_36_LENGHT);
@@ -425,7 +425,7 @@ class SinglePaymentTypeValidatorImplTest {
     }
 
     @Test
-    void doValidation_remittanceInformationStructuredArray_reference_issuer_error() {
+    void doSingleValidation_remittanceInformationStructuredArray_reference_issuer_error() {
         Remittance remittance = new Remittance();
         remittance.setReference("reference");
         remittance.setReferenceIssuer(VALUE_36_LENGHT);
