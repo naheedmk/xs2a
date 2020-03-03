@@ -95,7 +95,7 @@ public class AisAuthorisationConfirmationService {
 
         UpdateConsentPsuDataResponse response = processIsAllowed
                                                     ? processAuthorisationConfirmationInternal(request, authorisation.getScaAuthenticationData())
-                                                    : buildFormatErrorResponse(request.getConsentId(), authorisationId, currentStatus, request.getPsuData());
+                                                    : buildScaConfirmationCodeErrorResponse(request.getConsentId(), authorisationId, request.getPsuData());
 
         return Optional.ofNullable(response.getErrorHolder())
                    .map(e -> ResponseObject.<UpdateConsentPsuDataResponse>builder()
@@ -180,18 +180,6 @@ public class AisAuthorisationConfirmationService {
         aisConsentService.updateConsentStatus(consentId, response.getConsentStatus());
 
         return response;
-    }
-
-    private UpdateConsentPsuDataResponse buildFormatErrorResponse(String consentId, String authorisationId, ScaStatus currentStatus, PsuIdData psuIdData) {
-
-        ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.AIS_400)
-                                      .tppMessages(of(FORMAT_ERROR_SCA_STATUS, ScaStatus.FINALISED.name(), ScaStatus.UNCONFIRMED.name(), currentStatus))
-                                      .build();
-
-        log.info("Authorisation-ID: [{}]. Update consent PSU data failed: SCA status is invalid.", authorisationId);
-
-
-        return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId, psuIdData);
     }
 
     private UpdateConsentPsuDataResponse buildScaConfirmationCodeErrorResponse(String consentId, String authorisationId, PsuIdData psuIdData) {
