@@ -28,7 +28,7 @@ import java.util.Objects;
 @ApiModel(description = "Array of structured remittance information. ")
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-02-28T17:40:20.531650+02:00[Europe/Kiev]")
-
+@SuppressWarnings("PMD.SimplifyBooleanReturns") // This class is generated from YAML
 public class RemittanceInformationStructuredArray extends ArrayList<RemittanceInformationStructured> {
 
     @Override

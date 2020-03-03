@@ -124,7 +124,7 @@ public class PaymentMapper {
         return payment;
     }
 
-    private de.adorsys.psd2.xs2a.core.profile.AccountReference mapToXs2aAccountReference(Object accountReference) {
+    private AccountReference mapToXs2aAccountReference(Object accountReference) {
         return xs2aObjectMapper.convertValue(accountReference, AccountReference.class);
     }
 
