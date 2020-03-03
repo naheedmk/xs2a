@@ -16,7 +16,7 @@
 
 package de.adorsys.psd2.consent.integration;
 
-import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 import de.adorsys.psd2.consent.integration.config.IntegrationTestConfiguration;
 import de.adorsys.psd2.event.core.model.EventOrigin;
 import de.adorsys.psd2.event.core.model.EventType;
@@ -24,11 +24,10 @@ import de.adorsys.psd2.event.persist.EventReportRepository;
 import de.adorsys.psd2.event.persist.EventRepository;
 import de.adorsys.psd2.event.persist.model.EventPO;
 import de.adorsys.psd2.event.persist.model.ReportEvent;
-import de.adorsys.psd2.report.EventReportRepositoryImpl;
 import de.adorsys.xs2a.reader.JsonReader;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -36,8 +35,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.persistence.EntityManager;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,12 +46,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = IntegrationTestConfiguration.class)
 @DataJpaTest
+@TestInstance(value = TestInstance.Lifecycle.PER_CLASS)
 class EventReportRepositoryImplIT {
     private static final String INSTANCE_ID = "3de76f19-1df7-44d8-b760-ca972d2f945c";
     private static final String CONSENT_ID = "fa6e687b-1ac9-4b1a-9c74-357c35c82ba1";
     private static final String PAYMENT_ID = "j-t4XyLJTzQkonfSTnyxIMc";
-    private static final byte[] PAYLOAD = "payload".getBytes(Charsets.UTF_8);
-    private static final OffsetDateTime CREATED_DATETIME = OffsetDateTime.now();
+    private static final OffsetDateTime START = OffsetDateTime.parse("2019-07-09T12:29:50.042136Z");
+    private static final OffsetDateTime END = OffsetDateTime.parse("2019-07-09T14:29:50.042136Z");
 
     @Autowired
     private EventReportRepository repository;
@@ -60,82 +60,80 @@ class EventReportRepositoryImplIT {
     @Autowired
     private EventRepository eventRepository;
 
-    @Autowired
-    private EntityManager entityManager;
-
+    private ReportEvent expectedEvent;
     private JsonReader jsonReader = new JsonReader();
-    private EventPO eventPO;
-    private OffsetDateTime start;
-    private OffsetDateTime end;
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
-        eventPO = jsonReader.getObjectFromFile("json/event.json", EventPO.class);
-        eventPO.setTimestamp(CREATED_DATETIME);
-        eventPO.setPayload(PAYLOAD);
-
-        start = CREATED_DATETIME.minusHours(1);
-        end = CREATED_DATETIME.plusHours(1);
-
-        populateWithInitialData();
-    }
-
-    private void populateWithInitialData() {
+        EventPO eventPO = jsonReader.getObjectFromFile("json/event.json", EventPO.class);
+        expectedEvent = buildReportEvent(eventPO);
         eventRepository.save(eventPO);
-        entityManager.flush();
     }
 
     @Test
     void getEventsForPeriod() {
-        List<ReportEvent> eventsForPeriod = repository.getEventsForPeriod(start, end, INSTANCE_ID);
+        List<ReportEvent> eventsForPeriod = repository.getEventsForPeriod(START, END, INSTANCE_ID);
+
         assertNotNull(eventsForPeriod);
         assertEquals(1, eventsForPeriod.size());
-        assertEvents(eventPO, eventsForPeriod.get(0));
+        assertEquals(expectedEvent, updateToUTC(eventsForPeriod.get(0)));
     }
 
     @Test
     void getEventsForPeriodAndConsentId() {
-        List<ReportEvent> eventsForPeriod = repository.getEventsForPeriodAndConsentId(start, end, CONSENT_ID, INSTANCE_ID);
+        List<ReportEvent> eventsForPeriod = repository.getEventsForPeriodAndConsentId(START, END, CONSENT_ID, INSTANCE_ID);
+
         assertNotNull(eventsForPeriod);
         assertEquals(1, eventsForPeriod.size());
-        assertEvents(eventPO, eventsForPeriod.get(0));
+        assertEquals(expectedEvent, updateToUTC(eventsForPeriod.get(0)));
     }
 
     @Test
     void getEventsForPeriodAndPaymentId() {
-        List<ReportEvent> eventsForPeriod = repository.getEventsForPeriodAndPaymentId(start, end, PAYMENT_ID, INSTANCE_ID);
+        List<ReportEvent> eventsForPeriod = repository.getEventsForPeriodAndPaymentId(START, END, PAYMENT_ID, INSTANCE_ID);
+
         assertNotNull(eventsForPeriod);
         assertEquals(1, eventsForPeriod.size());
-        assertEvents(eventPO, eventsForPeriod.get(0));
+        assertEquals(expectedEvent, updateToUTC(eventsForPeriod.get(0)));
     }
 
     @Test
     void getEventsForPeriodAndEventOrigin() {
-        List<ReportEvent> eventsForPeriod = repository.getEventsForPeriodAndEventOrigin(start, end, EventOrigin.TPP, INSTANCE_ID);
+        List<ReportEvent> eventsForPeriod = repository.getEventsForPeriodAndEventOrigin(START, END, EventOrigin.TPP, INSTANCE_ID);
+
         assertNotNull(eventsForPeriod);
         assertEquals(1, eventsForPeriod.size());
-        assertEvents(eventPO, eventsForPeriod.get(0));
+        assertEquals(expectedEvent, updateToUTC(eventsForPeriod.get(0)));
     }
 
     @Test
     void getEventsForPeriodAndEventType() {
-        List<ReportEvent> eventsForPeriod = repository.getEventsForPeriodAndEventType(start, end, EventType.PAYMENT_INITIATION_REQUEST_RECEIVED, INSTANCE_ID);
+        List<ReportEvent> eventsForPeriod = repository.getEventsForPeriodAndEventType(START, END, EventType.PAYMENT_INITIATION_REQUEST_RECEIVED, INSTANCE_ID);
+
         assertNotNull(eventsForPeriod);
         assertEquals(1, eventsForPeriod.size());
-        assertEvents(eventPO, eventsForPeriod.get(0));
+        assertEquals(expectedEvent, updateToUTC(eventsForPeriod.get(0)));
     }
 
-    private void assertEvents(EventPO eventPO, ReportEvent reportEvent) {
-        assertEquals(eventPO.getTimestamp(), reportEvent.getTimestamp());
-        assertEquals(eventPO.getConsentId(), reportEvent.getConsentId());
-        assertEquals(eventPO.getPaymentId(), reportEvent.getPaymentId());
-        assertEquals(new String(eventPO.getPayload()), new String(reportEvent.getPayload()));
-        assertEquals(eventPO.getEventOrigin(), reportEvent.getEventOrigin());
-        assertEquals(eventPO.getEventType(), reportEvent.getEventType());
-        assertEquals(eventPO.getInstanceId(), reportEvent.getInstanceId());
-        assertEquals(eventPO.getTppAuthorisationNumber(), reportEvent.getTppAuthorisationNumber());
-        assertEquals(eventPO.getXRequestId(), reportEvent.getXRequestId());
-        assertEquals(eventPO.getPsuIdData(), reportEvent.getPsuIdData().iterator().next());
-        assertEquals(eventPO.getInternalRequestId(), reportEvent.getInternalRequestId());
+    private ReportEvent updateToUTC(ReportEvent reportEvent) {
+        reportEvent.setTimestamp(reportEvent.getTimestamp().withOffsetSameInstant(ZoneOffset.UTC));
+        return reportEvent;
+    }
+
+    private ReportEvent buildReportEvent(EventPO eventPO) {
+        ReportEvent reportEvent = new ReportEvent();
+        reportEvent.setId(1L);
+        reportEvent.setTimestamp(eventPO.getTimestamp());
+        reportEvent.setConsentId(eventPO.getConsentId());
+        reportEvent.setPaymentId(eventPO.getPaymentId());
+        reportEvent.setPayload(eventPO.getPayload());
+        reportEvent.setEventOrigin(eventPO.getEventOrigin());
+        reportEvent.setEventType(eventPO.getEventType());
+        reportEvent.setInstanceId(eventPO.getInstanceId());
+        reportEvent.setTppAuthorisationNumber(eventPO.getTppAuthorisationNumber());
+        reportEvent.setXRequestId(eventPO.getXRequestId());
+        reportEvent.setPsuIdData(Sets.newHashSet(eventPO.getPsuIdData()));
+        reportEvent.setInternalRequestId(eventPO.getInternalRequestId());
+        return reportEvent;
     }
 }

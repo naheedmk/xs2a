@@ -18,6 +18,7 @@ package de.adorsys.psd2.report.entity;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 
