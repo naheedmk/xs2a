@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018-2020 adorsys GmbH & Co KG
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.adorsys.psd2.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -19,30 +35,33 @@ import java.util.Objects;
  */
 @ApiModel(description = "Card account details. ")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-01-23T11:23:49.639198+02:00[Europe/Kiev]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-02-28T17:40:20.531650+02:00[Europe/Kiev]")
 
 public class CardAccountDetails   {
   @JsonProperty("resourceId")
   private String resourceId = null;
 
-  @JsonProperty("maskedPan")
-  private String maskedPan = null;
+    @JsonProperty("maskedPan")
+    private String maskedPan = null;
 
-  @JsonProperty("currency")
-  private String currency = null;
+    @JsonProperty("currency")
+    private String currency = null;
 
-  @JsonProperty("name")
-  private String name = null;
+    @JsonProperty("name")
+    private String name = null;
 
-  @JsonProperty("product")
-  private String product = null;
+    @JsonProperty("displayName")
+    private String displayName = null;
 
-  @JsonProperty("status")
-  private AccountStatus status = null;
+    @JsonProperty("product")
+    private String product = null;
 
-  /**
-   * Specifies the usage of the account:   * PRIV: private personal account   * ORGA: professional account
-   */
+    @JsonProperty("status")
+    private AccountStatus status = null;
+
+    /**
+     * Specifies the usage of the account:   * PRIV: private personal account   * ORGA: professional account
+     */
   public enum UsageEnum {
     PRIV("PRIV"),
 
@@ -168,26 +187,49 @@ public class CardAccountDetails   {
   **/
   @ApiModelProperty(value = "Name of the account given by the bank or the PSU in online-banking.")
 
-@Size(max=35)
+@Size(max= 35)
 
   @JsonProperty("name")
   public String getName() {
-    return name;
+      return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public CardAccountDetails product(String product) {
-    this.product = product;
-    return this;
-  }
+    public CardAccountDetails displayName(String displayName) {
+        this.displayName = displayName;
+        return this;
+    }
 
-  /**
-   * Product name of the bank for this account, proprietary definition.
-   * @return product
-  **/
+    /**
+     * Name of the account as defined by the PSU within online channels.
+     *
+     * @return displayName
+     **/
+    @ApiModelProperty(value = "Name of the account as defined by the PSU within online channels.")
+
+    @Size(max = 70)
+
+    @JsonProperty("displayName")
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public CardAccountDetails product(String product) {
+        this.product = product;
+        return this;
+    }
+
+    /**
+     * Product name of the bank for this account, proprietary definition.
+     * @return product
+     **/
   @ApiModelProperty(value = "Product name of the bank for this account, proprietary definition.")
 
 @Size(max=35)
@@ -362,30 +404,31 @@ public class CardAccountDetails   {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    CardAccountDetails cardAccountDetails = (CardAccountDetails) o;
-    return Objects.equals(this.resourceId, cardAccountDetails.resourceId) &&
-        Objects.equals(this.maskedPan, cardAccountDetails.maskedPan) &&
-        Objects.equals(this.currency, cardAccountDetails.currency) &&
-        Objects.equals(this.name, cardAccountDetails.name) &&
-        Objects.equals(this.product, cardAccountDetails.product) &&
-        Objects.equals(this.status, cardAccountDetails.status) &&
-        Objects.equals(this.usage, cardAccountDetails.usage) &&
-        Objects.equals(this.details, cardAccountDetails.details) &&
-        Objects.equals(this.creditLimit, cardAccountDetails.creditLimit) &&
-        Objects.equals(this.balances, cardAccountDetails.balances) &&
-        Objects.equals(this._links, cardAccountDetails._links) &&
-        Objects.equals(this.ownerName, cardAccountDetails.ownerName);
+      if (this == o) {
+          return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+          return false;
+      }
+      CardAccountDetails cardAccountDetails = (CardAccountDetails) o;
+      return Objects.equals(this.resourceId, cardAccountDetails.resourceId) &&
+                 Objects.equals(this.maskedPan, cardAccountDetails.maskedPan) &&
+                 Objects.equals(this.currency, cardAccountDetails.currency) &&
+                 Objects.equals(this.name, cardAccountDetails.name) &&
+                 Objects.equals(this.displayName, cardAccountDetails.displayName) &&
+                 Objects.equals(this.product, cardAccountDetails.product) &&
+                 Objects.equals(this.status, cardAccountDetails.status) &&
+                 Objects.equals(this.usage, cardAccountDetails.usage) &&
+                 Objects.equals(this.details, cardAccountDetails.details) &&
+                 Objects.equals(this.creditLimit, cardAccountDetails.creditLimit) &&
+                 Objects.equals(this.balances, cardAccountDetails.balances) &&
+                 Objects.equals(this._links, cardAccountDetails._links) &&
+                 Objects.equals(this.ownerName, cardAccountDetails.ownerName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(resourceId, maskedPan, currency, name, product, status, usage, details, creditLimit, balances, _links, ownerName);
+      return Objects.hash(resourceId, maskedPan, currency, name, displayName, product, status, usage, details, creditLimit, balances, _links, ownerName);
   }
 
   @Override
@@ -396,8 +439,9 @@ public class CardAccountDetails   {
     sb.append("    resourceId: ").append(toIndentedString(resourceId)).append("\n");
     sb.append("    maskedPan: ").append(toIndentedString(maskedPan)).append("\n");
     sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    product: ").append(toIndentedString(product)).append("\n");
+      sb.append("    name: ").append(toIndentedString(name)).append("\n");
+      sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
+      sb.append("    product: ").append(toIndentedString(product)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    usage: ").append(toIndentedString(usage)).append("\n");
     sb.append("    details: ").append(toIndentedString(details)).append("\n");

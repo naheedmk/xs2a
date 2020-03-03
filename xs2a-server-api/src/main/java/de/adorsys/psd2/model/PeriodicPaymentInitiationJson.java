@@ -78,6 +78,9 @@ public class PeriodicPaymentInitiationJson {
     @JsonProperty("remittanceInformationStructured")
     private RemittanceInformationStructured remittanceInformationStructured = null;
 
+    @JsonProperty("remittanceInformationStructuredArray")
+    private RemittanceInformationStructuredArray remittanceInformationStructuredArray = null;
+
     @JsonProperty("startDate")
     private LocalDate startDate = null;
 
@@ -419,13 +422,37 @@ public class PeriodicPaymentInitiationJson {
     @Valid
 
 
-    @JsonProperty("remittanceInformationStructured")
-    public RemittanceInformationStructured getRemittanceInformationStructured() {
-        return remittanceInformationStructured;
-    }
+  @JsonProperty("remittanceInformationStructured")
+  public RemittanceInformationStructured getRemittanceInformationStructured() {
+      return remittanceInformationStructured;
+  }
 
     public void setRemittanceInformationStructured(RemittanceInformationStructured remittanceInformationStructured) {
         this.remittanceInformationStructured = remittanceInformationStructured;
+    }
+
+    public PeriodicPaymentInitiationJson remittanceInformationStructuredArray(RemittanceInformationStructuredArray remittanceInformationStructuredArray) {
+        this.remittanceInformationStructuredArray = remittanceInformationStructuredArray;
+        return this;
+    }
+
+    /**
+     * Get remittanceInformationStructuredArray
+     *
+     * @return remittanceInformationStructuredArray
+     **/
+    @ApiModelProperty(value = "")
+
+    @Valid
+
+
+    @JsonProperty("remittanceInformationStructuredArray")
+    public RemittanceInformationStructuredArray getRemittanceInformationStructuredArray() {
+        return remittanceInformationStructuredArray;
+    }
+
+    public void setRemittanceInformationStructuredArray(RemittanceInformationStructuredArray remittanceInformationStructuredArray) {
+        this.remittanceInformationStructuredArray = remittanceInformationStructuredArray;
     }
 
     public PeriodicPaymentInitiationJson startDate(LocalDate startDate) {
@@ -438,8 +465,8 @@ public class PeriodicPaymentInitiationJson {
      *
      * @return startDate
      **/
-    @ApiModelProperty(required = true, value = "")
-    @NotNull
+  @ApiModelProperty(required = true, value = "")
+  @NotNull
 
     @Valid
 
@@ -534,12 +561,12 @@ public class PeriodicPaymentInitiationJson {
     /**
      * Get dayOfExecution
      *
-     * @return dayOfExecution
-     **/
-    @ApiModelProperty(value = "")
+   * @return dayOfExecution
+   **/
+  @ApiModelProperty(value = "")
 
     @Valid
-    @Size(max = 2)
+  @Size(max = 2)
 
     @JsonProperty("dayOfExecution")
     public DayOfExecution getDayOfExecution() {
@@ -574,40 +601,41 @@ public class PeriodicPaymentInitiationJson {
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        PeriodicPaymentInitiationJson periodicPaymentInitiationJson = (PeriodicPaymentInitiationJson) o;
-        return Objects.equals(this.endToEndIdentification, periodicPaymentInitiationJson.endToEndIdentification) &&
-                   Objects.equals(this.instructionIdentification, periodicPaymentInitiationJson.instructionIdentification) &&
-                   Objects.equals(this.debtorAccount, periodicPaymentInitiationJson.debtorAccount) &&
-                   Objects.equals(this.ultimateDebtor, periodicPaymentInitiationJson.ultimateDebtor) &&
-                   Objects.equals(this.instructedAmount, periodicPaymentInitiationJson.instructedAmount) &&
-                   Objects.equals(this.creditorAccount, periodicPaymentInitiationJson.creditorAccount) &&
-                   Objects.equals(this.creditorAgent, periodicPaymentInitiationJson.creditorAgent) &&
-                   Objects.equals(this.creditorId, periodicPaymentInitiationJson.creditorId) &&
-                   Objects.equals(this.creditorName, periodicPaymentInitiationJson.creditorName) &&
-                   Objects.equals(this.creditorAddress, periodicPaymentInitiationJson.creditorAddress) &&
-                   Objects.equals(this.ultimateCreditor, periodicPaymentInitiationJson.ultimateCreditor) &&
-                   Objects.equals(this.purposeCode, periodicPaymentInitiationJson.purposeCode) &&
-                   Objects.equals(this.remittanceInformationUnstructured, periodicPaymentInitiationJson.remittanceInformationUnstructured) &&
-                   Objects.equals(this.remittanceInformationStructured, periodicPaymentInitiationJson.remittanceInformationStructured) &&
-                   Objects.equals(this.startDate, periodicPaymentInitiationJson.startDate) &&
-                   Objects.equals(this.endDate, periodicPaymentInitiationJson.endDate) &&
-                   Objects.equals(this.executionRule, periodicPaymentInitiationJson.executionRule) &&
-                   Objects.equals(this.frequency, periodicPaymentInitiationJson.frequency) &&
+  @Override
+  public boolean equals(Object o) {
+      if (this == o) {
+          return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+          return false;
+      }
+      PeriodicPaymentInitiationJson periodicPaymentInitiationJson = (PeriodicPaymentInitiationJson) o;
+      return Objects.equals(this.endToEndIdentification, periodicPaymentInitiationJson.endToEndIdentification) &&
+                 Objects.equals(this.instructionIdentification, periodicPaymentInitiationJson.instructionIdentification) &&
+                 Objects.equals(this.debtorAccount, periodicPaymentInitiationJson.debtorAccount) &&
+                 Objects.equals(this.ultimateDebtor, periodicPaymentInitiationJson.ultimateDebtor) &&
+                 Objects.equals(this.instructedAmount, periodicPaymentInitiationJson.instructedAmount) &&
+                 Objects.equals(this.creditorAccount, periodicPaymentInitiationJson.creditorAccount) &&
+                 Objects.equals(this.creditorAgent, periodicPaymentInitiationJson.creditorAgent) &&
+                 Objects.equals(this.creditorId, periodicPaymentInitiationJson.creditorId) &&
+                 Objects.equals(this.creditorName, periodicPaymentInitiationJson.creditorName) &&
+                 Objects.equals(this.creditorAddress, periodicPaymentInitiationJson.creditorAddress) &&
+                 Objects.equals(this.ultimateCreditor, periodicPaymentInitiationJson.ultimateCreditor) &&
+                 Objects.equals(this.purposeCode, periodicPaymentInitiationJson.purposeCode) &&
+                 Objects.equals(this.remittanceInformationUnstructured, periodicPaymentInitiationJson.remittanceInformationUnstructured) &&
+                 Objects.equals(this.remittanceInformationStructured, periodicPaymentInitiationJson.remittanceInformationStructured) &&
+                 Objects.equals(this.remittanceInformationStructuredArray, periodicPaymentInitiationJson.remittanceInformationStructuredArray) &&
+                 Objects.equals(this.startDate, periodicPaymentInitiationJson.startDate) &&
+                 Objects.equals(this.endDate, periodicPaymentInitiationJson.endDate) &&
+                 Objects.equals(this.executionRule, periodicPaymentInitiationJson.executionRule) &&
+                 Objects.equals(this.frequency, periodicPaymentInitiationJson.frequency) &&
                    Objects.equals(this.dayOfExecution, periodicPaymentInitiationJson.dayOfExecution) &&
                    Objects.equals(this.debtorName, periodicPaymentInitiationJson.debtorName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(endToEndIdentification, instructionIdentification, debtorAccount, ultimateDebtor, instructedAmount, creditorAccount, creditorAgent, creditorId, creditorName, creditorAddress, ultimateCreditor, purposeCode, remittanceInformationUnstructured, remittanceInformationStructured, startDate, endDate, executionRule, frequency, dayOfExecution, debtorName);
+      return Objects.hash(endToEndIdentification, instructionIdentification, debtorAccount, ultimateDebtor, instructedAmount, creditorAccount, creditorAgent, creditorId, creditorName, creditorAddress, ultimateCreditor, purposeCode, remittanceInformationUnstructured, remittanceInformationStructured, remittanceInformationStructuredArray, startDate, endDate, executionRule, frequency, dayOfExecution, debtorName);
     }
 
     @Override
@@ -615,25 +643,26 @@ public class PeriodicPaymentInitiationJson {
         StringBuilder sb = new StringBuilder();
         sb.append("class PeriodicPaymentInitiationJson {\n");
 
-        sb.append("    endToEndIdentification: ").append(toIndentedString(endToEndIdentification)).append("\n");
-        sb.append("    instructionIdentification: ").append(toIndentedString(instructionIdentification)).append("\n");
-        sb.append("    debtorAccount: ").append(toIndentedString(debtorAccount)).append("\n");
-        sb.append("    ultimateDebtor: ").append(toIndentedString(ultimateDebtor)).append("\n");
-        sb.append("    instructedAmount: ").append(toIndentedString(instructedAmount)).append("\n");
-        sb.append("    creditorAccount: ").append(toIndentedString(creditorAccount)).append("\n");
-        sb.append("    creditorAgent: ").append(toIndentedString(creditorAgent)).append("\n");
-        sb.append("    creditorId: ").append(toIndentedString(creditorId)).append("\n");
-        sb.append("    creditorName: ").append(toIndentedString(creditorName)).append("\n");
-        sb.append("    creditorAddress: ").append(toIndentedString(creditorAddress)).append("\n");
-        sb.append("    ultimateCreditor: ").append(toIndentedString(ultimateCreditor)).append("\n");
-        sb.append("    purposeCode: ").append(toIndentedString(purposeCode)).append("\n");
-        sb.append("    remittanceInformationUnstructured: ").append(toIndentedString(remittanceInformationUnstructured)).append("\n");
-        sb.append("    remittanceInformationStructured: ").append(toIndentedString(remittanceInformationStructured)).append("\n");
-        sb.append("    startDate: ").append(toIndentedString(startDate)).append("\n");
-        sb.append("    endDate: ").append(toIndentedString(endDate)).append("\n");
-        sb.append("    executionRule: ").append(toIndentedString(executionRule)).append("\n");
-        sb.append("    frequency: ").append(toIndentedString(frequency)).append("\n");
-        sb.append("    dayOfExecution: ").append(toIndentedString(dayOfExecution)).append("\n");
+    sb.append("    endToEndIdentification: ").append(toIndentedString(endToEndIdentification)).append("\n");
+    sb.append("    instructionIdentification: ").append(toIndentedString(instructionIdentification)).append("\n");
+    sb.append("    debtorAccount: ").append(toIndentedString(debtorAccount)).append("\n");
+    sb.append("    ultimateDebtor: ").append(toIndentedString(ultimateDebtor)).append("\n");
+    sb.append("    instructedAmount: ").append(toIndentedString(instructedAmount)).append("\n");
+    sb.append("    creditorAccount: ").append(toIndentedString(creditorAccount)).append("\n");
+    sb.append("    creditorAgent: ").append(toIndentedString(creditorAgent)).append("\n");
+    sb.append("    creditorId: ").append(toIndentedString(creditorId)).append("\n");
+    sb.append("    creditorName: ").append(toIndentedString(creditorName)).append("\n");
+    sb.append("    creditorAddress: ").append(toIndentedString(creditorAddress)).append("\n");
+    sb.append("    ultimateCreditor: ").append(toIndentedString(ultimateCreditor)).append("\n");
+    sb.append("    purposeCode: ").append(toIndentedString(purposeCode)).append("\n");
+    sb.append("    remittanceInformationUnstructured: ").append(toIndentedString(remittanceInformationUnstructured)).append("\n");
+      sb.append("    remittanceInformationStructured: ").append(toIndentedString(remittanceInformationStructured)).append("\n");
+      sb.append("    remittanceInformationStructuredArray: ").append(toIndentedString(remittanceInformationStructuredArray)).append("\n");
+      sb.append("    startDate: ").append(toIndentedString(startDate)).append("\n");
+    sb.append("    endDate: ").append(toIndentedString(endDate)).append("\n");
+    sb.append("    executionRule: ").append(toIndentedString(executionRule)).append("\n");
+    sb.append("    frequency: ").append(toIndentedString(frequency)).append("\n");
+    sb.append("    dayOfExecution: ").append(toIndentedString(dayOfExecution)).append("\n");
         sb.append("    debtorName: ").append(toIndentedString(debtorName)).append("\n");
         sb.append("}");
         return sb.toString();

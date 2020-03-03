@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ import java.util.Objects;
  */
 @ApiModel(description = "Details of underlying standing orders.")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-12-26T15:06:21.086+02:00[Europe/Kiev]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-02-28T17:40:20.531650+02:00[Europe/Kiev]")
 
 public class StandingOrderDetails   {
   @JsonProperty("startDate")
@@ -202,7 +203,6 @@ public class StandingOrderDetails   {
   **/
   @ApiModelProperty(value = "")
 
-  @Valid
 
 
   @JsonProperty("monthsOfExecution")
@@ -248,6 +248,8 @@ public class StandingOrderDetails   {
   @ApiModelProperty(value = "")
 
   @Valid
+  @Size(max = 2)
+
   @JsonProperty("dayOfExecution")
   public DayOfExecution getDayOfExecution() {
     return dayOfExecution;

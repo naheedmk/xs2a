@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018-2020 adorsys GmbH & Co KG
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.adorsys.psd2.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -17,7 +33,7 @@ import java.util.Objects;
  */
 @ApiModel(description = "Generic JSON response body consistion of the corresponding payment initation JSON body together with an optional transaction status field. ")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-01-15T12:39:31.324290+02:00[Europe/Kiev]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-02-28T17:40:20.531650+02:00[Europe/Kiev]")
 
 public class PaymentInitiationWithStatusResponse   {
   @JsonProperty("endToEndIdentification")
@@ -53,24 +69,27 @@ public class PaymentInitiationWithStatusResponse   {
   @JsonProperty("ultimateCreditor")
   private String ultimateCreditor = null;
 
-  @JsonProperty("purposeCode")
-  private PurposeCode purposeCode = null;
+    @JsonProperty("purposeCode")
+    private PurposeCode purposeCode = null;
 
-  @JsonProperty("remittanceInformationUnstructured")
-  private String remittanceInformationUnstructured = null;
+    @JsonProperty("remittanceInformationUnstructured")
+    private String remittanceInformationUnstructured = null;
 
-  @JsonProperty("remittanceInformationStructured")
-  private RemittanceInformationStructured remittanceInformationStructured = null;
+    @JsonProperty("remittanceInformationStructured")
+    private RemittanceInformationStructured remittanceInformationStructured = null;
 
-  @JsonProperty("requestedExecutionDate")
-  private LocalDate requestedExecutionDate = null;
+    @JsonProperty("remittanceInformationStructuredArray")
+    private RemittanceInformationStructuredArray remittanceInformationStructuredArray = null;
 
-  @JsonProperty("transactionStatus")
-  private TransactionStatus transactionStatus = null;
+    @JsonProperty("requestedExecutionDate")
+    private LocalDate requestedExecutionDate = null;
 
-  public PaymentInitiationWithStatusResponse endToEndIdentification(String endToEndIdentification) {
-    this.endToEndIdentification = endToEndIdentification;
-    return this;
+    @JsonProperty("transactionStatus")
+    private TransactionStatus transactionStatus = null;
+
+    public PaymentInitiationWithStatusResponse endToEndIdentification(String endToEndIdentification) {
+        this.endToEndIdentification = endToEndIdentification;
+        return this;
   }
 
   /**
@@ -379,22 +398,47 @@ public class PaymentInitiationWithStatusResponse   {
 
   @JsonProperty("remittanceInformationStructured")
   public RemittanceInformationStructured getRemittanceInformationStructured() {
-    return remittanceInformationStructured;
+      return remittanceInformationStructured;
   }
 
-  public void setRemittanceInformationStructured(RemittanceInformationStructured remittanceInformationStructured) {
-    this.remittanceInformationStructured = remittanceInformationStructured;
-  }
+    public void setRemittanceInformationStructured(RemittanceInformationStructured remittanceInformationStructured) {
+        this.remittanceInformationStructured = remittanceInformationStructured;
+    }
 
-  public PaymentInitiationWithStatusResponse requestedExecutionDate(LocalDate requestedExecutionDate) {
-    this.requestedExecutionDate = requestedExecutionDate;
-    return this;
-  }
+    public PaymentInitiationWithStatusResponse remittanceInformationStructuredArray(RemittanceInformationStructuredArray remittanceInformationStructuredArray) {
+        this.remittanceInformationStructuredArray = remittanceInformationStructuredArray;
+        return this;
+    }
 
-  /**
-   * Get requestedExecutionDate
-   * @return requestedExecutionDate
-  **/
+    /**
+     * Get remittanceInformationStructuredArray
+     *
+     * @return remittanceInformationStructuredArray
+     **/
+    @ApiModelProperty(value = "")
+
+    @Valid
+
+
+    @JsonProperty("remittanceInformationStructuredArray")
+    public RemittanceInformationStructuredArray getRemittanceInformationStructuredArray() {
+        return remittanceInformationStructuredArray;
+    }
+
+    public void setRemittanceInformationStructuredArray(RemittanceInformationStructuredArray remittanceInformationStructuredArray) {
+        this.remittanceInformationStructuredArray = remittanceInformationStructuredArray;
+    }
+
+    public PaymentInitiationWithStatusResponse requestedExecutionDate(LocalDate requestedExecutionDate) {
+        this.requestedExecutionDate = requestedExecutionDate;
+        return this;
+    }
+
+    /**
+     * Get requestedExecutionDate
+     *
+     * @return requestedExecutionDate
+     **/
   @ApiModelProperty(value = "")
 
   @Valid
@@ -435,34 +479,35 @@ public class PaymentInitiationWithStatusResponse   {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    PaymentInitiationWithStatusResponse paymentInitiationWithStatusResponse = (PaymentInitiationWithStatusResponse) o;
-    return Objects.equals(this.endToEndIdentification, paymentInitiationWithStatusResponse.endToEndIdentification) &&
-        Objects.equals(this.instructionIdentification, paymentInitiationWithStatusResponse.instructionIdentification) &&
-        Objects.equals(this.debtorAccount, paymentInitiationWithStatusResponse.debtorAccount) &&
-        Objects.equals(this.ultimateDebtor, paymentInitiationWithStatusResponse.ultimateDebtor) &&
-        Objects.equals(this.instructedAmount, paymentInitiationWithStatusResponse.instructedAmount) &&
-        Objects.equals(this.creditorAccount, paymentInitiationWithStatusResponse.creditorAccount) &&
-        Objects.equals(this.creditorAgent, paymentInitiationWithStatusResponse.creditorAgent) &&
-        Objects.equals(this.creditorName, paymentInitiationWithStatusResponse.creditorName) &&
-        Objects.equals(this.creditorAddress, paymentInitiationWithStatusResponse.creditorAddress) &&
-        Objects.equals(this.creditorId, paymentInitiationWithStatusResponse.creditorId) &&
-        Objects.equals(this.ultimateCreditor, paymentInitiationWithStatusResponse.ultimateCreditor) &&
-        Objects.equals(this.purposeCode, paymentInitiationWithStatusResponse.purposeCode) &&
-        Objects.equals(this.remittanceInformationUnstructured, paymentInitiationWithStatusResponse.remittanceInformationUnstructured) &&
-        Objects.equals(this.remittanceInformationStructured, paymentInitiationWithStatusResponse.remittanceInformationStructured) &&
-        Objects.equals(this.requestedExecutionDate, paymentInitiationWithStatusResponse.requestedExecutionDate) &&
-        Objects.equals(this.transactionStatus, paymentInitiationWithStatusResponse.transactionStatus);
+      if (this == o) {
+          return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+          return false;
+      }
+      PaymentInitiationWithStatusResponse paymentInitiationWithStatusResponse = (PaymentInitiationWithStatusResponse) o;
+      return Objects.equals(this.endToEndIdentification, paymentInitiationWithStatusResponse.endToEndIdentification) &&
+                 Objects.equals(this.instructionIdentification, paymentInitiationWithStatusResponse.instructionIdentification) &&
+                 Objects.equals(this.debtorAccount, paymentInitiationWithStatusResponse.debtorAccount) &&
+                 Objects.equals(this.ultimateDebtor, paymentInitiationWithStatusResponse.ultimateDebtor) &&
+                 Objects.equals(this.instructedAmount, paymentInitiationWithStatusResponse.instructedAmount) &&
+                 Objects.equals(this.creditorAccount, paymentInitiationWithStatusResponse.creditorAccount) &&
+                 Objects.equals(this.creditorAgent, paymentInitiationWithStatusResponse.creditorAgent) &&
+                 Objects.equals(this.creditorName, paymentInitiationWithStatusResponse.creditorName) &&
+                 Objects.equals(this.creditorAddress, paymentInitiationWithStatusResponse.creditorAddress) &&
+                 Objects.equals(this.creditorId, paymentInitiationWithStatusResponse.creditorId) &&
+                 Objects.equals(this.ultimateCreditor, paymentInitiationWithStatusResponse.ultimateCreditor) &&
+                 Objects.equals(this.purposeCode, paymentInitiationWithStatusResponse.purposeCode) &&
+                 Objects.equals(this.remittanceInformationUnstructured, paymentInitiationWithStatusResponse.remittanceInformationUnstructured) &&
+                 Objects.equals(this.remittanceInformationStructured, paymentInitiationWithStatusResponse.remittanceInformationStructured) &&
+                 Objects.equals(this.remittanceInformationStructuredArray, paymentInitiationWithStatusResponse.remittanceInformationStructuredArray) &&
+                 Objects.equals(this.requestedExecutionDate, paymentInitiationWithStatusResponse.requestedExecutionDate) &&
+                 Objects.equals(this.transactionStatus, paymentInitiationWithStatusResponse.transactionStatus);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(endToEndIdentification, instructionIdentification, debtorAccount, ultimateDebtor, instructedAmount, creditorAccount, creditorAgent, creditorName, creditorAddress, creditorId, ultimateCreditor, purposeCode, remittanceInformationUnstructured, remittanceInformationStructured, requestedExecutionDate, transactionStatus);
+      return Objects.hash(endToEndIdentification, instructionIdentification, debtorAccount, ultimateDebtor, instructedAmount, creditorAccount, creditorAgent, creditorName, creditorAddress, creditorId, ultimateCreditor, purposeCode, remittanceInformationUnstructured, remittanceInformationStructured, remittanceInformationStructuredArray, requestedExecutionDate, transactionStatus);
   }
 
   @Override
@@ -483,8 +528,9 @@ public class PaymentInitiationWithStatusResponse   {
     sb.append("    ultimateCreditor: ").append(toIndentedString(ultimateCreditor)).append("\n");
     sb.append("    purposeCode: ").append(toIndentedString(purposeCode)).append("\n");
     sb.append("    remittanceInformationUnstructured: ").append(toIndentedString(remittanceInformationUnstructured)).append("\n");
-    sb.append("    remittanceInformationStructured: ").append(toIndentedString(remittanceInformationStructured)).append("\n");
-    sb.append("    requestedExecutionDate: ").append(toIndentedString(requestedExecutionDate)).append("\n");
+      sb.append("    remittanceInformationStructured: ").append(toIndentedString(remittanceInformationStructured)).append("\n");
+      sb.append("    remittanceInformationStructuredArray: ").append(toIndentedString(remittanceInformationStructuredArray)).append("\n");
+      sb.append("    requestedExecutionDate: ").append(toIndentedString(requestedExecutionDate)).append("\n");
     sb.append("    transactionStatus: ").append(toIndentedString(transactionStatus)).append("\n");
     sb.append("}");
     return sb.toString();

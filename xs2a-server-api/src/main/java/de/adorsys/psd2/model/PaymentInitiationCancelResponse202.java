@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import java.util.Objects;
  */
 @ApiModel(description = "Body of the response for a successful cancel payment request.")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-12-26T15:06:21.086+02:00[Europe/Kiev]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-02-28T17:40:20.531650+02:00[Europe/Kiev]")
 
 public class PaymentInitiationCancelResponse202   {
   @JsonProperty("transactionStatus")
@@ -164,12 +164,12 @@ public class PaymentInitiationCancelResponse202   {
 
   @JsonProperty("_links")
   public Map getLinks() {
-    return _links;
+      return _links;
   }
 
-  public void setLinks(Map _links) {
-    this._links = _links;
-  }
+    public void setLinks(Map _links) {
+        this._links = _links;
+    }
 
     public PaymentInitiationCancelResponse202 tppMessages(List<TppMessage2XX> tppMessages) {
         this.tppMessages = tppMessages;
@@ -186,6 +186,7 @@ public class PaymentInitiationCancelResponse202   {
 
     /**
      * Get tppMessages
+     *
      * @return tppMessages
      **/
     @ApiModelProperty(value = "")
@@ -202,24 +203,27 @@ public class PaymentInitiationCancelResponse202   {
         this.tppMessages = tppMessages;
     }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-}    PaymentInitiationCancelResponse202 paymentInitiationCancelResponse202 = (PaymentInitiationCancelResponse202) o;
-    return Objects.equals(this.transactionStatus, paymentInitiationCancelResponse202.transactionStatus) &&
-    Objects.equals(this.scaMethods, paymentInitiationCancelResponse202.scaMethods) &&
-    Objects.equals(this.chosenScaMethod, paymentInitiationCancelResponse202.chosenScaMethod) &&
-    Objects.equals(this.challengeData, paymentInitiationCancelResponse202.challengeData) &&
-    Objects.equals(this._links, paymentInitiationCancelResponse202._links);
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PaymentInitiationCancelResponse202 paymentInitiationCancelResponse202 = (PaymentInitiationCancelResponse202) o;
+        return Objects.equals(this.transactionStatus, paymentInitiationCancelResponse202.transactionStatus) &&
+                   Objects.equals(this.scaMethods, paymentInitiationCancelResponse202.scaMethods) &&
+                   Objects.equals(this.chosenScaMethod, paymentInitiationCancelResponse202.chosenScaMethod) &&
+                   Objects.equals(this.challengeData, paymentInitiationCancelResponse202.challengeData) &&
+                   Objects.equals(this._links, paymentInitiationCancelResponse202._links) &&
+                   Objects.equals(this.tppMessages, paymentInitiationCancelResponse202.tppMessages);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(transactionStatus, scaMethods, chosenScaMethod, challengeData, _links);
+      return Objects.hash(transactionStatus, scaMethods, chosenScaMethod, challengeData, _links, tppMessages);
   }
 
   @Override
@@ -231,8 +235,9 @@ public class PaymentInitiationCancelResponse202   {
     sb.append("    scaMethods: ").append(toIndentedString(scaMethods)).append("\n");
     sb.append("    chosenScaMethod: ").append(toIndentedString(chosenScaMethod)).append("\n");
     sb.append("    challengeData: ").append(toIndentedString(challengeData)).append("\n");
-    sb.append("    _links: ").append(toIndentedString(_links)).append("\n");
-    sb.append("}");
+      sb.append("    _links: ").append(toIndentedString(_links)).append("\n");
+      sb.append("    tppMessages: ").append(toIndentedString(tppMessages)).append("\n");
+      sb.append("}");
     return sb.toString();
   }
 

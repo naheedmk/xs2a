@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,10 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -32,26 +34,29 @@ import java.util.Objects;
  */
 @ApiModel(description = "Card transaction information.")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-12-26T15:06:21.086+02:00[Europe/Kiev]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-02-28T17:40:20.531650+02:00[Europe/Kiev]")
 
-public class CardTransaction   {
-  @JsonProperty("cardTransactionId")
-  private String cardTransactionId = null;
+public class CardTransaction {
+    @JsonProperty("cardTransactionId")
+    private String cardTransactionId = null;
 
-  @JsonProperty("terminalId")
-  private String terminalId = null;
+    @JsonProperty("terminalId")
+    private String terminalId = null;
 
-  @JsonProperty("transactionDate")
-  private LocalDate transactionDate = null;
+    @JsonProperty("transactionDate")
+    private LocalDate transactionDate = null;
 
-  @JsonProperty("bookingDate")
-  private LocalDate bookingDate = null;
+    @JsonProperty("acceptorTransactionDateTime")
+    private OffsetDateTime acceptorTransactionDateTime = null;
 
-  @JsonProperty("transactionAmount")
-  private Amount transactionAmount = null;
+    @JsonProperty("bookingDate")
+    private LocalDate bookingDate = null;
 
-  @JsonProperty("currencyExchange")
-  private ReportExchangeRateList currencyExchange = null;
+    @JsonProperty("transactionAmount")
+    private Amount transactionAmount = null;
+
+    @JsonProperty("currencyExchange")
+    private ReportExchangeRateList currencyExchange = null;
 
   @JsonProperty("originalAmount")
   private Amount originalAmount = null;
@@ -59,23 +64,26 @@ public class CardTransaction   {
   @JsonProperty("markupFee")
   private Amount markupFee = null;
 
-  @JsonProperty("markupFeePercentage")
-  private String markupFeePercentage = null;
+    @JsonProperty("markupFeePercentage")
+    private String markupFeePercentage = null;
 
-  @JsonProperty("cardAcceptorId")
-  private String cardAcceptorId = null;
+    @JsonProperty("cardAcceptorId")
+    private String cardAcceptorId = null;
 
-  @JsonProperty("cardAcceptorAddress")
-  private Address cardAcceptorAddress = null;
+    @JsonProperty("cardAcceptorAddress")
+    private Address cardAcceptorAddress = null;
 
-  @JsonProperty("merchantCategoryCode")
-  private String merchantCategoryCode = null;
+    @JsonProperty("cardAcceptorPhone")
+    private String cardAcceptorPhone = null;
 
-  @JsonProperty("maskedPAN")
-  private String maskedPAN = null;
+    @JsonProperty("merchantCategoryCode")
+    private String merchantCategoryCode = null;
 
-  @JsonProperty("transactionDetails")
-  private String transactionDetails = null;
+    @JsonProperty("maskedPAN")
+    private String maskedPAN = null;
+
+    @JsonProperty("transactionDetails")
+    private String transactionDetails = null;
 
   @JsonProperty("invoiced")
   private Boolean invoiced = null;
@@ -143,22 +151,47 @@ public class CardTransaction   {
 
   @JsonProperty("transactionDate")
   public LocalDate getTransactionDate() {
-    return transactionDate;
+      return transactionDate;
   }
 
-  public void setTransactionDate(LocalDate transactionDate) {
-    this.transactionDate = transactionDate;
-  }
+    public void setTransactionDate(LocalDate transactionDate) {
+        this.transactionDate = transactionDate;
+    }
 
-  public CardTransaction bookingDate(LocalDate bookingDate) {
-    this.bookingDate = bookingDate;
-    return this;
-  }
+    public CardTransaction acceptorTransactionDateTime(OffsetDateTime acceptorTransactionDateTime) {
+        this.acceptorTransactionDateTime = acceptorTransactionDateTime;
+        return this;
+    }
 
-  /**
-   * Get bookingDate
-   * @return bookingDate
-  **/
+    /**
+     * Get acceptorTransactionDateTime
+     *
+     * @return acceptorTransactionDateTime
+     **/
+    @ApiModelProperty(value = "")
+
+    @Valid
+
+
+    @JsonProperty("acceptorTransactionDateTime")
+    public OffsetDateTime getAcceptorTransactionDateTime() {
+        return acceptorTransactionDateTime;
+    }
+
+    public void setAcceptorTransactionDateTime(OffsetDateTime acceptorTransactionDateTime) {
+        this.acceptorTransactionDateTime = acceptorTransactionDateTime;
+    }
+
+    public CardTransaction bookingDate(LocalDate bookingDate) {
+        this.bookingDate = bookingDate;
+        return this;
+    }
+
+    /**
+     * Get bookingDate
+     *
+     * @return bookingDate
+     **/
   @ApiModelProperty(value = "")
 
   @Valid
@@ -326,21 +359,44 @@ public class CardTransaction   {
 
   @JsonProperty("cardAcceptorAddress")
   public Address getCardAcceptorAddress() {
-    return cardAcceptorAddress;
+      return cardAcceptorAddress;
   }
 
-  public void setCardAcceptorAddress(Address cardAcceptorAddress) {
-    this.cardAcceptorAddress = cardAcceptorAddress;
-  }
+    public void setCardAcceptorAddress(Address cardAcceptorAddress) {
+        this.cardAcceptorAddress = cardAcceptorAddress;
+    }
 
-  public CardTransaction merchantCategoryCode(String merchantCategoryCode) {
-    this.merchantCategoryCode = merchantCategoryCode;
-    return this;
-  }
+    public CardTransaction cardAcceptorPhone(String cardAcceptorPhone) {
+        this.cardAcceptorPhone = cardAcceptorPhone;
+        return this;
+    }
 
-  /**
-   * Get merchantCategoryCode
-   * @return merchantCategoryCode
+    /**
+     * Get cardAcceptorPhone
+     *
+     * @return cardAcceptorPhone
+     **/
+    @ApiModelProperty(value = "")
+
+    @Pattern(regexp = "\\+[0-9]{1,3}-[0-9()\\+\\-]{1,30}")
+
+    @JsonProperty("cardAcceptorPhone")
+    public String getCardAcceptorPhone() {
+        return cardAcceptorPhone;
+    }
+
+    public void setCardAcceptorPhone(String cardAcceptorPhone) {
+        this.cardAcceptorPhone = cardAcceptorPhone;
+    }
+
+    public CardTransaction merchantCategoryCode(String merchantCategoryCode) {
+        this.merchantCategoryCode = merchantCategoryCode;
+        return this;
+    }
+
+    /**
+     * Get merchantCategoryCode
+     * @return merchantCategoryCode
   **/
   @ApiModelProperty(value = "")
 
@@ -452,27 +508,29 @@ public class CardTransaction   {
     if (o == null || getClass() != o.getClass()) {
       return false;
 }    CardTransaction cardTransaction = (CardTransaction) o;
-    return Objects.equals(this.cardTransactionId, cardTransaction.cardTransactionId) &&
-    Objects.equals(this.terminalId, cardTransaction.terminalId) &&
-    Objects.equals(this.transactionDate, cardTransaction.transactionDate) &&
-    Objects.equals(this.bookingDate, cardTransaction.bookingDate) &&
-    Objects.equals(this.transactionAmount, cardTransaction.transactionAmount) &&
-    Objects.equals(this.currencyExchange, cardTransaction.currencyExchange) &&
-    Objects.equals(this.originalAmount, cardTransaction.originalAmount) &&
-    Objects.equals(this.markupFee, cardTransaction.markupFee) &&
-    Objects.equals(this.markupFeePercentage, cardTransaction.markupFeePercentage) &&
-    Objects.equals(this.cardAcceptorId, cardTransaction.cardAcceptorId) &&
-    Objects.equals(this.cardAcceptorAddress, cardTransaction.cardAcceptorAddress) &&
-    Objects.equals(this.merchantCategoryCode, cardTransaction.merchantCategoryCode) &&
-    Objects.equals(this.maskedPAN, cardTransaction.maskedPAN) &&
-    Objects.equals(this.transactionDetails, cardTransaction.transactionDetails) &&
-    Objects.equals(this.invoiced, cardTransaction.invoiced) &&
-    Objects.equals(this.proprietaryBankTransactionCode, cardTransaction.proprietaryBankTransactionCode);
+      return Objects.equals(this.cardTransactionId, cardTransaction.cardTransactionId) &&
+                 Objects.equals(this.terminalId, cardTransaction.terminalId) &&
+                 Objects.equals(this.transactionDate, cardTransaction.transactionDate) &&
+                 Objects.equals(this.acceptorTransactionDateTime, cardTransaction.acceptorTransactionDateTime) &&
+                 Objects.equals(this.bookingDate, cardTransaction.bookingDate) &&
+                 Objects.equals(this.transactionAmount, cardTransaction.transactionAmount) &&
+                 Objects.equals(this.currencyExchange, cardTransaction.currencyExchange) &&
+                 Objects.equals(this.originalAmount, cardTransaction.originalAmount) &&
+                 Objects.equals(this.markupFee, cardTransaction.markupFee) &&
+                 Objects.equals(this.markupFeePercentage, cardTransaction.markupFeePercentage) &&
+                 Objects.equals(this.cardAcceptorId, cardTransaction.cardAcceptorId) &&
+                 Objects.equals(this.cardAcceptorAddress, cardTransaction.cardAcceptorAddress) &&
+                 Objects.equals(this.cardAcceptorPhone, cardTransaction.cardAcceptorPhone) &&
+                 Objects.equals(this.merchantCategoryCode, cardTransaction.merchantCategoryCode) &&
+                 Objects.equals(this.maskedPAN, cardTransaction.maskedPAN) &&
+                 Objects.equals(this.transactionDetails, cardTransaction.transactionDetails) &&
+                 Objects.equals(this.invoiced, cardTransaction.invoiced) &&
+                 Objects.equals(this.proprietaryBankTransactionCode, cardTransaction.proprietaryBankTransactionCode);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(cardTransactionId, terminalId, transactionDate, bookingDate, transactionAmount, currencyExchange, originalAmount, markupFee, markupFeePercentage, cardAcceptorId, cardAcceptorAddress, merchantCategoryCode, maskedPAN, transactionDetails, invoiced, proprietaryBankTransactionCode);
+    @Override
+    public int hashCode() {
+        return Objects.hash(cardTransactionId, terminalId, transactionDate, acceptorTransactionDateTime, bookingDate, transactionAmount, currencyExchange, originalAmount, markupFee, markupFeePercentage, cardAcceptorId, cardAcceptorAddress, cardAcceptorPhone, merchantCategoryCode, maskedPAN, transactionDetails, invoiced, proprietaryBankTransactionCode);
   }
 
   @Override
@@ -482,16 +540,18 @@ public class CardTransaction   {
 
     sb.append("    cardTransactionId: ").append(toIndentedString(cardTransactionId)).append("\n");
     sb.append("    terminalId: ").append(toIndentedString(terminalId)).append("\n");
-    sb.append("    transactionDate: ").append(toIndentedString(transactionDate)).append("\n");
-    sb.append("    bookingDate: ").append(toIndentedString(bookingDate)).append("\n");
+      sb.append("    transactionDate: ").append(toIndentedString(transactionDate)).append("\n");
+      sb.append("    acceptorTransactionDateTime: ").append(toIndentedString(acceptorTransactionDateTime)).append("\n");
+      sb.append("    bookingDate: ").append(toIndentedString(bookingDate)).append("\n");
     sb.append("    transactionAmount: ").append(toIndentedString(transactionAmount)).append("\n");
     sb.append("    currencyExchange: ").append(toIndentedString(currencyExchange)).append("\n");
     sb.append("    originalAmount: ").append(toIndentedString(originalAmount)).append("\n");
     sb.append("    markupFee: ").append(toIndentedString(markupFee)).append("\n");
     sb.append("    markupFeePercentage: ").append(toIndentedString(markupFeePercentage)).append("\n");
     sb.append("    cardAcceptorId: ").append(toIndentedString(cardAcceptorId)).append("\n");
-    sb.append("    cardAcceptorAddress: ").append(toIndentedString(cardAcceptorAddress)).append("\n");
-    sb.append("    merchantCategoryCode: ").append(toIndentedString(merchantCategoryCode)).append("\n");
+      sb.append("    cardAcceptorAddress: ").append(toIndentedString(cardAcceptorAddress)).append("\n");
+      sb.append("    cardAcceptorPhone: ").append(toIndentedString(cardAcceptorPhone)).append("\n");
+      sb.append("    merchantCategoryCode: ").append(toIndentedString(merchantCategoryCode)).append("\n");
     sb.append("    maskedPAN: ").append(toIndentedString(maskedPAN)).append("\n");
     sb.append("    transactionDetails: ").append(toIndentedString(transactionDetails)).append("\n");
     sb.append("    invoiced: ").append(toIndentedString(invoiced)).append("\n");

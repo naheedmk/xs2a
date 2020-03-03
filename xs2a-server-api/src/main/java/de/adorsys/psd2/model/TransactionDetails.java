@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,7 +36,7 @@ import java.util.Objects;
  */
 @ApiModel(description = "Transaction details.")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-12-26T15:06:21.086+02:00[Europe/Kiev]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-02-28T17:40:20.531650+02:00[Europe/Kiev]")
 
 public class TransactionDetails   {
   @JsonProperty("transactionId")
@@ -85,26 +87,33 @@ public class TransactionDetails   {
   @JsonProperty("debtorAccount")
   private AccountReference debtorAccount = null;
 
-  @JsonProperty("debtorAgent")
-  private String debtorAgent = null;
+    @JsonProperty("debtorAgent")
+    private String debtorAgent = null;
 
-  @JsonProperty("ultimateDebtor")
-  private String ultimateDebtor = null;
+    @JsonProperty("ultimateDebtor")
+    private String ultimateDebtor = null;
 
-  @JsonProperty("remittanceInformationUnstructured")
-  private String remittanceInformationUnstructured = null;
+    @JsonProperty("remittanceInformationUnstructured")
+    private String remittanceInformationUnstructured = null;
 
-  @JsonProperty("remittanceInformationStructured")
-  private String remittanceInformationStructured = null;
+    @JsonProperty("remittanceInformationUnstructuredArray")
+    private RemittanceInformationUnstructuredArray remittanceInformationUnstructuredArray = null;
 
-  @JsonProperty("additionalInformation")
-  private String additionalInformation = null;
+    @JsonProperty("remittanceInformationStructured")
+    private String remittanceInformationStructured = null;
 
-  @JsonProperty("purposeCode")
-  private PurposeCode purposeCode = null;
+    @JsonProperty("remittanceInformationStructuredArray")
+    @Valid
+    private List<String> remittanceInformationStructuredArray = null;
 
-  @JsonProperty("bankTransactionCode")
-  private String bankTransactionCode = null;
+    @JsonProperty("additionalInformation")
+    private String additionalInformation = null;
+
+    @JsonProperty("purposeCode")
+    private PurposeCode purposeCode = null;
+
+    @JsonProperty("bankTransactionCode")
+    private String bankTransactionCode = null;
 
   @JsonProperty("proprietaryBankTransactionCode")
   private String proprietaryBankTransactionCode = null;
@@ -123,11 +132,12 @@ public class TransactionDetails   {
     return this;
   }
 
-  /**
-   * the Transaction Id can be used as access-ID in the API, where more details on an transaction is offered.  If this data attribute is provided this shows that the AIS can get access on more details about this  transaction using the Get transaction details request.
-   * @return transactionId
-  **/
-  @ApiModelProperty(value = "the Transaction Id can be used as access-ID in the API, where more details on an transaction is offered.  If this data attribute is provided this shows that the AIS can get access on more details about this  transaction using the Get transaction details request. ")
+    /**
+     * the Transaction Id can be used as access-ID in the API, where more details on an transaction is offered. If this data attribute is provided this shows that the AIS can get access on more details about this transaction using the Get transaction details request.
+     *
+     * @return transactionId
+     **/
+    @ApiModelProperty(value = "the Transaction Id can be used as access-ID in the API, where more details on an transaction is offered. If this data attribute is provided this shows that the AIS can get access on more details about this transaction using the Get transaction details request. ")
 
 
 
@@ -532,47 +542,101 @@ public class TransactionDetails   {
   **/
   @ApiModelProperty(value = "")
 
-@Size(max=140)
+@Size(max = 140)
 
   @JsonProperty("remittanceInformationUnstructured")
   public String getRemittanceInformationUnstructured() {
-    return remittanceInformationUnstructured;
+      return remittanceInformationUnstructured;
   }
 
-  public void setRemittanceInformationUnstructured(String remittanceInformationUnstructured) {
-    this.remittanceInformationUnstructured = remittanceInformationUnstructured;
-  }
+    public void setRemittanceInformationUnstructured(String remittanceInformationUnstructured) {
+        this.remittanceInformationUnstructured = remittanceInformationUnstructured;
+    }
 
-  public TransactionDetails remittanceInformationStructured(String remittanceInformationStructured) {
-    this.remittanceInformationStructured = remittanceInformationStructured;
-    return this;
-  }
+    public TransactionDetails remittanceInformationUnstructuredArray(RemittanceInformationUnstructuredArray remittanceInformationUnstructuredArray) {
+        this.remittanceInformationUnstructuredArray = remittanceInformationUnstructuredArray;
+        return this;
+    }
 
-  /**
-   * Reference as contained in the structured remittance reference structure (without the surrounding XML structure).  Different from other places the content is containt in plain form not in form of a structered field.
-   * @return remittanceInformationStructured
+    /**
+     * Get remittanceInformationUnstructuredArray
+     *
+     * @return remittanceInformationUnstructuredArray
+     **/
+    @ApiModelProperty(value = "")
+
+    @Valid
+
+
+    @JsonProperty("remittanceInformationUnstructuredArray")
+    public RemittanceInformationUnstructuredArray getRemittanceInformationUnstructuredArray() {
+        return remittanceInformationUnstructuredArray;
+    }
+
+    public void setRemittanceInformationUnstructuredArray(RemittanceInformationUnstructuredArray remittanceInformationUnstructuredArray) {
+        this.remittanceInformationUnstructuredArray = remittanceInformationUnstructuredArray;
+    }
+
+    public TransactionDetails remittanceInformationStructured(String remittanceInformationStructured) {
+        this.remittanceInformationStructured = remittanceInformationStructured;
+        return this;
+    }
+
+    /**
+     * Reference as contained in the structured remittance reference structure (without the surrounding XML structure).  Different from other places the content is containt in plain form not in form of a structered field.
+     * @return remittanceInformationStructured
   **/
   @ApiModelProperty(value = "Reference as contained in the structured remittance reference structure (without the surrounding XML structure).  Different from other places the content is containt in plain form not in form of a structered field. ")
 
-@Size(max=140)
+  @Size(max = 140)
 
   @JsonProperty("remittanceInformationStructured")
   public String getRemittanceInformationStructured() {
-    return remittanceInformationStructured;
+      return remittanceInformationStructured;
   }
 
-  public void setRemittanceInformationStructured(String remittanceInformationStructured) {
-    this.remittanceInformationStructured = remittanceInformationStructured;
-  }
+    public void setRemittanceInformationStructured(String remittanceInformationStructured) {
+        this.remittanceInformationStructured = remittanceInformationStructured;
+    }
 
-  public TransactionDetails additionalInformation(String additionalInformation) {
-    this.additionalInformation = additionalInformation;
-    return this;
-  }
+    public TransactionDetails remittanceInformationStructuredArray(List<String> remittanceInformationStructuredArray) {
+        this.remittanceInformationStructuredArray = remittanceInformationStructuredArray;
+        return this;
+    }
 
-  /**
-   * Might be used by the ASPSP to transport additional transaction related information to the PSU.
-   * @return additionalInformation
+    public TransactionDetails addRemittanceInformationStructuredArrayItem(String remittanceInformationStructuredArrayItem) {
+        if (this.remittanceInformationStructuredArray == null) {
+            this.remittanceInformationStructuredArray = new ArrayList<>();
+        }
+        this.remittanceInformationStructuredArray.add(remittanceInformationStructuredArrayItem);
+        return this;
+    }
+
+    /**
+     * Get remittanceInformationStructuredArray
+     *
+     * @return remittanceInformationStructuredArray
+     **/
+    @ApiModelProperty(value = "")
+
+
+    @JsonProperty("remittanceInformationStructuredArray")
+    public List<String> getRemittanceInformationStructuredArray() {
+        return remittanceInformationStructuredArray;
+    }
+
+    public void setRemittanceInformationStructuredArray(List<String> remittanceInformationStructuredArray) {
+        this.remittanceInformationStructuredArray = remittanceInformationStructuredArray;
+    }
+
+    public TransactionDetails additionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
+        return this;
+    }
+
+    /**
+     * Might be used by the ASPSP to transport additional transaction related information to the PSU.
+     * @return additionalInformation
   **/
   @ApiModelProperty(value = "Might be used by the ASPSP to transport additional transaction related information to the PSU. ")
 
@@ -741,29 +805,31 @@ public class TransactionDetails   {
     Objects.equals(this.bookingDate, transactionDetails.bookingDate) &&
     Objects.equals(this.valueDate, transactionDetails.valueDate) &&
     Objects.equals(this.transactionAmount, transactionDetails.transactionAmount) &&
-    Objects.equals(this.currencyExchange, transactionDetails.currencyExchange) &&
-    Objects.equals(this.creditorName, transactionDetails.creditorName) &&
-    Objects.equals(this.creditorAccount, transactionDetails.creditorAccount) &&
-    Objects.equals(this.creditorAgent, transactionDetails.creditorAgent) &&
-    Objects.equals(this.ultimateCreditor, transactionDetails.ultimateCreditor) &&
-    Objects.equals(this.debtorName, transactionDetails.debtorName) &&
-    Objects.equals(this.debtorAccount, transactionDetails.debtorAccount) &&
-    Objects.equals(this.debtorAgent, transactionDetails.debtorAgent) &&
-    Objects.equals(this.ultimateDebtor, transactionDetails.ultimateDebtor) &&
-    Objects.equals(this.remittanceInformationUnstructured, transactionDetails.remittanceInformationUnstructured) &&
-    Objects.equals(this.remittanceInformationStructured, transactionDetails.remittanceInformationStructured) &&
-    Objects.equals(this.additionalInformation, transactionDetails.additionalInformation) &&
-    Objects.equals(this.purposeCode, transactionDetails.purposeCode) &&
-    Objects.equals(this.bankTransactionCode, transactionDetails.bankTransactionCode) &&
-    Objects.equals(this.proprietaryBankTransactionCode, transactionDetails.proprietaryBankTransactionCode) &&
-    Objects.equals(this.additionalInformationStructured, transactionDetails.additionalInformationStructured) &&
-    Objects.equals(this.balanceAfterTransaction, transactionDetails.balanceAfterTransaction) &&
-    Objects.equals(this._links, transactionDetails._links);
+               Objects.equals(this.currencyExchange, transactionDetails.currencyExchange) &&
+               Objects.equals(this.creditorName, transactionDetails.creditorName) &&
+               Objects.equals(this.creditorAccount, transactionDetails.creditorAccount) &&
+               Objects.equals(this.creditorAgent, transactionDetails.creditorAgent) &&
+               Objects.equals(this.ultimateCreditor, transactionDetails.ultimateCreditor) &&
+               Objects.equals(this.debtorName, transactionDetails.debtorName) &&
+               Objects.equals(this.debtorAccount, transactionDetails.debtorAccount) &&
+               Objects.equals(this.debtorAgent, transactionDetails.debtorAgent) &&
+               Objects.equals(this.ultimateDebtor, transactionDetails.ultimateDebtor) &&
+               Objects.equals(this.remittanceInformationUnstructured, transactionDetails.remittanceInformationUnstructured) &&
+               Objects.equals(this.remittanceInformationUnstructuredArray, transactionDetails.remittanceInformationUnstructuredArray) &&
+               Objects.equals(this.remittanceInformationStructured, transactionDetails.remittanceInformationStructured) &&
+               Objects.equals(this.remittanceInformationStructuredArray, transactionDetails.remittanceInformationStructuredArray) &&
+               Objects.equals(this.additionalInformation, transactionDetails.additionalInformation) &&
+               Objects.equals(this.purposeCode, transactionDetails.purposeCode) &&
+               Objects.equals(this.bankTransactionCode, transactionDetails.bankTransactionCode) &&
+               Objects.equals(this.proprietaryBankTransactionCode, transactionDetails.proprietaryBankTransactionCode) &&
+               Objects.equals(this.additionalInformationStructured, transactionDetails.additionalInformationStructured) &&
+               Objects.equals(this.balanceAfterTransaction, transactionDetails.balanceAfterTransaction) &&
+               Objects.equals(this._links, transactionDetails._links);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(transactionId, entryReference, endToEndId, mandateId, checkId, creditorId, bookingDate, valueDate, transactionAmount, currencyExchange, creditorName, creditorAccount, creditorAgent, ultimateCreditor, debtorName, debtorAccount, debtorAgent, ultimateDebtor, remittanceInformationUnstructured, remittanceInformationStructured, additionalInformation, purposeCode, bankTransactionCode, proprietaryBankTransactionCode, additionalInformationStructured, balanceAfterTransaction, _links);
+    @Override
+    public int hashCode() {
+        return Objects.hash(transactionId, entryReference, endToEndId, mandateId, checkId, creditorId, bookingDate, valueDate, transactionAmount, currencyExchange, creditorName, creditorAccount, creditorAgent, ultimateCreditor, debtorName, debtorAccount, debtorAgent, ultimateDebtor, remittanceInformationUnstructured, remittanceInformationUnstructuredArray, remittanceInformationStructured, remittanceInformationStructuredArray, additionalInformation, purposeCode, bankTransactionCode, proprietaryBankTransactionCode, additionalInformationStructured, balanceAfterTransaction, _links);
   }
 
   @Override
@@ -789,9 +855,11 @@ public class TransactionDetails   {
     sb.append("    debtorAccount: ").append(toIndentedString(debtorAccount)).append("\n");
     sb.append("    debtorAgent: ").append(toIndentedString(debtorAgent)).append("\n");
     sb.append("    ultimateDebtor: ").append(toIndentedString(ultimateDebtor)).append("\n");
-    sb.append("    remittanceInformationUnstructured: ").append(toIndentedString(remittanceInformationUnstructured)).append("\n");
-    sb.append("    remittanceInformationStructured: ").append(toIndentedString(remittanceInformationStructured)).append("\n");
-    sb.append("    additionalInformation: ").append(toIndentedString(additionalInformation)).append("\n");
+      sb.append("    remittanceInformationUnstructured: ").append(toIndentedString(remittanceInformationUnstructured)).append("\n");
+      sb.append("    remittanceInformationUnstructuredArray: ").append(toIndentedString(remittanceInformationUnstructuredArray)).append("\n");
+      sb.append("    remittanceInformationStructured: ").append(toIndentedString(remittanceInformationStructured)).append("\n");
+      sb.append("    remittanceInformationStructuredArray: ").append(toIndentedString(remittanceInformationStructuredArray)).append("\n");
+      sb.append("    additionalInformation: ").append(toIndentedString(additionalInformation)).append("\n");
     sb.append("    purposeCode: ").append(toIndentedString(purposeCode)).append("\n");
     sb.append("    bankTransactionCode: ").append(toIndentedString(bankTransactionCode)).append("\n");
     sb.append("    proprietaryBankTransactionCode: ").append(toIndentedString(proprietaryBankTransactionCode)).append("\n");

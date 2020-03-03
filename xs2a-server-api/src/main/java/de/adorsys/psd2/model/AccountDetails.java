@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 adorsys GmbH & Co KG
+ * Copyright 2018-2020 adorsys GmbH & Co KG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import java.util.Objects;
  */
 @ApiModel(description = "The ASPSP shall give at least one of the account reference identifiers:   - iban   - bban   - pan   - maskedPan   - msisdn If the account is a multicurrency account currency code in \"currency\" is set to \"XXX\". ")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2019-12-26T15:06:21.086+02:00[Europe/Kiev]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-02-28T17:40:20.531650+02:00[Europe/Kiev]")
 
 public class AccountDetails   {
   @JsonProperty("resourceId")
@@ -47,23 +47,26 @@ public class AccountDetails   {
   @JsonProperty("bban")
   private String bban = null;
 
-  @JsonProperty("msisdn")
-  private String msisdn = null;
+    @JsonProperty("msisdn")
+    private String msisdn = null;
 
-  @JsonProperty("currency")
-  private String currency = null;
+    @JsonProperty("currency")
+    private String currency = null;
 
-  @JsonProperty("name")
-  private String name = null;
+    @JsonProperty("name")
+    private String name = null;
 
-  @JsonProperty("product")
-  private String product = null;
+    @JsonProperty("displayName")
+    private String displayName = null;
 
-  @JsonProperty("cashAccountType")
-  private String cashAccountType = null;
+    @JsonProperty("product")
+    private String product = null;
 
-  @JsonProperty("status")
-  private AccountStatus status = null;
+    @JsonProperty("cashAccountType")
+    private String cashAccountType = null;
+
+    @JsonProperty("status")
+    private AccountStatus status = null;
 
   @JsonProperty("bic")
   private String bic = null;
@@ -243,22 +246,46 @@ public class AccountDetails   {
 
   @JsonProperty("name")
   public String getName() {
-    return name;
+      return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public AccountDetails product(String product) {
-    this.product = product;
-    return this;
-  }
+    public AccountDetails displayName(String displayName) {
+        this.displayName = displayName;
+        return this;
+    }
 
-  /**
-   * Product name of the bank for this account, proprietary definition.
-   * @return product
-  **/
+    /**
+     * Name of the account as defined by the PSU within online channels.
+     *
+     * @return displayName
+     **/
+    @ApiModelProperty(value = "Name of the account as defined by the PSU within online channels.")
+
+    @Size(max = 70)
+
+    @JsonProperty("displayName")
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public AccountDetails product(String product) {
+        this.product = product;
+        return this;
+    }
+
+    /**
+     * Product name of the bank for this account, proprietary definition.
+     *
+     * @return product
+     **/
   @ApiModelProperty(value = "Product name of the bank for this account, proprietary definition.")
 
 @Size(max=35)
@@ -482,27 +509,28 @@ public class AccountDetails   {
     if (o == null || getClass() != o.getClass()) {
       return false;
 }    AccountDetails accountDetails = (AccountDetails) o;
-    return Objects.equals(this.resourceId, accountDetails.resourceId) &&
-    Objects.equals(this.iban, accountDetails.iban) &&
-    Objects.equals(this.bban, accountDetails.bban) &&
-    Objects.equals(this.msisdn, accountDetails.msisdn) &&
-    Objects.equals(this.currency, accountDetails.currency) &&
-    Objects.equals(this.name, accountDetails.name) &&
-    Objects.equals(this.product, accountDetails.product) &&
-    Objects.equals(this.cashAccountType, accountDetails.cashAccountType) &&
-    Objects.equals(this.status, accountDetails.status) &&
-    Objects.equals(this.bic, accountDetails.bic) &&
-    Objects.equals(this.linkedAccounts, accountDetails.linkedAccounts) &&
-    Objects.equals(this.usage, accountDetails.usage) &&
-    Objects.equals(this.details, accountDetails.details) &&
-    Objects.equals(this.balances, accountDetails.balances) &&
-    Objects.equals(this._links, accountDetails._links) &&
-    Objects.equals(this.ownerName, accountDetails.ownerName);
+      return Objects.equals(this.resourceId, accountDetails.resourceId) &&
+                 Objects.equals(this.iban, accountDetails.iban) &&
+                 Objects.equals(this.bban, accountDetails.bban) &&
+                 Objects.equals(this.msisdn, accountDetails.msisdn) &&
+                 Objects.equals(this.currency, accountDetails.currency) &&
+                 Objects.equals(this.name, accountDetails.name) &&
+                 Objects.equals(this.displayName, accountDetails.displayName) &&
+                 Objects.equals(this.product, accountDetails.product) &&
+                 Objects.equals(this.cashAccountType, accountDetails.cashAccountType) &&
+                 Objects.equals(this.status, accountDetails.status) &&
+                 Objects.equals(this.bic, accountDetails.bic) &&
+                 Objects.equals(this.linkedAccounts, accountDetails.linkedAccounts) &&
+                 Objects.equals(this.usage, accountDetails.usage) &&
+                 Objects.equals(this.details, accountDetails.details) &&
+                 Objects.equals(this.balances, accountDetails.balances) &&
+                 Objects.equals(this._links, accountDetails._links) &&
+                 Objects.equals(this.ownerName, accountDetails.ownerName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(resourceId, iban, bban, msisdn, currency, name, product, cashAccountType, status, bic, linkedAccounts, usage, details, balances, _links, ownerName);
+      return Objects.hash(resourceId, iban, bban, msisdn, currency, name, displayName, product, cashAccountType, status, bic, linkedAccounts, usage, details, balances, _links, ownerName);
   }
 
   @Override
@@ -515,8 +543,9 @@ public class AccountDetails   {
     sb.append("    bban: ").append(toIndentedString(bban)).append("\n");
     sb.append("    msisdn: ").append(toIndentedString(msisdn)).append("\n");
     sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    product: ").append(toIndentedString(product)).append("\n");
+      sb.append("    name: ").append(toIndentedString(name)).append("\n");
+      sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
+      sb.append("    product: ").append(toIndentedString(product)).append("\n");
     sb.append("    cashAccountType: ").append(toIndentedString(cashAccountType)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    bic: ").append(toIndentedString(bic)).append("\n");
