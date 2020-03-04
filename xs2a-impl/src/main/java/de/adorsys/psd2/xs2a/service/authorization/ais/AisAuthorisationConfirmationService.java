@@ -51,7 +51,8 @@ import java.util.Optional;
 
 import static de.adorsys.psd2.xs2a.core.domain.TppMessageInformation.of;
 import static de.adorsys.psd2.xs2a.core.error.ErrorType.AIS_403;
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.*;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_UNKNOWN_403;
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.SCA_INVALID;
 
 @Slf4j
 @Component
@@ -187,7 +188,7 @@ public class AisAuthorisationConfirmationService {
                                       .tppMessages(of(SCA_INVALID))
                                       .build();
 
-        log.info("Authorisation-ID: [{}]. Update consent PSU data failed: confirmation code is wrong.", authorisationId);
+        log.info("Authorisation-ID: [{}]. Update consent PSU data failed: confirmation code is wrong or has been provided more than once.", authorisationId);
 
         return new UpdateConsentPsuDataResponse(errorHolder, consentId, authorisationId, psuIdData);
     }

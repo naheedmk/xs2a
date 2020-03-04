@@ -158,11 +158,9 @@ public class PisAuthorisationConfirmationService {
                                                                  ? buildConfirmationCodeSpiErrorResponse(spiResponse, request.getPaymentId(), request.getAuthorisationId(), request.getPsuData())
                                                                  : new Xs2aUpdatePisCommonPaymentPsuDataResponse(spiResponse.getPayload().getScaStatus(), request.getPaymentId(), request.getAuthorisationId(), request.getPsuData());
 
-        if (!spiError) {
-            UpdateAuthorisationRequest updatePaymentRequest = pisCommonPaymentMapper.mapToUpdateAuthorisationRequest(response, authorisationResponse.getAuthorisationType());
-            authorisationServiceEncrypted.updateAuthorisation(request.getAuthorisationId(), updatePaymentRequest);
-            xs2aUpdatePaymentAfterSpiService.updatePaymentStatus(request.getPaymentId(), spiResponse.getPayload().getTransactionStatus());
-        }
+        UpdateAuthorisationRequest updatePaymentRequest = pisCommonPaymentMapper.mapToUpdateAuthorisationRequest(response, authorisationResponse.getAuthorisationType());
+        authorisationServiceEncrypted.updateAuthorisation(request.getAuthorisationId(), updatePaymentRequest);
+        xs2aUpdatePaymentAfterSpiService.updatePaymentStatus(request.getPaymentId(), response.getTransactionStatus());
 
         return response;
     }
@@ -179,7 +177,7 @@ public class PisAuthorisationConfirmationService {
         ErrorHolder errorHolder = ErrorHolder.builder(ErrorType.PIS_400)
                                       .tppMessages(TppMessageInformation.of(MessageErrorCode.SCA_INVALID))
                                       .build();
-        log.info("Payment-ID [{}], Authorisation-ID [{}]. Updating PIS authorisation PSU Data has failed: confirmation code is wrong.",
+        log.info("Payment-ID [{}], Authorisation-ID [{}]. Updating PIS authorisation PSU Data has failed: confirmation code is wrong or has been provided more than once.",
                  paymentId, authorisationId);
 
         return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
