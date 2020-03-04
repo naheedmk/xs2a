@@ -74,14 +74,14 @@ public class SpiToXs2aAccountDetailsMapper {
                             ad.getMaskedPan(),
                             ad.getCurrency(),
                             ad.getName(),
-                            cardAccountDetails.getDisplayName(),
+                            ad.getDisplayName(),
                             ad.getProduct(),
                             mapToAccountType(ad.getCashSpiAccountType()),
                             mapToAccountStatus(ad.getSpiAccountStatus()),
                             mapToXs2aUsageType(ad.getUsageType()),
                             ad.getDetails(),
                             balanceMapper.mapToXs2aBalanceList(ad.getBalances()),
-                            Optional.ofNullable(cardAccountDetails.getCreditLimit()).map(spiToXs2aAmountMapper::mapToXs2aAmount).orElse(null),
+                            Optional.ofNullable(ad.getCreditLimit()).map(spiToXs2aAmountMapper::mapToXs2aAmount).orElse(null),
                             ad.getOwnerName()
                         )
                    )

@@ -33,23 +33,23 @@ import java.util.Objects;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-02-28T17:40:20.531650+02:00[Europe/Kiev]")
 
-public class ConfirmationOfFunds   {
-  @JsonProperty("cardNumber")
-  private String cardNumber = null;
+public class ConfirmationOfFunds {
+    @JsonProperty("cardNumber")
+    private String cardNumber = null;
 
-  @JsonProperty("account")
-  private AccountReference account = null;
+    @JsonProperty("account")
+    private AccountReference account = null;
 
-  @JsonProperty("payee")
-  private String payee = null;
+    @JsonProperty("payee")
+    private String payee = null;
 
-  @JsonProperty("instructedAmount")
-  private Amount instructedAmount = null;
+    @JsonProperty("instructedAmount")
+    private Amount instructedAmount = null;
 
-  public ConfirmationOfFunds cardNumber(String cardNumber) {
-    this.cardNumber = cardNumber;
-    return this;
-  }
+    public ConfirmationOfFunds cardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
+        return this;
+    }
 
     /**
      * Card Number of the card issued by the PIISP. Should be delivered if available.
@@ -58,129 +58,133 @@ public class ConfirmationOfFunds   {
      **/
     @ApiModelProperty(value = "Card Number of the card issued by the PIISP. Should be delivered if available. ")
 
-@Size(max=35)
+    @Size(max = 35)
 
-  @JsonProperty("cardNumber")
-  public String getCardNumber() {
-    return cardNumber;
-  }
-
-  public void setCardNumber(String cardNumber) {
-    this.cardNumber = cardNumber;
-  }
-
-  public ConfirmationOfFunds account(AccountReference account) {
-    this.account = account;
-    return this;
-  }
-
-  /**
-   * Get account
-   * @return account
-  **/
-  @ApiModelProperty(required = true, value = "")
-  @NotNull
-
-  @Valid
-
-
-  @JsonProperty("account")
-  public AccountReference getAccount() {
-    return account;
-  }
-
-  public void setAccount(AccountReference account) {
-    this.account = account;
-  }
-
-  public ConfirmationOfFunds payee(String payee) {
-    this.payee = payee;
-    return this;
-  }
-
-  /**
-   * Name payee.
-   * @return payee
-  **/
-  @ApiModelProperty(value = "Name payee.")
-
-@Size(max=70)
-
-  @JsonProperty("payee")
-  public String getPayee() {
-    return payee;
-  }
-
-  public void setPayee(String payee) {
-    this.payee = payee;
-  }
-
-  public ConfirmationOfFunds instructedAmount(Amount instructedAmount) {
-    this.instructedAmount = instructedAmount;
-    return this;
-  }
-
-  /**
-   * Get instructedAmount
-   * @return instructedAmount
-  **/
-  @ApiModelProperty(required = true, value = "")
-  @NotNull
-
-  @Valid
-
-
-  @JsonProperty("instructedAmount")
-  public Amount getInstructedAmount() {
-    return instructedAmount;
-  }
-
-  public void setInstructedAmount(Amount instructedAmount) {
-    this.instructedAmount = instructedAmount;
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    @JsonProperty("cardNumber")
+    public String getCardNumber() {
+        return cardNumber;
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-}    ConfirmationOfFunds confirmationOfFunds = (ConfirmationOfFunds) o;
-    return Objects.equals(this.cardNumber, confirmationOfFunds.cardNumber) &&
-    Objects.equals(this.account, confirmationOfFunds.account) &&
-    Objects.equals(this.payee, confirmationOfFunds.payee) &&
-    Objects.equals(this.instructedAmount, confirmationOfFunds.instructedAmount);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(cardNumber, account, payee, instructedAmount);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class ConfirmationOfFunds {\n");
-
-    sb.append("    cardNumber: ").append(toIndentedString(cardNumber)).append("\n");
-    sb.append("    account: ").append(toIndentedString(account)).append("\n");
-    sb.append("    payee: ").append(toIndentedString(payee)).append("\n");
-    sb.append("    instructedAmount: ").append(toIndentedString(instructedAmount)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(Object o) {
-    if (o == null) {
-      return "null";
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
     }
-    return o.toString().replace("\n", "\n    ");
-  }
+
+    public ConfirmationOfFunds account(AccountReference account) {
+        this.account = account;
+        return this;
+    }
+
+    /**
+     * Get account
+     *
+     * @return account
+     **/
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+
+    @Valid
+
+
+    @JsonProperty("account")
+    public AccountReference getAccount() {
+        return account;
+    }
+
+    public void setAccount(AccountReference account) {
+        this.account = account;
+    }
+
+    public ConfirmationOfFunds payee(String payee) {
+        this.payee = payee;
+        return this;
+    }
+
+    /**
+     * Name payee.
+     *
+     * @return payee
+     **/
+    @ApiModelProperty(value = "Name payee.")
+
+    @Size(max = 70)
+
+    @JsonProperty("payee")
+    public String getPayee() {
+        return payee;
+    }
+
+    public void setPayee(String payee) {
+        this.payee = payee;
+    }
+
+    public ConfirmationOfFunds instructedAmount(Amount instructedAmount) {
+        this.instructedAmount = instructedAmount;
+        return this;
+    }
+
+    /**
+     * Get instructedAmount
+     *
+     * @return instructedAmount
+     **/
+    @ApiModelProperty(required = true, value = "")
+    @NotNull
+
+    @Valid
+
+
+    @JsonProperty("instructedAmount")
+    public Amount getInstructedAmount() {
+        return instructedAmount;
+    }
+
+    public void setInstructedAmount(Amount instructedAmount) {
+        this.instructedAmount = instructedAmount;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ConfirmationOfFunds confirmationOfFunds = (ConfirmationOfFunds) o;
+        return Objects.equals(this.cardNumber, confirmationOfFunds.cardNumber) &&
+                   Objects.equals(this.account, confirmationOfFunds.account) &&
+                   Objects.equals(this.payee, confirmationOfFunds.payee) &&
+                   Objects.equals(this.instructedAmount, confirmationOfFunds.instructedAmount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(cardNumber, account, payee, instructedAmount);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ConfirmationOfFunds {\n");
+
+        sb.append("    cardNumber: ").append(toIndentedString(cardNumber)).append("\n");
+        sb.append("    account: ").append(toIndentedString(account)).append("\n");
+        sb.append("    payee: ").append(toIndentedString(payee)).append("\n");
+        sb.append("    instructedAmount: ").append(toIndentedString(instructedAmount)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces
+     * (except the first line).
+     */
+    private String toIndentedString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 }
 
