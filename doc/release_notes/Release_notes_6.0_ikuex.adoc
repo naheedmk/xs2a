@@ -17,4 +17,4 @@ From now on, all `BalanceType` values are adjusted according to BG Specification
 
 == Bugfix: Validation for PIIS field cardNumber is missing
 
-From now on, value of the `cardNumber` field in Funds Confirmation request (`POST /v1/funds-confirmations`) is being validated and can not exceeds the maximum length of 35 symbols
+From now on, value of the `cardNumber` field in Funds Confirmation request (`POST /v1/funds-confirmations`) is being validated and can not exceed the maximum length of 35 symbols
