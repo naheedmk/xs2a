@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 @Slf4j
 public class CertificateUtils {
+    private static final int CERTIFICATE_PART_DATA_SIZE = 64;
 
     private CertificateUtils() {
     }
@@ -61,4 +62,35 @@ public class CertificateUtils {
 		return null;
 	}
 
+    /**
+     * Normalizes certificate: removes excess blanks and wraps by beginning and end tags.
+     *
+     * @param certificate certificate text
+     * @return normalized certificate
+     * <p>
+     * -----BEGIN CERTIFICATE-----
+     * (certificate)
+     * -----END CERTIFICATE-----
+     */
+    public static String normalizeCertificate(String certificate) {
+        if (certificate == null) {
+            return null;
+        }
+        String certificateData = getCertificateData(certificate);
+        StringBuilder formattedSb = new StringBuilder(10000);
+        formattedSb.append("-----BEGIN CERTIFICATE-----\n");
+        int length = certificateData.length();
+        for (int i = 0; i < length; i += CERTIFICATE_PART_DATA_SIZE) {
+            formattedSb.append(certificateData, i, Math.min(length, i + CERTIFICATE_PART_DATA_SIZE)).append("\n");
+        }
+        formattedSb.append("-----END CERTIFICATE-----");
+        return formattedSb.toString();
+    }
+
+    private static String getCertificateData(String certificate) {
+        return certificate.replace(" ", "")
+                   .replace("\n", "")
+                   .replace("-----BEGINCERTIFICATE-----", "")
+                   .replace("-----ENDCERTIFICATE-----", "");
+    }
 }
