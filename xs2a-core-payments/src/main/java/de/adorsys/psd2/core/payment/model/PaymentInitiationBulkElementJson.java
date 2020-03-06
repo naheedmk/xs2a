@@ -485,7 +485,7 @@ public class PaymentInitiationBulkElementJson {
                    Objects.equals(this.remittanceInformationUnstructured, paymentInitiationBulkElementJson.remittanceInformationUnstructured) &&
                    Objects.equals(this.remittanceInformationStructured, paymentInitiationBulkElementJson.remittanceInformationStructured) &&
                    Objects.equals(this.remittanceInformationStructuredArray, paymentInitiationBulkElementJson.remittanceInformationStructuredArray) &&
-                   Objects.equals(this.debtorName, paymentInitiationBulkElementJson.debtorName));
+                   Objects.equals(this.debtorName, paymentInitiationBulkElementJson.debtorName);
     }
 
     @Override
