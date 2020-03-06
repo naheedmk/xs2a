@@ -19,6 +19,7 @@ package de.adorsys.psd2.validator.certificate.util;
 import com.nimbusds.jose.util.X509CertUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.security.cert.X509Certificate;
@@ -77,14 +78,10 @@ public class CertificateUtils {
             return null;
         }
         String certificateData = getCertificateData(certificate);
-        StringBuilder formattedSb = new StringBuilder(10000);
-        formattedSb.append("-----BEGIN CERTIFICATE-----\n");
-        int length = certificateData.length();
-        for (int i = 0; i < length; i += CERTIFICATE_PART_DATA_SIZE) {
-            formattedSb.append(certificateData, i, Math.min(length, i + CERTIFICATE_PART_DATA_SIZE)).append("\n");
-        }
-        formattedSb.append("-----END CERTIFICATE-----");
-        return formattedSb.toString();
+        return new StringBuilder("-----BEGIN CERTIFICATE-----\n")
+                   .append(certificateData.replaceAll(".{" + CERTIFICATE_PART_DATA_SIZE + "}", "$0" + StringUtils.LF))
+                   .append("-----END CERTIFICATE-----")
+                   .toString();
     }
 
     private static String getCertificateData(String certificate) {
