@@ -78,10 +78,9 @@ public class CertificateUtils {
             return null;
         }
         String certificateData = getCertificateData(certificate);
-        return new StringBuilder("-----BEGIN CERTIFICATE-----\n")
-                   .append(certificateData.replaceAll(".{" + CERTIFICATE_PART_DATA_SIZE + "}", "$0" + StringUtils.LF))
-                   .append("-----END CERTIFICATE-----")
-                   .toString();
+        return "-----BEGIN CERTIFICATE-----\n" +
+                   certificateData.replaceAll(".{" + CERTIFICATE_PART_DATA_SIZE + "}", "$0" + StringUtils.LF) +
+                   "-----END CERTIFICATE-----";
     }
 
     private static String getCertificateData(String certificate) {
