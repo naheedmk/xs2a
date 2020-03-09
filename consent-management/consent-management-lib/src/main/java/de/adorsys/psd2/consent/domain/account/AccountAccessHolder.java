@@ -16,41 +16,36 @@
 
 package de.adorsys.psd2.consent.domain.account;
 
-import de.adorsys.psd2.consent.api.AccountInfo;
 import de.adorsys.psd2.consent.api.TypeAccess;
-import de.adorsys.psd2.consent.api.ais.AccountAdditionalInformationAccess;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
+import de.adorsys.psd2.xs2a.core.profile.AccountReference;
+import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static de.adorsys.psd2.consent.api.TypeAccess.*;
 
 @Getter
 public abstract class AccountAccessHolder<T extends AccountAccess> {
     protected Set<T> accountAccesses = new HashSet<>();
-    private AisAccountAccessInfo accountAccessInfo;
+    private de.adorsys.psd2.core.data.AccountAccess accountAccessInfo;
 
-    public AccountAccessHolder(AisAccountAccessInfo accountAccessInfo) {
+    public AccountAccessHolder(de.adorsys.psd2.core.data.AccountAccess accountAccessInfo) {
         this.accountAccessInfo = accountAccessInfo;
         fillAccess(this.accountAccessInfo);
     }
 
-    private void fillAccess(AisAccountAccessInfo accountAccessInfo) {
-        doFillAccess(accountAccessInfo.getAccounts(), ACCOUNT);
-        doFillAccess(accountAccessInfo.getBalances(), BALANCE);
-        doFillAccess(accountAccessInfo.getTransactions(), TRANSACTION);
-        AccountAdditionalInformationAccess accountAdditionalInformationAccess = accountAccessInfo.getAccountAdditionalInformationAccess();
+    private void fillAccess(de.adorsys.psd2.core.data.AccountAccess accountAccess) {
+        doFillAccess(accountAccess.getAccounts(), ACCOUNT);
+        doFillAccess(accountAccess.getBalances(), BALANCE);
+        doFillAccess(accountAccess.getTransactions(), TRANSACTION);
+        AdditionalInformationAccess accountAdditionalInformationAccess = accountAccess.getAdditionalInformationAccess();
         if (accountAdditionalInformationAccess != null) {
             doFillAccess(accountAdditionalInformationAccess.getOwnerName(), OWNER_NAME);
         }
     }
 
-    protected abstract void doFillAccess(List<AccountInfo> info, TypeAccess typeAccess);
-
-    protected Currency getCurrencyByString(String currency) {
-        return Optional.ofNullable(currency)
-                   .map(Currency::getInstance)
-                   .orElse(null);
-    }
+    protected abstract void doFillAccess(List<AccountReference> info, TypeAccess typeAccess);
 }

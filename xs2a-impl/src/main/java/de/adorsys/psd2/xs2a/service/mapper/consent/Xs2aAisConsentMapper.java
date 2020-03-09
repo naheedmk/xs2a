@@ -18,7 +18,6 @@ package de.adorsys.psd2.xs2a.service.mapper.consent;
 
 import de.adorsys.psd2.consent.api.AccountInfo;
 import de.adorsys.psd2.consent.api.ais.AccountAdditionalInformationAccess;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
@@ -112,17 +111,6 @@ public class Xs2aAisConsentMapper {
         accountConfirmation.setPsuId(Optional.ofNullable(psuData).map(PsuIdData::getPsuId).orElse(null));
         accountConfirmation.setTanNumber(request.getScaAuthenticationData());
         return accountConfirmation;
-    }
-
-    public AisAccountAccessInfo mapToAisAccountAccessInfo(AccountAccess access) {
-        AisAccountAccessInfo accessInfo = new AisAccountAccessInfo();
-        accessInfo.setAccounts(mapToListAccountInfo(access.getAccounts()));
-        accessInfo.setBalances(mapToListAccountInfo(access.getBalances()));
-        accessInfo.setTransactions(mapToListAccountInfo(access.getTransactions()));
-        accessInfo.setAccountAdditionalInformationAccess(Optional.ofNullable(access.getAdditionalInformationAccess())
-                                                             .map(this::mapToAccountAdditionalInformationAccess)
-                                                             .orElse(null));
-        return accessInfo;
     }
 
     public CmsConsent mapToCmsConsent(CreateConsentReq request, PsuIdData psuData, TppInfo tppInfo, int allowedFrequencyPerDay) {

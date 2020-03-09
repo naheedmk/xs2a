@@ -19,7 +19,6 @@ package de.adorsys.psd2.consent.service;
 import de.adorsys.psd2.consent.api.ActionStatus;
 import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.WrongChecksumException;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
 import de.adorsys.psd2.consent.api.ais.AisConsentActionRequest;
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.api.service.AisConsentService;
@@ -87,7 +86,7 @@ public class AisConsentServiceInternal implements AisConsentService {
 
     @Override
     @Transactional(rollbackFor = WrongChecksumException.class)
-    public CmsResponse<CmsConsent> updateAspspAccountAccess(String consentId, AisAccountAccessInfo request) throws WrongChecksumException {
+    public CmsResponse<CmsConsent> updateAspspAccountAccess(String consentId, AccountAccess request) throws WrongChecksumException {
         Optional<ConsentEntity> consentOptional = aisConsentRepository.getActualAisConsent(consentId);
 
         if (!consentOptional.isPresent()) {
@@ -108,11 +107,10 @@ public class AisConsentServiceInternal implements AisConsentService {
                    .build();
     }
 
-    private ConsentEntity updateConsentAccess(ConsentEntity consentEntity, AisAccountAccessInfo request) {
+    private ConsentEntity updateConsentAccess(ConsentEntity consentEntity, AccountAccess request) {
         List<AspspAccountAccess> aspspAccountAccesses = consentEntity.getAspspAccountAccesses();
         AccountAccess existingAccess = accessMapper.mapAspspAccessesToAccountAccess(aspspAccountAccesses, consentEntity.getOwnerNameType());
-        AccountAccess requestedAccess = accessMapper.mapToAccountAccess(request);
-        AccountAccess updatedAccesses = accountAccessUpdater.updateAccountReferencesInAccess(existingAccess, requestedAccess);
+        AccountAccess updatedAccesses = accountAccessUpdater.updateAccountReferencesInAccess(existingAccess, request);
         List<AspspAccountAccess> updatedAspspAccountAccesses = accessMapper.mapToAspspAccountAccess(updatedAccesses);
         consentEntity.setAspspAccountAccesses(updatedAspspAccountAccesses);
         return consentEntity;

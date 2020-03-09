@@ -16,10 +16,10 @@
 
 package de.adorsys.psd2.consent.domain.account;
 
-import de.adorsys.psd2.consent.api.AccountInfo;
-import de.adorsys.psd2.consent.api.ais.AccountAdditionalInformationAccess;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
+import de.adorsys.psd2.core.data.AccountAccess;
+import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.AccountReferenceType;
+import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -29,34 +29,46 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TppAccountAccessHolderTest {
+    private static final String IBAN = "DE85500105178874624792";
 
     @Test
     void tppAccountAccessHolder_noAdditionalInformation() {
         //Given
-        AisAccountAccessInfo aisAccountAccessInfo = new AisAccountAccessInfo();
+        AccountAccess accountAccess = buildAccountAccessWithAdditionalInformation(buildEmptyAdditionalInformationAccess());
         //When
-        TppAccountAccessHolder tppAccountAccessHolder = new TppAccountAccessHolder(aisAccountAccessInfo);
+        TppAccountAccessHolder tppAccountAccessHolder = new TppAccountAccessHolder(accountAccess);
         //Then
         Set<TppAccountAccess> accountAccesses = tppAccountAccessHolder.getAccountAccesses();
-        assertEquals( 0, accountAccesses.size());
+        assertEquals(0, accountAccesses.size());
     }
 
     @Test
     void tppAccountAccessHolder_ownerName() {
         //Given
-        AccountReferenceType accountReferenceType = AccountReferenceType.IBAN;
-        String accountIdentifier = "IBAN";
-        AccountInfo accountInfo = AccountInfo.builder().accountReferenceType(accountReferenceType).accountIdentifier(accountIdentifier).build();
-        List<AccountInfo> ownerName = Collections.singletonList(accountInfo);
-        AisAccountAccessInfo aisAccountAccessInfo = new AisAccountAccessInfo();
-        aisAccountAccessInfo.setAccountAdditionalInformationAccess(new AccountAdditionalInformationAccess(ownerName));
+        AccountReference accountInfo = new AccountReference();
+        accountInfo.setIban(IBAN);
+        
+        List<AccountReference> ownerName = Collections.singletonList(accountInfo);
+        AccountAccess accountAccess = buildAccountAccessWithAdditionalInformation(buildAdditionalInformationAccess(ownerName));
         //When
-        TppAccountAccessHolder tppAccountAccessHolder = new TppAccountAccessHolder(aisAccountAccessInfo);
+        TppAccountAccessHolder tppAccountAccessHolder = new TppAccountAccessHolder(accountAccess);
         //Then
         Set<TppAccountAccess> accountAccesses = tppAccountAccessHolder.getAccountAccesses();
-        assertEquals( 1, accountAccesses.size());
+        assertEquals(1, accountAccesses.size());
         TppAccountAccess tppAccountAccess = accountAccesses.iterator().next();
-        assertEquals( accountIdentifier, tppAccountAccess.getAccountIdentifier());
-        assertEquals( accountReferenceType, tppAccountAccess.getAccountReferenceType());
+        assertEquals(IBAN, tppAccountAccess.getAccountIdentifier());
+        assertEquals(AccountReferenceType.IBAN, tppAccountAccess.getAccountReferenceType());
+    }
+
+    private AccountAccess buildAccountAccessWithAdditionalInformation(AdditionalInformationAccess additionalInformationAccess) {
+        return new AccountAccess(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), additionalInformationAccess);
+    }
+
+    private AdditionalInformationAccess buildEmptyAdditionalInformationAccess() {
+        return new AdditionalInformationAccess(Collections.emptyList());
+    }
+
+    private AdditionalInformationAccess buildAdditionalInformationAccess(List<AccountReference> ownerNames) {
+        return new AdditionalInformationAccess(ownerNames);
     }
 }

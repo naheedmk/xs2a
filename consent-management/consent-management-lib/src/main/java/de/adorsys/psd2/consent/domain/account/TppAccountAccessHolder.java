@@ -16,9 +16,9 @@
 
 package de.adorsys.psd2.consent.domain.account;
 
-import de.adorsys.psd2.consent.api.AccountInfo;
 import de.adorsys.psd2.consent.api.TypeAccess;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
+import de.adorsys.psd2.core.data.AccountAccess;
+import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.AccountReferenceType;
 import lombok.Value;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,17 +32,17 @@ import static de.adorsys.psd2.consent.api.TypeAccess.*;
 @Value
 public class TppAccountAccessHolder extends AccountAccessHolder<TppAccountAccess> {
 
-    public TppAccountAccessHolder(AisAccountAccessInfo accountAccessInfo) {
-        super(accountAccessInfo);
+    public TppAccountAccessHolder(AccountAccess accountAccess) {
+        super(accountAccess);
     }
 
     @Override
-    public void doFillAccess(List<AccountInfo> info, TypeAccess typeAccess) {
+    public void doFillAccess(List<AccountReference> info, TypeAccess typeAccess) {
         if (CollectionUtils.isNotEmpty(info)) {
-            info.forEach(a -> addAccountAccess(a.getAccountIdentifier(),
-                typeAccess,
-                a.getAccountType(),
-                getCurrencyByString(a.getCurrency())));
+            info.forEach(a -> addAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
+                                               typeAccess,
+                                               a.getAccountReferenceType(),
+                                               a.getCurrency()));
         }
     }
 
