@@ -17,7 +17,6 @@
 package de.adorsys.psd2.consent.config;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.SessionFactory;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
