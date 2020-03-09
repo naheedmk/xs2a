@@ -17,6 +17,8 @@
 package de.adorsys.psd2.consent.config;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.SessionFactory;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
 import org.hibernate.internal.SessionFactoryImpl;
@@ -36,7 +38,7 @@ public class HibernateListenerConfig {
 
     @PostConstruct
     public void registerListeners() {
-        if (entityManagerFactory instanceof SessionFactoryImpl) {
+        if (entityManagerFactory instanceof SessionFactoryImplementor) {
             final SessionFactoryImpl sessionFactory = (SessionFactoryImpl) entityManagerFactory;
 
             final EventListenerRegistry registry = sessionFactory.getServiceRegistry()
