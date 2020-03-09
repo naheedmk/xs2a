@@ -40,13 +40,16 @@ public abstract class AuthorisationStatusValidator {
         }
 
         if (aspspProfileService.isAuthorisationConfirmationRequestMandated() && confirmationCodeReceived) {
-            return ValidationResult.invalid(ErrorType.AIS_400, MessageErrorCode.SCA_INVALID);
+            return ValidationResult.invalid(getErrorTypeForSCAInvalid(), MessageErrorCode.SCA_INVALID);
         }
 
         log.info("Authorisation has failed status");
-        return ValidationResult.invalid(getErrorType(), MessageErrorCode.STATUS_INVALID);
+        return ValidationResult.invalid(getErrorTypeForStatusInvalid(), MessageErrorCode.STATUS_INVALID);
     }
 
     @NotNull
-    protected abstract ErrorType getErrorType();
+    protected abstract ErrorType getErrorTypeForStatusInvalid();
+
+    @NotNull
+    protected abstract ErrorType getErrorTypeForSCAInvalid();
 }

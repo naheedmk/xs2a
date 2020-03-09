@@ -29,7 +29,12 @@ public class AisAuthorisationStatusValidator extends AuthorisationStatusValidato
     }
 
     @Override
-    protected @NotNull ErrorType getErrorType() {
+    protected @NotNull ErrorType getErrorTypeForStatusInvalid() {
         return ErrorType.AIS_409;
+    }
+
+    @Override
+    protected @NotNull ErrorType getErrorTypeForSCAInvalid() {
+        return ErrorType.AIS_400;
     }
 }

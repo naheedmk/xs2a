@@ -38,7 +38,7 @@ class PisAuthorisationStatusValidatorTest {
     private static final MessageError STATUS_VALIDATION_ERROR =
         new MessageError(ErrorType.PIS_409, TppMessageInformation.of(STATUS_INVALID));
     private static final MessageError SCA_INVALID_ERROR =
-        new MessageError(ErrorType.AIS_400, TppMessageInformation.of(SCA_INVALID));
+        new MessageError(ErrorType.PIS_400, TppMessageInformation.of(SCA_INVALID));
 
     @InjectMocks
     private PisAuthorisationStatusValidator pisAuthorisationValidator;

@@ -29,7 +29,12 @@ public class PisAuthorisationStatusValidator extends AuthorisationStatusValidato
     }
 
     @Override
-    protected @NotNull ErrorType getErrorType() {
+    protected @NotNull ErrorType getErrorTypeForStatusInvalid() {
         return ErrorType.PIS_409;
+    }
+
+    @Override
+    protected @NotNull ErrorType getErrorTypeForSCAInvalid() {
+        return ErrorType.PIS_400;
     }
 }

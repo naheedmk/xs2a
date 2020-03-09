@@ -107,7 +107,7 @@ class UpdatePisCommonPaymentPsuDataValidatorTest {
     private AuthorisationStageCheckValidator authorisationStageCheckValidator;
     @Mock
     private AspspProfileServiceWrapper aspspProfileService;
-    
+
     @InjectMocks
     private UpdatePisCommonPaymentPsuDataValidator updatePisCommonPaymentPsuDataValidator;
 
@@ -217,6 +217,26 @@ class UpdatePisCommonPaymentPsuDataValidatorTest {
         assertNotNull(validationResult);
         assertTrue(validationResult.isNotValid());
         assertEquals(EXPIRED_PAYMENT_ERROR, validationResult.getMessageError());
+    }
+
+    @Test
+    void validate_withExpiredPaymentObjectInAuthorisationConfirmation_shouldReturnValidationError() {
+        // Given
+        PisCommonPaymentResponse commonPaymentResponse = buildPisCommonPaymentResponse(REJECTED_TRANSACTION_STATUS, TPP_INFO, ScaStatus.FAILED);
+        when(pisTppInfoValidator.validateTpp(TPP_INFO)).thenReturn(ValidationResult.valid());
+        when(pisEndpointAccessCheckerService.isEndpointAccessible(AUTHORISATION_ID, CONFIRMATION_CODE_RECEIVED_TRUE))
+            .thenReturn(true);
+        when(aspspProfileService.isAuthorisationConfirmationRequestMandated()).thenReturn(true);
+
+        // When
+        ValidationResult validationResult = updatePisCommonPaymentPsuDataValidator.validate( new UpdatePisCommonPaymentPsuDataPO(commonPaymentResponse, buildUpdateRequest(AUTHORISATION_ID, PSU_ID_DATA_1, CONFIRMATION_CODE)));
+
+        // Then
+        verify(pisTppInfoValidator).validateTpp(commonPaymentResponse.getTppInfo());
+
+        assertNotNull(validationResult);
+        assertTrue(validationResult.isNotValid());
+        assertEquals(SCA_INVALID_ERROR,validationResult.getMessageError());
     }
 
     @Test
