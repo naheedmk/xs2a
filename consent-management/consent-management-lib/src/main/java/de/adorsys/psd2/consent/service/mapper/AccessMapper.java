@@ -20,7 +20,6 @@ import de.adorsys.psd2.consent.api.AccountInfo;
 import de.adorsys.psd2.consent.api.TypeAccess;
 import de.adorsys.psd2.consent.api.ais.AccountAdditionalInformationAccess;
 import de.adorsys.psd2.consent.api.ais.AdditionalAccountInformationType;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
 import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.account.TppAccountAccess;
 import de.adorsys.psd2.core.data.AccountAccess;
@@ -118,18 +117,6 @@ public class AccessMapper {
                                                                                                                             a.getAspspAccountId())).collect(Collectors.toList()));
         }
         return aspspAccountAccesses;
-    }
-
-    public AccountAccess mapToAccountAccess(AisAccountAccessInfo aisAccountAccessInfo) {
-        Set<AccountReference> accounts = mapToAccountReferences(aisAccountAccessInfo.getAccounts());
-        Set<AccountReference> balances = mapToAccountReferences(aisAccountAccessInfo.getBalances());
-        Set<AccountReference> transactions = mapToAccountReferences(aisAccountAccessInfo.getTransactions());
-
-        Set<AccountReference> allAccounts = addReferencesToAccounts(accounts, balances, transactions);
-        return new AccountAccess(new ArrayList<>(allAccounts),
-                                 new ArrayList<>(balances),
-                                 new ArrayList<>(transactions),
-                                 mapToAdditionalInformationAccess(aisAccountAccessInfo.getAccountAdditionalInformationAccess()));
     }
 
     public AspspAccountAccess mapToAspspAccountAccess(AccountReference accountReference) {

@@ -16,9 +16,9 @@
 
 package de.adorsys.psd2.consent.domain.account;
 
-import de.adorsys.psd2.consent.api.AccountInfo;
 import de.adorsys.psd2.consent.api.TypeAccess;
-import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
+import de.adorsys.psd2.core.data.AccountAccess;
+import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import de.adorsys.psd2.xs2a.core.profile.AccountReferenceType;
 import lombok.Value;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,19 +31,19 @@ import static de.adorsys.psd2.consent.api.TypeAccess.*;
 
 @Value
 public class AspspAccountAccessHolder extends AccountAccessHolder<AspspAccountAccess> {
-    public AspspAccountAccessHolder(AisAccountAccessInfo accountAccessInfo) {
-        super(accountAccessInfo);
+    public AspspAccountAccessHolder(AccountAccess accountAccess) {
+        super(accountAccess);
     }
 
     @Override
-    public void doFillAccess(List<AccountInfo> info, TypeAccess typeAccess) {
-        if (CollectionUtils.isNotEmpty(info)) {
-            info.forEach(a -> addAccountAccess(a.getAspspAccountId(),
-                a.getAccountIdentifier(),
-                a.getResourceId(),
-                getCurrencyByString(a.getCurrency()),
-                a.getAccountType(),
-                typeAccess));
+    public void doFillAccess(List<AccountReference> accountReferences, TypeAccess typeAccess) {
+        if (CollectionUtils.isNotEmpty(accountReferences)) {
+            accountReferences.forEach(a -> addAccountAccess(a.getAspspAccountId(),
+                                                            a.getUsedAccountReferenceSelector().getAccountValue(),
+                                                            a.getResourceId(),
+                                                            a.getCurrency(),
+                                                            a.getAccountReferenceType(),
+                                                            typeAccess));
         }
     }
 
