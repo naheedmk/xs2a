@@ -28,6 +28,8 @@ import java.util.Arrays;
 @Slf4j
 public class CertificateUtils {
     private static final int CERTIFICATE_PART_DATA_SIZE = 64;
+    private static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----\n";
+    private static final String END_CERTIFICATE = "-----END CERTIFICATE-----";
 
     private CertificateUtils() {
     }
@@ -78,9 +80,9 @@ public class CertificateUtils {
             return null;
         }
         String certificateData = getCertificateData(certificate);
-        return "-----BEGIN CERTIFICATE-----\n" +
+        return BEGIN_CERTIFICATE +
                    certificateData.replaceAll(".{" + CERTIFICATE_PART_DATA_SIZE + "}", "$0" + StringUtils.LF) +
-                   "-----END CERTIFICATE-----";
+                   END_CERTIFICATE;
     }
 
     private static String getCertificateData(String certificate) {
