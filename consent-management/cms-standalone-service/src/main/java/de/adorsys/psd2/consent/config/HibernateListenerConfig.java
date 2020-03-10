@@ -38,7 +38,7 @@ public class HibernateListenerConfig {
     @PostConstruct
     public void registerListeners() {
         if (entityManagerFactory instanceof SessionFactoryImplementor) {
-            final SessionFactoryImpl sessionFactory = (SessionFactoryImpl) entityManagerFactory;
+            final SessionFactoryImplementor sessionFactory = (SessionFactoryImplementor) entityManagerFactory;
 
             final EventListenerRegistry registry = sessionFactory.getServiceRegistry()
                                                        .getService(EventListenerRegistry.class);
