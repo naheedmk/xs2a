@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
-import org.hibernate.internal.SessionFactoryImpl;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
@@ -37,14 +36,13 @@ public class HibernateListenerConfig {
 
     @PostConstruct
     public void registerListeners() {
-        if (entityManagerFactory instanceof SessionFactoryImplementor) {
-            final SessionFactoryImplementor sessionFactory = (SessionFactoryImplementor) entityManagerFactory;
+        final SessionFactoryImplementor sessionFactory = entityManagerFactory.unwrap(SessionFactoryImplementor.class);
 
-            final EventListenerRegistry registry = sessionFactory.getServiceRegistry()
-                                                       .getService(EventListenerRegistry.class);
+        final EventListenerRegistry registry = sessionFactory
+                                                   .getServiceRegistry()
+                                                   .getService(EventListenerRegistry.class);
 
-            registry.getEventListenerGroup(EventType.PRE_INSERT)
-                .appendListener(serviceInstanceIdEventListener);
-        }
+        registry.getEventListenerGroup(EventType.PRE_INSERT)
+            .appendListener(serviceInstanceIdEventListener);
     }
 }
