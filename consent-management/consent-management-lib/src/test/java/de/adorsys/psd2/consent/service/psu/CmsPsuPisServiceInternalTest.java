@@ -54,12 +54,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.xml.bind.annotation.XmlType;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -125,8 +123,8 @@ class CmsPsuPisServiceInternalTest {
     void getAuthorisationByAuthorisationId_Success(){
         when(authorisationSpecification.byExternalIdAndInstanceId(AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        //noinspection unchecked
         AuthorisationEntity authorisationEntity = buildPisAuthorisation();
+        //noinspection unchecked
         when(authorisationRepository.findOne(any(Specification.class))).thenReturn(Optional.of(authorisationEntity));
         when(cmsPsuAuthorisationMapper.mapToCmsPsuAuthorisation(authorisationEntity)).thenReturn(buildCmsPsuAuthorisation());
 
@@ -141,7 +139,6 @@ class CmsPsuPisServiceInternalTest {
         when(authorisationSpecification.byExternalIdAndInstanceId(AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID))
             .thenReturn(((root, criteriaQuery, criteriaBuilder) -> null));
         //noinspection unchecked
-        AuthorisationEntity authorisationEntity = buildPisAuthorisation();
         when(authorisationRepository.findOne(any(Specification.class))).thenReturn(Optional.empty());
 
         Optional<CmsPsuAuthorisation> cmsPsuAuthorisationOptional = cmsPsuPisServiceInternal.getAuthorisationByAuthorisationId(AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID);
@@ -227,10 +224,10 @@ class CmsPsuPisServiceInternalTest {
         when(psuDataMapper.mapToPsuData(psuIdData)).thenReturn(psuData);
         when(authorisationSpecification.byExternalIdAndInstanceId(AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        //noinspection unchecked
         AuthorisationEntity authorisationEntityWithoutPsuData = buildPisAuthorisation();
         authorisationEntityWithoutPsuData.setPsuData(null);
         authorisationEntityWithoutPsuData.setParentExternalId(WRONG_PAYMENT_ID);
+        //noinspection unchecked
         when(authorisationRepository.findOne(any(Specification.class))).thenReturn(Optional.of(authorisationEntityWithoutPsuData));
 
         // When
@@ -249,9 +246,9 @@ class CmsPsuPisServiceInternalTest {
         when(psuDataMapper.mapToPsuData(psuIdData)).thenReturn(psuData);
         when(authorisationSpecification.byExternalIdAndInstanceId(AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        //noinspection unchecked
         AuthorisationEntity authorisationEntityWithoutPsuData = buildPisAuthorisation();
         authorisationEntityWithoutPsuData.setPsuData(null);
+        //noinspection unchecked
         when(authorisationRepository.findOne(any(Specification.class))).thenReturn(Optional.of(authorisationEntityWithoutPsuData));
         PisCommonPaymentData pisCommonPaymentDataWithoutPsuData = buildPisCommonPaymentData();
         pisCommonPaymentDataWithoutPsuData.setPsuDataList(Collections.emptyList());
@@ -273,9 +270,9 @@ class CmsPsuPisServiceInternalTest {
         when(psuDataMapper.mapToPsuData(psuIdData)).thenReturn(psuData);
         when(authorisationSpecification.byExternalIdAndInstanceId(AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        //noinspection unchecked
         AuthorisationEntity authorisationEntityWithoutPsuData = buildPisAuthorisation();
         authorisationEntityWithoutPsuData.setPsuData(null);
+        //noinspection unchecked
         when(authorisationRepository.findOne(any(Specification.class))).thenReturn(Optional.of(authorisationEntityWithoutPsuData));
         PisCommonPaymentData pisCommonPaymentDataWithPsuData = buildPisCommonPaymentData();
         when(pisCommonPaymentDataRepository.findByPaymentId(PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentDataWithPsuData));
