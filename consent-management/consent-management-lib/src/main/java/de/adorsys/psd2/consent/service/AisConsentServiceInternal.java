@@ -34,15 +34,19 @@ import de.adorsys.psd2.consent.service.mapper.AccessMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsConsentMapper;
 import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
+import de.adorsys.psd2.xs2a.core.profile.AccountReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static de.adorsys.psd2.consent.api.CmsError.LOGICAL_ERROR;
 import static de.adorsys.psd2.xs2a.core.consent.ConsentStatus.EXPIRED;
@@ -98,13 +102,25 @@ public class AisConsentServiceInternal implements AisConsentService {
         }
 
         ConsentEntity consentEntity = consentOptional.get();
-        ConsentEntity updatedConsent = updateConsentAccess(consentEntity, request);
+        AccountAccess requestedAccessWithFilledAccounts = fillAccountsWithAllAccountReferences(request);
+        ConsentEntity updatedConsent = updateConsentAccess(consentEntity, requestedAccessWithFilledAccounts);
         ConsentEntity savedConsent = aisConsentRepository.verifyAndUpdate(updatedConsent);
         CmsConsent cmsConsent = mapToCmsConsent(savedConsent);
 
         return CmsResponse.<CmsConsent>builder()
                    .payload(cmsConsent)
                    .build();
+    }
+
+    private AccountAccess fillAccountsWithAllAccountReferences(AccountAccess accountAccess) {
+        List<AccountReference> allReferences = Stream.of(accountAccess.getAccounts(),
+                                                         accountAccess.getBalances(),
+                                                         accountAccess.getTransactions())
+                                                   .flatMap(Collection::stream)
+                                                   .distinct()
+                                                   .collect(Collectors.toList());
+        return new AccountAccess(allReferences, accountAccess.getBalances(), accountAccess.getTransactions(),
+                                 accountAccess.getAdditionalInformationAccess());
     }
 
     private ConsentEntity updateConsentAccess(ConsentEntity consentEntity, AccountAccess request) {
