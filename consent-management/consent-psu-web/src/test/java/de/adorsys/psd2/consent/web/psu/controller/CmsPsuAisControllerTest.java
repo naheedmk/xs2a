@@ -134,7 +134,7 @@ class CmsPsuAisControllerTest {
     }
 
     @Test
-    void updatePsuDataInConsent_onExpiredAuthorisationException_shouldReturnRequestTimeout() throws Exception {
+    void updatePsuDataInConsent_onExpiredAuthorisationException_shouldReturnNokLink() throws Exception {
         // Given
         when(cmsPsuAisService.updatePsuDataInConsent(PSU_ID_DATA, AUTHORISATION_ID, INSTANCE_ID))
             .thenThrow(new AuthorisationIsExpiredException(NOK_REDIRECT_URI));
@@ -234,7 +234,7 @@ class CmsPsuAisControllerTest {
     }
 
     @Test
-    void updateAuthorisationStatus_onExpiredAuthorisationException_shouldReturnRequestTimeout() throws Exception {
+    void updateAuthorisationStatus_onExpiredAuthorisationException_shouldReturnNokLink() throws Exception {
         // Given
         when(cmsPsuAisService.updateAuthorisationStatus(PSU_ID_DATA, CONSENT_ID, AUTHORISATION_ID, ScaStatus.RECEIVED, INSTANCE_ID, AUTHENTICATION_DATA_HOLDER))
             .thenThrow(new AuthorisationIsExpiredException(NOK_REDIRECT_URI));
@@ -517,7 +517,7 @@ class CmsPsuAisControllerTest {
     }
 
     @Test
-    void getConsentIdByRedirectId_onExpiredAuthorisationException_shouldReturnRequestTimeout() throws Exception {
+    void getConsentIdByRedirectId_onExpiredRedirectUrlException_shouldReturnNokLink() throws Exception {
         // Given
         when(cmsPsuAisService.checkRedirectAndGetConsent(AUTHORISATION_ID, INSTANCE_ID))
             .thenThrow(new RedirectUrlIsExpiredException(NOK_REDIRECT_URI));
@@ -588,7 +588,7 @@ class CmsPsuAisControllerTest {
     }
 
     @Test
-    void getAuthorisationByAuthorisationId_withEmptyServiceResponse_shouldReturnNotFound() throws Exception {
+    void getAuthorisationByAuthorisationId_withEmptyServiceResponse_shouldReturnBadRequest() throws Exception {
         // Given
         when(cmsPsuAisService.getAuthorisationByAuthorisationId(AUTHORISATION_ID, INSTANCE_ID))
             .thenReturn(Optional.empty());
