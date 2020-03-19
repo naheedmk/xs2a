@@ -4449,7 +4449,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\n\t\"authenticationMethodId\": \"SMS\"\n}",
+                      "raw": "{\n    \"authenticationMethodId\": \"SMS\",\n    \"authenticationData\": \"{{authConfirmationCode}}\"\n}",
                       "options": {
                         "raw": {
                           "language": "json"
