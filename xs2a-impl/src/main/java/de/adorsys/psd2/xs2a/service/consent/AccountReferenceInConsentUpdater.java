@@ -24,7 +24,6 @@ import de.adorsys.psd2.xs2a.core.profile.AccountReferenceType;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aAccountDetails;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aCardAccountDetails;
-import de.adorsys.psd2.xs2a.service.mapper.consent.Xs2aAisConsentMapper;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -42,7 +41,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountReferenceInConsentUpdater {
     private final Xs2aAisConsentService aisConsentService;
-    private final Xs2aAisConsentMapper consentMapper;
     private final CardAccountHandler cardAccountHandler;
 
     /**
