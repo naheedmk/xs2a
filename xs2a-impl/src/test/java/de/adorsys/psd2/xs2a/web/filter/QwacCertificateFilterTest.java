@@ -36,17 +36,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.util.DigestUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -226,22 +222,5 @@ class QwacCertificateFilterTest {
         // Then
         verify(chain).doFilter(mockRequest, mockResponse);
         verifyNoMoreInteractions(requestProviderService, tppService, tppInfoHolder);
-    }
-
-    @Test
-    void name() throws NoSuchAlgorithmException {
-        TppInfo tppInfo = new TppInfo();
-        String password = "ILoveJava";
-
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        md.update(password.getBytes());
-        byte[] digest = md.digest();
-        String myHash = DatatypeConverter
-                            .printHexBinary(digest).toUpperCase();
-        System.out.println("myHash1 = " + myHash);
-
-        String md5Hex = DigestUtils
-                            .md5DigestAsHex(password.getBytes()).toUpperCase();
-        System.out.println("myHash2 = " + md5Hex);
     }
 }
