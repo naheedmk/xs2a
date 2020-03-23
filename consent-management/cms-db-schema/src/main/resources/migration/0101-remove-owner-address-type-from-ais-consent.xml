@@ -19,7 +19,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet author="kya@adorsys.com.ua" id="2019-11-27-1">
+    <changeSet author="kya@adorsys.com.ua" id="2020-03-23">
         <comment>
             Remove owner_address_type column from ais_consent table
         </comment>
