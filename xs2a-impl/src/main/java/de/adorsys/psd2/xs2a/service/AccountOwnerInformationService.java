@@ -26,12 +26,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static de.adorsys.psd2.xs2a.core.ais.AccountAccessType.ALL_ACCOUNTS;
-import static de.adorsys.psd2.xs2a.core.ais.AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME;
-
 @Service
 @RequiredArgsConstructor
 public class AccountOwnerInformationService {
+    private static final AccountAccessType ALL_ACCOUNTS_WITH_OWNER_NAME = AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME;
+    private static final AccountAccessType ALL_ACCOUNTS = AccountAccessType.ALL_ACCOUNTS;
     private final AspspProfileServiceWrapper aspspProfileService;
 
     public CreateConsentReq checkSupportedAccountOwnerInformation(CreateConsentReq request) {
@@ -44,17 +43,14 @@ public class AccountOwnerInformationService {
     private CreateConsentReq cleanAccountOwnerInformation(CreateConsentReq request) {
         AccountAccess access = request.getAccess();
 
-        AccountAccessType allAccountsWithOwnerName = ALL_ACCOUNTS_WITH_OWNER_NAME;
-        AccountAccessType allAccounts = ALL_ACCOUNTS;
-
-        if (request.getAvailableAccounts() == allAccountsWithOwnerName) {
-            request.setAvailableAccounts(allAccounts);
+        if (request.getAvailableAccounts() == ALL_ACCOUNTS_WITH_OWNER_NAME) {
+            request.setAvailableAccounts(ALL_ACCOUNTS);
         }
-        if (request.getAvailableAccountsWithBalance() == allAccountsWithOwnerName) {
-            request.setAvailableAccountsWithBalance(allAccounts);
+        if (request.getAvailableAccountsWithBalance() == ALL_ACCOUNTS_WITH_OWNER_NAME) {
+            request.setAvailableAccountsWithBalance(ALL_ACCOUNTS);
         }
-        if (request.getAllPsd2() == allAccountsWithOwnerName) {
-            request.setAllPsd2(allAccounts);
+        if (request.getAllPsd2() == ALL_ACCOUNTS_WITH_OWNER_NAME) {
+            request.setAllPsd2(ALL_ACCOUNTS);
         }
         if (isConsentWithAdditionalInformationAccess(access)) {
             AccountAccess accessWithoutOwnerName = new AccountAccess(access.getAccounts(), access.getBalances(), access.getTransactions(), null);
