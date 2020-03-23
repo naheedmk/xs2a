@@ -2553,6 +2553,17 @@
 											"    pm.expect(jsonData.accountConsent).to.have.property(\"id\");",
 											"});",
 											"",
+											"pm.test(\"Owner name is present\", ()=> {",
+											"    pm.expect(jsonData.accountConsent.access).to.have.property(\"accountAdditionalInformationAccess\");",
+											"    pm.expect(jsonData.accountConsent.access.accountAdditionalInformationAccess).to.have.property(\"ownerName\");",
+											"});",
+											"",
+											"pm.test(\"Owner name is correct\", ()=> {",
+											"    ownerName = jsonData.accountConsent.access.accountAdditionalInformationAccess.ownerName[0];",
+											"",
+											"    pm.expect(ownerName.iban).to.equal('DE80760700240271232400');",
+											"});",
+											"",
 											"pm.globals.set(\"internal_consent_id\", jsonData.accountConsent.id);",
 											"pm.globals.set(\"authorisation_id\", authorisationId);"
 										],
@@ -2600,7 +2611,9 @@
 									"script": {
 										"id": "f5bf291c-591b-452c-9609-537cd0cb7050",
 										"exec": [
-											""
+											"pm.test(\"Status code is 200\", () => {",
+											"    pm.response.to.have.status(200);",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -2686,6 +2699,17 @@
 											"    pm.expect(jsonData.accountConsent).to.have.property(\"id\");",
 											"});",
 											"",
+											"pm.test(\"Owner name is present\", ()=> {",
+											"    pm.expect(jsonData.accountConsent.access).to.have.property(\"accountAdditionalInformationAccess\");",
+											"    pm.expect(jsonData.accountConsent.access.accountAdditionalInformationAccess).to.have.property(\"ownerName\");",
+											"});",
+											"",
+											"pm.test(\"Owner name is correct\", ()=> {",
+											"    ownerName = jsonData.accountConsent.access.accountAdditionalInformationAccess.ownerName[0];",
+											"",
+											"    pm.expect(ownerName.iban).to.equal('DE69760700240340283600');",
+											"});",
+											"",
 											"pm.globals.set(\"internal_consent_id\", jsonData.accountConsent.id);",
 											"pm.globals.set(\"authorisation_id\", authorisationId);"
 										],
@@ -2733,7 +2757,9 @@
 									"script": {
 										"id": "f5bf291c-591b-452c-9609-537cd0cb7050",
 										"exec": [
-											""
+											"pm.test(\"Status code is 200\", () => {",
+											"    pm.response.to.have.status(200);",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -2817,6 +2843,17 @@
 											"",
 											"pm.test(\"Consent id is present\", () => {",
 											"    pm.expect(jsonData.accountConsent).to.have.property(\"id\");",
+											"});",
+											"",
+											"pm.test(\"Owner name is present\", ()=> {",
+											"    pm.expect(jsonData.accountConsent.access).to.have.property(\"accountAdditionalInformationAccess\");",
+											"    pm.expect(jsonData.accountConsent.access.accountAdditionalInformationAccess).to.have.property(\"ownerName\");",
+											"});",
+											"",
+											"pm.test(\"Owner name is empty\", ()=> {",
+											"    ownerName = jsonData.accountConsent.access.accountAdditionalInformationAccess.ownerName;",
+											"    ",
+											"    pm.expect(ownerName).to.be.empty;",
 											"});",
 											"",
 											"pm.globals.set(\"internal_consent_id\", jsonData.accountConsent.id);",
