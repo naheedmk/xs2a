@@ -61,7 +61,7 @@ If the parameter = FALSE, then the ASPSP is not supporting the related consent e
 |FALSE |TRUE, FALSE
 |trustedBeneficiariesSupported |This field defines if the ASPSP supports additional account information - providing a list of trusted beneficiaries.
 
-If the parameter = FALSE, then the ASPSP is not supporting the related consent extension, and should ignore the corresponding entries. . In this case, the data will not be part of the consent model which is generated through the call where this object is contained.
+If the parameter = FALSE, then the ASPSP is not supporting the related consent extension, and should ignore the corresponding entries. In this case, the data will not be part of the consent model which is generated through the call where this object is contained.
 
 |FALSE |TRUE, FALSE
 |*redirectLinkToOnlineBanking:* | | |
