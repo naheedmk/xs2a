@@ -56,7 +56,7 @@ Not confirmed during this period of time AIS consents will be considered obsolet
 |maxConsentValidityDays |This field defines consent lifetime - maximum validity days of consent. When this value equals to 0 or empty, then the maximum lifetime of Consent is infinity. |0 |days (0, 1, ...)
 |accountOwnerInformationSupported |This field defines if the ASPSP supports additional account information - account owner name.
 
-If the parameter = FALSE, then the ASPSP is not supporting the related consent extension, and should ignore the corresponding entries. . In this case, the data will not be part of the consent model which is generated through the call where this object is contained.
+If the parameter = FALSE, then the ASPSP is not supporting the related consent extension, and should ignore the corresponding entries. In this case, the data will not be part of the consent model which is generated through the call where this object is contained.
 
 |FALSE |TRUE, FALSE
 |trustedBeneficiariesSupported |This field defines if the ASPSP supports additional account information - providing a list of trusted beneficiaries.
