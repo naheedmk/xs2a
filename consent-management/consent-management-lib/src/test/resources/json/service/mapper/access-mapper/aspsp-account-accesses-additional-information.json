@@ -37,6 +37,6 @@
     "accountReferenceType": "iban",
     "accountIdentifier": "DE80760700240271232700",
     "currency": "UAH",
-    "typeAccess": "TRUSTED_BENEFICIARIES"
+    "typeAccess": "BENEFICIARIES"
   }
 ]

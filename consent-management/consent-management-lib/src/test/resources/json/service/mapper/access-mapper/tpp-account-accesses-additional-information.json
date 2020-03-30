@@ -27,6 +27,6 @@
     "accountReferenceType": "iban",
     "accountIdentifier": "DE80760700240271232400",
     "currency": "EUR",
-    "typeAccess": "TRUSTED_BENEFICIARIES"
+    "typeAccess": "BENEFICIARIES"
   }
 ]

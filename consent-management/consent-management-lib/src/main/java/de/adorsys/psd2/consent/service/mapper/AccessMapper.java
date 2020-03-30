@@ -85,7 +85,7 @@ public class AccessMapper {
         }
         if (additionalInformationAccess != null && CollectionUtils.isNotEmpty(additionalInformationAccess.getTrustedBeneficiaries())) {
             tppAccountAccesses.addAll(additionalInformationAccess.getTrustedBeneficiaries().stream().map(a -> new TppAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
-                                                                                                                        TypeAccess.TRUSTED_BENEFICIARIES,
+                                                                                                                        TypeAccess.BENEFICIARIES,
                                                                                                                         a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                                         a.getCurrency())).collect(Collectors.toList()));
         }
@@ -123,7 +123,7 @@ public class AccessMapper {
         }
         if (additionalInformationAccess != null && CollectionUtils.isNotEmpty(additionalInformationAccess.getTrustedBeneficiaries())) {
             aspspAccountAccesses.addAll(additionalInformationAccess.getTrustedBeneficiaries().stream().map(a -> new AspspAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
-                                                                                                                            TypeAccess.TRUSTED_BENEFICIARIES,
+                                                                                                                            TypeAccess.BENEFICIARIES,
                                                                                                                             a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                                             a.getCurrency(),
                                                                                                                             a.getResourceId(),
@@ -166,7 +166,7 @@ public class AccessMapper {
                 transactions.add(accountReference);
             } else if (TypeAccess.OWNER_NAME == typeAccess) {
                 ownerNames.add(accountReference);
-            } else if (TypeAccess.TRUSTED_BENEFICIARIES == typeAccess) {
+            } else if (TypeAccess.BENEFICIARIES == typeAccess) {
                 trustedBeneficiaries.add(accountReference);
             }
         }
