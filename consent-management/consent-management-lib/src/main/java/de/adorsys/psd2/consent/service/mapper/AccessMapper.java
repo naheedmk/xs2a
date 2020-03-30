@@ -43,7 +43,8 @@ public class AccessMapper {
             holder.addAccountReference(accountReference, a.getTypeAccess());
         });
         return new AccountAccess(holder.getAccounts(), holder.getBalances(), holder.getTransactions(),
-                                 new AdditionalInformationAccess(additionalAccountInformationType.getReferencesByType(holder.getOwnerNames())));
+                                 new AdditionalInformationAccess(additionalAccountInformationType.getReferencesByType(holder.getOwnerNames()),
+                                                                 additionalAccountInformationType.getReferencesByType(holder.getTrustedBeneficiaries())));
     }
 
     public AccountAccess mapAspspAccessesToAccountAccess(List<AspspAccountAccess> aspspAccountAccesses, AdditionalAccountInformationType additionalAccountInformationType) {
@@ -57,7 +58,8 @@ public class AccessMapper {
             holder.addAccountReference(accountReference, a.getTypeAccess());
         });
         return new AccountAccess(holder.getAccounts(), holder.getBalances(), holder.getTransactions(),
-                                 new AdditionalInformationAccess(additionalAccountInformationType.getReferencesByType(holder.getOwnerNames())));
+                                 new AdditionalInformationAccess(additionalAccountInformationType.getReferencesByType(holder.getOwnerNames()),
+                                                                 additionalAccountInformationType.getReferencesByType(holder.getTrustedBeneficiaries())));
     }
 
     public List<TppAccountAccess> mapToTppAccountAccess(AccountAccess accountAccess) {
@@ -78,6 +80,12 @@ public class AccessMapper {
         if (additionalInformationAccess != null && CollectionUtils.isNotEmpty(additionalInformationAccess.getOwnerName())) {
             tppAccountAccesses.addAll(additionalInformationAccess.getOwnerName().stream().map(a -> new TppAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
                                                                                                                         TypeAccess.OWNER_NAME,
+                                                                                                                        a.getUsedAccountReferenceSelector().getAccountReferenceType(),
+                                                                                                                        a.getCurrency())).collect(Collectors.toList()));
+        }
+        if (additionalInformationAccess != null && CollectionUtils.isNotEmpty(additionalInformationAccess.getTrustedBeneficiaries())) {
+            tppAccountAccesses.addAll(additionalInformationAccess.getTrustedBeneficiaries().stream().map(a -> new TppAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
+                                                                                                                        TypeAccess.TRUSTED_BENEFICIARIES,
                                                                                                                         a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                                         a.getCurrency())).collect(Collectors.toList()));
         }
@@ -113,6 +121,14 @@ public class AccessMapper {
                                                                                                                             a.getResourceId(),
                                                                                                                             a.getAspspAccountId())).collect(Collectors.toList()));
         }
+        if (additionalInformationAccess != null && CollectionUtils.isNotEmpty(additionalInformationAccess.getTrustedBeneficiaries())) {
+            aspspAccountAccesses.addAll(additionalInformationAccess.getTrustedBeneficiaries().stream().map(a -> new AspspAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
+                                                                                                                            TypeAccess.TRUSTED_BENEFICIARIES,
+                                                                                                                            a.getUsedAccountReferenceSelector().getAccountReferenceType(),
+                                                                                                                            a.getCurrency(),
+                                                                                                                            a.getResourceId(),
+                                                                                                                            a.getAspspAccountId())).collect(Collectors.toList()));
+        }
         return aspspAccountAccesses;
     }
 
@@ -139,6 +155,7 @@ public class AccessMapper {
         List<AccountReference> balances = new ArrayList<>();
         List<AccountReference> transactions = new ArrayList<>();
         List<AccountReference> ownerNames = new ArrayList<>();
+        List<AccountReference> trustedBeneficiaries = new ArrayList<>();
 
         void addAccountReference(AccountReference accountReference, TypeAccess typeAccess) {
             if (TypeAccess.ACCOUNT == typeAccess) {
@@ -149,6 +166,8 @@ public class AccessMapper {
                 transactions.add(accountReference);
             } else if (TypeAccess.OWNER_NAME == typeAccess) {
                 ownerNames.add(accountReference);
+            } else if (TypeAccess.TRUSTED_BENEFICIARIES == typeAccess) {
+                trustedBeneficiaries.add(accountReference);
             }
         }
     }

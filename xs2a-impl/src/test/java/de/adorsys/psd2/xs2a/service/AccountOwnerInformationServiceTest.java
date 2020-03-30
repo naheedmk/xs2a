@@ -47,7 +47,7 @@ public class AccountOwnerInformationServiceTest {
         CreateConsentReq inputData = jsonReader.getObjectFromFile("json/service/create-consent-req-with-owner-name.json", CreateConsentReq.class);
 
         // When
-        CreateConsentReq actual = accountOwnerInformationService.checkSupportedAccountOwnerInformation(inputData);
+        CreateConsentReq actual = accountOwnerInformationService.checkIfAdditionalInformationSupported(inputData);
 
         // Then
         assertThat(actual).isEqualTo(expected);
@@ -62,7 +62,7 @@ public class AccountOwnerInformationServiceTest {
         CreateConsentReq inputData = jsonReader.getObjectFromFile("json/service/create-consent-req-with-available-accounts-owner-name.json", CreateConsentReq.class);
 
         // When
-        CreateConsentReq actual = accountOwnerInformationService.checkSupportedAccountOwnerInformation(inputData);
+        CreateConsentReq actual = accountOwnerInformationService.checkIfAdditionalInformationSupported(inputData);
 
         // Then
         assertThat(actual).isEqualTo(expected);
@@ -77,7 +77,7 @@ public class AccountOwnerInformationServiceTest {
         CreateConsentReq inputData = jsonReader.getObjectFromFile("json/service/create-consent-req-with-available-accounts-with-balance-owner-name.json", CreateConsentReq.class);
 
         // When
-        CreateConsentReq actual = accountOwnerInformationService.checkSupportedAccountOwnerInformation(inputData);
+        CreateConsentReq actual = accountOwnerInformationService.checkIfAdditionalInformationSupported(inputData);
 
         // Then
         assertThat(actual).isEqualTo(expected);
@@ -92,7 +92,7 @@ public class AccountOwnerInformationServiceTest {
         CreateConsentReq inputData = jsonReader.getObjectFromFile("json/service/create-consent-req-with-all-psd2-owner-name.json", CreateConsentReq.class);
 
         // When
-        CreateConsentReq actual = accountOwnerInformationService.checkSupportedAccountOwnerInformation(inputData);
+        CreateConsentReq actual = accountOwnerInformationService.checkIfAdditionalInformationSupported(inputData);
 
         // Then
         assertThat(actual).isEqualTo(expected);
@@ -106,7 +106,7 @@ public class AccountOwnerInformationServiceTest {
         CreateConsentReq inputData = jsonReader.getObjectFromFile("json/service/create-consent-req-with-owner-name.json", CreateConsentReq.class);
 
         // When
-        CreateConsentReq actual = accountOwnerInformationService.checkSupportedAccountOwnerInformation(inputData);
+        CreateConsentReq actual = accountOwnerInformationService.checkIfAdditionalInformationSupported(inputData);
 
         // Then
         assertThat(actual).isEqualTo(inputData);

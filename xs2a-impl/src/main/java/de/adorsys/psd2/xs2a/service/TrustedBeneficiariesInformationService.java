@@ -17,7 +17,6 @@
 package de.adorsys.psd2.xs2a.service;
 
 import de.adorsys.psd2.core.data.AccountAccess;
-import de.adorsys.psd2.xs2a.core.ais.AccountAccessType;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
 import de.adorsys.psd2.xs2a.domain.consent.CreateConsentReq;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
@@ -28,43 +27,32 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class AccountOwnerInformationService {
-    private static final AccountAccessType ALL_ACCOUNTS_WITH_OWNER_NAME = AccountAccessType.ALL_ACCOUNTS_WITH_OWNER_NAME;
-    private static final AccountAccessType ALL_ACCOUNTS = AccountAccessType.ALL_ACCOUNTS;
+public class TrustedBeneficiariesInformationService {
     private final AspspProfileServiceWrapper aspspProfileService;
 
     public CreateConsentReq checkIfAdditionalInformationSupported(CreateConsentReq request) {
-        if (!aspspProfileService.isAccountOwnerInformationSupported()) {
-            return cleanAccountOwnerInformation(request);
+        if (!aspspProfileService.isTrustedBeneficiariesSupported()) {
+            return clearTrustedBeneficiaries(request);
         }
         return request;
     }
 
-    private CreateConsentReq cleanAccountOwnerInformation(CreateConsentReq request) {
+    private CreateConsentReq clearTrustedBeneficiaries(CreateConsentReq request) {
         AccountAccess access = request.getAccess();
 
-        if (request.getAvailableAccounts() == ALL_ACCOUNTS_WITH_OWNER_NAME) {
-            request.setAvailableAccounts(ALL_ACCOUNTS);
-        }
-        if (request.getAvailableAccountsWithBalance() == ALL_ACCOUNTS_WITH_OWNER_NAME) {
-            request.setAvailableAccountsWithBalance(ALL_ACCOUNTS);
-        }
-        if (request.getAllPsd2() == ALL_ACCOUNTS_WITH_OWNER_NAME) {
-            request.setAllPsd2(ALL_ACCOUNTS);
-        }
-        if (isConsentWithOwnerName(access)) {
+        if (isConsentWithTrustedBeneficiaries(access)) {
             AdditionalInformationAccess additionalInformationAccess = access.getAdditionalInformationAccess();
-            AdditionalInformationAccess additionalInformationWithoutOwnerName = new AdditionalInformationAccess(null, additionalInformationAccess.getTrustedBeneficiaries());
-            AccountAccess accessWithoutOwnerName = new AccountAccess(access.getAccounts(), access.getBalances(), access.getTransactions(), additionalInformationWithoutOwnerName);
-            request.setAccess(accessWithoutOwnerName);
+            AdditionalInformationAccess additionalInformationWithoutTrustedBeneficiaries = new AdditionalInformationAccess(additionalInformationAccess.getOwnerName(), null);
+            AccountAccess accessWithoutTrustedBeneficiaries = new AccountAccess(access.getAccounts(), access.getBalances(), access.getTransactions(), additionalInformationWithoutTrustedBeneficiaries);
+            request.setAccess(accessWithoutTrustedBeneficiaries);
         }
 
         return request;
     }
 
-    private boolean isConsentWithOwnerName(AccountAccess access) {
+    private boolean isConsentWithTrustedBeneficiaries(AccountAccess access) {
         return Optional.ofNullable(access.getAdditionalInformationAccess())
-                   .map(AdditionalInformationAccess::getOwnerName)
+                   .map(AdditionalInformationAccess::getTrustedBeneficiaries)
                    .isPresent();
     }
 }
