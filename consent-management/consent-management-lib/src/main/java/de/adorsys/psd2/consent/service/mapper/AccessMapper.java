@@ -113,22 +113,25 @@ public class AccessMapper {
                                                                                                              a.getResourceId(),
                                                                                                              a.getAspspAccountId())).collect(Collectors.toList()));
         AdditionalInformationAccess additionalInformationAccess = accountAccess.getAdditionalInformationAccess();
-        if (additionalInformationAccess != null && CollectionUtils.isNotEmpty(additionalInformationAccess.getOwnerName())) {
+        if (additionalInformationAccess != null) {
+            if (CollectionUtils.isNotEmpty(additionalInformationAccess.getOwnerName())) {
             aspspAccountAccesses.addAll(additionalInformationAccess.getOwnerName().stream().map(a -> new AspspAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
                                                                                                                             TypeAccess.OWNER_NAME,
                                                                                                                             a.getUsedAccountReferenceSelector().getAccountReferenceType(),
                                                                                                                             a.getCurrency(),
                                                                                                                             a.getResourceId(),
                                                                                                                             a.getAspspAccountId())).collect(Collectors.toList()));
+            }
+            if (CollectionUtils.isNotEmpty(additionalInformationAccess.getTrustedBeneficiaries())) {
+                aspspAccountAccesses.addAll(additionalInformationAccess.getTrustedBeneficiaries().stream().map(a -> new AspspAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
+                                                                                                                                           TypeAccess.BENEFICIARIES,
+                                                                                                                                           a.getUsedAccountReferenceSelector().getAccountReferenceType(),
+                                                                                                                                           a.getCurrency(),
+                                                                                                                                           a.getResourceId(),
+                                                                                                                                           a.getAspspAccountId())).collect(Collectors.toList()));
+            }
         }
-        if (additionalInformationAccess != null && CollectionUtils.isNotEmpty(additionalInformationAccess.getTrustedBeneficiaries())) {
-            aspspAccountAccesses.addAll(additionalInformationAccess.getTrustedBeneficiaries().stream().map(a -> new AspspAccountAccess(a.getUsedAccountReferenceSelector().getAccountValue(),
-                                                                                                                            TypeAccess.BENEFICIARIES,
-                                                                                                                            a.getUsedAccountReferenceSelector().getAccountReferenceType(),
-                                                                                                                            a.getCurrency(),
-                                                                                                                            a.getResourceId(),
-                                                                                                                            a.getAspspAccountId())).collect(Collectors.toList()));
-        }
+
         return aspspAccountAccesses;
     }
 
