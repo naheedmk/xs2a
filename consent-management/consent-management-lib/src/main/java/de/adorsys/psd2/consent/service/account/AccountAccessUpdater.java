@@ -69,20 +69,43 @@ public class AccountAccessUpdater {
             return existingAccess;
         }
 
-        assert existingAccess.getOwnerName() != null && existingAccess.getTrustedBeneficiaries() != null;
-        assert requestedAccess.getOwnerName() != null && requestedAccess.getTrustedBeneficiaries() != null;
-        List<AccountReference> updatedOwnerName = existingAccess.getOwnerName().stream()
-                                                      .map(ref -> updateAccountReference(ref, requestedAccess.getOwnerName()))
-                                                      .collect(Collectors.toList());
-        List<AccountReference> updatedTrustedBeneficiaries = existingAccess.getTrustedBeneficiaries().stream()
-                                                                 .map(ref -> updateAccountReference(ref, requestedAccess.getTrustedBeneficiaries()))
-                                                                 .collect(Collectors.toList());
+        List<AccountReference> updatedOwnerName = null;
+        List<AccountReference> updatedTrustedBeneficiaries = null;
 
+        if (!isOwnerNameAbsent(existingAccess) && !isOwnerNameAbsent(requestedAccess)) {
+            assert existingAccess.getOwnerName() != null;
+            assert requestedAccess.getOwnerName() != null;
+
+            updatedOwnerName = existingAccess.getOwnerName().stream()
+                                                          .map(ref -> updateAccountReference(ref, requestedAccess.getOwnerName()))
+                                                          .collect(Collectors.toList());
+        }
+
+        if (!isTrustedBeneficiariesAbsent(existingAccess) && !isTrustedBeneficiariesAbsent(requestedAccess)) {
+            assert existingAccess.getTrustedBeneficiaries() != null;
+            assert requestedAccess.getTrustedBeneficiaries() != null;
+
+            updatedTrustedBeneficiaries = existingAccess.getTrustedBeneficiaries().stream()
+                                                                     .map(ref -> updateAccountReference(ref, requestedAccess.getTrustedBeneficiaries()))
+                                                                     .collect(Collectors.toList());
+        }
         return new AdditionalInformationAccess(updatedOwnerName, updatedTrustedBeneficiaries);
     }
 
     private boolean isAdditionalInformationAbsent(AdditionalInformationAccess additionalInformationAccess) {
-        return additionalInformationAccess == null || additionalInformationAccess.getOwnerName() == null;
+        return additionalInformationAccess == null || isAdditionalInformationEmpty(additionalInformationAccess);
+    }
+
+    private boolean isAdditionalInformationEmpty(AdditionalInformationAccess additionalInformationAccess) {
+        return isOwnerNameAbsent(additionalInformationAccess) && isTrustedBeneficiariesAbsent(additionalInformationAccess);
+    }
+
+    private boolean isOwnerNameAbsent(AdditionalInformationAccess additionalInformationAccess) {
+        return additionalInformationAccess.getOwnerName() == null;
+    }
+
+    private boolean isTrustedBeneficiariesAbsent(AdditionalInformationAccess additionalInformationAccess) {
+        return additionalInformationAccess.getTrustedBeneficiaries() == null;
     }
 
     private AccountReference updateAccountReference(AccountReference existingReference, List<AccountReference> requestedAspspReferences) {
