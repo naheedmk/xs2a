@@ -68,22 +68,17 @@ public class AccountAccessUpdater {
         if (isAdditionalInformationAbsent(existingAccess) || isAdditionalInformationAbsent(requestedAccess)) {
             return existingAccess;
         }
+        return new AdditionalInformationAccess(getAccountReferences(existingAccess.getOwnerName(), requestedAccess.getOwnerName()),
+                                               getAccountReferences(existingAccess.getTrustedBeneficiaries(), requestedAccess.getTrustedBeneficiaries()));
+    }
 
-        List<AccountReference> updatedOwnerName = null;
-        List<AccountReference> updatedTrustedBeneficiaries = null;
-
-        if (!isOwnerNameAbsent(existingAccess) && !isOwnerNameAbsent(requestedAccess)) {
-            updatedOwnerName = existingAccess.getOwnerName().stream()
-                                                          .map(ref -> updateAccountReference(ref, requestedAccess.getOwnerName()))
-                                                          .collect(Collectors.toList());
+    private List<AccountReference> getAccountReferences(List<AccountReference> existing, List<AccountReference> requested){
+        if (existing != null && requested != null) {
+            return existing.stream()
+                       .map(ref -> updateAccountReference(ref, requested))
+                       .collect(Collectors.toList());
         }
-
-        if (!isTrustedBeneficiariesAbsent(existingAccess) && !isTrustedBeneficiariesAbsent(requestedAccess)) {
-            updatedTrustedBeneficiaries = existingAccess.getTrustedBeneficiaries().stream()
-                                                                     .map(ref -> updateAccountReference(ref, requestedAccess.getTrustedBeneficiaries()))
-                                                                     .collect(Collectors.toList());
-        }
-        return new AdditionalInformationAccess(updatedOwnerName, updatedTrustedBeneficiaries);
+        return null;
     }
 
     private boolean isAdditionalInformationAbsent(AdditionalInformationAccess additionalInformationAccess) {
