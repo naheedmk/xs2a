@@ -66,6 +66,16 @@ public abstract class AccountModelMapper {
         return new AccountList().accounts(details);
     }
 
+    public TrustedBeneficiariesList mapToTrustedBeneficiariesList(Xs2aTrustedBeneficiariesListHolder xs2aTrustedBeneficiariesListHolder) {
+        List<Xs2aTrustedBeneficiaries> trustedBeneficiaries = xs2aTrustedBeneficiariesListHolder.getTrustedBeneficiaries();
+
+        List<TrustedBeneficiaries> beneficiaries = trustedBeneficiaries.stream()
+                                                       .map(this::mapToTrustedBeneficiaries)
+                                                       .collect(Collectors.toList());
+
+        return new TrustedBeneficiariesList().trustedBeneficiaries(beneficiaries);
+    }
+
     public InlineResponse200 mapToInlineResponse200(Xs2aAccountDetailsHolder xs2aAccountDetailsHolder) {
         InlineResponse200 inlineResponse200 = new InlineResponse200();
         inlineResponse200.setAccount(mapToAccountDetails(xs2aAccountDetailsHolder.getAccountDetails()));
@@ -78,6 +88,8 @@ public abstract class AccountModelMapper {
     @Mapping(target = "usage", source = "usageType")
     @Mapping(target = "currency", expression = "java(mapToAccountDetailsCurrency(accountDetails.getCurrency()))")
     public abstract AccountDetails mapToAccountDetails(Xs2aAccountDetails accountDetails);
+
+    public abstract TrustedBeneficiaries mapToTrustedBeneficiaries(Xs2aTrustedBeneficiaries trustedBeneficiaries);
 
     @Mapping(target = "balanceType", expression = "java(mapToBalanceType(balance.getBalanceType()))")
     @Mapping(target = "lastChangeDateTime", expression = "java(mapToOffsetDateTime(balance.getLastChangeDateTime()))")
