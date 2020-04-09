@@ -2,7 +2,7 @@
 
 ---
 
-ow to use certificate generator
+How to use certificate generator
 
 1) Build project
 
