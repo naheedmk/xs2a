@@ -7,5 +7,6 @@
 == Change type of `requestDateTime` in `ConsentEntity`
 
 From now on, type of `requestDateTime` in `ConsentEntity` was changed from `LocalDateTime` to `OffsetDateTime`.
+The following columns (`request_date_time` and `creation_timestamp`) were modified data type to `DATETIME`.
 
 
