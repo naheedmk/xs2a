@@ -1,0 +1,113 @@
+{
+  "consentData":{
+  "availableAccounts":null,
+    "allPsd2":null,
+    "availableAccountsWithBalance":null,
+    "combinedServiceIndicator":false
+  },
+  "id":"ed1d8022-1c38-49ae-898e-78f29234557c",
+  "internalRequestId":"643e4ea3-0401-4bc8-b9bc-a9df51ec848e",
+  "consentStatus":"VALID",
+  "frequencyPerDay":7,
+  "recurringIndicator":true,
+  "multilevelScaRequired":true,
+
+  "expireDate":null,
+
+  "validUntil":"2030-12-31",
+  "lastActionDate":"2020-04-08",
+  "creationTimestamp":"2020-04-08T14:09:27.496839+03:00",
+  "statusChangeTimestamp":"2020-04-08T14:09:27.496839+03:00",
+
+  "consentTppInformation":{
+    "tppRedirectPreferred":true,
+    "tppFrequencyPerDay":7,
+    "tppNotificationUri":null,
+    "tppInfo":{
+      "authorisationNumber":"TPP_AUTHORISATION_NUMBER",
+      "tppName":null,
+      "tppRoles":[
+        "AISP",
+        "ASPSP",
+        "PIISP",
+        "PISP"
+      ],
+      "authorityId":"TPP_AUTHORITY_ID",
+      "authorityName":null,
+      "country":null,
+      "organisation":null,
+      "organisationUnit":null,
+      "city":null,
+      "state":null,
+      "cancelTppRedirectUri":null,
+      "issuerCN":null
+    },
+    "tppNotificationSupportedModes":null,
+    "tppBrandLoggingInformation":"tppBrandLoggingInformation"
+  },
+  "authorisationTemplate":{
+    "tppRedirectUri":{
+      "uri":"redirect uri",
+      "nokUri":"non redirect uri"
+    },
+    "cancelTppRedirectUri":{
+      "uri":"cancel redirect uri",
+      "nokUri":"cancel nok redirect uri"
+    }
+  },
+  "psuIdDataList":[
+    {
+      "psuId":"PSU_ID",
+      "psuIdType":"PSU_ID_TYPE",
+      "psuCorporateId":"PSU_CORPORATE_ID",
+      "psuCorporateIdType":"PSU_CORPORATE_ID_TYPE",
+      "psuIpAddress":"PSU_IP_ADDRESS",
+      "additionalPsuIdData":null
+    }
+  ],
+  "authorisations":[],
+  "usages":{
+    "/accounts":9
+  },
+  "tppAccountAccesses":{
+    "accounts":[
+      {
+        "aspspAccountId":null,
+        "resourceId":null,
+        "iban":"DE89876442804656108109",
+        "bban":null,
+        "pan":null,
+        "maskedPan":null,
+        "msisdn":null,
+        "currency":"EUR"
+      }
+    ],
+    "balances":[],
+    "transactions":[],
+    "additionalInformationAccess":{
+      "ownerName":null
+    }
+  },
+  "aspspAccountAccesses":{
+    "accounts":[
+      {
+        "aspspAccountId":"aspsp account id",
+        "resourceId":"resource id",
+        "iban":"DE89876442804656108109",
+        "bban":null,
+        "pan":null,
+        "maskedPan":null,
+        "msisdn":null,
+        "currency":"EUR"
+      }
+    ],
+    "balances":[],
+    "transactions":[],
+    "additionalInformationAccess":{
+      "ownerName":null
+    }
+  },
+  "usageCounterMap":{
+    "/accounts":9
+  }
+}
