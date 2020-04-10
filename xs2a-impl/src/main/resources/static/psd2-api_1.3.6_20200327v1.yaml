@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
     title: NextGenPSD2 XS2A Framework
-    version: "1.3.6_2020-01-31v1"
+    version: "1.3.7_2020-03-09v1"
     description: |
         # Summary
         The **NextGenPSD2** *Framework Version 1.3.6* offers a modern, open, harmonised and interoperable set of
@@ -586,7 +586,7 @@ paths:
 
             responses:
                 '201':
-                    $ref: "#/components/responses/CREATED_201_StartCancellationScaProcess"
+                    $ref: "#/components/responses/CREATED_201_StartScaProcess"
 
                 '400':
                     $ref: "#/components/responses/BAD_REQUEST_400_PIS"
@@ -894,7 +894,7 @@ paths:
 
             responses:
                 '200':
-                    $ref: "#/components/responses/OK_200_UpdateCancellationPsuData"
+                    $ref: "#/components/responses/OK_200_UpdatePsuData"
 
                 '400':
                     $ref: "#/components/responses/BAD_REQUEST_400_PIS"
@@ -3897,13 +3897,6 @@ components:
             example: "3dc3d5b3-7023-4848-9853-f5400a64e80f"
 
 
-        cancellationId:
-            description: Identification for cancellation resource.
-            type: string
-            example: "123auth456"
-
-
-
         cardTransactionId:
             description: Unique end to end identity.
             type: string
@@ -4104,7 +4097,8 @@ components:
             description: |
                 If equals 'true', the transaction will involve specific transaction cost as shown by the ASPSP in
                 their public price list or as agreed between ASPSP and PSU.
-                If equals 'false', the transaction will not involve additional specific transaction costs to the PSU.
+                If equals 'false', the transaction will not involve additional specific transaction costs to the PSU unless the fee amount is given specifically in the data elements transactionFees and/or currencyConversionFees.
+                If this data element is not used, there is no information about transaction fees unless the fee amount is given explicitly in the data element transactionFees and/or currencyConversionFees.
             type: boolean
 
         recurringIndicator:
@@ -4130,6 +4124,16 @@ components:
             type: boolean
             example: false
 
+
+        trustedBeneficiaryFlag:
+            description: |
+                Additional Service: Trusted Benificiaries
+                Within this data element, the ASPSP might optionally communicate towards the TPP whether the creditor was part of the related trusted beneficiary list.
+                This attribute is only contained in case of a final scaStatus.
+            type: boolean
+            example: false
+
+
         scaMethods:
             description: |
                 This data element might be contained, if SCA is required and if the PSU has a choice between different
@@ -4152,8 +4156,7 @@ components:
             #  This data element is only contained in the response if the ASPSP has chosen the Embedded SCA Approach,
             #  if the PSU is already identified e.g. with the first relevant factor or alternatively an access token,
             #  if SCA is required and if the authentication method is implicitly selected.
-            allOf:
-                - $ref: "#/components/schemas/authenticationObject"
+            $ref: "#/components/schemas/authenticationObject"
 
         authenticationType:
             description: |
@@ -4965,13 +4968,6 @@ components:
                 $ref: "#/components/schemas/balance"
 
 
-        cancellationList:
-            description: An array of all cancellationIds connected to this resource.
-            type: array
-            items:
-                $ref: "#/components/schemas/cancellationId"
-
-
         bicfi:
             description: |
                 BICFI
@@ -5139,7 +5135,6 @@ components:
                     type: array
                     items:
                         $ref: "#/components/schemas/accountReference"
-
 
         amount:
             type: object
@@ -5934,7 +5929,7 @@ components:
                   </table>
 
                 IMPORTANT: In this API definition the following holds:
-                  * All data elements mentioned above are defined, but some of them are commented,
+                  *  All data elements mentioned above are defined, but some of them are commented,
                     i.e. they are only visible in the source code and can be used by uncommenting them.
                   * Data elements which are mandatory in the table above for all payment products
                     are set to be mandatory in this specification.
@@ -6591,7 +6586,18 @@ components:
                 paymentId:
                     $ref: "#/components/schemas/paymentId"
                 transactionFees:
-                    # description: Can be used by the ASPSP to transport transaction fees relevant for the underlying payments.
+                    # description: |
+                    #   Might be used by the ASPSP to transport the transaction fees relevant for the underlying payments.
+                    #   This field includes the entry of the currencyConversionFees if applicable.
+                    $ref: "#/components/schemas/amount"
+                currencyConversionFee:
+                    # description: Might be used by the ASPSP to transport specific currency conversion fees related to the initiated credit transfer.
+                    $ref: "#/components/schemas/amount"
+                estimatedTotalAmount:
+                    # description: The amount which is estimated to be debted from the debtor account.
+                    $ref: "#/components/schemas/amount"
+                estimatedInterbankSettlementAmount:
+                    # description: The estimated amount to be transferred to the payee.
                     $ref: "#/components/schemas/amount"
                 transactionFeeIndicator:
                     $ref: "#/components/schemas/transactionFeeIndicator"
@@ -6785,6 +6791,9 @@ components:
             properties:
                 scaStatus:
                     $ref: "#/components/schemas/scaStatus"
+                trustedBeneficiaryFlag:
+                    $ref: "#/components/schemas/trustedBeneficiaryFlag"
+
 
 
         startScaprocessResponse:
@@ -6799,29 +6808,6 @@ components:
                     $ref: "#/components/schemas/scaStatus"
                 authorisationId:
                     $ref: "#/components/schemas/authorisationId"
-                scaMethods:
-                    $ref: "#/components/schemas/scaMethods"
-                chosenScaMethod:
-                    $ref: "#/components/schemas/chosenScaMethod"
-                challengeData:
-                    $ref: "#/components/schemas/challengeData"
-                _links:
-                    $ref: "#/components/schemas/_linksStartScaProcess"
-                psuMessage:
-                    $ref: "#/components/schemas/psuMessageText"
-
-        startCancellationScaProcessResponse:
-            description: Body of the JSON response for a Start SCA authorisation request.
-            type: object
-            required:
-                - scaStatus
-                - authorisationId
-                - _links
-            properties:
-                scaStatus:
-                    $ref: "#/components/schemas/scaStatus"
-                cancellationId:
-                    $ref: "#/components/schemas/cancellationId"
                 scaMethods:
                     $ref: "#/components/schemas/scaMethods"
                 chosenScaMethod:
@@ -6856,6 +6842,18 @@ components:
                 - _links
                 - scaStatus
             properties:
+                transactionFees:
+                    # description: Might be used by the ASPSP to transport the total transaction fee relevant for the underlying payments. This field includes the entry of the currencyConversionFees if applicable.
+                    $ref: "#/components/schemas/amount"
+                currencyConversionFees:
+                    # description: Might be used by the ASPSP to transport specific currency conversion fees related to the initiated credit transfer.
+                    $ref: "#/components/schemas/amount"
+                estimatedTotalAmount:
+                    # description: The amount which is estimated to be debted from the debtor account.
+                    $ref: "#/components/schemas/amount"
+                estimatedInterbankSettlementAmount:
+                    # description: The estimated amount to be transferred to the payee.
+                    $ref: "#/components/schemas/amount"
                 scaMethods:
                     $ref: "#/components/schemas/scaMethods"
                 _links:
@@ -6872,6 +6870,18 @@ components:
             required:
                 - scaStatus
             properties:
+                transactionFees:
+                    # description: Might be used by the ASPSP to transport the total transaction fee relevant for the underlying payments. This field includes the entry of the currencyConversionFees if applicable.
+                    $ref: "#/components/schemas/amount"
+                currencyConversionFees:
+                    # description: Might be used by the ASPSP to transport specific currency conversion fees related to the initiated credit transfer.
+                    $ref: "#/components/schemas/amount"
+                estimatedTotalAmount:
+                    # description: The amount which is estimated to be debted from the debtor account.
+                    $ref: "#/components/schemas/amount"
+                estimatedInterbankSettlementAmount:
+                    # description: The estimated amount to be transferred to the payee.
+                    $ref: "#/components/schemas/amount"
                 chosenScaMethod:
                     $ref: "#/components/schemas/chosenScaMethod"
                 challengeData:
@@ -6888,34 +6898,24 @@ components:
                     $ref: "#/components/schemas/authorisationId"
 
 
-        updateCancellationPsuAuthenticationResponse:
-            description: Body of the JSON response for a successful update PSU authentication request.
-            type: object
-            required:
-                - scaStatus
-            properties:
-                chosenScaMethod:
-                    $ref: "#/components/schemas/chosenScaMethod"
-                challengeData:
-                    $ref: "#/components/schemas/challengeData"
-                scaMethods:
-                    $ref: "#/components/schemas/scaMethods"
-                _links:
-                    $ref: "#/components/schemas/_linksUpdatePsuAuthentication"
-                scaStatus:
-                    $ref: "#/components/schemas/scaStatus"
-                psuMessage:
-                    $ref: "#/components/schemas/psuMessageText"
-                cancellationId:
-                    $ref: "#/components/schemas/cancellationId"
-
-
         selectPsuAuthenticationMethodResponse:
             description: Body of the JSON response for a successful select PSU authentication method request.
             type: object
             required:
                 - scaStatus
             properties:
+                transactionFees:
+                    # description: Might be used by the ASPSP to transport the total transaction fee relevant for the underlying payments. This field includes the entry of the currencyConversionFees if applicable.
+                    $ref: "#/components/schemas/amount"
+                currencyConversionFees:
+                    # description: Might be used by the ASPSP to transport specific currency conversion fees related to the initiated credit transfer.
+                    $ref: "#/components/schemas/amount"
+                estimatedTotalAmount:
+                    # description: The amount which is estimated to be debted from the debtor account.
+                    $ref: "#/components/schemas/amount"
+                estimatedInterbankSettlementAmount:
+                    # description: The estimated amount to be transferred to the payee.
+                    $ref: "#/components/schemas/amount"
                 chosenScaMethod:
                     $ref: "#/components/schemas/chosenScaMethod"
                 challengeData:
@@ -10449,7 +10449,6 @@ components:
                 $ref: "#/components/schemas/paymentId"
 
 
-
         authorisationId:
             name: authorisationId
             in: path
@@ -11529,33 +11528,6 @@ components:
                         "Authorisation confirmation":
                             $ref: "#/components/examples/authorisationConfirmationResponseExample"
 
-        OK_200_UpdateCancellationPsuData:
-            description: OK
-
-            headers:
-                X-Request-ID:
-                    $ref: "#/components/headers/X-Request-ID"
-                ASPSP-SCA-Approach:
-                    $ref: "#/components/headers/ASPSP-SCA-Approach"
-
-            content:
-                application/json:
-                    schema:
-
-                        oneOf: #Different Authorisation Bodies
-                            - $ref: "#/components/schemas/updatePsuIdenticationResponse" #Update PSU Identification
-                            - $ref: "#/components/schemas/updateCancellationPsuAuthenticationResponse" #Update PSU Authentication
-                            - $ref: "#/components/schemas/selectPsuAuthenticationMethodResponse" #Select Authentication Method
-                            - $ref: "#/components/schemas/scaStatusResponse" #Transaction Authorisation
-                    examples:
-                        "Update PSU Identification - Payment Initiation (Decoupled Approach)":
-                            $ref: "#/components/examples/updatePsuIdentificationResponseExample_Decoupled_payments"
-                        "Update PSU Authentication - Payment Initiation (Embedded Approach)":
-                            $ref: "#/components/examples/updatePsuAuthenticationResponseExample_Embedded_payments"
-                        "Select PSU Authentication - Payment Initiation Method (Embedded Approach)":
-                            $ref: "#/components/examples/selectPsuAuthenticationMethodResponseExample_Embedded_payments"
-                        "Transaction Authorisation (Embedded Approach)":
-                            $ref: "#/components/examples/transactionAuthorisationResponseExample"
 
         OK_200_GetSigningBasket:
             description: OK
@@ -11684,24 +11656,6 @@ components:
                     examples:
                         "Example 1: payments - Decoupled Approach":
                             $ref: "#/components/examples/startScaProcessResponseExample1"
-
-
-        CREATED_201_StartCancellationScaProcess:
-            description: Created cancellation authorisation
-
-            headers:
-                X-Request-ID:
-                    $ref: "#/components/headers/X-Request-ID"
-                ASPSP-SCA-Approach:
-                    $ref: "#/components/headers/ASPSP-SCA-Approach"
-
-            content:
-                application/json:
-                    schema:
-                        $ref: "#/components/schemas/startCancellationScaProcessResponse"
-                    examples:
-                        "Example 1: payments - Decoupled Approach":
-                            $ref: "#/components/examples/startCancellationScaProcessResponseExample1"
 
 
         CREATED_201_Consents:
@@ -12329,17 +12283,6 @@ components:
                     schema:
                         $ref: "#/components/schemas/Error409_PIIS"
 
-        startCancellationScaProcessResponseExample1:
-            value:
-              {
-                  "scaStatus": "received",
-                  "cancellationId": "123auth456",
-                  "psuMessage": "Please use your BankApp for transaction Authorisation.",
-                  "_links":
-                    {
-                        "scaStatus":  {"href":"/v1/payments/qwer3456tzui7890/cancellation-authorisations/123auth456"}
-                    }
-              }
 
         CONFLICT_409_SBS:
             description: Conflict
@@ -12922,7 +12865,6 @@ components:
                         "scaStatus":  {"href":"/v1/payments/qwer3456tzui7890/authorisations/123auth456"}
                     }
               }
-
 
 
         signingBasketExample:

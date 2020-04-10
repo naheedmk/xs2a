@@ -985,8 +985,8 @@ class PaymentControllerTest {
         when(paymentCancellationAuthorisationService.createPisCancellationAuthorisation(request))
             .thenReturn(serviceResponse);
 
-        StartCancellationScaProcessResponse expectedResponse = new StartCancellationScaProcessResponse();
-        ResponseEntity<StartCancellationScaProcessResponse> value = new ResponseEntity<>(expectedResponse, CREATED);
+        StartScaprocessResponse expectedResponse = new StartScaprocessResponse();
+        ResponseEntity<StartScaprocessResponse> value = new ResponseEntity<>(expectedResponse, CREATED);
         doReturn(value).when(responseMapper).created(eq(serviceResponse), any(), eq(RESPONSE_HEADERS));
 
         when(paymentCancellationHeadersBuilder.buildStartAuthorisationHeaders(CANCELLATION_AUTHORISATION_ID)).thenReturn(RESPONSE_HEADERS);
@@ -1385,7 +1385,7 @@ class PaymentControllerTest {
         when(paymentAuthorisationService.createPisAuthorisation(request))
             .thenReturn(serviceResponse);
 
-        StartCancellationScaProcessResponse expectedResponse = new StartCancellationScaProcessResponse();
+        StartScaprocessResponse expectedResponse = new StartScaprocessResponse();
 
         doReturn(new ResponseEntity<>(expectedResponse, CREATED)).when(responseMapper).created(any(), eq(RESPONSE_HEADERS));
 
@@ -1513,10 +1513,10 @@ class PaymentControllerTest {
                    .build();
     }
 
-    private Authorisations buildAuthorisations(List<String> cancellationIds) {
+    private Authorisations buildAuthorisations(List<String> authorisationIds) {
         Authorisations authorisations = new Authorisations();
         AuthorisationsList authorisationsList = new AuthorisationsList();
-        authorisationsList.addAll(cancellationIds);
+        authorisationsList.addAll(authorisationIds);
         authorisations.setAuthorisationIds(authorisationsList);
         return authorisations;
     }

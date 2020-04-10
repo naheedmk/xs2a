@@ -438,7 +438,7 @@ public class PaymentController implements PaymentApi {
         }
 
         CancellationAuthorisationResponse serviceResponseBody = serviceResponse.getBody();
-        ResponseHeaders responseHeaders = paymentCancellationHeadersBuilder.buildStartAuthorisationHeaders(serviceResponseBody.getCancellationId());
+        ResponseHeaders responseHeaders = paymentCancellationHeadersBuilder.buildStartAuthorisationHeaders(serviceResponseBody.getAuthorisationId());
 
         return responseMapper.created(serviceResponse, authorisationModelMapper::mapToStartOrUpdateCancellationResponse, responseHeaders);
     }

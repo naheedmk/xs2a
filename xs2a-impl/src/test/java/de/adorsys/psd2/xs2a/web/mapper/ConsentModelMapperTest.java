@@ -150,14 +150,14 @@ class ConsentModelMapperTest {
     @Test
     void mapToCancellations() {
         //Given
-        List<String> cancellationIds = Arrays.asList("c0121ca2-ab3a-4564-b915-6e40e8b40f50", "743d0a45-7233-4fbf-9799-c657f327836c");
+        List<String> authorisationIds = Arrays.asList("c0121ca2-ab3a-4564-b915-6e40e8b40f50", "743d0a45-7233-4fbf-9799-c657f327836c");
         //When
-        Authorisations authorisations = consentModelMapper.mapToAuthorisations(new Xs2aPaymentCancellationAuthorisationSubResource(cancellationIds));
+        Authorisations authorisations = consentModelMapper.mapToAuthorisations(new Xs2aPaymentCancellationAuthorisationSubResource(authorisationIds));
         //Then
         assertNotNull(authorisations);
         AuthorisationsList authorisationsList = authorisations.getAuthorisationIds();
         assertNotNull(authorisationsList);
-        assertEquals(cancellationIds, new ArrayList<>(authorisationsList));
+        assertEquals(authorisationIds, new ArrayList<>(authorisationsList));
     }
 
     @Test
