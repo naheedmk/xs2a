@@ -5,21 +5,12 @@
         "aspspAccountId":"aspsp account id",
         "resourceId":"resource id",
         "iban":"DE89876442804656108109",
-        "bban":null,
-        "pan":null,
-        "maskedPan":null,
-        "msisdn":null,
         "currency":"EUR"
       }
     ],
     "balances":[],
     "transactions":[],
-    "availableAccounts":null,
-    "allPsd2":null,
-    "availableAccountsWithBalance":null,
-    "accountAdditionalInformationAccess":{
-      "ownerName":null
-    }
+    "accountAdditionalInformationAccess":{}
   },
   "recurringIndicator":true,
 
@@ -28,11 +19,9 @@
   "lastActionDate":"2020-04-08",
   "statusChangeTimestamp":"2020-04-08T14:09:27.496839+03:00",
 
-  "expireDate":null,
   "frequencyPerDay":7,
 
   "consentStatus":"VALID",
-  "withBalance":false,
   "tppRedirectPreferred":true,
   "aisConsentRequestType":"DEDICATED_ACCOUNTS",
   "psuIdDataList":[
@@ -41,24 +30,14 @@
       "psuIdType":"PSU_ID_TYPE",
       "psuCorporateId":"PSU_CORPORATE_ID",
       "psuCorporateIdType":"PSU_CORPORATE_ID_TYPE",
-      "psuIpAddress":"PSU_IP_ADDRESS",
-      "additionalPsuIdData":null
+      "psuIpAddress":"PSU_IP_ADDRESS"
     }
   ],
 
   "tppInfo":{
     "authorisationNumber":"TPP_AUTHORISATION_NUMBER",
-    "tppName":null,
     "tppRoles":["AISP","ASPSP","PIISP","PISP"],
-    "authorityId":"TPP_AUTHORITY_ID",
-    "authorityName":null,
-    "country":null,
-    "organisation":null,
-    "organisationUnit":null,
-    "city":null,
-    "state":null,
-    "cancelTppRedirectUri":null,
-    "issuerCN":null
+    "authorityId":"TPP_AUTHORITY_ID"
   },
   "authorisationTemplate":{
     "tppRedirectUri":{
@@ -79,8 +58,7 @@
         "psuIdType":"PSU_ID_TYPE",
         "psuCorporateId":"PSU_CORPORATE_ID",
         "psuCorporateIdType":"PSU_CORPORATE_ID_TYPE",
-        "psuIpAddress":"PSU_IP_ADDRESS",
-        "additionalPsuIdData":null
+        "psuIpAddress":"PSU_IP_ADDRESS"
       },
       "scaStatus":"received"
     }

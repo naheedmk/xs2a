@@ -1,10 +1,6 @@
 {
   "accounts":[
   {
-    "bban":null,
-    "pan":null,
-    "maskedPan":null,
-    "msisdn":null,
     "currency":"EUR",
     "aspspAccountId":"26bb59a3-2f63-4027-ad38-67d87e59611a",
     "resourceId":"LGCGDC4KTx0tgnpZGYTTr8",
@@ -13,6 +9,5 @@
   }
 ],
   "balances":[],
-  "transactions":[],
-  "additionalInformationAccess":null
+  "transactions":[]
 }
