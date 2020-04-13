@@ -19,16 +19,16 @@ package de.adorsys.psd2.xs2a.service.validator.ais.account;
 import de.adorsys.psd2.core.data.ais.AisConsent;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.profile.AdditionalInformationAccess;
-import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
+import de.adorsys.psd2.xs2a.service.validator.ais.account.common.AccountConsentValidator;
 import de.adorsys.psd2.xs2a.service.validator.ais.account.dto.GetTrustedBeneficiariesListConsentObject;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import static de.adorsys.psd2.xs2a.core.error.ErrorType.*;
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.ACCESS_EXCEEDED;
+import static de.adorsys.psd2.xs2a.core.error.ErrorType.AIS_401;
+import static de.adorsys.psd2.xs2a.core.error.ErrorType.AIS_405;
 import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 
 /**
@@ -37,8 +37,8 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 @Component
 @RequiredArgsConstructor
 public class GetTrustedBeneficiariesListValidator extends AbstractAccountTppValidator<GetTrustedBeneficiariesListConsentObject> {
+    private final AccountConsentValidator accountConsentValidator;
     private final AspspProfileServiceWrapper aspspProfileService;
-    private final RequestProviderService requestProviderService;
 
     /**
      * Validates get trusted beneficiaries list request by checking whether:
@@ -54,12 +54,14 @@ public class GetTrustedBeneficiariesListValidator extends AbstractAccountTppVali
     protected ValidationResult executeBusinessValidation(GetTrustedBeneficiariesListConsentObject consentObject) {
         AisConsent aisConsent = consentObject.getAisConsent();
 
-        if (!aspspProfileService.isTrustedBeneficiariesSupported()) {
-            return ValidationResult.invalid(AIS_405, MessageErrorCode.SERVICE_INVALID_405);
+        ValidationResult accountConsentValidationResult = accountConsentValidator.validate(aisConsent, consentObject.getRequestUri());
+
+        if (accountConsentValidationResult.isNotValid()) {
+            return accountConsentValidationResult;
         }
 
-        if (isAccessExceeded(aisConsent, consentObject.getRequestUri())) {
-            return ValidationResult.invalid(AIS_429, ACCESS_EXCEEDED);
+        if (!aspspProfileService.isTrustedBeneficiariesSupported()) {
+            return ValidationResult.invalid(AIS_405, MessageErrorCode.SERVICE_INVALID_405);
         }
 
         if (aisConsent.isGlobalConsent()) {
@@ -85,17 +87,5 @@ public class GetTrustedBeneficiariesListValidator extends AbstractAccountTppVali
                                                          additionalInformationAccess.getTrustedBeneficiaries() == null;
 
         return isConsentDedicated && isNotTrustedBeneficiariesSupported;
-    }
-
-    private boolean isAccessExceeded(AisConsent aisConsent, String requestUri) {
-        if (requestProviderService.isRequestFromPsu() && !aisConsent.isOneAccessType()) {
-            return false;
-        }
-
-        if (!aisConsent.getUsageCounterMap().containsKey(requestUri)) {
-            return false;
-        }
-
-        return aisConsent.getUsageCounterMap().get(requestUri) <= 0;
     }
 }
