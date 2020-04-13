@@ -266,7 +266,7 @@ ASPSP may decide whether to support additional account information (Trusted Bene
 
 * *trustedBeneficiariesSupported* (boolean, default value is FALSE).
 
-If the ASPSP is not supporting the related consent extension (**trustedBeneficiariesSupported=FALSE**), then the ASPSP ignores the corresponding entries.
+If the ASPSP is not supporting the related consent extension (**trustedBeneficiariesSupported=FALSE**), then the ASPSP ignores the corresponding entries in consent body.
 In this case it will not be part of the consent model which is generated through the call where this object is contained. And attribute "trustedBeneficiaries" won't be stored and won't be present in Get Consent Response.
 
 Permission for receiving List of Trusted Beneficiaries can be covered through:
