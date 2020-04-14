@@ -1,0 +1,10 @@
+= Release notes v.6.3
+
+== Table of Contents
+
+* Remove deprecated SPI constructors `SpiAccountDetails`, `SpiCardAccountDetails`, `SpiCardTransaction` and `SpiTransaction`
+
+== Remove deprecated SPI constructors `SpiAccountDetails`, `SpiCardAccountDetails`, `SpiCardTransaction` and `SpiTransaction`
+
+Deprecated SPI constructors were removed (`SpiAccountDetails`, `SpiCardAccountDetails`, `SpiCardTransaction` and `SpiTransaction`).
+
