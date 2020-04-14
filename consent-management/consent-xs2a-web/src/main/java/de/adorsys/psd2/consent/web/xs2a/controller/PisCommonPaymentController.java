@@ -367,13 +367,17 @@ public class PisCommonPaymentController {
         return new ResponseEntity<>(response.getPayload(), HttpStatus.OK);
     }
 
-    // TODO return correct error code in case was not found https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/issues/1254
     @PutMapping(path = "/{payment-id}/payment")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 400, message = "Bad request")})
     public ResponseEntity<Void> updatePaymentCommonPaymentData(@RequestBody PisCommonPaymentRequest request, @PathVariable("payment-id") String paymentId) {
-        pisCommonPaymentServiceEncrypted.updateCommonPayment(request, paymentId);
+        CmsResponse<CmsResponse.VoidResponse> response = pisCommonPaymentServiceEncrypted.updateCommonPayment(request, paymentId);
+
+        if (response.hasError()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

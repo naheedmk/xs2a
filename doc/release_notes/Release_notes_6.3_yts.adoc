@@ -1,0 +1,11 @@
+= Release notes v.6.3
+
+== Table of Contents
+
+* Return correct error code in case `payment was not found` in `PisCommonPaymentController`
+
+== Return correct error code in case `payment was not found` in `PisCommonPaymentController`
+
+Method `updatePaymentCommonPaymentData` in `PisCommonPaymentController` return correct error code in case `payment was not found` in `PisCommonPaymentController`.
+(Error the same as in other methods in this controller).
+Added unit-tests for this method.
