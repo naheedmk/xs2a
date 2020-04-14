@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 @Configuration
 @EnableJpaRepositories("de.adorsys.psd2.consent.repository")
@@ -37,16 +36,10 @@ import java.sql.SQLException;
 public class TestDBConfiguration {
 
     @Bean
-    public SpringLiquibase springLiquibase(DataSource dataSource) throws SQLException {
-        // here we create the schema first if not yet created before
-//        tryToCreateSchema(dataSource);
+    public SpringLiquibase springLiquibase(DataSource dataSource) {
         SpringLiquibase liquibase = new SpringLiquibase();
-        // we want to drop the datasbe if it was created before to have immutable version
         liquibase.setDropFirst(true);
         liquibase.setDataSource(dataSource);
-        //you set the schema name which will be used into ur integration test
-//        liquibase.setDefaultSchema("test");
-        // the classpath reference for your liquibase changlog
         liquibase.setChangeLog("classpath:/master.xml");
         return liquibase;
     }

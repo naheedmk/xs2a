@@ -56,7 +56,6 @@ public class AbstractContainerDatabaseTest {
         hikariConfig.setUsername(container.getUsername());
         hikariConfig.setPassword(container.getPassword());
         hikariConfig.setDriverClassName(container.getDriverClassName());
-//        hikariConfig.setMaximumPoolSize(20);
 
         this.dataSource = new HikariDataSource(hikariConfig);
         return this.dataSource;
