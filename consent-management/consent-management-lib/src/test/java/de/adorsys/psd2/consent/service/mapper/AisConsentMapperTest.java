@@ -91,9 +91,9 @@ class AisConsentMapperTest {
         CmsAisAccountConsent result = aisConsentMapper.mapToCmsAisAccountConsent(consent, authorisations);
 
         CmsAisAccountConsent expected = jsonReader
-            .getObjectFromFile("json/service/mapper/ais-consent-mapper/builded/" +
-                    "cms-ais-account-consent-empty-authorisations-expected.json",
-            CmsAisAccountConsent.class);
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper/built/" +
+                    "cms-ais-account-consent-empty-authorisations.json",
+                CmsAisAccountConsent.class);
 
         assertEquals(expected, result);
     }
@@ -112,8 +112,8 @@ class AisConsentMapperTest {
         CmsAisAccountConsent result = aisConsentMapper.mapToCmsAisAccountConsent(consent, authorisations);
 
         CmsAisAccountConsent expected = jsonReader
-            .getObjectFromFile("json/service/mapper/ais-consent-mapper/builded/" +
-                    "cms-ais-account-consent-global-account-access-and-empty-aspsp-account-accesses-expected.json",
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper/built/" +
+                    "cms-ais-account-consent-global-account.json",
                 CmsAisAccountConsent.class);
 
         assertEquals(expected, result);
@@ -131,8 +131,7 @@ class AisConsentMapperTest {
         CmsAisAccountConsent result = aisConsentMapper.mapToCmsAisAccountConsent(consent, authorisations);
 
         CmsAisAccountConsent expected = jsonReader
-            .getObjectFromFile("json/service/mapper/ais-consent-mapper/builded/" +
-                    "cms-ais-account-consent-expected.json",
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper/built/cms-ais-account-consent.json",
                 CmsAisAccountConsent.class);
 
         assertEquals(expected, result);
@@ -141,12 +140,13 @@ class AisConsentMapperTest {
     @Test
     void mapToAccountAccess() {
         AisAccountAccess aisAccountAccess = jsonReader
-                .getObjectFromFile("json/service/mapper/ais-consent-mapper/builded/" +
-                        "ais-account-access-accounts-with-resource-id.json", AisAccountAccess.class);
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper/built/" +
+                "ais-account-access-accounts-with-resource-id.json", AisAccountAccess.class);
+
         AccountAccess result = aisConsentMapper.mapToAccountAccess(aisAccountAccess);
 
         AccountAccess expected = jsonReader.getObjectFromFile("json/service/mapper/" +
-            "ais-consent-mapper/builded/aspsp-account-access-accounts-expected.json", AccountAccess.class);
+            "ais-consent-mapper/built/aspsp-account-access-accounts.json", AccountAccess.class);
 
         assertEquals(expected, result);
     }
@@ -179,27 +179,26 @@ class AisConsentMapperTest {
         AisConsent result = aisConsentMapper.mapToAisConsent(consent, authorisations);
 
         AisConsent expected = jsonReader
-            .getObjectFromFile("json/service/mapper/ais-consent-mapper/" +
-                    "builded/ais-consent-with-authorisations-expected.json",
-                AisConsent.class);
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper/built" +
+                    "/ais-consent-with-authorisations.json", AisConsent.class);
 
         assertEquals(expected, result);
     }
 
     private AisConsent buildAisConsent() {
-        return jsonReader.getObjectFromFile("json/service/mapper/ais-consent-mapper/builded/ais-consent.json",
+        return jsonReader.getObjectFromFile("json/service/mapper/ais-consent-mapper/built/ais-consent.json",
             AisConsent.class);
     }
 
     private ConsentEntity buildConsent() {
         return jsonReader
-            .getObjectFromFile("json/service/mapper/ais-consent-mapper/builded/consent-entity.json",
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper/built/consent-entity.json",
                 ConsentEntity.class);
     }
 
     private AuthorisationEntity buildAisConsentAuthorisation() {
         return jsonReader
-            .getObjectFromFile("json/service/mapper/ais-consent-mapper/builded/authorisation-entity.json",
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper/built/authorisation-entity.json",
                 AuthorisationEntity.class);
     }
 
