@@ -424,10 +424,5 @@ class AccountModelMapperTest {
         public PurposeCodeMapper mockPurposeCodeMapper() {
             return mock(PurposeCodeMapper.class);
         }
-
-        @Bean
-        public Xs2aAddressMapper mockXs2aAddressMapper() {
-            return mock(Xs2aAddressMapper.class);
-        }
     }
 }

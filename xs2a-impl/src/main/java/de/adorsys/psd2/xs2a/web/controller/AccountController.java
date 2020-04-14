@@ -17,7 +17,6 @@
 package de.adorsys.psd2.xs2a.web.controller;
 
 import de.adorsys.psd2.api.AccountApi;
-import de.adorsys.psd2.model.TrustedBeneficiariesList;
 import de.adorsys.psd2.xs2a.core.ais.BookingStatus;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
@@ -27,6 +26,7 @@ import de.adorsys.psd2.xs2a.domain.account.*;
 import de.adorsys.psd2.xs2a.service.ais.*;
 import de.adorsys.psd2.xs2a.service.mapper.AccountModelMapper;
 import de.adorsys.psd2.xs2a.service.mapper.ResponseMapper;
+import de.adorsys.psd2.xs2a.service.mapper.TrustedBeneficiariesModelMapper;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ResponseErrorMapper;
 import de.adorsys.psd2.xs2a.web.error.TppErrorMessageWriter;
 import de.adorsys.psd2.xs2a.web.filter.TppErrorMessage;
@@ -44,7 +44,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.QueryParam;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -68,6 +67,7 @@ public class AccountController implements AccountApi {
     private final TrustedBeneficiariesService trustedBeneficiariesService;
     private final ResponseMapper responseMapper;
     private final AccountModelMapper accountModelMapper;
+    private final TrustedBeneficiariesModelMapper trustedBeneficiariesModelMapper;
     private final ResponseErrorMapper responseErrorMapper;
     private final TppErrorMessageWriter tppErrorMessageWriter;
 
@@ -115,7 +115,7 @@ public class AccountController implements AccountApi {
             trustedBeneficiariesService.getTrustedBeneficiaries(consentID, accountId, trimEndingSlash(request.getRequestURI()));
         return trustedBeneficiaries.hasError()
                    ? responseErrorMapper.generateErrorResponse(trustedBeneficiaries.getError())
-                   : responseMapper.ok(trustedBeneficiaries, accountModelMapper::mapToTrustedBeneficiariesList);
+                   : responseMapper.ok(trustedBeneficiaries, trustedBeneficiariesModelMapper::mapToTrustedBeneficiariesList);
     }
 
     @GetMapping(value = "/v1/accounts/{account-id}/transactions/download/{download-id}")
