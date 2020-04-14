@@ -1,6 +1,7 @@
 {
   "instanceId": "UNDEFINED",
   "externalId": "ed1d8022-1c38-49ae-898e-78f29234557c",
+  "internalRequestId": "643e4ea3-0401-4bc8-b9bc-a9df51ec848e",
   "consentStatus": "VALID",
   "frequencyPerDay": 7,
   "recurringIndicator": true,
@@ -9,14 +10,6 @@
   "validUntil": "2030-12-31",
   "lastActionDate": "2020-04-08",
   "statusChangeTimestamp": "2020-04-08T14:09:27.496839+03:00",
-  "internalRequestId": "643e4ea3-0401-4bc8-b9bc-a9df51ec848e",
-  "authorisationTemplate": {
-    "id": 1,
-    "redirectUri": "redirect uri",
-    "nokRedirectUri": "non redirect uri",
-    "cancelRedirectUri": "cancel redirect uri",
-    "cancelNokRedirectUri": "cancel nok redirect uri"
-  },
   "tppInformation": {
     "tppRedirectPreferred": true,
     "tppInfo": {
@@ -42,19 +35,5 @@
       "psuCorporateIdType": "PSU_CORPORATE_ID_TYPE",
       "psuIpAddress": "PSU_IP_ADDRESS"
     }
-  ],
-  "usages": [],
-  "tppAccountAccesses": [],
-  "aspspAccountAccesses": [
-    {
-      "accountIdentifier": "DE89876442804656108109",
-      "currency": "EUR",
-      "typeAccess": "ACCOUNT",
-      "accountReferenceType": "iban",
-      "resourceId": "resource id",
-      "aspspAccountId": "aspsp account id"
-    }
-  ],
-  "ownerNameType": "NONE",
-  "trustedBeneficiariesType": "NONE"
+  ]
 }

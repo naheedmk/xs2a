@@ -5,6 +5,7 @@
   "frequencyPerDay": 7,
   "recurringIndicator": true,
   "multilevelScaRequired": true,
+  "data": "eyJhbGxQc2QyIjoiYWxsQWNjb3VudHMiLCJjb21iaW5lZFNlcnZpY2VJbmRpY2F0b3IiOmZhbHNlfQ==",
   "creationTimestamp": "2020-04-08T14:09:27.496839+03:00",
   "validUntil": "2030-12-31",
   "lastActionDate": "2020-04-08",
@@ -44,17 +45,15 @@
     }
   ],
   "usages": [],
-  "tppAccountAccesses": [],
-  "aspspAccountAccesses": [
+  "tppAccountAccesses": [
     {
       "accountIdentifier": "DE89876442804656108109",
       "currency": "EUR",
       "typeAccess": "ACCOUNT",
-      "accountReferenceType": "iban",
-      "resourceId": "resource id",
-      "aspspAccountId": "aspsp account id"
+      "accountReferenceType": "iban"
     }
   ],
+  "aspspAccountAccesses": [],
   "ownerNameType": "NONE",
   "trustedBeneficiariesType": "NONE"
 }

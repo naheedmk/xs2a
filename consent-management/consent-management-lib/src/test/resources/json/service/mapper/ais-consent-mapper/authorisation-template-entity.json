@@ -1,7 +1,0 @@
-{
-  "id": 1,
-  "redirectUri": "redirect uri",
-  "nokRedirectUri": "non redirect uri",
-  "cancelRedirectUri": "cancel redirect uri",
-  "cancelNokRedirectUri": "cancel nok redirect uri"
-}

@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.consent.service.mapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adorsys.psd2.consent.api.ais.AisAccountAccess;
 import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
@@ -24,7 +25,6 @@ import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.service.AisConsentUsageService;
 import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsent;
-import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.io.File;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -85,26 +86,26 @@ class AisConsentMapperTest {
 
     @Test
     void mapToCmsAisAccountConsent_emptyAuthorisations() {
-        ConsentEntity consent = buildConsent();
+        ConsentEntity consent = jsonReader
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper/consent-entity-empty-authorisations.json",
+                ConsentEntity.class);
+
         List<AuthorisationEntity> authorisations = Collections.emptyList();
 
         CmsAisAccountConsent result = aisConsentMapper.mapToCmsAisAccountConsent(consent, authorisations);
 
         CmsAisAccountConsent expected = jsonReader
             .getObjectFromFile("json/service/mapper/ais-consent-mapper" +
-                    "/cms-ais-account-consent-empty-authorisations.json",
-                CmsAisAccountConsent.class);
+                    "/cms-ais-account-consent-empty-authorisations.json", CmsAisAccountConsent.class);
 
         assertEquals(expected, result);
     }
 
     @Test
     void mapToCmsAisAccountConsent_globalAccountAccessAndEmptyAspspAccountAccesses() {
-        ConsentEntity consent = buildConsent();
-        consent.setTppAccountAccesses(accessMapper.mapToTppAccountAccess(buildAisConsent().getTppAccountAccesses()));
-        consent.setAuthorisationTemplate(buildAuthorisationTemplateEntity());
-        consent.setData(consentDataMapper.getBytesFromConsentData(jsonReader
-            .getObjectFromFile("json/service/mapper/ais-consent-mapper/ais-consent-data.json", AisConsentData.class)));
+        ConsentEntity consent = jsonReader
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper" +
+                    "/consent-entity-global-account-access.json", ConsentEntity.class);
 
         List<AuthorisationEntity> authorisations = Collections.singletonList(buildAisConsentAuthorisation());
 
@@ -121,9 +122,9 @@ class AisConsentMapperTest {
 
     @Test
     void mapToCmsAisAccountConsent() {
-        ConsentEntity consent = buildConsent();
-        consent.setAspspAccountAccesses(accessMapper.mapToAspspAccountAccess(buildAisConsent().getAspspAccountAccesses()));
-        consent.setAuthorisationTemplate(buildAuthorisationTemplateEntity());
+        ConsentEntity consent = jsonReader
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper" +
+                "/consent-entity.json", ConsentEntity.class);
 
         List<AuthorisationEntity> authorisations = Collections.singletonList(buildAisConsentAuthorisation());
 
@@ -153,25 +154,26 @@ class AisConsentMapperTest {
 
     @Test
     void mapToAisConsent_emptyAuthorisations() {
-        ConsentEntity consent = buildConsent();
-        consent.setAuthorisationTemplate(buildAuthorisationTemplateEntity());
-        consent.setTppAccountAccesses(accessMapper.mapToTppAccountAccess(buildAisConsent().getTppAccountAccesses()));
-        consent.setAspspAccountAccesses(accessMapper.mapToAspspAccountAccess(buildAisConsent().getAspspAccountAccesses()));
+        ConsentEntity consent = jsonReader
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper" +
+                "/consent-entity-with-tpp-aspsp-access.json", ConsentEntity.class);
 
         List<AuthorisationEntity> authorisations = Collections.emptyList();
 
         when(aisConsentUsageService.getUsageCounterMap(consent)).thenReturn(USAGE_COUNTER);
         AisConsent result = aisConsentMapper.mapToAisConsent(consent, authorisations);
 
-        assertEquals(buildAisConsent(), result);
+        AisConsent expected = jsonReader.getObjectFromFile("json/service/mapper/ais-consent-mapper/ais-consent.json",
+            AisConsent.class);
+
+            assertEquals(expected, result);
     }
 
     @Test
     void mapToAisConsent() {
-        ConsentEntity consent = buildConsent();
-        consent.setAuthorisationTemplate(buildAuthorisationTemplateEntity());
-        consent.setTppAccountAccesses(accessMapper.mapToTppAccountAccess(buildAisConsent().getTppAccountAccesses()));
-        consent.setAspspAccountAccesses(accessMapper.mapToAspspAccountAccess(buildAisConsent().getAspspAccountAccesses()));
+        ConsentEntity consent = jsonReader
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper" +
+                "/consent-entity-with-tpp-aspsp-access.json", ConsentEntity.class);
 
         List<AuthorisationEntity> authorisations = Collections.singletonList(buildAisConsentAuthorisation());
 
@@ -185,26 +187,10 @@ class AisConsentMapperTest {
         assertEquals(expected, result);
     }
 
-    private AisConsent buildAisConsent() {
-        return jsonReader.getObjectFromFile("json/service/mapper/ais-consent-mapper/ais-consent.json",
-            AisConsent.class);
-    }
-
-    private ConsentEntity buildConsent() {
-        return jsonReader
-            .getObjectFromFile("json/service/mapper/ais-consent-mapper/consent-entity.json",
-                ConsentEntity.class);
-    }
-
     private AuthorisationEntity buildAisConsentAuthorisation() {
         return jsonReader
             .getObjectFromFile("json/service/mapper/ais-consent-mapper/authorisation-entity.json",
                 AuthorisationEntity.class);
     }
 
-    private AuthorisationTemplateEntity buildAuthorisationTemplateEntity() {
-        return jsonReader
-            .getObjectFromFile("json/service/mapper/ais-consent-mapper/authorisation-template-entity.json",
-                AuthorisationTemplateEntity.class);
-    }
 }

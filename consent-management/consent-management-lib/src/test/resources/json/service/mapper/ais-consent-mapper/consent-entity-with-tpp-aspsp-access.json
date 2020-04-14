@@ -44,7 +44,14 @@
     }
   ],
   "usages": [],
-  "tppAccountAccesses": [],
+  "tppAccountAccesses": [
+    {
+      "accountIdentifier": "DE89876442804656108109",
+      "currency": "EUR",
+      "typeAccess": "ACCOUNT",
+      "accountReferenceType": "iban"
+    }
+  ],
   "aspspAccountAccesses": [
     {
       "accountIdentifier": "DE89876442804656108109",
