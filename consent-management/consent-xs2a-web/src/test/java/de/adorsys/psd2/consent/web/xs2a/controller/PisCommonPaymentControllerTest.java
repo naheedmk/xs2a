@@ -22,7 +22,6 @@ import de.adorsys.psd2.consent.api.CmsResponse;
 import de.adorsys.psd2.consent.api.authorisation.*;
 import de.adorsys.psd2.consent.api.pis.CreatePisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.PisCommonPaymentDataStatusResponse;
-import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentRequest;
 import de.adorsys.psd2.consent.api.pis.proto.PisCommonPaymentResponse;
 import de.adorsys.psd2.consent.api.pis.proto.PisPaymentInfo;
 import de.adorsys.psd2.consent.api.service.AuthorisationServiceEncrypted;
@@ -435,29 +434,5 @@ class PisCommonPaymentControllerTest {
         Authorisation authorisation = new Authorisation();
         authorisation.setScaStatus(ScaStatus.RECEIVED);
         return authorisation;
-    }
-
-    @Test
-    void updateupdatePaymentCommonPaymentData_Ok() {
-        PisCommonPaymentRequest request = new PisCommonPaymentRequest();
-
-        when(pisCommonPaymentService.updateCommonPayment(request, PAYMENT_ID))
-            .thenReturn(CmsResponse.<CmsResponse.VoidResponse>builder().payload(CmsResponse.voidResponse()).build());
-
-        ResponseEntity<Void> actualResponse = pisCommonPaymentController.updatePaymentCommonPaymentData(request, PAYMENT_ID);
-
-        assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
-    }
-
-    @Test
-    void updatePaymentCommonPaymentData_NotFound() {
-        PisCommonPaymentRequest request = new PisCommonPaymentRequest();
-
-        when(pisCommonPaymentService.updateCommonPayment(request, PAYMENT_ID))
-            .thenReturn(CmsResponse.<CmsResponse.VoidResponse>builder().error(CmsError.LOGICAL_ERROR).build());
-
-        ResponseEntity<Void> actualResponse = pisCommonPaymentController.updatePaymentCommonPaymentData(request, PAYMENT_ID);
-
-        assertEquals(HttpStatus.NOT_FOUND, actualResponse.getStatusCode());
     }
 }
