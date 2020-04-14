@@ -16,6 +16,7 @@
 
 package de.adorsys.psd2.consent.service;
 
+import de.adorsys.psd2.aspsp.profile.service.AspspProfileService;
 import de.adorsys.psd2.consent.api.ais.CmsConsent;
 import de.adorsys.psd2.consent.domain.account.AisConsentTransaction;
 import de.adorsys.psd2.consent.repository.AisConsentTransactionRepository;
@@ -50,6 +51,7 @@ public class OneOffConsentExpirationService {
     private final AisConsentUsageRepository aisConsentUsageRepository;
     private final AisConsentTransactionRepository aisConsentTransactionRepository;
     private final CmsAisConsentMapper cmsAisConsentMapper;
+    private final AspspProfileService aspspProfileService;
 
     /**
      * Checks, should the one-off consent be expired after using its all GET endpoints (accounts, balances, transactions)
@@ -145,12 +147,20 @@ public class OneOffConsentExpirationService {
         }
 
         // Consent was given for accounts, balances, transactions and beneficiaries.
-        if (isConsentGlobal || !isTrustedBeneficiariesNotAllowed(aspspAccountAccesses)) {
+        if (isBeneficiariesEndpointAllowed(isConsentGlobal, aspspAccountAccesses)) {
             return READ_ALL_DETAILS_WITH_BENEFICIARIES_COUNT + numberOfTransactions;
         }
 
         // Consent was given for accounts, balances and transactions.
         return READ_ALL_DETAILS_COUNT + numberOfTransactions;
+    }
+
+    private boolean isBeneficiariesEndpointAllowed(boolean isConsentGlobal, AccountAccess aspspAccountAccesses) {
+        return isGlobalConsentWithBeneficiaries(isConsentGlobal) || !isTrustedBeneficiariesNotAllowed(aspspAccountAccesses);
+    }
+
+    private boolean isGlobalConsentWithBeneficiaries(boolean isConsentGlobal) {
+        return isConsentGlobal && isTrustedBeneficiariesSupported();
     }
 
     private boolean isTrustedBeneficiariesNotAllowed(AccountAccess aspspAccountAccesses) {
@@ -160,5 +170,9 @@ public class OneOffConsentExpirationService {
 
     private boolean isAccessForAccountReferencesEmpty(List<AccountReference> accounts, String resourceId) {
         return accounts.stream().noneMatch(access -> access.getResourceId().equals(resourceId));
+    }
+
+    public boolean isTrustedBeneficiariesSupported() {
+        return aspspProfileService.getAspspSettings().getAis().getConsentTypes().isTrustedBeneficiariesSupported();
     }
 }
