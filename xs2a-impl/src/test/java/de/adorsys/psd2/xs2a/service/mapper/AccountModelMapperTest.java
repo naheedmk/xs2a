@@ -29,6 +29,7 @@ import de.adorsys.psd2.xs2a.domain.account.*;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.web.mapper.HrefLinkMapper;
 import de.adorsys.psd2.xs2a.web.mapper.PurposeCodeMapper;
+import de.adorsys.psd2.xs2a.web.mapper.Xs2aAddressMapper;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -422,6 +423,11 @@ class AccountModelMapperTest {
         @Bean
         public PurposeCodeMapper mockPurposeCodeMapper() {
             return mock(PurposeCodeMapper.class);
+        }
+
+        @Bean
+        public Xs2aAddressMapper mockXs2aAddressMapper() {
+            return mock(Xs2aAddressMapper.class);
         }
     }
 }
