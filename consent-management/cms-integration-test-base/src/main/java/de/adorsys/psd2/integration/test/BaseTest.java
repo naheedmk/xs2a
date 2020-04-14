@@ -36,6 +36,7 @@ public class BaseTest extends AbstractContainerDatabaseTest {
                                                                        .withPassword("secret");
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        @Override
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
             if (!postgreSQLContainer.isRunning()) {
                 postgreSQLContainer.start();

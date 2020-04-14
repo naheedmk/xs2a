@@ -23,6 +23,8 @@ import de.adorsys.psd2.consent.repository.TppInfoRepository;
 import de.adorsys.psd2.integration.test.BaseTest;
 import de.adorsys.psd2.integration.test.TestDBConfiguration;
 import de.adorsys.psd2.xs2a.core.consent.ConsentType;
+import de.adorsys.psd2.xs2a.core.profile.AccountReference;
+import de.adorsys.psd2.xs2a.core.profile.AccountReferenceType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,9 +36,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
+import java.util.Currency;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,82 +45,49 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ContextConfiguration(classes = TestDBConfiguration.class,
-    initializers = {AisConsentSpecificationIT.Initializer.class})
-class AisConsentSpecificationIT extends BaseTest {
+    initializers = {PiisConsentEntitySpecificationIT.Initializer.class})
+class PiisConsentEntitySpecificationIT extends BaseTest {
 
+    private static final String TPP_AUTHORISATION_NUMBER = "12345987";
     private static final String INSTANCE_ID = "UNDEFINED";
     private static final PsuIdData PSU_ID_DATA = new PsuIdData("987654321", "", "", "", "");
-    private static final String ASPSP_ACCOUNT_ID = "123-DEDE89370400440532013000-EUR";
 
     @Autowired
-    private AisConsentSpecification aisConsentSpecification;
+    private PiisConsentEntitySpecification piisConsentEntitySpecification;
 
     @Autowired
     private ConsentJpaRepository consentJpaRepository;
     @Autowired
     private TppInfoRepository tppInfoRepository;
 
-    private TppInfoEntity tppInfo;
     private ConsentEntity consent;
+    private AccountReference accountReference;
 
     @BeforeEach
     void setUp() {
         clearData();
 
-        tppInfo = tppInfoRepository.save(
+        TppInfoEntity tppInfo = tppInfoRepository.save(
             jsonReader.getObjectFromFile("json/specification/tpp-info-entity.json", TppInfoEntity.class));
 
         ConsentEntity consentEntity = jsonReader.getObjectFromFile("json/specification/consent-entity.json", ConsentEntity.class);
-        consentEntity.setConsentType(ConsentType.AIS.getName());
+        consentEntity.setConsentType(ConsentType.PIIS_ASPSP.getName());
         consentEntity.getTppInformation().setTppInfo(tppInfo);
         consent = consentJpaRepository.save(consentEntity);
-    }
 
-    @Test
-    void byConsentIdAndInstanceId() {
-        Optional<ConsentEntity> actual = consentJpaRepository.findOne(
-            aisConsentSpecification.byConsentIdAndInstanceId(consent.getExternalId(), INSTANCE_ID));
-
-        assertTrue(actual.isPresent());
-        assertEquals(consent.getExternalId(), actual.get().getExternalId());
-        assertEquals(INSTANCE_ID, actual.get().getInstanceId());
+        accountReference = new AccountReference();
+        accountReference.setIban("DE15500105172295759744");
+        accountReference.setCurrency(Currency.getInstance("EUR"));
     }
 
     @Test
     @Transactional
-    void byTppIdAndCreationPeriodAndPsuIdDataAndInstanceId() {
-        OffsetDateTime from = consent.getCreationTimestamp().minusMinutes(1);
-        OffsetDateTime to = consent.getCreationTimestamp().plusMinutes(1);
+    void byPsuDataAndInstanceId() {
         List<ConsentEntity> actual = consentJpaRepository.findAll(
-            aisConsentSpecification.byTppIdAndCreationPeriodAndPsuIdDataAndInstanceId(
-                tppInfo.getAuthorisationNumber(),
-                from.toLocalDate(),
-                to.toLocalDate(),
+            piisConsentEntitySpecification.byPsuDataAndInstanceId(
                 PSU_ID_DATA,
                 INSTANCE_ID
-            )
-        );
-
-        assertTrue(CollectionUtils.isNotEmpty(actual));
-        assertEquals(1, actual.size());
-        ConsentEntity actualConsent = actual.get(0);
-        assertEquals(tppInfo.getAuthorisationNumber(), actualConsent.getTppInformation().getTppInfo().getAuthorisationNumber());
-        assertEquals(consent.getExternalId(), actualConsent.getExternalId());
-        assertTrue(actualConsent.getCreationTimestamp().isAfter(from));
-        assertTrue(actualConsent.getCreationTimestamp().isBefore(to));
-        assertEquals(PSU_ID_DATA.getPsuId(), actualConsent.getPsuDataList().get(0).getPsuId());
-        assertEquals(INSTANCE_ID, actualConsent.getInstanceId());
-    }
-
-    @Test
-    @Transactional
-    void byPsuDataInListAndInstanceId() {
-        List<ConsentEntity> actual = consentJpaRepository.findAll(
-            aisConsentSpecification.byPsuDataInListAndInstanceId(
-                PSU_ID_DATA,
-                INSTANCE_ID
-            )
-        );
+            ));
 
         assertTrue(CollectionUtils.isNotEmpty(actual));
         assertEquals(1, actual.size());
@@ -130,47 +98,53 @@ class AisConsentSpecificationIT extends BaseTest {
 
     @Test
     @Transactional
-    void byPsuIdDataAndCreationPeriodAndInstanceId() {
-        OffsetDateTime from = consent.getCreationTimestamp().minusMinutes(1);
-        OffsetDateTime to = consent.getCreationTimestamp().plusMinutes(1);
+    void byPsuIdDataAndAuthorisationNumberAndAccountReference() {
         List<ConsentEntity> actual = consentJpaRepository.findAll(
-            aisConsentSpecification.byPsuIdDataAndCreationPeriodAndInstanceId(
+            piisConsentEntitySpecification.byPsuIdDataAndAuthorisationNumberAndAccountReference(
                 PSU_ID_DATA,
-                from.toLocalDate(),
-                to.toLocalDate(),
-                INSTANCE_ID
-            )
-        );
+                TPP_AUTHORISATION_NUMBER,
+                accountReference
+            ));
 
         assertTrue(CollectionUtils.isNotEmpty(actual));
         assertEquals(1, actual.size());
         ConsentEntity actualConsent = actual.get(0);
         assertEquals(PSU_ID_DATA.getPsuId(), actualConsent.getPsuDataList().get(0).getPsuId());
-        assertTrue(actualConsent.getCreationTimestamp().isAfter(from));
-        assertTrue(actualConsent.getCreationTimestamp().isBefore(to));
-        assertEquals(INSTANCE_ID, actualConsent.getInstanceId());
+        assertEquals(TPP_AUTHORISATION_NUMBER, actualConsent.getTppInformation().getTppInfo().getAuthorisationNumber());
+        assertEquals(accountReference.getIban(), actualConsent.getAspspAccountAccesses().get(0).getAccountIdentifier());
+        assertEquals(AccountReferenceType.IBAN, actualConsent.getAspspAccountAccesses().get(0).getAccountReferenceType());
+        assertEquals(accountReference.getCurrency(), actualConsent.getAspspAccountAccesses().get(0).getCurrency());
     }
 
     @Test
     @Transactional
-    void byAspspAccountIdAndCreationPeriodAndInstanceId() {
-        OffsetDateTime from = consent.getCreationTimestamp().minusMinutes(1);
-        OffsetDateTime to = consent.getCreationTimestamp().plusMinutes(1);
+    void byCurrencyAndAccountReferenceSelector() {
         List<ConsentEntity> actual = consentJpaRepository.findAll(
-            aisConsentSpecification.byAspspAccountIdAndCreationPeriodAndInstanceId(
-                ASPSP_ACCOUNT_ID,
-                from.toLocalDate(),
-                to.toLocalDate(),
-                INSTANCE_ID
-            )
-        );
+            piisConsentEntitySpecification.byCurrencyAndAccountReferenceSelector(
+                accountReference.getCurrency(),
+                accountReference.getUsedAccountReferenceSelector()
+            ));
 
         assertTrue(CollectionUtils.isNotEmpty(actual));
         assertEquals(1, actual.size());
         ConsentEntity actualConsent = actual.get(0);
-        assertEquals(ASPSP_ACCOUNT_ID, actualConsent.getAspspAccountAccesses().get(0).getAspspAccountId());
-        assertTrue(actualConsent.getCreationTimestamp().isAfter(from));
-        assertTrue(actualConsent.getCreationTimestamp().isBefore(to));
-        assertEquals(INSTANCE_ID, actualConsent.getInstanceId());
+        assertEquals(accountReference.getIban(), actualConsent.getAspspAccountAccesses().get(0).getAccountIdentifier());
+        assertEquals(AccountReferenceType.IBAN, actualConsent.getAspspAccountAccesses().get(0).getAccountReferenceType());
+        assertEquals(accountReference.getCurrency(), actualConsent.getAspspAccountAccesses().get(0).getCurrency());
+    }
+
+    @Test
+    @Transactional
+    void byAccountReferenceSelector() {
+        List<ConsentEntity> actual = consentJpaRepository.findAll(
+            piisConsentEntitySpecification.byAccountReferenceSelector(
+                accountReference.getUsedAccountReferenceSelector()
+            ));
+
+        assertTrue(CollectionUtils.isNotEmpty(actual));
+        assertEquals(1, actual.size());
+        ConsentEntity actualConsent = actual.get(0);
+        assertEquals(accountReference.getIban(), actualConsent.getAspspAccountAccesses().get(0).getAccountIdentifier());
+        assertEquals(AccountReferenceType.IBAN, actualConsent.getAspspAccountAccesses().get(0).getAccountReferenceType());
     }
 }

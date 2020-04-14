@@ -210,7 +210,6 @@
                                 <bannedDependencies>
                                     <excludes>
                                         <exclude>de.adorsys.psd2:consent-management</exclude>
-                                        <exclude>de.adorsys.psd2:cms-db-schema</exclude>
                                         <exclude>de.adorsys.psd2:cms-standalone-service</exclude>
                                         <exclude>de.adorsys.psd2:consent-aspsp-web</exclude>
                                         <exclude>de.adorsys.psd2:consent-core-web</exclude>
