@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 
 import static de.adorsys.psd2.xs2a.core.error.ErrorType.AIS_401;
 import static de.adorsys.psd2.xs2a.core.error.ErrorType.AIS_405;
-import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CONSENT_INVALID;
 
 /**
  * Validator to be used for validating get trusted beneficiaries list request according to some business rules
@@ -69,11 +68,11 @@ public class GetTrustedBeneficiariesListValidator extends AbstractAccountTppVali
         }
 
         if (aisConsent.isConsentForAllAvailableAccounts()) {
-            return ValidationResult.invalid(AIS_401, CONSENT_INVALID);
+            return ValidationResult.invalid(AIS_401, MessageErrorCode.CONSENT_INVALID);
         }
 
         if (doesNotDedicatedConsentHaveRights(aisConsent)) {
-            return ValidationResult.invalid(AIS_401, CONSENT_INVALID);
+            return ValidationResult.invalid(AIS_401, MessageErrorCode.CONSENT_INVALID);
         }
 
         return ValidationResult.valid();
