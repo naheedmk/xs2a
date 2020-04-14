@@ -66,11 +66,11 @@ public class PisCommonPaymentRemoteUrls {
      * PathVariables: String paymentId
      */
     public String createPisAuthorisation() {
-        return commonPaymentServiceBaseUrl + "/pis/common-payments/{payment-id}/authorizations";
+        return commonPaymentServiceBaseUrl + "/pis/common-payments/{payment-id}/authorisations";
     }
 
     /**
-     * @return Returns URL-string to CMS endpoint that create pis authorization cancellation
+     * @return Returns URL-string to CMS endpoint that create pis authorisation cancellation
      * Method: POST
      * PathVariables: String paymentId
      */
@@ -79,7 +79,7 @@ public class PisCommonPaymentRemoteUrls {
     }
 
     /**
-     * @return String authorization ID
+     * @return String authorisation ID
      * Method: GET
      * PathVariables: String paymentId
      */
