@@ -2,7 +2,12 @@
 
 == Table of Contents
 
+* Removed deprecated SPI constructors in `SpiAccountDetails`, `SpiCardAccountDetails`, `SpiCardTransaction` and `SpiTransaction`
 * Removed unused methods in `PisCommonPaymentController`, `PisCommonPaymentServiceBase`, `PisCommonPaymentServiceInternalEncrypted`, `PisCommonPaymentServiceInternal`, `PisCommonPaymentServiceRemote`
+
+== Removed deprecated SPI constructors in `SpiAccountDetails`, `SpiCardAccountDetails`, `SpiCardTransaction` and `SpiTransaction`
+
+Deprecated SPI constructors were removed (`SpiAccountDetails`, `SpiCardAccountDetails`, `SpiCardTransaction` and `SpiTransaction`).
 
 == Removed unused methods in `PisCommonPaymentController`, `PisCommonPaymentServiceBase`, `PisCommonPaymentServiceInternalEncrypted`, `PisCommonPaymentServiceInternal`, `PisCommonPaymentServiceRemote`
 
