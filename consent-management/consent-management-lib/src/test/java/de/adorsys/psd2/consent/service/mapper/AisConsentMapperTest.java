@@ -137,13 +137,13 @@ class AisConsentMapperTest {
     @Test
     void mapToAccountAccess() {
         AisAccountAccess aisAccountAccess = jsonReader
-            .getObjectFromFile("json/service/mapper/ais-consent-mapper/ais-account-access-accounts.json",
+            .getObjectFromFile("json/service/mapper/ais-consent-mapper/ais-account-access.json",
                 AisAccountAccess.class);
 
         AccountAccess result = aisConsentMapper.mapToAccountAccess(aisAccountAccess);
 
         AccountAccess expected = jsonReader.
-            getObjectFromFile("json/service/mapper/ais-consent-mapper/aspsp-account-access-accounts.json",
+            getObjectFromFile("json/service/mapper/ais-consent-mapper/aspsp-account-access.json",
             AccountAccess.class);
 
         assertEquals(expected, result);
