@@ -19,7 +19,7 @@ package de.adorsys.psd2.xs2a.service.mapper;
 import de.adorsys.psd2.model.TrustedBeneficiaries;
 import de.adorsys.psd2.model.TrustedBeneficiariesList;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aTrustedBeneficiaries;
-import de.adorsys.psd2.xs2a.domain.account.Xs2aTrustedBeneficiariesListHolder;
+import de.adorsys.psd2.xs2a.domain.account.Xs2aTrustedBeneficiariesList;
 import de.adorsys.psd2.xs2a.web.mapper.Xs2aAddressMapper;
 import org.mapstruct.Mapper;
 
@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", uses = {Xs2aAddressMapper.class})
 public abstract class TrustedBeneficiariesModelMapper {
 
-    public TrustedBeneficiariesList mapToTrustedBeneficiariesList(Xs2aTrustedBeneficiariesListHolder xs2aTrustedBeneficiariesListHolder) {
-        List<Xs2aTrustedBeneficiaries> trustedBeneficiaries = xs2aTrustedBeneficiariesListHolder.getTrustedBeneficiaries();
+    public TrustedBeneficiariesList mapToTrustedBeneficiariesList(Xs2aTrustedBeneficiariesList xs2ATrustedBeneficiariesList) {
+        List<Xs2aTrustedBeneficiaries> trustedBeneficiaries = xs2ATrustedBeneficiariesList.getTrustedBeneficiaries();
 
         List<TrustedBeneficiaries> beneficiaries = trustedBeneficiaries.stream()
                                                        .map(this::mapToTrustedBeneficiaries)

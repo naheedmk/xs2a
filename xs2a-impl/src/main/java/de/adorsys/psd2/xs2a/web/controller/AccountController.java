@@ -111,7 +111,7 @@ public class AccountController implements AccountApi {
 
     @Override
     public ResponseEntity getTrustedBeneficiariesList(UUID xRequestID, String consentID, String accountId, String digest, String signature, byte[] tpPSignatureCertificate, String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
-        ResponseObject<Xs2aTrustedBeneficiariesListHolder> trustedBeneficiaries =
+        ResponseObject<Xs2aTrustedBeneficiariesList> trustedBeneficiaries =
             trustedBeneficiariesService.getTrustedBeneficiaries(consentID, accountId, trimEndingSlash(request.getRequestURI()));
         return trustedBeneficiaries.hasError()
                    ? responseErrorMapper.generateErrorResponse(trustedBeneficiaries.getError())

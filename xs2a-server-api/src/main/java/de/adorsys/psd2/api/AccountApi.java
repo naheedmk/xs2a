@@ -227,7 +227,6 @@ public interface AccountApi {
     }
 
 
-
     @ApiOperation(value = "Read trusted beneficiaries list", nickname = "getTrustedBeneficiariesList", notes = "Reads the list of trusted beneficiaries related to the PSU who has given the (explicit) consent.", response = TrustedBeneficiariesList.class, authorizations = {
         @Authorization(value = "BearerAuthOAuth")
     }, tags={  })

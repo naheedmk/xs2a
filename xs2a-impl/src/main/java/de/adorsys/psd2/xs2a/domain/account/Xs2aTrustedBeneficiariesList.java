@@ -16,13 +16,11 @@
 
 package de.adorsys.psd2.xs2a.domain.account;
 
-import de.adorsys.psd2.core.data.ais.AisConsent;
 import lombok.Value;
 
 import java.util.List;
 
 @Value
-public class Xs2aTrustedBeneficiariesListHolder {
+public class Xs2aTrustedBeneficiariesList {
     List<Xs2aTrustedBeneficiaries> trustedBeneficiaries;
-    AisConsent aisConsent;
 }

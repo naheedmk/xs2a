@@ -26,7 +26,7 @@ import de.adorsys.psd2.xs2a.core.error.MessageError;
 import de.adorsys.psd2.xs2a.core.mapper.ServiceType;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aTrustedBeneficiaries;
-import de.adorsys.psd2.xs2a.domain.account.Xs2aTrustedBeneficiariesListHolder;
+import de.adorsys.psd2.xs2a.domain.account.Xs2aTrustedBeneficiariesList;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aAisConsentService;
 import de.adorsys.psd2.xs2a.service.event.Xs2aEventService;
@@ -74,11 +74,11 @@ public class TrustedBeneficiariesService {
      * @param consentId  String representing an AccountConsent identification
      * @param accountId  String representing a PSU`s Account at ASPSP
      * @param requestUri the URI of incoming request
-     * @return response with {@link Xs2aTrustedBeneficiariesListHolder} based on accountId and granted by consent
+     * @return response with {@link Xs2aTrustedBeneficiariesList} based on accountId and granted by consent
      */
-    public ResponseObject<Xs2aTrustedBeneficiariesListHolder> getTrustedBeneficiaries(String consentId,
-                                                                                      String accountId,
-                                                                                      String requestUri) {
+    public ResponseObject<Xs2aTrustedBeneficiariesList> getTrustedBeneficiaries(String consentId,
+                                                                                String accountId,
+                                                                                String requestUri) {
         xs2aEventService.recordAisTppRequest(consentId, EventType.READ_TRUSTED_BENEFICIARIES_LIST_REQUEST_RECEIVED);
 
         Optional<AisConsent> aisConsentOptional = aisConsentService.getAccountConsentById(consentId);
@@ -103,10 +103,10 @@ public class TrustedBeneficiariesService {
         return getSuccessfulResponse(consentId, accountId, requestUri, aisConsent, spiResponse);
     }
 
-    private ResponseObject<Xs2aTrustedBeneficiariesListHolder> getResponseWithNotFoundConsent(String consentId, String accountId) {
+    private ResponseObject<Xs2aTrustedBeneficiariesList> getResponseWithNotFoundConsent(String consentId, String accountId) {
         log.info("Account-ID [{}], Consent-ID [{}]. Get trusted beneficiaries list failed. Account consent not found by id",
                  accountId, consentId);
-        return ResponseObject.<Xs2aTrustedBeneficiariesListHolder>builder()
+        return ResponseObject.<Xs2aTrustedBeneficiariesList>builder()
                    .fail(AIS_400, TppMessageInformation.of(CONSENT_UNKNOWN_400))
                    .build();
     }
@@ -116,10 +116,10 @@ public class TrustedBeneficiariesService {
         return getTrustedBeneficiariesListValidator.validate(validatorObject);
     }
 
-    private ResponseObject<Xs2aTrustedBeneficiariesListHolder> getResponseWithValidationError(String consentId, String accountId, String requestUri, ValidationResult validationResult) {
+    private ResponseObject<Xs2aTrustedBeneficiariesList> getResponseWithValidationError(String consentId, String accountId, String requestUri, ValidationResult validationResult) {
         log.info("Account-ID [{}], Consent-ID [{}], RequestUri [{}]. Get trusted beneficiaries list - validation failed: {}",
                  accountId, consentId, requestUri, validationResult.getMessageError());
-        return ResponseObject.<Xs2aTrustedBeneficiariesListHolder>builder()
+        return ResponseObject.<Xs2aTrustedBeneficiariesList>builder()
                    .fail(validationResult.getMessageError())
                    .build();
     }
@@ -131,22 +131,22 @@ public class TrustedBeneficiariesService {
                                                           aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId));
     }
 
-    private ResponseObject<Xs2aTrustedBeneficiariesListHolder> getResponseWithSpiError(String consentId, SpiResponse<List<SpiTrustedBeneficiaries>> spiResponse) {
+    private ResponseObject<Xs2aTrustedBeneficiariesList> getResponseWithSpiError(String consentId, SpiResponse<List<SpiTrustedBeneficiaries>> spiResponse) {
         ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS);
         log.info("Consent-ID: [{}]. Get trusted beneficiaries list failed: couldn't get trusted beneficiaries. Error msg: [{}]",
                  consentId, errorHolder);
-        return ResponseObject.<Xs2aTrustedBeneficiariesListHolder>builder()
+        return ResponseObject.<Xs2aTrustedBeneficiariesList>builder()
                    .fail(new MessageError(errorHolder))
                    .build();
     }
 
-    private ResponseObject<Xs2aTrustedBeneficiariesListHolder> getSuccessfulResponse(String consentId, String accountId, String requestUri, AisConsent aisConsent, SpiResponse<List<SpiTrustedBeneficiaries>> spiResponse) {
+    private ResponseObject<Xs2aTrustedBeneficiariesList> getSuccessfulResponse(String consentId, String accountId, String requestUri, AisConsent aisConsent, SpiResponse<List<SpiTrustedBeneficiaries>> spiResponse) {
         loggingContextService.storeConsentStatus(aisConsent.getConsentStatus());
 
         List<Xs2aTrustedBeneficiaries> trustedBeneficiaries = spiToXs2aTrustedBeneficiariesMapper.mapToXs2aTrustedBeneficiariesList(spiResponse.getPayload());
-        Xs2aTrustedBeneficiariesListHolder holder = new Xs2aTrustedBeneficiariesListHolder(trustedBeneficiaries, aisConsent);
+        Xs2aTrustedBeneficiariesList holder = new Xs2aTrustedBeneficiariesList(trustedBeneficiaries);
 
-        ResponseObject<Xs2aTrustedBeneficiariesListHolder> response = ResponseObject.<Xs2aTrustedBeneficiariesListHolder>builder()
+        ResponseObject<Xs2aTrustedBeneficiariesList> response = ResponseObject.<Xs2aTrustedBeneficiariesList>builder()
                                                                           .body(holder)
                                                                           .build();
 

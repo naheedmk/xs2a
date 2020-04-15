@@ -26,7 +26,7 @@ import de.adorsys.psd2.xs2a.core.error.TppMessage;
 import de.adorsys.psd2.xs2a.core.mapper.ServiceType;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aTrustedBeneficiaries;
-import de.adorsys.psd2.xs2a.domain.account.Xs2aTrustedBeneficiariesListHolder;
+import de.adorsys.psd2.xs2a.domain.account.Xs2aTrustedBeneficiariesList;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aAisConsentService;
 import de.adorsys.psd2.xs2a.service.event.Xs2aEventService;
@@ -121,11 +121,11 @@ public class TrustedBeneficiariesServiceTest {
     @Test
     void getTrustedBeneficiaries_consentUnknown() {
         // Given
-        ResponseObject<Xs2aTrustedBeneficiariesListHolder> expected = getConsentUnknownResponse();
+        ResponseObject<Xs2aTrustedBeneficiariesList> expected = getConsentUnknownResponse();
         when(aisConsentService.getAccountConsentById(CONSENT_ID)).thenReturn(Optional.empty());
 
         // When
-        ResponseObject<Xs2aTrustedBeneficiariesListHolder> actual =
+        ResponseObject<Xs2aTrustedBeneficiariesList> actual =
             trustedBeneficiariesService.getTrustedBeneficiaries(CONSENT_ID, ACCOUNT_ID, REQUEST_URI);
 
         // Then
@@ -137,14 +137,14 @@ public class TrustedBeneficiariesServiceTest {
     @Test
     void getTrustedBeneficiaries_validationError() {
         // Given
-        ResponseObject<Xs2aTrustedBeneficiariesListHolder> expected = getValidationErrorResponse();
+        ResponseObject<Xs2aTrustedBeneficiariesList> expected = getValidationErrorResponse();
 
         GetTrustedBeneficiariesListConsentObject validatorObject = new GetTrustedBeneficiariesListConsentObject(aisConsent, ACCOUNT_ID, REQUEST_URI);
         ValidationResult invalid = ValidationResult.invalid(AIS_405, MessageErrorCode.SERVICE_INVALID_405);
         when(getTrustedBeneficiariesListValidator.validate(validatorObject)).thenReturn(invalid);
 
         // When
-        ResponseObject<Xs2aTrustedBeneficiariesListHolder> actual =
+        ResponseObject<Xs2aTrustedBeneficiariesList> actual =
             trustedBeneficiariesService.getTrustedBeneficiaries(CONSENT_ID, ACCOUNT_ID, REQUEST_URI);
 
         // Then
@@ -157,7 +157,7 @@ public class TrustedBeneficiariesServiceTest {
     void getTrustedBeneficiaries_spiError() {
         // Given
         setUpMocks();
-        ResponseObject<Xs2aTrustedBeneficiariesListHolder> expected = getSpiErrorResponse();
+        ResponseObject<Xs2aTrustedBeneficiariesList> expected = getSpiErrorResponse();
         SpiResponse<List<SpiTrustedBeneficiaries>> spiResponse = buildErrorSpiResponse(Collections.singletonList(spiTrustedBeneficiaries));
 
         when(accountSpi.requestTrustedBeneficiariesList(spiContextData, spiAccountReference, spiAccountConsent, spiAspspConsentDataProvider))
@@ -168,7 +168,7 @@ public class TrustedBeneficiariesServiceTest {
                                                                                            .build());
 
         // When
-        ResponseObject<Xs2aTrustedBeneficiariesListHolder> actual =
+        ResponseObject<Xs2aTrustedBeneficiariesList> actual =
             trustedBeneficiariesService.getTrustedBeneficiaries(CONSENT_ID, ACCOUNT_ID, REQUEST_URI);
 
         // Then
@@ -192,11 +192,11 @@ public class TrustedBeneficiariesServiceTest {
         List<Xs2aTrustedBeneficiaries> trustedBeneficiaries = Collections.singletonList(xs2aTrustedBeneficiaries);
         when(spiToXs2aTrustedBeneficiariesMapper.mapToXs2aTrustedBeneficiariesList(beneficiaries)).thenReturn(trustedBeneficiaries);
 
-        ResponseObject<Xs2aTrustedBeneficiariesListHolder> expected =
-            getSuccessResponse(new Xs2aTrustedBeneficiariesListHolder(trustedBeneficiaries, aisConsent));
+        ResponseObject<Xs2aTrustedBeneficiariesList> expected =
+            getSuccessResponse(new Xs2aTrustedBeneficiariesList(trustedBeneficiaries));
 
         // When
-        ResponseObject<Xs2aTrustedBeneficiariesListHolder> actual =
+        ResponseObject<Xs2aTrustedBeneficiariesList> actual =
             trustedBeneficiariesService.getTrustedBeneficiaries(CONSENT_ID, ACCOUNT_ID, REQUEST_URI);
 
         // Then
@@ -215,27 +215,27 @@ public class TrustedBeneficiariesServiceTest {
         when(aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(CONSENT_ID)).thenReturn(spiAspspConsentDataProvider);
     }
 
-    private ResponseObject<Xs2aTrustedBeneficiariesListHolder> getSuccessResponse(Xs2aTrustedBeneficiariesListHolder holder) {
+    private ResponseObject<Xs2aTrustedBeneficiariesList> getSuccessResponse(Xs2aTrustedBeneficiariesList holder) {
 
-        return ResponseObject.<Xs2aTrustedBeneficiariesListHolder>builder()
+        return ResponseObject.<Xs2aTrustedBeneficiariesList>builder()
                    .body(holder)
                    .build();
     }
 
-    private ResponseObject<Xs2aTrustedBeneficiariesListHolder> getSpiErrorResponse() {
-        return ResponseObject.<Xs2aTrustedBeneficiariesListHolder>builder()
+    private ResponseObject<Xs2aTrustedBeneficiariesList> getSpiErrorResponse() {
+        return ResponseObject.<Xs2aTrustedBeneficiariesList>builder()
                    .fail(ErrorType.AIS_401, TppMessageInformation.of(PSU_CREDENTIALS_INVALID))
                    .build();
     }
 
-    private ResponseObject<Xs2aTrustedBeneficiariesListHolder> getValidationErrorResponse() {
-        return ResponseObject.<Xs2aTrustedBeneficiariesListHolder>builder()
+    private ResponseObject<Xs2aTrustedBeneficiariesList> getValidationErrorResponse() {
+        return ResponseObject.<Xs2aTrustedBeneficiariesList>builder()
                    .fail(AIS_405, TppMessageInformation.of(MessageErrorCode.SERVICE_INVALID_405))
                    .build();
     }
 
-    private ResponseObject<Xs2aTrustedBeneficiariesListHolder> getConsentUnknownResponse() {
-        return ResponseObject.<Xs2aTrustedBeneficiariesListHolder>builder()
+    private ResponseObject<Xs2aTrustedBeneficiariesList> getConsentUnknownResponse() {
+        return ResponseObject.<Xs2aTrustedBeneficiariesList>builder()
             .fail(AIS_400, TppMessageInformation.of(CONSENT_UNKNOWN_400))
             .build();
     }
