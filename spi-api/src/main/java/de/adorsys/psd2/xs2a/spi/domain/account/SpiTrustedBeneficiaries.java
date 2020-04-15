@@ -17,16 +17,18 @@
 package de.adorsys.psd2.xs2a.spi.domain.account;
 
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiAddress;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 @Data
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SpiTrustedBeneficiaries {
     /**
      * Resource identification of the list entry
      */
-    private String trustedBeneficiaryId;
+    @NotNull
+    private final String trustedBeneficiaryId;
     /**
      * This is provided by the ASPSP if the trusted
      * beneficiary entry is applicable to a dedicated
@@ -37,7 +39,8 @@ public class SpiTrustedBeneficiaries {
      * The creditor account as used in the trusted
      * beneficiary list of the PSU
      */
-    private SpiAccountReference creditorAccount;
+    @NotNull
+    private final SpiAccountReference creditorAccount;
     /**
      * It is mandated where the information is
      * mandated for related credit transfers
@@ -46,7 +49,8 @@ public class SpiTrustedBeneficiaries {
     /**
      * Name of the creditor as provided by the PSU
      */
-    private String creditorName;
+    @NotNull
+    private final String creditorName;
     /**
      * An alias for the creditor as defined by the PSU
      * as an alias when displaying the list of trusted
