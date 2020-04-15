@@ -10672,7 +10672,7 @@ components:
 
 
         accountIdQuery:
-            name: accountId
+            name: account-id
             in: query
             description: |
                 Reference to a dedicated account, which where a list of trusted beneficiaries might be restricted to.
