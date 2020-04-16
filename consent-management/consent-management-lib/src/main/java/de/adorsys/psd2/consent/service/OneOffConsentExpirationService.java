@@ -39,7 +39,6 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class OneOffConsentExpirationService {
-
     public static final String BENEFICIARIES_URI = "/v1/trusted-beneficiaries";
 
     public static final int READ_ONLY_ACCOUNT_DETAILS_COUNT = 1;
