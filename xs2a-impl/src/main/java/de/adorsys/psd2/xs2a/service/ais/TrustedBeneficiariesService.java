@@ -144,10 +144,10 @@ public class TrustedBeneficiariesService {
         loggingContextService.storeConsentStatus(aisConsent.getConsentStatus());
 
         List<Xs2aTrustedBeneficiaries> trustedBeneficiaries = spiToXs2aTrustedBeneficiariesMapper.mapToXs2aTrustedBeneficiariesList(spiResponse.getPayload());
-        Xs2aTrustedBeneficiariesList holder = new Xs2aTrustedBeneficiariesList(trustedBeneficiaries);
+        Xs2aTrustedBeneficiariesList xs2aTrustedBeneficiariesList = new Xs2aTrustedBeneficiariesList(trustedBeneficiaries);
 
         ResponseObject<Xs2aTrustedBeneficiariesList> response = ResponseObject.<Xs2aTrustedBeneficiariesList>builder()
-                                                                          .body(holder)
+                                                                          .body(xs2aTrustedBeneficiariesList)
                                                                           .build();
 
         aisConsentService.consentActionLog(tppService.getTppId(), consentId,
