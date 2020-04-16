@@ -1,0 +1,19 @@
+= Release notes v.6.3
+
+== Table of Contents
+
+* Removed unused methods in `PisCommonPaymentController`, `PisCommonPaymentServiceBase`, `PisCommonPaymentServiceInternalEncrypted`, `PisCommonPaymentServiceInternal`, `PisCommonPaymentServiceRemote`
+
+== Removed unused methods in `PisCommonPaymentController`, `PisCommonPaymentServiceBase`, `PisCommonPaymentServiceInternalEncrypted`, `PisCommonPaymentServiceInternal`, `PisCommonPaymentServiceRemote`
+
+Removed unused method `updatePaymentCommonPaymentData` in `PisCommonPaymentController`.
+
+Removed unused method `updateCommonPayment` in `PisCommonPaymentServiceBase`.
+
+Removed unused method `updateCommonPayment` in `PisCommonPaymentServiceInternalEncrypted`.
+
+Removed unused method `updateCommonPayment` in `PisCommonPaymentServiceInternal`.
+
+Removed unused method `updateCommonPayment` in `PisCommonPaymentServiceRemote`.
+
+Removed unused unit-tests for this methods.
