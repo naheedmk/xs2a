@@ -19,7 +19,6 @@ package de.adorsys.psd2.consent.integration.aspsp;
 import de.adorsys.psd2.consent.ConsentManagementStandaloneApp;
 import de.adorsys.psd2.consent.config.WebConfig;
 import de.adorsys.psd2.consent.domain.TppInfoEntity;
-import de.adorsys.psd2.consent.integration.ApiIntegrationTestConfig;
 import de.adorsys.psd2.consent.integration.UrlBuilder;
 import de.adorsys.psd2.consent.repository.TppInfoRepository;
 import de.adorsys.xs2a.reader.JsonReader;
@@ -46,11 +45,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles({"integration-test"})
+@ActiveProfiles({"api-integration-test"})
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @SpringBootTest(classes = ConsentManagementStandaloneApp.class)
-@ContextConfiguration(classes = {WebConfig.class, ApiIntegrationTestConfig.class})
+@ContextConfiguration(classes = WebConfig.class)
 public class CmsAspspTppInfoControllerIT {
 
     private static final String TPP_AUTHORISATION_NUMBER = "12345987";

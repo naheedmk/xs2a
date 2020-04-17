@@ -19,7 +19,6 @@ package de.adorsys.psd2.consent.integration.aspsp;
 import de.adorsys.psd2.consent.ConsentManagementStandaloneApp;
 import de.adorsys.psd2.consent.config.WebConfig;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
-import de.adorsys.psd2.consent.integration.ApiIntegrationTestConfig;
 import de.adorsys.psd2.consent.integration.UrlBuilder;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.ConsentSpecification;
@@ -57,11 +56,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles({"integration-test"})
+@ActiveProfiles({"api-integration-test"})
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @SpringBootTest(classes = ConsentManagementStandaloneApp.class)
-@ContextConfiguration(classes = {WebConfig.class, ApiIntegrationTestConfig.class})
+@ContextConfiguration(classes = WebConfig.class)
 public class CmsAspspPsuConsentManagementControllerIT {
 
     private static final String INSTANCE_ID = "bank-instance-id";
