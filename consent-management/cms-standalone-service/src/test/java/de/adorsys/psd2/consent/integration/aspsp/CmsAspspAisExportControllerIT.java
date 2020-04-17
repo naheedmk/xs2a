@@ -19,9 +19,13 @@ package de.adorsys.psd2.consent.integration.aspsp;
 import de.adorsys.psd2.consent.ConsentManagementStandaloneApp;
 import de.adorsys.psd2.consent.config.WebConfig;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
+import de.adorsys.psd2.consent.integration.ApiIntegrationTestConfig;
 import de.adorsys.psd2.consent.integration.UrlBuilder;
+import de.adorsys.psd2.consent.repository.AisConsentUsageRepository;
+import de.adorsys.psd2.consent.repository.AuthorisationRepository;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.AisConsentSpecification;
+import de.adorsys.psd2.xs2a.core.authorisation.AuthorisationType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,17 +50,18 @@ import java.time.LocalDate;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles({"integration-test", "mock-qwac"})
+@ActiveProfiles({"integration-test"})
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @SpringBootTest(classes = ConsentManagementStandaloneApp.class)
-@ContextConfiguration(classes = {WebConfig.class})
+@ContextConfiguration(classes = {WebConfig.class, ApiIntegrationTestConfig.class})
 public class CmsAspspAisExportControllerIT {
 
     private static final String TPP_AUTHORISATION_NUMBER = "12345987";
@@ -70,6 +75,10 @@ public class CmsAspspAisExportControllerIT {
 
     @MockBean
     private ConsentJpaRepository consentJpaRepository;
+    @MockBean
+    private AuthorisationRepository authorisationRepository;
+    @MockBean
+    private AisConsentUsageRepository aisConsentUsageRepository;
     @SpyBean
     private AisConsentSpecification aisConsentSpecification;
 
@@ -96,6 +105,10 @@ public class CmsAspspAisExportControllerIT {
         consentEntity.setData(jsonReader.getBytesFromFile("json/consent/integration/ais/ais-consent-data.json"));
 
         given(consentJpaRepository.findAll(any(Specification.class))).willReturn(Collections.singletonList(consentEntity));
+        given(authorisationRepository.findAllByParentExternalIdAndAuthorisationType(consentEntity.getExternalId(), AuthorisationType.AIS))
+            .willReturn(Collections.emptyList());
+        given(aisConsentUsageRepository.findReadByConsentAndUsageDate(eq(consentEntity), any(LocalDate.class)))
+            .willReturn(Collections.emptyList());
     }
 
     @Test
