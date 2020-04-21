@@ -63,9 +63,9 @@ public class TppServiceInternal implements TppService {
     }
 
     private boolean isRolesChanged(List<TppRole> savedTppRoles, List<TppRole> tppRoles) {
-        return (CollectionUtils.isNotEmpty(savedTppRoles) && CollectionUtils.isEmpty(tppRoles))
-                   || (CollectionUtils.isEmpty(savedTppRoles) && CollectionUtils.isNotEmpty(tppRoles))
-                   || (CollectionUtils.isNotEmpty(savedTppRoles) && CollectionUtils.isNotEmpty(tppRoles) &&
-                           !CollectionUtils.isEqualCollection(savedTppRoles, tppRoles));
+        return CollectionUtils.isNotEmpty(savedTppRoles) && CollectionUtils.isEmpty(tppRoles)
+                   || CollectionUtils.isEmpty(savedTppRoles) && CollectionUtils.isNotEmpty(tppRoles)
+                   || CollectionUtils.isNotEmpty(savedTppRoles) && CollectionUtils.isNotEmpty(tppRoles) &&
+                           !CollectionUtils.isEqualCollection(savedTppRoles, tppRoles);
     }
 }
