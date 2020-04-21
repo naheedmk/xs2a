@@ -376,7 +376,7 @@ class CmsPsuPisMapperTest {
         cmsAddress.setCity(CITY);
         cmsAddress.setStreet(STREET);
         cmsAddress.setBuildingNumber(BUILDING_NUMBER);
-        cmsAddress.setPostalCode(POSTAL_CODE);
+        cmsAddress.setPostCode(POSTAL_CODE);
         return cmsAddress;
     }
 }

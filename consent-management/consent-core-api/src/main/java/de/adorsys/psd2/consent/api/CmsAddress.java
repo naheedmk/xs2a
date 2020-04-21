@@ -33,7 +33,7 @@ public class CmsAddress {
     private String city;
 
     @ApiModelProperty(value = "Postal code", example = "90431")
-    private String postalCode;
+    private String postCode;
 
     @ApiModelProperty(value = "Country", example = "Germany")
     private String country;

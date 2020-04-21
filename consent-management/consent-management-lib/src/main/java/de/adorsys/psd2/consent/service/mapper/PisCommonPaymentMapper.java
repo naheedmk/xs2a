@@ -155,7 +155,7 @@ public class PisCommonPaymentMapper {
                        cmsAddress.setStreet(adr.getStreet());
                        cmsAddress.setBuildingNumber(adr.getBuildingNumber());
                        cmsAddress.setCity(adr.getCity());
-                       cmsAddress.setPostalCode(adr.getPostalCode());
+                       cmsAddress.setPostCode(adr.getPostalCode());
                        cmsAddress.setCountry(adr.getCountry());
                        return cmsAddress;
                    }).orElse(null);

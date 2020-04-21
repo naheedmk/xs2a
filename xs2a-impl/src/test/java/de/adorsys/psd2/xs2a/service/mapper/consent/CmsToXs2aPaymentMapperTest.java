@@ -354,7 +354,7 @@ class CmsToXs2aPaymentMapperTest {
         cmsAddress.setStreet(CREDITOR_ADDRESS_STREET);
         cmsAddress.setBuildingNumber(CREDITOR_ADDRESS_BUILDING_NUMBER);
         cmsAddress.setCity(CREDITOR_ADDRESS_CITY);
-        cmsAddress.setPostalCode(CREDITOR_ADDRESS_POSTAL_CODE);
+        cmsAddress.setPostCode(CREDITOR_ADDRESS_POSTAL_CODE);
         cmsAddress.setCountry(CREDITOR_ADDRESS_COUNTRY);
         return cmsAddress;
     }

@@ -144,7 +144,7 @@ public class CmsCorePaymentMapper {
                        Address address = new Address();
                        address.setBuildingNumber(ref.getBuildingNumber());
                        address.setCountry(ref.getCountry());
-                       address.setPostCode(ref.getPostalCode());
+                       address.setPostCode(ref.getPostCode());
                        address.setStreetName(ref.getStreet());
                        address.setTownName(ref.getCity());
 
