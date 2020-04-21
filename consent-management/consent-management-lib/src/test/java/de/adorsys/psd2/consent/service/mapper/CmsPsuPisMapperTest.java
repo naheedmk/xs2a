@@ -124,7 +124,7 @@ class CmsPsuPisMapperTest {
     private CmsPsuPisMapper cmsPsuPisMapper;
 
     @Mock
-    private PisCommonPaymentMapper pisCommonPaymentMapper;
+    private CmsAddressMapper cmsAddressMapper;
     @Mock
     private TppInfoMapper tppInfoMapper;
     @Mock
@@ -154,7 +154,7 @@ class CmsPsuPisMapperTest {
 
     @Test
     void mapToCmsPayment_pisPaymentDataList_single_Success() {
-        when(pisCommonPaymentMapper.mapToCmsAddress(CREDITOR_ADDRESS)).thenReturn(CREDITOR_CMS_ADDRESS);
+        when(cmsAddressMapper.mapToCmsAddress(CREDITOR_ADDRESS)).thenReturn(CREDITOR_CMS_ADDRESS);
 
         CmsPayment cmsPayment = cmsPsuPisMapper.mapToCmsPayment(PIS_PAYMENT_DATA_SINGLE_LIST);
 
@@ -191,7 +191,7 @@ class CmsPsuPisMapperTest {
 
     @Test
     void mapToCmsPayment_pisPaymentDataList_periodic_Success() {
-        when(pisCommonPaymentMapper.mapToCmsAddress(CREDITOR_ADDRESS)).thenReturn(CREDITOR_CMS_ADDRESS);
+        when(cmsAddressMapper.mapToCmsAddress(CREDITOR_ADDRESS)).thenReturn(CREDITOR_CMS_ADDRESS);
 
         CmsPayment cmsPayment = cmsPsuPisMapper.mapToCmsPayment(PIS_PAYMENT_DATA_PERIODIC_LIST);
 
@@ -228,7 +228,7 @@ class CmsPsuPisMapperTest {
 
     @Test
     void mapToCmsPayment_pisPaymentDataList_bulk_Success() {
-        when(pisCommonPaymentMapper.mapToCmsAddress(CREDITOR_ADDRESS)).thenReturn(CREDITOR_CMS_ADDRESS);
+        when(cmsAddressMapper.mapToCmsAddress(CREDITOR_ADDRESS)).thenReturn(CREDITOR_CMS_ADDRESS);
 
         CmsPayment cmsPayment = cmsPsuPisMapper.mapToCmsPayment(PIS_PAYMENT_DATA_BULK_LIST);
 
