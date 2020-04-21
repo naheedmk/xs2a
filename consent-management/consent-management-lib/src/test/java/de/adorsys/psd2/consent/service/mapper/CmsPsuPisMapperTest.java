@@ -97,7 +97,7 @@ class CmsPsuPisMapperTest {
     private static final String CITY = "CITY";
     private static final String STREET = "STREET";
     private static final String BUILDING_NUMBER = "BUILDING_NUMBER";
-    private static final String POSTAL_CODE = "POSTAL_CODE";
+    private static final String POST_CODE = "POST_CODE";
     private static final PisAddress CREDITOR_ADDRESS = buildPisAddress();
     private static final CmsAddress CREDITOR_CMS_ADDRESS = buildCmsAddress();
     private static final String REMITTANCE_INFORMATION_UNSTRUCTURED = "REMITTANCE_INFORMATION_UNSTRUCTURED";
@@ -366,7 +366,7 @@ class CmsPsuPisMapperTest {
         pisAddress.setCity(CITY);
         pisAddress.setStreet(STREET);
         pisAddress.setBuildingNumber(BUILDING_NUMBER);
-        pisAddress.setPostalCode(POSTAL_CODE);
+        pisAddress.setPostalCode(POST_CODE);
         return pisAddress;
     }
 
@@ -376,7 +376,7 @@ class CmsPsuPisMapperTest {
         cmsAddress.setCity(CITY);
         cmsAddress.setStreet(STREET);
         cmsAddress.setBuildingNumber(BUILDING_NUMBER);
-        cmsAddress.setPostCode(POSTAL_CODE);
+        cmsAddress.setPostCode(POST_CODE);
         return cmsAddress;
     }
 }
