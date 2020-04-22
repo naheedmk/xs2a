@@ -372,14 +372,14 @@ public class ConsentService {
      * @return Response containing SCA status of the authorisation and optionally trusted beneficiaries flag or corresponding error
      */
     public ResponseObject<Xs2aScaStatusResponse> getConsentAuthorisationScaStatus(String consentId, String authorisationId) {
-        ResponseObject<ConsentScaStatus> getScaStatusRequestResponse = consentAuthorisationService.getConsentAuthorisationScaStatus(consentId, authorisationId);
-        if (getScaStatusRequestResponse.hasError()) {
+        ResponseObject<ConsentScaStatus> consentScaStatusResponse = consentAuthorisationService.getConsentAuthorisationScaStatus(consentId, authorisationId);
+        if (consentScaStatusResponse.hasError()) {
             return ResponseObject.<Xs2aScaStatusResponse>builder()
-                       .fail(getScaStatusRequestResponse.getError())
+                       .fail(consentScaStatusResponse.getError())
                        .build();
         }
 
-        ConsentScaStatus consentScaStatus = getScaStatusRequestResponse.getBody();
+        ConsentScaStatus consentScaStatus = consentScaStatusResponse.getBody();
         ScaStatus scaStatus = consentScaStatus.getScaStatus();
 
         if (scaStatus.isNotFinalisedStatus()) {
