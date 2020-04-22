@@ -100,7 +100,7 @@ public class PaymentServiceForAuthorisation {
 
         if (spiResponse.hasError()) {
             ErrorHolder errorHolder = spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.PIS);
-            log.info("Authorisation-ID [{}], Payment-ID [{}]. Get trusted beneficiaries flag for failed.",
+            log.info("Authorisation-ID [{}], Payment-ID [{}]. Get trusted beneficiaries flag failed.",
                      authorisationId, paymentId);
             return ResponseObject.<Boolean>builder()
                        .fail(errorHolder)
