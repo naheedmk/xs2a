@@ -84,12 +84,12 @@ class PaymentCancellationServiceForAuthorisationTest {
     @Test
     void getPaymentAuthorisationScaStatus_errorFromAuthorisation() {
         // Given
-        ResponseObject<PaymentScaStatus> getScaStatusRequestResponse = ResponseObject.<PaymentScaStatus>builder()
-                                                                                     .fail(new MessageError())
-                                                                                     .build();
+        ResponseObject<PaymentScaStatus> paymentScaStatusResponse = ResponseObject.<PaymentScaStatus>builder()
+                                                                        .fail(new MessageError())
+                                                                        .build();
 
         when(paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, PaymentType.SINGLE, PAYMENT_PRODUCT))
-            .thenReturn(getScaStatusRequestResponse);
+            .thenReturn(paymentScaStatusResponse);
 
         // When
         ResponseObject<Xs2aScaStatusResponse> actual = paymentCancellationServiceForAuthorisation.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, PaymentType.SINGLE, PAYMENT_PRODUCT);
@@ -106,12 +106,12 @@ class PaymentCancellationServiceForAuthorisationTest {
         Xs2aScaStatusResponse expected = new Xs2aScaStatusResponse(ScaStatus.RECEIVED, null);
 
         PaymentScaStatus paymentScaStatus = new PaymentScaStatus(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.RECEIVED);
-        ResponseObject<PaymentScaStatus> getScaStatusRequestResponse = ResponseObject.<PaymentScaStatus>builder()
-                                                                                     .body(paymentScaStatus)
-                                                                                     .build();
+        ResponseObject<PaymentScaStatus> paymentScaStatusResponse = ResponseObject.<PaymentScaStatus>builder()
+                                                                        .body(paymentScaStatus)
+                                                                        .build();
 
         when(paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, PaymentType.SINGLE, PAYMENT_PRODUCT))
-            .thenReturn(getScaStatusRequestResponse);
+            .thenReturn(paymentScaStatusResponse);
 
         // When
         ResponseObject<Xs2aScaStatusResponse> actual = paymentCancellationServiceForAuthorisation.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, PaymentType.SINGLE, PAYMENT_PRODUCT);
@@ -126,12 +126,12 @@ class PaymentCancellationServiceForAuthorisationTest {
     void getPaymentAuthorisationScaStatus_spiError() {
         // Given
         PaymentScaStatus paymentScaStatus = new PaymentScaStatus(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.FINALISED);
-        ResponseObject<PaymentScaStatus> getScaStatusRequestResponse = ResponseObject.<PaymentScaStatus>builder()
-                                                                                     .body(paymentScaStatus)
-                                                                                     .build();
+        ResponseObject<PaymentScaStatus> paymentScaStatusResponse = ResponseObject.<PaymentScaStatus>builder()
+                                                                        .body(paymentScaStatus)
+                                                                        .build();
 
         when(paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, PaymentType.SINGLE, PAYMENT_PRODUCT))
-            .thenReturn(getScaStatusRequestResponse);
+            .thenReturn(paymentScaStatusResponse);
         when(spiPaymentFactory.createSpiPaymentByPaymentType(pisCommonPaymentResponse)).thenReturn(Optional.empty());
 
         SpiResponse<Boolean> spiResponse = SpiResponse.<Boolean>builder()
@@ -157,12 +157,12 @@ class PaymentCancellationServiceForAuthorisationTest {
         Xs2aScaStatusResponse expected = new Xs2aScaStatusResponse(ScaStatus.FINALISED, true);
 
         PaymentScaStatus paymentScaStatus = new PaymentScaStatus(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.FINALISED);
-        ResponseObject<PaymentScaStatus> getScaStatusRequestResponse = ResponseObject.<PaymentScaStatus>builder()
-                                                                                     .body(paymentScaStatus)
-                                                                                     .build();
+        ResponseObject<PaymentScaStatus> paymentScaStatusResponse = ResponseObject.<PaymentScaStatus>builder()
+                                                                        .body(paymentScaStatus)
+                                                                        .build();
 
         when(paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, PaymentType.SINGLE, PAYMENT_PRODUCT))
-            .thenReturn(getScaStatusRequestResponse);
+            .thenReturn(paymentScaStatusResponse);
         when(spiPaymentFactory.createSpiPaymentByPaymentType(pisCommonPaymentResponse)).thenReturn(Optional.empty());
 
         SpiResponse<Boolean> spiResponse = SpiResponse.<Boolean>builder()
@@ -180,6 +180,6 @@ class PaymentCancellationServiceForAuthorisationTest {
 
         verify(spiPaymentFactory, times(1)).createSpiPaymentByPaymentType(any());
         verify(paymentCancellationSpi, times(1)).requestTrustedBeneficiaryFlag(any(), any(), any(), any());
-        verify(spiErrorMapper, never()).mapToErrorHolder( any(), any());
+        verify(spiErrorMapper, never()).mapToErrorHolder(any(), any());
     }
 }

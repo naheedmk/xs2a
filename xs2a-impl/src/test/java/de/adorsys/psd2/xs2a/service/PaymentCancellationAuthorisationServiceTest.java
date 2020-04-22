@@ -37,6 +37,7 @@ import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisCancellationAuthorisatio
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aPaymentCancellationAuthorisationSubResource;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataResponse;
+import de.adorsys.psd2.xs2a.service.authorization.Xs2aAuthorisationService;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationService;
 import de.adorsys.psd2.xs2a.service.authorization.pis.PisScaAuthorisationServiceResolver;
 import de.adorsys.psd2.xs2a.service.consent.Xs2aPisCommonPaymentService;
@@ -105,6 +106,8 @@ class PaymentCancellationAuthorisationServiceTest {
     private LoggingContextService loggingContextService;
     @Mock
     private CreatePisCancellationAuthorisationValidator createPisCancellationAuthorisationValidator;
+    @Mock
+    private Xs2aAuthorisationService xs2aAuthorisationService;
 
     @Test
     void createPisCancellationAuthorisation_Success_ShouldRecordEvent() {
