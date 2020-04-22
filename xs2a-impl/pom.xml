@@ -102,6 +102,12 @@
 
         <dependency>
             <groupId>de.adorsys.psd2</groupId>
+            <artifactId>xs2a-payment-support-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.adorsys.psd2</groupId>
             <artifactId>json-reader</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
