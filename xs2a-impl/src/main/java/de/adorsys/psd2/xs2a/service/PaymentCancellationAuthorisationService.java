@@ -19,7 +19,7 @@ package de.adorsys.psd2.xs2a.service;
 import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.authorisation.CancellationAuthorisationResponse;
-import de.adorsys.psd2.xs2a.domain.consent.GetPaymentScaStatusRequest;
+import de.adorsys.psd2.xs2a.domain.consent.PaymentScaStatus;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationRequest;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aPaymentCancellationAuthorisationSubResource;
 import de.adorsys.psd2.xs2a.domain.consent.pis.Xs2aUpdatePisCommonPaymentPsuDataRequest;
@@ -32,5 +32,5 @@ public interface PaymentCancellationAuthorisationService {
 
     ResponseObject<Xs2aPaymentCancellationAuthorisationSubResource> getPaymentInitiationCancellationAuthorisationInformation(String paymentId, PaymentType paymentType, String paymentProduct);
 
-    ResponseObject<GetPaymentScaStatusRequest> getPaymentCancellationAuthorisationScaStatus(String paymentId, String authorisationId, PaymentType paymentType, String paymentProduct);
+    ResponseObject<PaymentScaStatus> getPaymentCancellationAuthorisationScaStatus(String paymentId, String authorisationId, PaymentType paymentType, String paymentProduct);
 }

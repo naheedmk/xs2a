@@ -117,7 +117,7 @@ class ConsentAuthorisationServiceTest {
     @Test
     void getConsentAuthorisationScaStatus_failure() {
         // When
-        ResponseObject<GetConsentScaStatusRequest> actual = service.getConsentAuthorisationScaStatus(CONSENT_ID, WRONG_AUTHORISATION_ID);
+        ResponseObject<ConsentScaStatus> actual = service.getConsentAuthorisationScaStatus(CONSENT_ID, WRONG_AUTHORISATION_ID);
 
         // Then
         assertTrue(actual.hasError());
@@ -132,7 +132,7 @@ class ConsentAuthorisationServiceTest {
             .thenReturn(ValidationResult.invalid(CONSENT_INVALID_401_ERROR));
 
         // When
-        ResponseObject<GetConsentScaStatusRequest> actualResponse = service.getConsentAuthorisationScaStatus(CONSENT_ID, AUTHORISATION_ID);
+        ResponseObject<ConsentScaStatus> actualResponse = service.getConsentAuthorisationScaStatus(CONSENT_ID, AUTHORISATION_ID);
 
         // Then
         verify(consentValidationService).validateConsentAuthorisationScaStatus(aisConsent, AUTHORISATION_ID);
@@ -145,7 +145,7 @@ class ConsentAuthorisationServiceTest {
         when(aisConsentService.getAccountConsentById(WRONG_CONSENT_ID)).thenReturn(Optional.empty());
 
         // When
-        ResponseObject<GetConsentScaStatusRequest> response = service.getConsentAuthorisationScaStatus(WRONG_CONSENT_ID, AUTHORISATION_ID);
+        ResponseObject<ConsentScaStatus> response = service.getConsentAuthorisationScaStatus(WRONG_CONSENT_ID, AUTHORISATION_ID);
 
         // Then
         assertThat(response.getError()).isEqualTo(CONSENT_UNKNOWN_403_ERROR);
@@ -192,7 +192,7 @@ class ConsentAuthorisationServiceTest {
     @Test
     void getConsentAuthorisationScaStatus_success() {
         // Given
-        GetConsentScaStatusRequest getConsentScaStatusRequest = new GetConsentScaStatusRequest(PSU_ID_DATA, aisConsent, ScaStatus.RECEIVED);
+        ConsentScaStatus consentScaStatus = new ConsentScaStatus(PSU_ID_DATA, aisConsent, ScaStatus.RECEIVED);
 
         when(aisConsentService.getAccountConsentById(CONSENT_ID)).thenReturn(Optional.of(aisConsent));
         when(consentValidationService.validateConsentAuthorisationScaStatus(aisConsent, AUTHORISATION_ID)).thenReturn(ValidationResult.valid());
@@ -202,11 +202,11 @@ class ConsentAuthorisationServiceTest {
         when(redirectAisAuthorizationService.getAccountConsentAuthorizationById(AUTHORISATION_ID)).thenReturn(Optional.of(authorisation));
 
         // When
-        ResponseObject<GetConsentScaStatusRequest> actual = service.getConsentAuthorisationScaStatus(CONSENT_ID, AUTHORISATION_ID);
+        ResponseObject<ConsentScaStatus> actual = service.getConsentAuthorisationScaStatus(CONSENT_ID, AUTHORISATION_ID);
 
         // Then
         assertFalse(actual.hasError());
-        assertEquals(getConsentScaStatusRequest, actual.getBody());
+        assertEquals(consentScaStatus, actual.getBody());
     }
 
     @Test
@@ -219,7 +219,7 @@ class ConsentAuthorisationServiceTest {
             .thenReturn(Optional.empty());
 
         // When
-        ResponseObject<GetConsentScaStatusRequest> actual = service.getConsentAuthorisationScaStatus(CONSENT_ID, AUTHORISATION_ID);
+        ResponseObject<ConsentScaStatus> actual = service.getConsentAuthorisationScaStatus(CONSENT_ID, AUTHORISATION_ID);
 
         // Then
         assertTrue(actual.hasError());

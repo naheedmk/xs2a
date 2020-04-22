@@ -27,7 +27,7 @@ import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
-import de.adorsys.psd2.xs2a.domain.consent.GetPaymentScaStatusRequest;
+import de.adorsys.psd2.xs2a.domain.consent.PaymentScaStatus;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aScaStatusResponse;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.mapper.payment.SpiPaymentFactory;
@@ -84,7 +84,7 @@ class PaymentCancellationServiceForAuthorisationTest {
     @Test
     void getPaymentAuthorisationScaStatus_errorFromAuthorisation() {
         // Given
-        ResponseObject<GetPaymentScaStatusRequest> getScaStatusRequestResponse = ResponseObject.<GetPaymentScaStatusRequest>builder()
+        ResponseObject<PaymentScaStatus> getScaStatusRequestResponse = ResponseObject.<PaymentScaStatus>builder()
                                                                                      .fail(new MessageError())
                                                                                      .build();
 
@@ -105,9 +105,9 @@ class PaymentCancellationServiceForAuthorisationTest {
         // Given
         Xs2aScaStatusResponse expected = new Xs2aScaStatusResponse(ScaStatus.RECEIVED, null);
 
-        GetPaymentScaStatusRequest getPaymentScaStatusRequest = new GetPaymentScaStatusRequest(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.RECEIVED);
-        ResponseObject<GetPaymentScaStatusRequest> getScaStatusRequestResponse = ResponseObject.<GetPaymentScaStatusRequest>builder()
-                                                                                     .body(getPaymentScaStatusRequest)
+        PaymentScaStatus paymentScaStatus = new PaymentScaStatus(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.RECEIVED);
+        ResponseObject<PaymentScaStatus> getScaStatusRequestResponse = ResponseObject.<PaymentScaStatus>builder()
+                                                                                     .body(paymentScaStatus)
                                                                                      .build();
 
         when(paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, PaymentType.SINGLE, PAYMENT_PRODUCT))
@@ -125,9 +125,9 @@ class PaymentCancellationServiceForAuthorisationTest {
     @Test
     void getPaymentAuthorisationScaStatus_spiError() {
         // Given
-        GetPaymentScaStatusRequest getPaymentScaStatusRequest = new GetPaymentScaStatusRequest(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.FINALISED);
-        ResponseObject<GetPaymentScaStatusRequest> getScaStatusRequestResponse = ResponseObject.<GetPaymentScaStatusRequest>builder()
-                                                                                     .body(getPaymentScaStatusRequest)
+        PaymentScaStatus paymentScaStatus = new PaymentScaStatus(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.FINALISED);
+        ResponseObject<PaymentScaStatus> getScaStatusRequestResponse = ResponseObject.<PaymentScaStatus>builder()
+                                                                                     .body(paymentScaStatus)
                                                                                      .build();
 
         when(paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, PaymentType.SINGLE, PAYMENT_PRODUCT))
@@ -156,9 +156,9 @@ class PaymentCancellationServiceForAuthorisationTest {
         // Given
         Xs2aScaStatusResponse expected = new Xs2aScaStatusResponse(ScaStatus.FINALISED, true);
 
-        GetPaymentScaStatusRequest getPaymentScaStatusRequest = new GetPaymentScaStatusRequest(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.FINALISED);
-        ResponseObject<GetPaymentScaStatusRequest> getScaStatusRequestResponse = ResponseObject.<GetPaymentScaStatusRequest>builder()
-                                                                                     .body(getPaymentScaStatusRequest)
+        PaymentScaStatus paymentScaStatus = new PaymentScaStatus(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.FINALISED);
+        ResponseObject<PaymentScaStatus> getScaStatusRequestResponse = ResponseObject.<PaymentScaStatus>builder()
+                                                                                     .body(paymentScaStatus)
                                                                                      .build();
 
         when(paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, PaymentType.SINGLE, PAYMENT_PRODUCT))

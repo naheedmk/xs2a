@@ -136,13 +136,13 @@ public class ConsentAuthorisationService {
                    });
     }
 
-    public ResponseObject<GetConsentScaStatusRequest> getConsentAuthorisationScaStatus(String consentId, String authorisationId) {
+    public ResponseObject<ConsentScaStatus> getConsentAuthorisationScaStatus(String consentId, String authorisationId) {
         xs2aEventService.recordAisTppRequest(consentId, EventType.GET_CONSENT_SCA_STATUS_REQUEST_RECEIVED);
 
         Optional<AisConsent> aisConsentOptional = aisConsentService.getAccountConsentById(consentId);
         if (aisConsentOptional.isEmpty()) {
             log.info("Consent-ID: [{}]. Get consent authorisation SCA status failed: consent not found by id", consentId);
-            return ResponseObject.<GetConsentScaStatusRequest>builder()
+            return ResponseObject.<ConsentScaStatus>builder()
                        .fail(AIS_403, of(CONSENT_UNKNOWN_403)).build();
         }
         AisConsent accountConsent = aisConsentOptional.get();
@@ -151,7 +151,7 @@ public class ConsentAuthorisationService {
         if (validationResult.isNotValid()) {
             log.info("Consent-ID: [{}], Authorisation-ID [{}]. Get consent authorisation SCA status - validation failed: {}",
                      consentId, authorisationId, validationResult.getMessageError());
-            return ResponseObject.<GetConsentScaStatusRequest>builder()
+            return ResponseObject.<ConsentScaStatus>builder()
                        .fail(validationResult.getMessageError())
                        .build();
         }
@@ -163,7 +163,7 @@ public class ConsentAuthorisationService {
         if (scaStatusOptional.isEmpty()) {
             log.info("Consent-ID: [{}]. Get consent authorisation SCA status failed: consent not found at CMS by id",
                      consentId);
-            return ResponseObject.<GetConsentScaStatusRequest>builder()
+            return ResponseObject.<ConsentScaStatus>builder()
                        .fail(AIS_403, of(RESOURCE_UNKNOWN_403))
                        .build();
         }
@@ -174,13 +174,13 @@ public class ConsentAuthorisationService {
                                   .getAccountConsentAuthorizationById(authorisationId).map(Authorisation::getPsuIdData)
                                   .orElseGet(null);
 
-        GetConsentScaStatusRequest getConsentScaStatusRequest = new GetConsentScaStatusRequest(psuIdData, accountConsent, scaStatus);
+        ConsentScaStatus consentScaStatus = new ConsentScaStatus(psuIdData, accountConsent, scaStatus);
 
         loggingContextService.storeConsentStatus(accountConsent.getConsentStatus());
         loggingContextService.storeScaStatus(scaStatus);
 
-        return ResponseObject.<GetConsentScaStatusRequest>builder()
-                   .body(getConsentScaStatusRequest)
+        return ResponseObject.<ConsentScaStatus>builder()
+                   .body(consentScaStatus)
                    .build();
     }
 

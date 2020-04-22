@@ -23,7 +23,7 @@ import de.adorsys.psd2.xs2a.core.profile.PaymentType;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
-import de.adorsys.psd2.xs2a.domain.consent.GetPaymentScaStatusRequest;
+import de.adorsys.psd2.xs2a.domain.consent.PaymentScaStatus;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aScaStatusResponse;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
 import de.adorsys.psd2.xs2a.service.mapper.payment.SpiPaymentFactory;
@@ -55,15 +55,15 @@ public class PaymentCancellationServiceForAuthorisation {
      * @return Response containing SCA status of the authorisation and optionally trusted beneficiaries flag or corresponding error
      */
     public ResponseObject<Xs2aScaStatusResponse> getPaymentCancellationAuthorisationScaStatus(String paymentId, String authorisationId, PaymentType paymentType, String paymentProduct) {
-        ResponseObject<GetPaymentScaStatusRequest> getScaStatusRequestResponse = paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(paymentId, authorisationId, paymentType, paymentProduct);
+        ResponseObject<PaymentScaStatus> getScaStatusRequestResponse = paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(paymentId, authorisationId, paymentType, paymentProduct);
         if (getScaStatusRequestResponse.hasError()) {
             return ResponseObject.<Xs2aScaStatusResponse>builder()
                        .fail(getScaStatusRequestResponse.getError())
                        .build();
         }
 
-        GetPaymentScaStatusRequest getPaymentScaStatusRequest = getScaStatusRequestResponse.getBody();
-        ScaStatus scaStatus = getPaymentScaStatusRequest.getScaStatus();
+        PaymentScaStatus paymentScaStatus = getScaStatusRequestResponse.getBody();
+        ScaStatus scaStatus = paymentScaStatus.getScaStatus();
 
         if (scaStatus.isNotFinalisedStatus()) {
             Xs2aScaStatusResponse response = new Xs2aScaStatusResponse(scaStatus, null);
@@ -72,9 +72,9 @@ public class PaymentCancellationServiceForAuthorisation {
                        .build();
         }
 
-        ResponseObject<Boolean> beneficiaryFlagResponse = getTrustedBeneficiaryFlag(getPaymentScaStatusRequest.getPsuIdData(),
+        ResponseObject<Boolean> beneficiaryFlagResponse = getTrustedBeneficiaryFlag(paymentScaStatus.getPsuIdData(),
                                                                                     paymentId, authorisationId,
-                                                                                    getPaymentScaStatusRequest.getPisCommonPaymentResponse());
+                                                                                    paymentScaStatus.getPisCommonPaymentResponse());
         if (beneficiaryFlagResponse.hasError()) {
             return ResponseObject.<Xs2aScaStatusResponse>builder()
                        .fail(beneficiaryFlagResponse.getError())

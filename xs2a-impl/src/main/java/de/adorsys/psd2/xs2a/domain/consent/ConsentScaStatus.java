@@ -24,7 +24,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GetConsentScaStatusRequest {
+public class ConsentScaStatus {
     private PsuIdData psuIdData;
     private AisConsent accountConsent;
     private ScaStatus scaStatus;

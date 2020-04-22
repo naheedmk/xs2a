@@ -1278,9 +1278,9 @@ class ConsentServiceTest {
                                                              .body(new Xs2aScaStatusResponse(ScaStatus.RECEIVED, null))
                                                              .build();
 
-        GetConsentScaStatusRequest getConsentScaStatusRequest = new GetConsentScaStatusRequest(null, aisConsent, ScaStatus.RECEIVED);
-        ResponseObject<GetConsentScaStatusRequest> responseObject = ResponseObject.<GetConsentScaStatusRequest>builder()
-                                                                        .body(getConsentScaStatusRequest)
+        ConsentScaStatus consentScaStatus = new ConsentScaStatus(null, aisConsent, ScaStatus.RECEIVED);
+        ResponseObject<ConsentScaStatus> responseObject = ResponseObject.<ConsentScaStatus>builder()
+                                                                        .body(consentScaStatus)
                                                                         .build();
 
         when(consentAuthorisationService.getConsentAuthorisationScaStatus(CONSENT_ID, WRONG_AUTHORISATION_ID))
@@ -1303,9 +1303,9 @@ class ConsentServiceTest {
                                                              .body(new Xs2aScaStatusResponse(ScaStatus.FINALISED, true))
                                                              .build();
 
-        GetConsentScaStatusRequest getConsentScaStatusRequest = new GetConsentScaStatusRequest(null, aisConsent, ScaStatus.FINALISED);
-        ResponseObject<GetConsentScaStatusRequest> responseObject = ResponseObject.<GetConsentScaStatusRequest>builder()
-                                                                        .body(getConsentScaStatusRequest)
+        ConsentScaStatus consentScaStatus = new ConsentScaStatus(null, aisConsent, ScaStatus.FINALISED);
+        ResponseObject<ConsentScaStatus> responseObject = ResponseObject.<ConsentScaStatus>builder()
+                                                                        .body(consentScaStatus)
                                                                         .build();
 
         when(consentAuthorisationService.getConsentAuthorisationScaStatus(CONSENT_ID, WRONG_AUTHORISATION_ID))
@@ -1333,9 +1333,9 @@ class ConsentServiceTest {
                                                              .fail(ErrorHolder.builder(ErrorType.AIS_400).build())
                                                              .build();
 
-        GetConsentScaStatusRequest getConsentScaStatusRequest = new GetConsentScaStatusRequest(null, aisConsent, ScaStatus.FINALISED);
-        ResponseObject<GetConsentScaStatusRequest> responseObject = ResponseObject.<GetConsentScaStatusRequest>builder()
-                                                                        .body(getConsentScaStatusRequest)
+        ConsentScaStatus consentScaStatus = new ConsentScaStatus(null, aisConsent, ScaStatus.FINALISED);
+        ResponseObject<ConsentScaStatus> responseObject = ResponseObject.<ConsentScaStatus>builder()
+                                                                        .body(consentScaStatus)
                                                                         .build();
 
         when(consentAuthorisationService.getConsentAuthorisationScaStatus(CONSENT_ID, WRONG_AUTHORISATION_ID))
@@ -1364,7 +1364,7 @@ class ConsentServiceTest {
         ResponseObject<Xs2aScaStatusResponse> expected = ResponseObject.<Xs2aScaStatusResponse>builder()
                                                              .fail(ErrorHolder.builder(ErrorType.AIS_400).build())
                                                              .build();
-        ResponseObject<GetConsentScaStatusRequest> responseObject = ResponseObject.<GetConsentScaStatusRequest>builder()
+        ResponseObject<ConsentScaStatus> responseObject = ResponseObject.<ConsentScaStatus>builder()
                                                                         .fail(ErrorHolder.builder(ErrorType.AIS_400).build())
                                                                         .build();
 

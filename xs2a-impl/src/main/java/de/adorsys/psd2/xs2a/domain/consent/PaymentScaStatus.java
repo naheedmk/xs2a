@@ -24,7 +24,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GetPaymentScaStatusRequest {
+public class PaymentScaStatus {
     private PsuIdData psuIdData;
     private PisCommonPaymentResponse pisCommonPaymentResponse;
     private ScaStatus scaStatus;

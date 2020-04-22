@@ -31,7 +31,7 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponseType;
 import de.adorsys.psd2.xs2a.domain.authorisation.CancellationAuthorisationResponse;
-import de.adorsys.psd2.xs2a.domain.consent.GetPaymentScaStatusRequest;
+import de.adorsys.psd2.xs2a.domain.consent.PaymentScaStatus;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationRequest;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisCancellationAuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aPaymentCancellationAuthorisationSubResource;
@@ -528,7 +528,7 @@ class PaymentCancellationAuthorisationServiceTest {
     void getPaymentCancellationAuthorisationScaStatus_success() {
         // Given
         PisCommonPaymentResponse pisCommonPaymentResponse = buildPisCommonPaymentResponse();
-        GetPaymentScaStatusRequest getPaymentScaStatusRequest = new GetPaymentScaStatusRequest(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.RECEIVED);
+        PaymentScaStatus paymentScaStatus = new PaymentScaStatus(PSU_ID_DATA, pisCommonPaymentResponse, ScaStatus.RECEIVED);
 
         when(pisScaAuthorisationService.getCancellationAuthorisationScaStatus(PAYMENT_ID, CANCELLATION_AUTHORISATION_ID))
             .thenReturn(Optional.of(SCA_STATUS));
@@ -545,13 +545,13 @@ class PaymentCancellationAuthorisationServiceTest {
             .thenReturn(pisScaAuthorisationService);
 
         // When
-        ResponseObject<GetPaymentScaStatusRequest> actual =
+        ResponseObject<PaymentScaStatus> actual =
             paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID,
                                                                                                  CANCELLATION_AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
 
         // Then
         assertFalse(actual.hasError());
-        assertEquals(getPaymentScaStatusRequest, actual.getBody());
+        assertEquals(paymentScaStatus, actual.getBody());
     }
 
     @Test
@@ -600,7 +600,7 @@ class PaymentCancellationAuthorisationServiceTest {
             .thenReturn(pisScaAuthorisationService);
 
         // When
-        ResponseObject<GetPaymentScaStatusRequest> response = paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, CANCELLATION_AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
+        ResponseObject<PaymentScaStatus> response = paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, CANCELLATION_AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
 
         // Then
         assertFalse(response.hasError());
@@ -625,7 +625,7 @@ class PaymentCancellationAuthorisationServiceTest {
         when(pisScaAuthorisationServiceResolver.getService(CANCELLATION_AUTHORISATION_ID).getCancellationAuthorisationScaStatus(PAYMENT_ID, CANCELLATION_AUTHORISATION_ID))
             .thenReturn(Optional.empty());
 
-        ResponseObject<GetPaymentScaStatusRequest> actual = paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, CANCELLATION_AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
+        ResponseObject<PaymentScaStatus> actual = paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(PAYMENT_ID, CANCELLATION_AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
 
         assertTrue(actual.hasError());
         assertEquals(SCA_STATUS_ERROR, actual.getError());
@@ -642,7 +642,7 @@ class PaymentCancellationAuthorisationServiceTest {
             .thenReturn(ValidationResult.invalid(VALIDATION_ERROR));
 
         // When
-        ResponseObject<GetPaymentScaStatusRequest> actualResponse =
+        ResponseObject<PaymentScaStatus> actualResponse =
             paymentCancellationAuthorisationService.getPaymentCancellationAuthorisationScaStatus(WRONG_PAYMENT_ID,
                                                                                                  WRONG_CANCELLATION_AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
 

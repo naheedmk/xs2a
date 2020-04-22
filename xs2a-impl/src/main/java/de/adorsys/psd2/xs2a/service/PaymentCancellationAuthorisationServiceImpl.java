@@ -25,7 +25,7 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.authorisation.CancellationAuthorisationResponse;
-import de.adorsys.psd2.xs2a.domain.consent.GetPaymentScaStatusRequest;
+import de.adorsys.psd2.xs2a.domain.consent.PaymentScaStatus;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationRequest;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisCancellationAuthorisationResponse;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aPaymentCancellationAuthorisationSubResource;
@@ -201,17 +201,17 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
      * @return Response containing SCA status of authorisation and optionally trusted beneficiary flag or corresponding error
      */
     @Override
-    public ResponseObject<GetPaymentScaStatusRequest> getPaymentCancellationAuthorisationScaStatus(String paymentId,
-                                                                                                   String authorisationId,
-                                                                                                   PaymentType paymentType,
-                                                                                                   String paymentProduct) {
+    public ResponseObject<PaymentScaStatus> getPaymentCancellationAuthorisationScaStatus(String paymentId,
+                                                                                         String authorisationId,
+                                                                                         PaymentType paymentType,
+                                                                                         String paymentProduct) {
         xs2aEventService.recordPisTppRequest(paymentId, EventType.GET_PAYMENT_CANCELLATION_SCA_STATUS_REQUEST_RECEIVED);
 
         Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = xs2aPisCommonPaymentService.getPisCommonPaymentById(paymentId);
         if (pisCommonPaymentResponseOptional.isEmpty()) {
             log.info("Payment-ID [{}]. Get SCA status PIS Cancellation Authorisation has failed. Payment not found by id.",
                      paymentId);
-            return ResponseObject.<GetPaymentScaStatusRequest>builder()
+            return ResponseObject.<PaymentScaStatus>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404_NO_PAYMENT))
                        .build();
         }
@@ -225,7 +225,7 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
         if (validationResult.isNotValid()) {
             log.info("Payment-ID [{}]. Get SCA status PIS cancellation authorisation - validation failed: {}",
                      paymentId, validationResult.getMessageError());
-            return ResponseObject.<GetPaymentScaStatusRequest>builder()
+            return ResponseObject.<PaymentScaStatus>builder()
                        .fail(validationResult.getMessageError())
                        .build();
         }
@@ -234,7 +234,7 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
         Optional<ScaStatus> scaStatusOptional = pisScaAuthorisationService.getCancellationAuthorisationScaStatus(paymentId, authorisationId);
 
         if (scaStatusOptional.isEmpty()) {
-            return ResponseObject.<GetPaymentScaStatusRequest>builder()
+            return ResponseObject.<PaymentScaStatus>builder()
                        .fail(PIS_403, of(RESOURCE_UNKNOWN_403))
                        .build();
         }
@@ -244,12 +244,12 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
         // This is done for multilevel accounts, since we don't know which PSU requested the cancellation, we take first one
         PsuIdData psuIdData = pisCommonPaymentResponse.getPsuData().get(0);
 
-        GetPaymentScaStatusRequest getPaymentScaStatusRequest = new GetPaymentScaStatusRequest(psuIdData, pisCommonPaymentResponse, scaStatus);
+        PaymentScaStatus paymentScaStatus = new PaymentScaStatus(psuIdData, pisCommonPaymentResponse, scaStatus);
 
         loggingContextService.storeTransactionAndScaStatus(pisCommonPaymentResponse.getTransactionStatus(), scaStatus);
 
-        return ResponseObject.<GetPaymentScaStatusRequest>builder()
-                   .body(getPaymentScaStatusRequest)
+        return ResponseObject.<PaymentScaStatus>builder()
+                   .body(paymentScaStatus)
                    .build();
     }
 

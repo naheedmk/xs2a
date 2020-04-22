@@ -372,15 +372,15 @@ public class ConsentService {
      * @return Response containing SCA status of the authorisation and optionally trusted beneficiaries flag or corresponding error
      */
     public ResponseObject<Xs2aScaStatusResponse> getConsentAuthorisationScaStatus(String consentId, String authorisationId) {
-        ResponseObject<GetConsentScaStatusRequest> getScaStatusRequestResponse = consentAuthorisationService.getConsentAuthorisationScaStatus(consentId, authorisationId);
+        ResponseObject<ConsentScaStatus> getScaStatusRequestResponse = consentAuthorisationService.getConsentAuthorisationScaStatus(consentId, authorisationId);
         if (getScaStatusRequestResponse.hasError()) {
             return ResponseObject.<Xs2aScaStatusResponse>builder()
                        .fail(getScaStatusRequestResponse.getError())
                        .build();
         }
 
-        GetConsentScaStatusRequest getConsentScaStatusRequest = getScaStatusRequestResponse.getBody();
-        ScaStatus scaStatus = getConsentScaStatusRequest.getScaStatus();
+        ConsentScaStatus consentScaStatus = getScaStatusRequestResponse.getBody();
+        ScaStatus scaStatus = consentScaStatus.getScaStatus();
 
         if (scaStatus.isNotFinalisedStatus()) {
             Xs2aScaStatusResponse response = new Xs2aScaStatusResponse(scaStatus, null);
@@ -389,9 +389,9 @@ public class ConsentService {
                        .build();
         }
 
-        ResponseObject<Boolean> beneficiaryFlagResponse = getTrustedBeneficiaryFlag(getConsentScaStatusRequest.getPsuIdData(),
+        ResponseObject<Boolean> beneficiaryFlagResponse = getTrustedBeneficiaryFlag(consentScaStatus.getPsuIdData(),
                                                                                     consentId, authorisationId,
-                                                                                    getConsentScaStatusRequest.getAccountConsent());
+                                                                                    consentScaStatus.getAccountConsent());
         if (beneficiaryFlagResponse.hasError()) {
             return ResponseObject.<Xs2aScaStatusResponse>builder()
                        .fail(beneficiaryFlagResponse.getError())

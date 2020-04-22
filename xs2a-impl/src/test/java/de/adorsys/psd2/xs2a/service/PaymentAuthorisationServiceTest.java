@@ -30,7 +30,7 @@ import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponse;
-import de.adorsys.psd2.xs2a.domain.consent.GetPaymentScaStatusRequest;
+import de.adorsys.psd2.xs2a.domain.consent.PaymentScaStatus;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthorisationSubResources;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationRequest;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aCreatePisAuthorisationResponse;
@@ -543,7 +543,7 @@ class PaymentAuthorisationServiceTest {
     void getPaymentInitiationAuthorisationScaStatus_success() {
         // Given
         PisCommonPaymentResponse commonPaymentResponse = buildPisCommonPaymentResponse();
-        GetPaymentScaStatusRequest getPaymentScaStatusRequest = new GetPaymentScaStatusRequest(PSU_ID_DATA, commonPaymentResponse, ScaStatus.RECEIVED);
+        PaymentScaStatus paymentScaStatus = new PaymentScaStatus(PSU_ID_DATA, commonPaymentResponse, ScaStatus.RECEIVED);
 
         when(pisScaAuthorisationService.getAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID))
             .thenReturn(Optional.of(SCA_STATUS));
@@ -558,11 +558,11 @@ class PaymentAuthorisationServiceTest {
         when(authorisationService.getAuthorisationById(AUTHORISATION_ID)).thenReturn(Optional.of(authorisation));
 
         // When
-        ResponseObject<GetPaymentScaStatusRequest> actual = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(PAYMENT_ID,
-                                                                                                                                   AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
+        ResponseObject<PaymentScaStatus> actual = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(PAYMENT_ID,
+                                                                                                                         AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
         // Then
         assertFalse(actual.hasError());
-        assertEquals(getPaymentScaStatusRequest, actual.getBody());
+        assertEquals(paymentScaStatus, actual.getBody());
     }
 
     @Test
@@ -594,7 +594,7 @@ class PaymentAuthorisationServiceTest {
     void getPaymentInitiationAuthorisationScaStatus_shouldStoreStatusesInLoggingContext() {
         // Given:
         PisCommonPaymentResponse commonPaymentResponse = buildPisCommonPaymentResponse();
-        GetPaymentScaStatusRequest getPaymentScaStatusRequest = new GetPaymentScaStatusRequest(PSU_ID_DATA, commonPaymentResponse, ScaStatus.RECEIVED);
+        PaymentScaStatus paymentScaStatus = new PaymentScaStatus(PSU_ID_DATA, commonPaymentResponse, ScaStatus.RECEIVED);
 
         when(pisScaAuthorisationService.getAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID))
             .thenReturn(Optional.of(SCA_STATUS));
@@ -609,11 +609,11 @@ class PaymentAuthorisationServiceTest {
         when(authorisationService.getAuthorisationById(AUTHORISATION_ID)).thenReturn(Optional.of(authorisation));
 
         // When
-        ResponseObject<GetPaymentScaStatusRequest> response = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
+        ResponseObject<PaymentScaStatus> response = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(PAYMENT_ID, AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
 
         // Then
         assertFalse(response.hasError());
-        assertEquals(getPaymentScaStatusRequest, response.getBody());
+        assertEquals(paymentScaStatus, response.getBody());
         verify(loggingContextService).storeTransactionAndScaStatus(TRANSACTION_STATUS, SCA_STATUS);
     }
 
@@ -624,8 +624,8 @@ class PaymentAuthorisationServiceTest {
             .thenReturn(Optional.empty());
 
         // When
-        ResponseObject<GetPaymentScaStatusRequest> actual = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(WRONG_PAYMENT_ID,
-                                                                                                                  WRONG_AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
+        ResponseObject<PaymentScaStatus> actual = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(WRONG_PAYMENT_ID,
+                                                                                                                         WRONG_AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
 
         // Then
         assertTrue(actual.hasError());
@@ -642,8 +642,8 @@ class PaymentAuthorisationServiceTest {
             .thenReturn(ValidationResult.invalid(VALIDATION_ERROR));
 
         // When
-        ResponseObject<GetPaymentScaStatusRequest> actualResponse = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(PAYMENT_ID,
-                                                                                                                          AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
+        ResponseObject<PaymentScaStatus> actualResponse = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(PAYMENT_ID,
+                                                                                                                                 AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT);
 
         // Then
         verify(getPaymentInitiationAuthorisationScaStatusValidator).validate(new GetPaymentInitiationAuthorisationScaStatusPO(invalidPisCommonPaymentResponse, AUTHORISATION_ID, SINGLE, PAYMENT_PRODUCT));

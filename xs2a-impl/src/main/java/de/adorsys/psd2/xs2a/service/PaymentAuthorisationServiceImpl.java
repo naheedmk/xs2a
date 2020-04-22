@@ -208,15 +208,15 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
      * @return Response containing SCA status of authorisation and optionally trusted beneficiary flag or corresponding error
      */
     @Override
-    public ResponseObject<GetPaymentScaStatusRequest> getPaymentInitiationAuthorisationScaStatus(String paymentId, String authorisationId,
-                                                                                                 PaymentType paymentType, String paymentProduct) {
+    public ResponseObject<PaymentScaStatus> getPaymentInitiationAuthorisationScaStatus(String paymentId, String authorisationId,
+                                                                                       PaymentType paymentType, String paymentProduct) {
         xs2aEventService.recordPisTppRequest(paymentId, EventType.GET_PAYMENT_SCA_STATUS_REQUEST_RECEIVED);
 
         Optional<PisCommonPaymentResponse> pisCommonPaymentResponseOptional = pisCommonPaymentService.getPisCommonPaymentById(paymentId);
         if (pisCommonPaymentResponseOptional.isEmpty()) {
             log.info("Payment-ID [{}]. Get SCA status payment initiation authorisation failed. PIS CommonPayment not found by id",
                      paymentId);
-            return ResponseObject.<GetPaymentScaStatusRequest>builder()
+            return ResponseObject.<PaymentScaStatus>builder()
                        .fail(PIS_404, of(RESOURCE_UNKNOWN_404_NO_PAYMENT))
                        .build();
         }
@@ -229,7 +229,7 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
         if (validationResult.isNotValid()) {
             log.info("Payment-ID [{}]. Get SCA status payment initiation authorisation - validation failed: {}",
                      paymentId, validationResult.getMessageError());
-            return ResponseObject.<GetPaymentScaStatusRequest>builder()
+            return ResponseObject.<PaymentScaStatus>builder()
                        .fail(validationResult.getMessageError())
                        .build();
         }
@@ -238,7 +238,7 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
         Optional<ScaStatus> scaStatusOptional = pisScaAuthorisationService.getAuthorisationScaStatus(paymentId, authorisationId);
 
         if (scaStatusOptional.isEmpty()) {
-            return ResponseObject.<GetPaymentScaStatusRequest>builder()
+            return ResponseObject.<PaymentScaStatus>builder()
                        .fail(PIS_403, of(RESOURCE_UNKNOWN_403))
                        .build();
         }
@@ -249,12 +249,12 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
                                    .map(Authorisation::getPsuIdData)
                                    .orElseGet(null);
 
-        GetPaymentScaStatusRequest getPaymentScaStatusRequest = new GetPaymentScaStatusRequest(psuIdData, pisCommonPaymentResponse, scaStatus);
+        PaymentScaStatus paymentScaStatus = new PaymentScaStatus(psuIdData, pisCommonPaymentResponse, scaStatus);
 
         loggingContextService.storeTransactionAndScaStatus(pisCommonPaymentResponse.getTransactionStatus(), scaStatus);
 
-        return ResponseObject.<GetPaymentScaStatusRequest>builder()
-                   .body(getPaymentScaStatusRequest)
+        return ResponseObject.<PaymentScaStatus>builder()
+                   .body(paymentScaStatus)
                    .build();
     }
 
