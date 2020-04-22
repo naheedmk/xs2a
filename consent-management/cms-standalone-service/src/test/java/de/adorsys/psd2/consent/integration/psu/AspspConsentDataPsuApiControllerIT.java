@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package de.adorsys.psd2.consent.integration.aspsp;
+package de.adorsys.psd2.consent.integration.psu;
 
 import de.adorsys.psd2.consent.ConsentManagementStandaloneApp;
 import de.adorsys.psd2.consent.config.WebConfig;
-import de.adorsys.psd2.consent.domain.payment.PisCommonPaymentData;
+import de.adorsys.psd2.consent.domain.AspspConsentDataEntity;
 import de.adorsys.psd2.consent.integration.UrlBuilder;
-import de.adorsys.psd2.consent.repository.PisCommonPaymentDataRepository;
-import de.adorsys.psd2.consent.repository.specification.PisCommonPaymentDataSpecification;
-import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
+import de.adorsys.psd2.consent.repository.AspspConsentDataRepository;
 import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,8 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -44,12 +40,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -58,51 +51,68 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(classes = ConsentManagementStandaloneApp.class)
 @ContextConfiguration(classes = WebConfig.class)
-public class CmsAspspPisTransactionControllerIT {
+public class AspspConsentDataPsuApiControllerIT {
 
-    private static final String INSTANCE_ID = "bank-instance-id";
-    private static final String PAYMENT_ID = "cea9dda3-5154-420d-b1a7-6b4798fccb4b";
-    private static final String STATUS = TransactionStatus.PATC.name();
+    private static final String CONSENT_ID = "4b112130-6a96-4941-a220-2da8a4af2c65";
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private PisCommonPaymentDataRepository pisCommonPaymentDataRepository;
-    @SpyBean
-    private PisCommonPaymentDataSpecification pisCommonPaymentDataSpecification;
+    private AspspConsentDataRepository aspspConsentDataRepository;
 
     private final JsonReader jsonReader = new JsonReader();
     private HttpHeaders httpHeaders;
-    private PisCommonPaymentData pisCommonPaymentData;
+    private AspspConsentDataEntity aspspConsentDataEntity;
 
     @BeforeEach
     void setUp() {
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        httpHeaders.add("instance-id", INSTANCE_ID);
 
-        pisCommonPaymentData = jsonReader.getObjectFromFile("json/consent/integration/aspsp/common-payment-data.json", PisCommonPaymentData.class);
-        pisCommonPaymentData.getPayments().forEach(p -> p.setPaymentData(pisCommonPaymentData));
+        aspspConsentDataEntity = new AspspConsentDataEntity();
+        aspspConsentDataEntity.setConsentId(CONSENT_ID);
+        aspspConsentDataEntity.setData("data".getBytes());
     }
 
     @Test
-    void updatePaymentStatus() throws Exception {
-        assertFalse(pisCommonPaymentData.isMultilevelScaRequired());
+    void getAspspConsentData() throws Exception {
+        given(aspspConsentDataRepository.findByConsentId(CONSENT_ID)).willReturn(Optional.of(aspspConsentDataEntity));
 
-        given(pisCommonPaymentDataRepository.findOne(any(Specification.class))).willReturn(Optional.of(pisCommonPaymentData));
-        given(pisCommonPaymentDataRepository.save(pisCommonPaymentData)).willReturn(pisCommonPaymentData);
+        MockHttpServletRequestBuilder requestBuilder = get(UrlBuilder.getAspspConsentData(CONSENT_ID));
+        requestBuilder.headers(httpHeaders);
+        ResultActions resultActions = mockMvc.perform(requestBuilder);
 
-        MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.updatePaymentStatusUrl(PAYMENT_ID, STATUS));
+        resultActions.andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().json(jsonReader.getStringFromFile("json/consent/integration/psu/expect/cms-aspsp-consent-data-base64.json")));
+    }
+
+    @Test
+    void updateAspspConsentData() throws Exception {
+        given(aspspConsentDataRepository.findByConsentId(CONSENT_ID)).willReturn(Optional.of(aspspConsentDataEntity));
+        given(aspspConsentDataRepository.save(aspspConsentDataEntity)).willReturn(aspspConsentDataEntity);
+
+        MockHttpServletRequestBuilder requestBuilder = put(UrlBuilder.getAspspConsentData(CONSENT_ID))
+                                                           .content(jsonReader.getStringFromFile("json/consent/integration/psu/expect/cms-aspsp-consent-data-base64.json"));
         requestBuilder.headers(httpHeaders);
         ResultActions resultActions = mockMvc.perform(requestBuilder);
 
         resultActions.andExpect(status().isOk())
             .andExpect(content().string(""));
+    }
 
-        verify(pisCommonPaymentDataSpecification).byPaymentIdAndInstanceId(PAYMENT_ID, INSTANCE_ID);
-        verify(pisCommonPaymentDataRepository).save(pisCommonPaymentData);
+    @Test
+    void deleteAspspConsentData() throws Exception {
+        given(aspspConsentDataRepository.existsById(CONSENT_ID)).willReturn(true);
 
-        assertTrue(pisCommonPaymentData.isMultilevelScaRequired());
+        MockHttpServletRequestBuilder requestBuilder = delete(UrlBuilder.getAspspConsentData(CONSENT_ID));
+        requestBuilder.headers(httpHeaders);
+        ResultActions resultActions = mockMvc.perform(requestBuilder);
+
+        resultActions.andExpect(status().isNoContent())
+            .andExpect(content().string(""));
+
+        verify(aspspConsentDataRepository).deleteById(CONSENT_ID);
     }
 }
