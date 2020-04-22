@@ -55,14 +55,14 @@ public class PaymentServiceForAuthorisation {
      * @return Response containing SCA status of the authorisation and optionally trusted beneficiaries flag or corresponding error
      */
     public ResponseObject<Xs2aScaStatusResponse> getPaymentAuthorisationScaStatus(String paymentId, String authorisationId, PaymentType paymentType, String paymentProduct) {
-        ResponseObject<PaymentScaStatus> getScaStatusRequestResponse = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(paymentId, authorisationId, paymentType, paymentProduct);
-        if (getScaStatusRequestResponse.hasError()) {
+        ResponseObject<PaymentScaStatus> paymentScaStatusResponse = paymentAuthorisationService.getPaymentInitiationAuthorisationScaStatus(paymentId, authorisationId, paymentType, paymentProduct);
+        if (paymentScaStatusResponse.hasError()) {
             return ResponseObject.<Xs2aScaStatusResponse>builder()
-                       .fail(getScaStatusRequestResponse.getError())
+                       .fail(paymentScaStatusResponse.getError())
                        .build();
         }
 
-        PaymentScaStatus paymentScaStatus = getScaStatusRequestResponse.getBody();
+        PaymentScaStatus paymentScaStatus = paymentScaStatusResponse.getBody();
         ScaStatus scaStatus = paymentScaStatus.getScaStatus();
 
         if (scaStatus.isNotFinalisedStatus()) {
