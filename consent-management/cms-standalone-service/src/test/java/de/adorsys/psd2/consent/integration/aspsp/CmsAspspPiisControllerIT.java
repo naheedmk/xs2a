@@ -67,6 +67,7 @@ public class CmsAspspPiisControllerIT {
     private static final String TPP_AUTHORISATION_NUMBER = "PSDDE-FAKENCA-87B2AC";
     private static final String CONSENT_ID = "4b112130-6a96-4941-a220-2da8a4af2c65";
     private static final String INSTANCE_ID = "bank-instance-id";
+    private static final Long ID = 111L;
 
     @Autowired
     private MockMvc mockMvc;
@@ -109,7 +110,7 @@ public class CmsAspspPiisControllerIT {
         given(tppInfoRepository.findByAuthorisationNumber(TPP_AUTHORISATION_NUMBER)).willReturn(Optional.empty());
 
         ConsentEntity consentEntity = new ConsentEntity();
-        consentEntity.setId(111L);
+        consentEntity.setId(ID);
         consentEntity.setExternalId(CONSENT_ID);
         given(consentJpaRepository.save(any(ConsentEntity.class))).willReturn(consentEntity);
 
