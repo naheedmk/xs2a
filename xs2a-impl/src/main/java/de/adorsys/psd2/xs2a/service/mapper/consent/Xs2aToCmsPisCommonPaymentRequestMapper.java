@@ -178,9 +178,9 @@ public class Xs2aToCmsPisCommonPaymentRequestMapper {
         return Optional.ofNullable(address)
                    .map(adr -> {
                        CmsAddress cmsAddress = new CmsAddress();
-                       cmsAddress.setStreet(adr.getStreetName());
+                       cmsAddress.setStreetName(adr.getStreetName());
                        cmsAddress.setBuildingNumber(adr.getBuildingNumber());
-                       cmsAddress.setCity(adr.getTownName());
+                       cmsAddress.setTownName(adr.getTownName());
                        cmsAddress.setPostCode(adr.getPostCode());
                        cmsAddress.setCountry(Optional.ofNullable(adr.getCountry()).map(Xs2aCountryCode::getCode).orElse(null));
                        return cmsAddress;

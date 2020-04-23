@@ -145,9 +145,9 @@ public class CmsToXs2aPaymentMapper {
         return Optional.ofNullable(address)
                    .map(a -> {
                        Xs2aAddress xs2aAddress = new Xs2aAddress();
-                       xs2aAddress.setStreetName(a.getStreet());
+                       xs2aAddress.setStreetName(a.getStreetName());
                        xs2aAddress.setBuildingNumber(a.getBuildingNumber());
-                       xs2aAddress.setTownName(a.getCity());
+                       xs2aAddress.setTownName(a.getTownName());
                        xs2aAddress.setPostCode(a.getPostCode());
                        xs2aAddress.setCountry(new Xs2aCountryCode(a.getCountry()));
                        return xs2aAddress;

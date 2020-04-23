@@ -94,8 +94,8 @@ class CmsPsuPisMapperTest {
     private static final String CREDITOR_NAME = "CREDITOR_NAME";
     private static final long PSU_ADDRESS_ID = 123456789L;
     private static final String COUNTRY = "COUNTRY";
-    private static final String CITY = "CITY";
-    private static final String STREET = "STREET";
+    private static final String TOWN_NAME = "TOWN NAME";
+    private static final String STREET_NAME = "STREET NAME";
     private static final String BUILDING_NUMBER = "BUILDING_NUMBER";
     private static final String POST_CODE = "POST_CODE";
     private static final PisAddress CREDITOR_ADDRESS = buildPisAddress();
@@ -363,8 +363,8 @@ class CmsPsuPisMapperTest {
         PisAddress pisAddress = new PisAddress();
         pisAddress.setId(PSU_ADDRESS_ID);
         pisAddress.setCountry(COUNTRY);
-        pisAddress.setCity(CITY);
-        pisAddress.setStreet(STREET);
+        pisAddress.setCity(TOWN_NAME);
+        pisAddress.setStreet(STREET_NAME);
         pisAddress.setBuildingNumber(BUILDING_NUMBER);
         pisAddress.setPostalCode(POST_CODE);
         return pisAddress;
@@ -373,8 +373,8 @@ class CmsPsuPisMapperTest {
     private static CmsAddress buildCmsAddress() {
         CmsAddress cmsAddress = new CmsAddress();
         cmsAddress.setCountry(COUNTRY);
-        cmsAddress.setCity(CITY);
-        cmsAddress.setStreet(STREET);
+        cmsAddress.setTownName(TOWN_NAME);
+        cmsAddress.setStreetName(STREET_NAME);
         cmsAddress.setBuildingNumber(BUILDING_NUMBER);
         cmsAddress.setPostCode(POST_CODE);
         return cmsAddress;

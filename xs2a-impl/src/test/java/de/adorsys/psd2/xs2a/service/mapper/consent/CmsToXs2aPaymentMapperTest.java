@@ -73,9 +73,9 @@ class CmsToXs2aPaymentMapperTest {
     private static final String CREDITOR_AGENT = "creditor agent";
     private static final String CREDITOR_NAME = "creditor name";
 
-    private static final String CREDITOR_ADDRESS_STREET = "street";
+    private static final String CREDITOR_ADDRESS_STREET_NAME = "street name";
     private static final String CREDITOR_ADDRESS_BUILDING_NUMBER = "building number";
-    private static final String CREDITOR_ADDRESS_CITY = "city";
+    private static final String CREDITOR_ADDRESS_TOWN_NAME = "town name";
     private static final String CREDITOR_ADDRESS_POST_CODE = "post code";
     private static final String CREDITOR_ADDRESS_COUNTRY = "DE";
 
@@ -134,9 +134,9 @@ class CmsToXs2aPaymentMapperTest {
 
         Xs2aAddress creditorAddress = periodicPayment.getCreditorAddress();
         assertNotNull(creditorAddress);
-        assertEquals(CREDITOR_ADDRESS_STREET, creditorAddress.getStreetName());
+        assertEquals(CREDITOR_ADDRESS_STREET_NAME, creditorAddress.getStreetName());
         assertEquals(CREDITOR_ADDRESS_BUILDING_NUMBER, creditorAddress.getBuildingNumber());
-        assertEquals(CREDITOR_ADDRESS_CITY, creditorAddress.getTownName());
+        assertEquals(CREDITOR_ADDRESS_TOWN_NAME, creditorAddress.getTownName());
         assertEquals(CREDITOR_ADDRESS_POST_CODE, creditorAddress.getPostCode());
         assertEquals(CREDITOR_ADDRESS_COUNTRY, creditorAddress.getCountry().getCode());
 
@@ -201,9 +201,9 @@ class CmsToXs2aPaymentMapperTest {
 
         Xs2aAddress creditorAddress = singlePayment.getCreditorAddress();
         assertNotNull(creditorAddress);
-        assertEquals(CREDITOR_ADDRESS_STREET, creditorAddress.getStreetName());
+        assertEquals(CREDITOR_ADDRESS_STREET_NAME, creditorAddress.getStreetName());
         assertEquals(CREDITOR_ADDRESS_BUILDING_NUMBER, creditorAddress.getBuildingNumber());
-        assertEquals(CREDITOR_ADDRESS_CITY, creditorAddress.getTownName());
+        assertEquals(CREDITOR_ADDRESS_TOWN_NAME, creditorAddress.getTownName());
         assertEquals(CREDITOR_ADDRESS_POST_CODE, creditorAddress.getPostCode());
         assertEquals(CREDITOR_ADDRESS_COUNTRY, creditorAddress.getCountry().getCode());
 
@@ -266,9 +266,9 @@ class CmsToXs2aPaymentMapperTest {
 
         Xs2aAddress creditorAddress = firstPayment.getCreditorAddress();
         assertNotNull(creditorAddress);
-        assertEquals(CREDITOR_ADDRESS_STREET, creditorAddress.getStreetName());
+        assertEquals(CREDITOR_ADDRESS_STREET_NAME, creditorAddress.getStreetName());
         assertEquals(CREDITOR_ADDRESS_BUILDING_NUMBER, creditorAddress.getBuildingNumber());
-        assertEquals(CREDITOR_ADDRESS_CITY, creditorAddress.getTownName());
+        assertEquals(CREDITOR_ADDRESS_TOWN_NAME, creditorAddress.getTownName());
         assertEquals(CREDITOR_ADDRESS_POST_CODE, creditorAddress.getPostCode());
         assertEquals(CREDITOR_ADDRESS_COUNTRY, creditorAddress.getCountry().getCode());
 
@@ -351,9 +351,9 @@ class CmsToXs2aPaymentMapperTest {
 
     private CmsAddress buildCmsAddress() {
         CmsAddress cmsAddress = new CmsAddress();
-        cmsAddress.setStreet(CREDITOR_ADDRESS_STREET);
+        cmsAddress.setStreetName(CREDITOR_ADDRESS_STREET_NAME);
         cmsAddress.setBuildingNumber(CREDITOR_ADDRESS_BUILDING_NUMBER);
-        cmsAddress.setCity(CREDITOR_ADDRESS_CITY);
+        cmsAddress.setTownName(CREDITOR_ADDRESS_TOWN_NAME);
         cmsAddress.setPostCode(CREDITOR_ADDRESS_POST_CODE);
         cmsAddress.setCountry(CREDITOR_ADDRESS_COUNTRY);
         return cmsAddress;
