@@ -18,11 +18,13 @@ package de.adorsys.psd2.xs2a.service.validator.tpp;
 
 import com.google.common.net.InternetDomainName;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
+import de.adorsys.psd2.xs2a.core.profile.TppUriCompliance;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.BusinessValidator;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
+import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +36,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.FORMAT_ERROR_INVALID_DOMAIN;
+
 @Service
 @AllArgsConstructor
 @Slf4j
@@ -43,9 +47,23 @@ public class TppDomainValidator implements BusinessValidator<String> {
     private static final TppMessageInformation INVALID_DOMAIN_WARNING_MESSAGE = TppMessageInformation.buildWarning(INVALID_DOMAIN_MESSAGE);
     private final TppService tppService;
     private final AspspProfileServiceWrapper aspspProfileServiceWrapper;
+    private final ErrorBuildingService errorBuildingService;
 
     @Override
-    public ValidationResult validate(String header) {
+    public ValidationResult validate(@NotNull String header) {
+        if (aspspProfileServiceWrapper.getTppUriComplianceResponse() == TppUriCompliance.REJECT && StringUtils.isNotBlank(header)) {
+            List<URL> certificateUrls = getCertificateUrls();
+
+            if (certificateUrls.isEmpty()) {
+                return ValidationResult.valid();
+            }
+
+            URL urlHeader = buildURL(header);
+            if (urlHeader == null || !isUrlCompliant(urlHeader, certificateUrls)) {
+                return buildInvalidResult();
+            }
+        }
+
         return ValidationResult.valid();
     }
 
@@ -58,10 +76,7 @@ public class TppDomainValidator implements BusinessValidator<String> {
         }
 
         if (StringUtils.isNotBlank(urlString)) {
-            List<URL> certificateUrls = getDomainsFromTppInfo().stream()
-                                            .map(this::buildURL)
-                                            .filter(Objects::nonNull)
-                                            .collect(Collectors.toList());
+            List<URL> certificateUrls = getCertificateUrls();
 
             if (certificateUrls.isEmpty()) {
                 return warningMessages;
@@ -132,5 +147,17 @@ public class TppDomainValidator implements BusinessValidator<String> {
             log.warn("Cannot get top domain from [{}]", host);
         }
         return null;
+    }
+
+    private List<URL> getCertificateUrls() {
+        return getDomainsFromTppInfo().stream()
+                   .map(this::buildURL)
+                   .filter(Objects::nonNull)
+                   .collect(Collectors.toList());
+    }
+
+    private ValidationResult buildInvalidResult() {
+        return ValidationResult.invalid(
+            errorBuildingService.buildErrorType(), TppMessageInformation.of(FORMAT_ERROR_INVALID_DOMAIN));
     }
 }
