@@ -66,6 +66,7 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
     private final GetPaymentCancellationAuthorisationsValidator getPaymentAuthorisationsValidator;
     private final GetPaymentCancellationAuthorisationScaStatusValidator getPaymentAuthorisationScaStatusValidator;
     private final LoggingContextService loggingContextService;
+    private final PsuIdDataAuthorisationService psuIdDataAuthorisationService;
 
     /**
      * Creates authorisation for payment cancellation request if given psu data is valid
@@ -243,7 +244,7 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
 
         ScaStatus scaStatus = scaStatusOptional.get();
 
-        PsuIdData psuIdData = getPsuIdData(authorisationId, pisCommonPaymentResponse);
+        PsuIdData psuIdData = psuIdDataAuthorisationService.getPsuIdData(authorisationId, pisCommonPaymentResponse.getPsuData());
 
         PaymentScaStatus paymentScaStatus = new PaymentScaStatus(psuIdData, pisCommonPaymentResponse, scaStatus);
 
@@ -252,20 +253,6 @@ public class PaymentCancellationAuthorisationServiceImpl implements PaymentCance
         return ResponseObject.<PaymentScaStatus>builder()
                    .body(paymentScaStatus)
                    .build();
-    }
-
-    private PsuIdData getPsuIdData(String authorisationId, PisCommonPaymentResponse pisCommonPaymentResponse) {
-        PsuIdData psuIdData =  xs2aAuthorisationService.getAuthorisationById(authorisationId)
-                                   .map(Authorisation::getPsuIdData)
-                                   .orElse(null);
-
-        List<PsuIdData> psuIdDataFromPayment = pisCommonPaymentResponse.getPsuData();
-        if (psuIdData == null && !psuIdDataFromPayment.isEmpty()) {
-            // This is done for multilevel accounts, since we don't know which PSU requested the cancellation, we take first one
-            psuIdData = psuIdDataFromPayment.get(0);
-        }
-
-        return psuIdData != null ? psuIdData : new PsuIdData();
     }
 
     private ResponseObject<Xs2aCreatePisCancellationAuthorisationResponse> createCancellationAuthorisation(String paymentId, PsuIdData psuData, PaymentType paymentType, String paymentProduct) {

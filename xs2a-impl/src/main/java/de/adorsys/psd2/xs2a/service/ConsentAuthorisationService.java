@@ -44,7 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
 
 import static de.adorsys.psd2.xs2a.core.domain.TppMessageInformation.of;
@@ -65,6 +64,7 @@ public class ConsentAuthorisationService {
     private final AuthorisationChainResponsibilityService authorisationChainResponsibilityService;
     private final LoggingContextService loggingContextService;
     private final AisAuthorisationConfirmationService aisAuthorisationConfirmationService;
+    private final PsuIdDataAuthorisationService psuIdDataAuthorisationService;
 
     public ResponseObject<AuthorisationResponse> createAisAuthorisation(PsuIdData psuData, String consentId, String password) {
         ResponseObject<CreateConsentAuthorizationResponse> createAisAuthorizationResponse = createConsentAuthorizationWithResponse(psuData, consentId);
@@ -171,7 +171,7 @@ public class ConsentAuthorisationService {
 
         ScaStatus scaStatus = scaStatusOptional.get();
 
-        PsuIdData psuIdData = getPsuIdData(authorisationId, accountConsent, authorizationService);
+        PsuIdData psuIdData = psuIdDataAuthorisationService.getPsuIdData(authorisationId, accountConsent.getPsuIdDataList());
 
         ConsentScaStatus consentScaStatus = new ConsentScaStatus(psuIdData, accountConsent, scaStatus);
 
@@ -181,20 +181,6 @@ public class ConsentAuthorisationService {
         return ResponseObject.<ConsentScaStatus>builder()
                    .body(consentScaStatus)
                    .build();
-    }
-
-    private PsuIdData getPsuIdData(String authorisationId, AisConsent accountConsent, AisAuthorizationService authorizationService) {
-        PsuIdData psuIdData =  authorizationService
-                                  .getAccountConsentAuthorizationById(authorisationId).map(Authorisation::getPsuIdData)
-                                   .orElse(null);
-
-        List<PsuIdData> psuIdDataFromConsent = accountConsent.getPsuIdDataList();
-        if (psuIdData == null && !psuIdDataFromConsent.isEmpty()) {
-            // This is done for multilevel accounts, since we don't know which PSU requested the cancellation, we take first one
-            psuIdData = psuIdDataFromConsent.get(0);
-        }
-
-        return psuIdData != null ? psuIdData : new PsuIdData();
     }
 
     public ResponseObject<UpdateConsentPsuDataResponse> updateConsentPsuData(UpdateConsentPsuDataReq updatePsuData) {
