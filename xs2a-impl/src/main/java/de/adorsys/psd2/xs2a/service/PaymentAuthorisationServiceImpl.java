@@ -44,6 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
 import static de.adorsys.psd2.xs2a.core.domain.TppMessageInformation.of;
@@ -245,9 +246,7 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
 
         ScaStatus scaStatus = scaStatusOptional.get();
 
-        PsuIdData psuIdData = authorisationService.getAuthorisationById(authorisationId)
-                                   .map(Authorisation::getPsuIdData)
-                                   .orElseGet(null);
+        PsuIdData psuIdData = getPsuIdData(authorisationId, pisCommonPaymentResponse);
 
         PaymentScaStatus paymentScaStatus = new PaymentScaStatus(psuIdData, pisCommonPaymentResponse, scaStatus);
 
@@ -256,6 +255,20 @@ public class PaymentAuthorisationServiceImpl implements PaymentAuthorisationServ
         return ResponseObject.<PaymentScaStatus>builder()
                    .body(paymentScaStatus)
                    .build();
+    }
+
+    private PsuIdData getPsuIdData(String authorisationId, PisCommonPaymentResponse pisCommonPaymentResponse) {
+        PsuIdData psuIdData =  authorisationService.getAuthorisationById(authorisationId)
+                                   .map(Authorisation::getPsuIdData)
+                                   .orElse(null);
+
+        List<PsuIdData> psuIdDataFromPayment = pisCommonPaymentResponse.getPsuData();
+        if (psuIdData == null && !psuIdDataFromPayment.isEmpty()) {
+            // This is done for multilevel accounts, since we don't know which PSU requested the cancellation, we take first one
+            psuIdData = psuIdDataFromPayment.get(0);
+        }
+
+        return psuIdData != null ? psuIdData : new PsuIdData();
     }
 
     private ResponseObject<Xs2aCreatePisAuthorisationResponse> createPisAuthorisation(String paymentId, PaymentType paymentService,
