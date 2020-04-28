@@ -18,8 +18,10 @@ package de.adorsys.psd2.xs2a.service.validator.tpp;
 
 import com.google.common.net.InternetDomainName;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
+import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.profile.TppUriCompliance;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
+import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.BusinessValidator;
@@ -48,15 +50,14 @@ public class TppDomainValidator implements BusinessValidator<String> {
     private final TppService tppService;
     private final AspspProfileServiceWrapper aspspProfileServiceWrapper;
     private final ErrorBuildingService errorBuildingService;
+    private final ScaApproachResolver scaApproachResolver;
 
     @Override
     public ValidationResult validate(@NotNull String header) {
-        boolean isCheckUriComplianceToDomainSupported = aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported();
-        boolean isRejectMode = aspspProfileServiceWrapper.getTppUriComplianceResponse() == TppUriCompliance.REJECT;
-
         if (StringUtils.isNotBlank(header) &&
-                isCheckUriComplianceToDomainSupported &&
-                isRejectMode) {
+                isRedirectScaApproach() &&
+                isCheckUriComplianceToDomainSupported() &&
+                isRejectMode()) {
             List<URL> certificateUrls = getCertificateUrls();
 
             if (certificateUrls.isEmpty()) {
@@ -76,7 +77,7 @@ public class TppDomainValidator implements BusinessValidator<String> {
     public Set<TppMessageInformation> buildWarningMessages(@NotNull String urlString) {
         Set<TppMessageInformation> warningMessages = new HashSet<>();
 
-        if (!aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported()) {
+        if (!isCheckUriComplianceToDomainSupported()) {
             return warningMessages;
         }
 
@@ -164,5 +165,17 @@ public class TppDomainValidator implements BusinessValidator<String> {
     private ValidationResult buildInvalidResult() {
         return ValidationResult.invalid(
             errorBuildingService.buildErrorType(), TppMessageInformation.of(FORMAT_ERROR_INVALID_DOMAIN));
+    }
+
+    private boolean isRejectMode() {
+        return aspspProfileServiceWrapper.getTppUriComplianceResponse() == TppUriCompliance.REJECT;
+    }
+
+    private boolean isCheckUriComplianceToDomainSupported() {
+        return aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported();
+    }
+
+    private boolean isRedirectScaApproach() {
+        return ScaApproach.REDIRECT == scaApproachResolver.resolveScaApproach();
     }
 }

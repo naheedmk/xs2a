@@ -18,8 +18,10 @@ package de.adorsys.psd2.xs2a.service.validator.tpp;
 
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
+import de.adorsys.psd2.xs2a.core.profile.ScaApproach;
 import de.adorsys.psd2.xs2a.core.profile.TppUriCompliance;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
+import de.adorsys.psd2.xs2a.service.ScaApproachResolver;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
@@ -64,17 +66,11 @@ class TppDomainValidatorTest {
     private AspspProfileServiceWrapper aspspProfileServiceWrapper;
     @Mock
     private ErrorBuildingService errorBuildingService;
-
-    @BeforeEach
-    void setUp() {
-        when(aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported()).thenReturn(true);
-    }
+    @Mock
+    private ScaApproachResolver scaApproachResolver;
 
     @Test
     void validate_valid_warningMode() {
-        //Given
-        when(aspspProfileServiceWrapper.getTppUriComplianceResponse()).thenReturn(TppUriCompliance.WARNING);
-
         //When
         ValidationResult actualResult =  tppDomainValidator.validate(URL_HEADER_WRONG);
 
@@ -94,6 +90,8 @@ class TppDomainValidatorTest {
     @Test
     void validate_valid_rejectMode() {
         //Given
+        when(aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported()).thenReturn(true);
+        when(scaApproachResolver.resolveScaApproach()).thenReturn(ScaApproach.REDIRECT);
         when(tppService.getTppInfo()).thenReturn(buildTppInfo(TPP_NAME_DOMAIN, TPP_DNS_DOMAIN));
         when(aspspProfileServiceWrapper.getTppUriComplianceResponse()).thenReturn(TppUriCompliance.REJECT);
 
@@ -107,6 +105,8 @@ class TppDomainValidatorTest {
     @Test
     void validate_valid_rejectMode_emptyCertificateValues() {
         //Given
+        when(aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported()).thenReturn(true);
+        when(scaApproachResolver.resolveScaApproach()).thenReturn(ScaApproach.REDIRECT);
         when(tppService.getTppInfo()).thenReturn(buildTppInfo(null, null));
         when(aspspProfileServiceWrapper.getTppUriComplianceResponse()).thenReturn(TppUriCompliance.REJECT);
 
@@ -122,9 +122,11 @@ class TppDomainValidatorTest {
         //Given
         ValidationResult expectedResult = buildInvalidResult();
 
+        when(scaApproachResolver.resolveScaApproach()).thenReturn(ScaApproach.REDIRECT);
         when(tppService.getTppInfo()).thenReturn(buildTppInfo(TPP_NAME_DOMAIN, TPP_DNS_DOMAIN));
         when(aspspProfileServiceWrapper.getTppUriComplianceResponse()).thenReturn(TppUriCompliance.REJECT);
         when(errorBuildingService.buildErrorType()).thenReturn(ErrorType.PIS_400);
+        when(aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported()).thenReturn(true);
 
         //When
         ValidationResult actualResult =  tppDomainValidator.validate(URL_HEADER_WRONG);
@@ -136,8 +138,7 @@ class TppDomainValidatorTest {
     @Test
     void buildWarningMessages_valid() {
         //Given
-        when(aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported())
-            .thenReturn(false);
+        when(aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported()).thenReturn(false);
         //When
         Set<TppMessageInformation> validate = tppDomainValidator.buildWarningMessages(URL_HEADER_WRONG_DOMAIN);
         //Then
