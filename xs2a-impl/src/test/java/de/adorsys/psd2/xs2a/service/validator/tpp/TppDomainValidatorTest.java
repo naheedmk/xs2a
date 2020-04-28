@@ -24,6 +24,7 @@ import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.service.validator.ValidationResult;
 import de.adorsys.psd2.xs2a.web.validator.ErrorBuildingService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -64,6 +65,11 @@ class TppDomainValidatorTest {
     @Mock
     private ErrorBuildingService errorBuildingService;
 
+    @BeforeEach
+    void setUp() {
+        when(aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported()).thenReturn(true);
+    }
+
     @Test
     void validate_valid_warningMode() {
         //Given
@@ -79,7 +85,7 @@ class TppDomainValidatorTest {
     @Test
     void validate_valid() {
         //When
-        ValidationResult actualResult =  tppDomainValidator.validate(null);
+        ValidationResult actualResult =  tppDomainValidator.validate("");
 
         //Then
         assertEquals(ValidationResult.valid(), actualResult);

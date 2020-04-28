@@ -51,7 +51,12 @@ public class TppDomainValidator implements BusinessValidator<String> {
 
     @Override
     public ValidationResult validate(@NotNull String header) {
-        if (aspspProfileServiceWrapper.getTppUriComplianceResponse() == TppUriCompliance.REJECT && StringUtils.isNotBlank(header)) {
+        boolean isCheckUriComplianceToDomainSupported = aspspProfileServiceWrapper.isCheckUriComplianceToDomainSupported();
+        boolean isRejectMode = aspspProfileServiceWrapper.getTppUriComplianceResponse() == TppUriCompliance.REJECT;
+
+        if (StringUtils.isNotBlank(header) &&
+                isCheckUriComplianceToDomainSupported &&
+                isRejectMode) {
             List<URL> certificateUrls = getCertificateUrls();
 
             if (certificateUrls.isEmpty()) {
