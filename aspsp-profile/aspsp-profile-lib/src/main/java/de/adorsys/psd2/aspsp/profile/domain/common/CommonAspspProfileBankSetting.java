@@ -131,7 +131,7 @@ public class CommonAspspProfileBankSetting {
     private boolean checkUriComplianceToDomainSupported;
 
     /**
-     * Indicates whether ASPSP returns warning with correct response or rejects redirect URIs when they don't match certificate
+     * Indicates whether ASPSP returns warning with correct response or rejects request when redirect URIs don't match certificate
      */
     private TppUriCompliance tppUriComplianceResponse;
 }

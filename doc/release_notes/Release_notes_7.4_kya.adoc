@@ -1,4 +1,4 @@
-= Release notes v.7.3
+= Release notes v.7.4
 
 == Table of Contents
 
@@ -10,7 +10,7 @@ From now on, it's possible to define in ASPSP profile `tppUriComplianceResponse`
 and `REJECT`.
 
 If `WARNING` mode is activated, in case of payment/consent initiation with invalid headers `TPP-Redirect-URI` or
- `TPP-Nok-Redirect-URI` one will get correct response with warning.
+ `TPP-Nok-Redirect-URI` TPP will get correct response with warning.
 
 If `REJECT` mode is activated, in case of  payment/consent initiation with invalid headers `TPP-Redirect-URI` or
- `TPP-Nok-Redirect-URI` one will get error response ` 400 FORMAT_ERROR`.
+ `TPP-Nok-Redirect-URI` TPP will get error response ` 400 FORMAT_ERROR`.
