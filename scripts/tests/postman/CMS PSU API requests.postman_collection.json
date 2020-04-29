@@ -86,6 +86,11 @@
 											"pm.test(\"Result validator\", () => {",
 											"      pm.expect(jsonData).to.have.property('consentId');",
 											"       pm.expect(jsonData).to.have.property('aspspConsentDataBase64');",
+											"});",
+											"",
+											"const aspspConsentDataBase64 = jsonData.aspspConsentDataBase64;",
+											"pm.test(\"Aspsp Consent Data Base64\", () => {",
+											"    pm.expect(aspspConsentDataBase64).to.eql(pm.globals.get(\"encodedLedgersBearerToken\"));",
 											"});"
 										],
 										"type": "text/javascript"
@@ -466,7 +471,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/redirect/f051d5f6-a8c0-4b75-87d7-9d1fb7165c75",
+									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/redirect/{{internal_consent_id}}",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{url_cms}}"
@@ -477,7 +482,7 @@
 										"ais",
 										"consent",
 										"redirect",
-										"f051d5f6-a8c0-4b75-87d7-9d1fb7165c75"
+										"{{internal_consent_id}}"
 									]
 								}
 							},
@@ -514,7 +519,7 @@
 									"raw": "{\n  \"psuId\": \"{{psu_id_none}}\"\n}"
 								},
 								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/f051d5f6-a8c0-4b75-87d7-9d1fb7165c75/authorisation/123/psu-data",
+									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}/authorisation/{{internal_authorisation_id}}/psu-data",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{url_cms}}"
@@ -524,9 +529,9 @@
 										"v1",
 										"ais",
 										"consent",
-										"f051d5f6-a8c0-4b75-87d7-9d1fb7165c75",
+										"{{internal_consent_id}}",
 										"authorisation",
-										"123",
+										"{{internal_authorisation_id}}",
 										"psu-data"
 									]
 								}
@@ -574,7 +579,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}/authorisation/123/status/FINALISED",
+									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}/authorisation/{{internal_authorisation_id}}/status/FINALISED",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{url_cms}}"
@@ -586,7 +591,7 @@
 										"consent",
 										"{{internal_consent_id}}",
 										"authorisation",
-										"123",
+										"{{internal_authorisation_id}}",
 										"status",
 										"FINALISED"
 									]
@@ -630,7 +635,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/123/confirm-consent",
+									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{internal_consent_id}}/confirm-consent",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{url_cms}}"
@@ -640,7 +645,7 @@
 										"v1",
 										"ais",
 										"consent",
-										"123",
+										"{{internal_consent_id}}",
 										"confirm-consent"
 									]
 								}
@@ -864,7 +869,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/authorisation/123",
+									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/authorisation/{{internal_authorisation_id}}",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{url_cms}}"
@@ -875,7 +880,7 @@
 										"ais",
 										"consent",
 										"authorisation",
-										"123"
+										"{{internal_authorisation_id}}"
 									]
 								}
 							},
@@ -931,6 +936,46 @@
 										"reject-consent"
 									]
 								}
+							},
+							"response": []
+						},
+						{
+							"name": "11. Get list of PSU data Authorisations NOT_FOUND",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6d668fb5-d960-40ed-ab62-986a9bb3ffdc",
+										"exec": [
+											"pm.test(\"Status code is 404\", () => {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{consent_id}}/authorisation/psus",
+									"protocol": "{{protocol}}",
+									"host": [
+										"{{url_cms}}"
+									],
+									"path": [
+										"psu-api",
+										"v1",
+										"ais",
+										"consent",
+										"{{consent_id}}",
+										"authorisation",
+										"psus"
+									]
+								},
+								"description": "Returns EMPTY list of info objects about psu data and authorisation scaStatuses"
 							},
 							"response": []
 						}
@@ -1018,7 +1063,7 @@
 											},
 											{
 												"key": "PSU-ID",
-												"value": "{{psu_id_none}}"
+												"value": "{{psu_id_single}}"
 											},
 											{
 												"key": "TPP-Explicit-Authorisation-Preferred",
@@ -1043,7 +1088,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n      \"access\": {\n        \"accounts\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_none}}\"\n          }\n        ],\n        \"balances\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_none}}\"\n          }\n        ],\n        \"transactions\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_none}}\"\n          }\n        ]\n      },\n      \"combinedServiceIndicator\": false,\n      \"frequencyPerDay\": 400,\n      \"recurringIndicator\": true,\n      \"validUntil\": \"2021-12-31\"\n    }"
+											"raw": "{\n      \"access\": {\n        \"accounts\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_single}}\"\n          }\n        ],\n        \"balances\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_single}}\"\n          }\n        ],\n        \"transactions\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_single}}\"\n          }\n        ]\n      },\n      \"combinedServiceIndicator\": false,\n      \"frequencyPerDay\": 400,\n      \"recurringIndicator\": true,\n      \"validUntil\": \"2021-12-31\"\n    }"
 										},
 										"url": {
 											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents",
@@ -1450,9 +1495,10 @@
 													"",
 													"pm.test(\"PSU ID\", () => {",
 													"    _.each(jsonData, (arrItem) => {",
-													"        pm.expect(arrItem.psuId).to.eql(\"marion.mueller\");",
+													"        pm.expect(arrItem.psuId).to.eql(pm.variables.get(\"psu_id_none\"));",
 													"    })",
 													"});",
+													"",
 													""
 												],
 												"type": "text/javascript"
@@ -1483,47 +1529,7 @@
 									"response": []
 								},
 								{
-									"name": "10. Get EMPTY list of PSU data Authorisations",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"id": "6d668fb5-d960-40ed-ab62-986a9bb3ffdc",
-												"exec": [
-													"pm.test(\"Status code is 404\", () => {",
-													"    pm.response.to.have.status(404);",
-													"});",
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [],
-										"url": {
-											"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/ais/consent/{{consent_id}}/authorisation/psus",
-											"protocol": "{{protocol}}",
-											"host": [
-												"{{url_cms}}"
-											],
-											"path": [
-												"psu-api",
-												"v1",
-												"ais",
-												"consent",
-												"{{consent_id}}",
-												"authorisation",
-												"psus"
-											]
-										},
-										"description": "Returns EMPTY list of info objects about psu data and authorisation scaStatuses"
-									},
-									"response": []
-								},
-								{
-									"name": "11. Save access (availableAccounts)",
+									"name": "10. Save access (availableAccounts)",
 									"event": [
 										{
 											"listen": "test",
@@ -1576,7 +1582,7 @@
 									"response": []
 								},
 								{
-									"name": "12. Revoke Ais Consent",
+									"name": "11. Revoke Ais Consent",
 									"event": [
 										{
 											"listen": "test",
@@ -1629,7 +1635,7 @@
 									"response": []
 								},
 								{
-									"name": "13. Get list of AIS Consent objects by PSU ID",
+									"name": "12. Get list of AIS Consent objects by PSU ID",
 									"event": [
 										{
 											"listen": "test",
@@ -1681,7 +1687,7 @@
 									"response": []
 								},
 								{
-									"name": "14. Get EMPTY list of AIS Consent objects by PSU ID",
+									"name": "13. Get EMPTY list of AIS Consent objects by PSU ID",
 									"event": [
 										{
 											"listen": "test",
@@ -1692,7 +1698,10 @@
 													"    pm.response.to.have.status(200);",
 													"});",
 													"",
-													""
+													"const jsonData = pm.response.json();",
+													"pm.test(\"Empty array\", () => {",
+													"    pm.expect(jsonData.length).to.eql(0);",
+													"});"
 												],
 												"type": "text/javascript"
 											}
@@ -1726,7 +1735,7 @@
 									"response": []
 								},
 								{
-									"name": "15. Get Authorisation By Authorisation Id",
+									"name": "14. Get Authorisation By Authorisation Id",
 									"event": [
 										{
 											"listen": "test",
@@ -1740,7 +1749,7 @@
 													"const jsonData = pm.response.json();",
 													"",
 													"pm.test(\"PSU ID\", () => {",
-													"    pm.expect(jsonData.psuId).to.eql(\"marion.mueller\");",
+													"    pm.expect(jsonData.psuId).to.eql(pm.variables.get(\"psu_id_none\"));",
 													"});",
 													""
 												],
@@ -1872,7 +1881,7 @@
 											},
 											{
 												"key": "PSU-ID",
-												"value": "{{psu_id_none}}"
+												"value": "{{psu_id_single}}"
 											},
 											{
 												"key": "TPP-Explicit-Authorisation-Preferred",
@@ -1897,7 +1906,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n      \"access\": {\n        \"accounts\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_none}}\"\n          }\n        ],\n        \"balances\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_none}}\"\n          }\n        ],\n        \"transactions\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_none}}\"\n          }\n        ]\n      },\n      \"combinedServiceIndicator\": false,\n      \"frequencyPerDay\": 400,\n      \"recurringIndicator\": true,\n      \"validUntil\": \"2021-12-31\"\n    }"
+											"raw": "{\n      \"access\": {\n        \"accounts\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_single}}\"\n          }\n        ],\n        \"balances\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_single}}\"\n          }\n        ],\n        \"transactions\": [\n          {\n            \"currency\": \"EUR\",\n\t\t\t\"iban\": \"{{iban_single}}\"\n          }\n        ]\n      },\n      \"combinedServiceIndicator\": false,\n      \"frequencyPerDay\": 400,\n      \"recurringIndicator\": true,\n      \"validUntil\": \"2021-12-31\"\n    }"
 										},
 										"url": {
 											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents",
@@ -2304,7 +2313,7 @@
 													"",
 													"pm.test(\"PSU ID\", () => {",
 													"    _.each(jsonData, (arrItem) => {",
-													"        pm.expect(arrItem.psuId).to.eql(\"marion.mueller\");",
+													"        pm.expect(arrItem.psuId).to.eql(pm.variables.get(\"psu_id_none\"));",
 													"    })",
 													"});",
 													""
@@ -2509,7 +2518,7 @@
 													"const jsonData = pm.response.json();",
 													"",
 													"pm.test(\"PSU ID\", () => {",
-													"    pm.expect(jsonData.psuId).to.eql(\"marion.mueller\");",
+													"    pm.expect(jsonData.psuId).to.eql(pm.variables.get(\"psu_id_none\"));",
 													"});",
 													""
 												],
@@ -2607,7 +2616,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/payment/redirect/123",
+									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/payment/redirect/{{internal_payment_id}}",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{url_cms}}"
@@ -2617,7 +2626,7 @@
 										"v1",
 										"payment",
 										"redirect",
-										"123"
+										"{{internal_payment_id}}"
 									]
 								}
 							},
@@ -2661,7 +2670,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/payment/cancellation/redirect/123",
+									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/payment/cancellation/redirect/{{internal_payment_id}}",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{url_cms}}"
@@ -2672,7 +2681,7 @@
 										"payment",
 										"cancellation",
 										"redirect",
-										"123"
+										"{{internal_payment_id}}"
 									]
 								}
 							},
@@ -2783,15 +2792,10 @@
 									"script": {
 										"id": "64f02700-4697-4170-853a-7d071c7fb697",
 										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
+											"pm.test(\"Status code is 400\", () => {",
+											"    pm.response.to.have.status(400);",
 											"});",
 											"",
-											"const jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Payment type\", () => {",
-											"        pm.expect(jsonData.paymentType).to.eql(\"payments\");",
-											"});",
 											""
 										],
 										"type": "text/javascript"
@@ -2804,7 +2808,8 @@
 									{
 										"key": "psu-id",
 										"type": "text",
-										"value": "marion.mueller"
+										"value": "marion.mueller",
+										"disabled": true
 									},
 									{
 										"key": "psu-id-type",
@@ -3267,7 +3272,7 @@
 								"header": [
 									{
 										"key": "psu-id",
-										"value": "marion.mueller",
+										"value": "{{psu_id_none}}",
 										"type": "text"
 									},
 									{
@@ -3376,25 +3381,25 @@
 								"header": [
 									{
 										"key": "psu-id",
-										"value": "marion.mueller",
-										"type": "text"
+										"type": "text",
+										"value": "{{psu_id_none}}"
 									},
 									{
 										"key": "psu-id-type",
-										"value": "psu id type",
 										"type": "text",
+										"value": "psu id type",
 										"disabled": true
 									},
 									{
 										"key": "psu-corporate-id",
-										"value": "psu corporate id",
 										"type": "text",
+										"value": "psu corporate id",
 										"disabled": true
 									},
 									{
 										"key": "psu-corporate-id-type",
-										"value": "psu corporate id type",
 										"type": "text",
+										"value": "psu corporate id type",
 										"disabled": true
 									}
 								],
@@ -3431,7 +3436,7 @@
 											"",
 											"pm.test(\"PSU ID\", () => {",
 											"    _.each(jsonData, (arrItem) => {",
-											"        pm.expect(arrItem.psuId).to.eql(\"marion.mueller\");",
+											"        pm.expect(arrItem.psuId).to.eql(pm.variables.get(\"psu_id_none\"));",
 											"    })",
 											"});",
 											""
@@ -3536,7 +3541,7 @@
 									},
 									{
 										"key": "psu-id",
-										"value": "marion.mueller",
+										"value": "{{psu_id_none}}",
 										"type": "text"
 									}
 								],
@@ -3713,7 +3718,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/piis/consents/0ce15e95-de8b-403b-a2f4-cb34d483a440",
+									"raw": "{{protocol}}://{{url_cms}}/psu-api/v1/piis/consents/{{internal_consent_id}}",
 									"protocol": "{{protocol}}",
 									"host": [
 										"{{url_cms}}"
@@ -3723,7 +3728,7 @@
 										"v1",
 										"piis",
 										"consents",
-										"0ce15e95-de8b-403b-a2f4-cb34d483a440"
+										"{{internal_consent_id}}"
 									]
 								}
 							},
@@ -4006,7 +4011,7 @@
 											"",
 											"pm.test(\"Consent psu id\", () => {",
 											"    _.each(jsonData, (arrItem) => {",
-											"        pm.expect(arrItem.psuData.psuId).to.eql(\"marion.mueller\");",
+											"        pm.expect(arrItem.psuData.psuId).to.eql(pm.variables.get(\"psu_id_none\"));",
 											"    })",
 											"});"
 										],
@@ -4076,7 +4081,7 @@
 							"response": []
 						},
 						{
-							"name": "5. Revokes PIIS Consent object by its ID. Consent gets status Revoked by PSU. Copy",
+							"name": "5. Revokes PIIS Consent object by its ID. Consent gets status Revoked by PSU. ",
 							"event": [
 								{
 									"listen": "test",
@@ -4102,7 +4107,7 @@
 								"header": [
 									{
 										"key": "psu-id",
-										"value": "marion.mueller",
+										"value": "{{psu_id_none}}",
 										"type": "text"
 									},
 									{
