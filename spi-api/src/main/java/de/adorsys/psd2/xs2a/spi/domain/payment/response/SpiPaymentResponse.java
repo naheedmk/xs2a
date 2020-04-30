@@ -23,7 +23,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class SpiPaymentResponse {
-
+    /**
+     * Indicates whether the PSU was authorised (SUCCESS, ATTEMPT_FAILURE, FAILURE)
+     */
     private SpiAuthorisationStatus spiAuthorisationStatus;
 
     public SpiPaymentResponse() {
