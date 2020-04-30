@@ -47,6 +47,7 @@ import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAvailableScaMethodsRespo
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiPsuAuthorisationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiScaConfirmation;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentExecutionResponse;
+import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentResponse;
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.PaymentAuthorisationSpi;
@@ -102,7 +103,7 @@ public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisati
     }
 
     @Override
-    SpiResponse<SpiPaymentExecutionResponse> verifyScaAuthorisationAndExecutePayment(Authorisation authorisation,
+    SpiResponse<SpiPaymentResponse> verifyScaAuthorisationAndExecutePayment(Authorisation authorisation,
                                                                                      SpiPayment payment, SpiScaConfirmation spiScaConfirmation,
                                                                                      SpiContextData contextData, SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
         return pisExecutePaymentService.verifyScaAuthorisationAndExecutePayment(contextData,
@@ -112,7 +113,7 @@ public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisati
     }
 
     @Override
-    void updatePaymentData(String paymentId, SpiResponse<Object> spiResponse) {
+    void updatePaymentData(String paymentId, SpiResponse<SpiPaymentResponse> spiResponse) {
         SpiPaymentExecutionResponse payload = (SpiPaymentExecutionResponse) spiResponse.getPayload();
         TransactionStatus paymentStatus = payload.getTransactionStatus();
 
@@ -142,8 +143,8 @@ public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisati
     @Override
     SpiResponse<SpiPsuAuthorisationResponse> authorisePsu(Xs2aUpdatePisCommonPaymentPsuDataRequest request, SpiPayment payment,
                                                           SpiAspspConsentDataProvider aspspConsentDataProvider, SpiPsuData spiPsuData,
-                                                          SpiContextData contextData) {
-        return paymentAuthorisationSpi.authorisePsu(contextData, spiPsuData, request.getPassword(), payment, aspspConsentDataProvider);
+                                                          SpiContextData contextData, String authorisationId) {
+        return paymentAuthorisationSpi.authorisePsu(contextData, authorisationId, spiPsuData, request.getPassword(), payment, aspspConsentDataProvider);
     }
 
     @Override

@@ -26,6 +26,7 @@ import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiScaConfirmation;
 import de.adorsys.psd2.xs2a.spi.domain.payment.SpiPaymentInfo;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentExecutionResponse;
 import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentInitiationResponse;
+import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentResponse;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.*;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class PisExecutePaymentServiceSupportImpl implements PisExecutePaymentSer
     private final SpiPaymentMapper spiPaymentMapper;
 
     @Override
-    public SpiResponse<SpiPaymentExecutionResponse> verifyScaAuthorisationAndExecutePayment(SpiContextData contextData,
+    public SpiResponse<SpiPaymentResponse> verifyScaAuthorisationAndExecutePayment(SpiContextData contextData,
                                                                                             SpiScaConfirmation spiScaConfirmation,
                                                                                             SpiPayment payment,
                                                                                             SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
@@ -76,11 +77,11 @@ public class PisExecutePaymentServiceSupportImpl implements PisExecutePaymentSer
         }
     }
 
-    private <T extends SpiPayment> SpiResponse<SpiPaymentExecutionResponse> verifyScaAndExecutePayment(PaymentSpi<T, ? extends SpiPaymentInitiationResponse> paymentSpi,
-                                                                                                       T payment,
-                                                                                                       SpiScaConfirmation spiScaConfirmation,
-                                                                                                       SpiContextData contextData,
-                                                                                                       SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
+    private <T extends SpiPayment> SpiResponse<SpiPaymentResponse> verifyScaAndExecutePayment(PaymentSpi<T, ? extends SpiPaymentInitiationResponse> paymentSpi,
+                                                                                              T payment,
+                                                                                              SpiScaConfirmation spiScaConfirmation,
+                                                                                              SpiContextData contextData,
+                                                                                              SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
         return paymentSpi.verifyScaAuthorisationAndExecutePayment(contextData, spiScaConfirmation, payment, spiAspspConsentDataProvider);
     }
 

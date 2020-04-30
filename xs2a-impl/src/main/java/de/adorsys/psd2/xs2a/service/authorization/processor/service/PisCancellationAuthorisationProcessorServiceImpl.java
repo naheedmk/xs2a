@@ -49,6 +49,7 @@ import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAuthorizationCodeResult;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiAvailableScaMethodsResponse;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiPsuAuthorisationResponse;
 import de.adorsys.psd2.xs2a.spi.domain.authorisation.SpiScaConfirmation;
+import de.adorsys.psd2.xs2a.spi.domain.payment.response.SpiPaymentResponse;
 import de.adorsys.psd2.xs2a.spi.domain.psu.SpiPsuData;
 import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.PaymentCancellationSpi;
@@ -103,15 +104,16 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends PaymentBas
     }
 
     @Override
-    SpiResponse<SpiResponse.VoidResponse> verifyScaAuthorisationAndExecutePayment(Authorisation authorisation,
+    SpiResponse<SpiPaymentResponse> verifyScaAuthorisationAndExecutePayment(Authorisation authorisation,
                                                                                   SpiPayment payment, SpiScaConfirmation spiScaConfirmation,
                                                                                   SpiContextData contextData, SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
         return paymentCancellationSpi.verifyScaAuthorisationAndCancelPayment(contextData, spiScaConfirmation, payment, spiAspspConsentDataProvider);
     }
 
     @Override
-    SpiResponse<SpiPsuAuthorisationResponse> authorisePsu(Xs2aUpdatePisCommonPaymentPsuDataRequest request, SpiPayment payment, SpiAspspConsentDataProvider aspspConsentDataProvider, SpiPsuData spiPsuData, SpiContextData contextData) {
+    SpiResponse<SpiPsuAuthorisationResponse> authorisePsu(Xs2aUpdatePisCommonPaymentPsuDataRequest request, SpiPayment payment, SpiAspspConsentDataProvider aspspConsentDataProvider, SpiPsuData spiPsuData, SpiContextData contextData, String authorisationId) {
         return paymentCancellationSpi.authorisePsu(contextData,
+                                                   authorisationId,
                                                    spiPsuData,
                                                    request.getPassword(),
                                                    payment,
@@ -153,7 +155,7 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends PaymentBas
     }
 
     @Override
-    void updatePaymentData(String paymentId, SpiResponse<Object> spiResponse) {
+    void updatePaymentData(String paymentId, SpiResponse<SpiPaymentResponse> spiResponse) {
         updatePaymentAfterSpiService.updatePaymentStatus(paymentId, TransactionStatus.CANC);
     }
 

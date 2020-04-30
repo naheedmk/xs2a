@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * A response object that is returned by the ASPSP after the successful execution of payment
  */
 @Value
-public class SpiPaymentExecutionResponse {
+public class SpiPaymentExecutionResponse extends SpiPaymentResponse{
     @NotNull
     private TransactionStatus transactionStatus;
 }

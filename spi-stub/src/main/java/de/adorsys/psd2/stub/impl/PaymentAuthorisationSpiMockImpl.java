@@ -40,7 +40,7 @@ public class PaymentAuthorisationSpiMockImpl implements PaymentAuthorisationSpi 
     private static final String DECOUPLED_PSU_MESSAGE = "Please use your BankApp for transaction Authorisation";
 
     @Override
-    public SpiResponse<SpiPsuAuthorisationResponse> authorisePsu(@NotNull SpiContextData contextData, @NotNull SpiPsuData psuLoginData, String password, SpiPayment businessObject, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider) {
+    public SpiResponse<SpiPsuAuthorisationResponse> authorisePsu(@NotNull SpiContextData contextData, @NotNull String authorisationId, @NotNull SpiPsuData psuLoginData, String password, SpiPayment businessObject, @NotNull SpiAspspConsentDataProvider aspspConsentDataProvider) {
         log.info("PaymentAuthorisationSpi#authorisePsu: contextData {}, psuLoginData {}, password {}, businessObject {}", contextData, psuLoginData, password, businessObject);
 
         return SpiResponse.<SpiPsuAuthorisationResponse>builder()
