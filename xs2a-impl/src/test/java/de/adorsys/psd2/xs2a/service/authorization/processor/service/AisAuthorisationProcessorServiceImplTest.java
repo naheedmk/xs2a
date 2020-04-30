@@ -22,6 +22,7 @@ import de.adorsys.psd2.xs2a.core.authorisation.Authorisation;
 import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.domain.ErrorHolder;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
+import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.error.MessageErrorCode;
 import de.adorsys.psd2.xs2a.core.error.TppMessage;
 import de.adorsys.psd2.xs2a.core.mapper.ServiceType;
@@ -1126,6 +1127,55 @@ class AisAuthorisationProcessorServiceImplTest {
         assertEquals(Collections.singletonList(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID)), errorHolder.getTppMessageInformationList());
 
         assertEquals(ScaStatus.FAILED, processorResponse.getScaStatus());
+        assertEquals(ENCRYPTED_CONSENT_ID, processorResponse.getConsentId());
+        assertEquals(AUTHORISATION_ID, processorResponse.getAuthorisationId());
+
+        verify(aisConsentSpi, never()).requestAvailableScaMethods(any(), any(), any());
+        verify(aisConsentSpi, never()).requestAuthorisationCode(any(), any(), any(), any());
+    }
+
+    @Test
+    void doScaPsuIdentified_withPsuAuthorisationRequest_withAttemptureFailedPsuAuthorisation_shouldReturnError() {
+        // Given
+        UpdateConsentPsuDataReq updateAuthorisationRequest = buildUpdateConsentPsuDataReq();
+        updateAuthorisationRequest.setPassword(PSU_PASSWORD);
+
+        when(xs2aAisConsentService.getAccountConsentById(ENCRYPTED_CONSENT_ID)).thenReturn(Optional.of(aisConsent));
+
+        SpiAccountConsent spiAccountConsent = new SpiAccountConsent();
+        when(xs2aAisConsentMapper.mapToSpiAccountConsent(aisConsent)).thenReturn(spiAccountConsent);
+
+        SpiPsuData spiPsuData = SpiPsuData.builder().psuId(PSU_ID).build();
+        when(spiContextDataProvider.provideWithPsuIdData(PSU_ID_DATA)).thenReturn(SPI_CONTEXT_DATA);
+
+        when(xs2aToSpiPsuDataMapper.mapToSpiPsuData(PSU_ID_DATA)).thenReturn(spiPsuData);
+
+        SpiAspspConsentDataProvider spiAspspConsentDataProvider = mock(SpiAspspConsentDataProvider.class);
+        when(spiAspspConsentDataProviderFactory.getSpiAspspDataProviderFor(ENCRYPTED_CONSENT_ID)).thenReturn(spiAspspConsentDataProvider);
+
+        SpiResponse<SpiPsuAuthorisationResponse> spiResponse = SpiResponse.<SpiPsuAuthorisationResponse>builder()
+                                                             .payload(new SpiPsuAuthorisationResponse(false, SpiAuthorisationStatus.ATTEMPT_FAILURE))
+                                                             .build();
+        when(aisConsentSpi.authorisePsu(SPI_CONTEXT_DATA, AUTHORISATION_ID, spiPsuData, PSU_PASSWORD, spiAccountConsent, spiAspspConsentDataProvider))
+            .thenReturn(spiResponse);
+
+        when(spiErrorMapper.mapToErrorHolder(spiResponse, ServiceType.AIS)).thenReturn(ErrorHolder.builder(ErrorType.AIS_401)
+                                                                                           .tppMessages(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID))
+                                                                                           .build());
+
+        AuthorisationProcessorRequest processorRequest = buildAuthorisationProcessorRequest(ScaStatus.PSUIDENTIFIED, updateAuthorisationRequest, authorisation);
+
+        // When
+        AuthorisationProcessorResponse processorResponse = aisAuthorisationProcessorService.doScaPsuIdentified(processorRequest);
+
+        // Then
+        assertTrue(processorResponse.hasError());
+
+        ErrorHolder errorHolder = processorResponse.getErrorHolder();
+        assertEquals(AIS_401, errorHolder.getErrorType());
+        assertEquals(Collections.singletonList(TppMessageInformation.of(MessageErrorCode.PSU_CREDENTIALS_INVALID)), errorHolder.getTppMessageInformationList());
+
+        assertEquals(ScaStatus.PSUIDENTIFIED, processorResponse.getScaStatus());
         assertEquals(ENCRYPTED_CONSENT_ID, processorResponse.getConsentId());
         assertEquals(AUTHORISATION_ID, processorResponse.getAuthorisationId());
 

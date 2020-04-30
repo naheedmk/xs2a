@@ -1234,6 +1234,32 @@ class PisAuthorisationProcessorServiceImplTest {
     }
 
     @Test
+    void doScaMethodSelected_verifySca_fail_attemptFailure() {
+        // Given
+        SpiResponse<SpiPaymentResponse> spiResponse = SpiResponse.<SpiPaymentResponse>builder()
+                                                          .payload(new SpiPaymentResponse(SpiAuthorisationStatus.ATTEMPT_FAILURE))
+                                                          .error(new TppMessage(MessageErrorCode.INTERNAL_SERVER_ERROR, "Internal server error"))
+                                                          .build();
+        when(pisExecutePaymentService.verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any())).thenReturn(spiResponse);
+        when(spiErrorMapper.mapToErrorHolder(eq(spiResponse), any())).thenReturn(ErrorHolder.builder(TEST_ERROR_TYPE_400)
+                                                                                     .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR))
+                                                                                     .build());
+
+        // When
+        AuthorisationProcessorResponse actual = pisAuthorisationProcessorService.doScaMethodSelected(buildAuthorisationProcessorRequest());
+
+        //Then
+        assertNotNull(actual);
+        assertNotNull(actual.getErrorHolder());
+        assertTrue(actual instanceof Xs2aUpdatePisCommonPaymentPsuDataResponse);
+        assertThat(actual.getScaStatus()).isEqualTo(ScaStatus.RECEIVED);
+        assertThat(actual.getAuthorisationId()).isEqualTo(TEST_AUTHORISATION_ID);
+        assertThat(actual.getPaymentId()).isEqualTo(TEST_PAYMENT_ID);
+        assertThat(actual.getPsuData()).isEqualTo(TEST_PSU_DATA);
+        verify(spiErrorMapper).mapToErrorHolder(any(), any());
+    }
+
+    @Test
     void doScaExempted_success() {
         // When
         AuthorisationProcessorResponse actual = pisAuthorisationProcessorService.doScaExempted(buildAuthorisationProcessorRequest());
