@@ -1648,13 +1648,11 @@
 													"",
 													"const jsonData = pm.response.json();",
 													"",
-													"pm.test(\"Consent valid until\", () => {",
+													"pm.test(\"Psu id\", () => {",
 													"    _.each(jsonData, (arrItem) => {",
-													"        pm.expect(arrItem.validUntil).to.eql(\"2021-12-31\");",
+													"        pm.expect(arrItem.psuIdDataList[0].psuId).to.eql(pm.variables.get(\"psu_id_none\"));",
 													"    })",
-													"});",
-													"",
-													""
+													"});"
 												],
 												"type": "text/javascript"
 											}
@@ -2465,9 +2463,9 @@
 													"",
 													"const jsonData = pm.response.json();",
 													"",
-													"pm.test(\"Consent valid until\", () => {",
+													"pm.test(\"Psu id\", () => {",
 													"    _.each(jsonData, (arrItem) => {",
-													"        pm.expect(arrItem.validUntil).to.eql(\"2021-12-31\");",
+													"        pm.expect(arrItem.psuIdDataList[0].psuId).to.eql(pm.variables.get(\"psu_id_none\"));",
 													"    })",
 													"});",
 													"",
