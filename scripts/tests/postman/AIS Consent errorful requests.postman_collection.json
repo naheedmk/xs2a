@@ -4985,7 +4985,7 @@
 													"       ",
 													"    pm.expect(error.category).to.eql('ERROR');",
 													"    pm.expect(error.code).to.eql('PSU_CREDENTIALS_INVALID');",
-													"    pm.expect(error.text).to.eql('Either your login or pin is incorrect. You have 1 attempts to enter valid credentials');",
+													"    pm.expect(error.text).to.eql('You have 2 attempts to enter valid credentials');",
 													"});"
 												],
 												"type": "text/javascript"
@@ -5035,12 +5035,84 @@
 									"response": []
 								},
 								{
-									"name": "5. Read the SCA status of the consent authorisation",
+									"name": "5. Update PSU Data for consent",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
-												"id": "a0b2aee9-a95c-43ee-a1d9-d8c5b6c6a59b",
+												"id": "b9626400-ef27-4373-a873-8e11bee8dd9c",
+												"exec": [
+													"pm.test('Status code is 401', () => {",
+													"   pm.response.to.have.status(401);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Error code is PSU_CREDENTIALS_INVALID\", () => {",
+													"    const error = jsonData.tppMessages[0];",
+													"    ",
+													"    pm.expect(error).to.have.property('category');",
+													"    pm.expect(error).to.have.property('code');",
+													"    pm.expect(error).to.have.property('text');",
+													"       ",
+													"    pm.expect(error.category).to.eql('ERROR');",
+													"    pm.expect(error.code).to.eql('PSU_CREDENTIALS_INVALID');",
+													"    pm.expect(error.text).to.eql('You have 1 attempts to enter valid credentials');",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_multiple}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"psuData\": {\n\t\t\"password\": \"wrong\"\n\t}\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								},
+								{
+									"name": "6. Read the SCA status of the consent authorisation",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "e3eb547e-541d-4dd6-832c-da85e1f2402b",
 												"exec": [
 													"const jsonData = pm.response.json();",
 													"",
@@ -5087,7 +5159,7 @@
 									"response": []
 								},
 								{
-									"name": "6. Update PSU Data for consen",
+									"name": "7. Update PSU Data for consent",
 									"event": [
 										{
 											"listen": "test",
@@ -5159,7 +5231,7 @@
 									"response": []
 								},
 								{
-									"name": "7. Read the SCA status of the consent authorisation",
+									"name": "8. Read the SCA status of the consent authorisation",
 									"event": [
 										{
 											"listen": "test",
@@ -5708,6 +5780,1681 @@
 									"listen": "test",
 									"script": {
 										"id": "76b2c1cf-c9df-4200-9323-4591436cfb4e",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "wrong TAN",
+							"item": [
+								{
+									"name": "1. Set embedded SCA approach",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "4715c1d8-06c5-4755-b819-2a61a446cd10",
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "[\n  \"EMBEDDED\",\n  \"REDIRECT\",\n  \"DECOUPLED\"\n]"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_aspsp_profile}}/api/v1/aspsp-profile/for-debug/sca-approaches",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_aspsp_profile}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"aspsp-profile",
+												"for-debug",
+												"sca-approaches"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2. create consent available accounts",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "86fd65d5-def6-4e9b-baae-a0b6b626f592",
+												"exec": [
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Consent Id exists\", () => {",
+													"   pm.expect(jsonData).to.have.property('consentId');",
+													"});",
+													"",
+													"pm.test(\"Status code is 201\", () => {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"pm.test(\"Update PSU authentication link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    ",
+													"    var updatePsuAuthentication = _links.updatePsuAuthentication.href;",
+													"",
+													"    if (updatePsuAuthentication === undefined) {",
+													"       pm.expect().fail();",
+													"    }",
+													"});",
+													"",
+													"pm.test(\"Consent status is received\", () => {",
+													"    pm.expect(jsonData.consentStatus).to.eql('received');",
+													"});",
+													"",
+													"pm.globals.set(\"consent_id\", jsonData.consentId);",
+													"pm.globals.set(\"updatePsuAuthentication\", jsonData._links.updatePsuAuthentication);",
+													"",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "27e944a0-7c8a-422c-83d1-3d1b38faaf5f",
+												"exec": [
+													"pm.globals.unset(\"consent_id\");"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_multiple}}",
+												"type": "text"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "psu-ip-address",
+												"value": "{{ip_address}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"access\": {\n    \"accounts\": [],\n    \"balances\": [],\n    \"availableAccounts\": \"allAccounts\",\n    \"transactions\": []\n  },\n  \"combinedServiceIndicator\": false,\n  \"frequencyPerDay\": 10,\n  \"recurringIndicator\": true,\n  \"validUntil\": \"2021-10-10\"\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "3. Start the authorisation process for a consent",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "b99b08fb-263d-4b8a-8752-90d7fa3265d2",
+												"exec": [
+													"const jsonData = pm.response.json();",
+													"",
+													"const authorisationId = jsonData._links.updatePsuAuthentication.href.split('/').pop();",
+													"",
+													"pm.test(\"Status code is 201\", () => {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"pm.test(\"updatePsuAuthentication link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    ",
+													"    pm.expect(_links).to.have.property('updatePsuAuthentication');",
+													"});",
+													"",
+													"pm.test(\"Select scaStatus \", () => {",
+													"    pm.expect(jsonData).to.have.property('scaStatus');",
+													"    const scaStatus = jsonData.scaStatus;",
+													"    pm.expect(scaStatus).to.eql('psuIdentified');",
+													"});",
+													"",
+													"pm.globals.set(\"authorisation_id\", authorisationId);",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "085ea95a-2871-4215-be4f-d6782123defb",
+												"exec": [
+													"pm.globals.unset(\"authorisation_id\");"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_multiple}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations"
+											]
+										},
+										"description": "Create an authorisation sub-resource and start the authorisation process of a consent.  The message might in addition transmit authentication and authorisation related data.  his method is iterated n times for a n times SCA authorisation in a  corporate context, each creating an own authorisation sub-endpoint for  the corresponding PSU authorising the consent.  The ASPSP might make the usage of this access method unnecessary,  since the related authorisation resource will be automatically created by  the ASPSP after the submission of the consent data with the first POST consents call.  The start authorisation process is a process which is needed for creating a new authorisation  or cancellation sub-resource.   This applies in the following scenarios:    * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment      Initiation Response that an explicit start of the authorisation process is needed by the TPP.      The 'startAuthorisation' hyperlink can transport more information about data which needs to be      uploaded by using the extended forms.     * 'startAuthorisationWithPsuIdentfication',      * 'startAuthorisationWithPsuAuthentication'     * 'startAuthorisationWithAuthentciationMethodSelection'    * The related payment initiation cannot yet be executed since a multilevel SCA is mandated.   * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding      Payment Cancellation Response that an explicit start of the authorisation process is needed by the TPP.      The 'startAuthorisation' hyperlink can transport more information about data which needs to be uploaded      by using the extended forms as indicated above.   * The related payment cancellation request cannot be applied yet since a multilevel SCA is mandate for      executing the cancellation.   * The signing basket needs to be authorised yet. "
+									},
+									"response": []
+								},
+								{
+									"name": "4. Update PSU Data for consent",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "77bbf41b-3b8a-4725-96eb-ba7ef67d84be",
+												"exec": [
+													"pm.test('Status code is 200', () => {",
+													"   pm.response.to.have.status(200);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test('Sca status is psuAuthenticated', () => {",
+													"   pm.expect(jsonData.scaStatus).to.eql('psuAuthenticated');",
+													"});",
+													"",
+													"pm.test(\"SelectAuthenticationMethod method link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    pm.expect(_links).to.have.property('selectAuthenticationMethod');",
+													"});",
+													"",
+													"pm.test(\"scaMethods exist\", () => {",
+													"    pm.expect(jsonData).to.have.property('scaMethods');",
+													"    const scaMethods = jsonData.scaMethods;",
+													"    ",
+													"    pm.expect(scaMethods.length).to.be.above(1);",
+													"    ",
+													"    pm.expect(scaMethods[0]).to.have.property('authenticationType');",
+													"    pm.expect(scaMethods[0].authenticationType) !== undefined;",
+													"    ",
+													"    pm.expect(scaMethods[0]).to.have.property('authenticationMethodId');",
+													"    pm.expect(scaMethods[0].authenticationMethodId) !== undefined;",
+													"",
+													"    pm.expect(scaMethods[0]).to.have.property('authenticationType');",
+													"    pm.expect(scaMethods[0].authenticationType) !== undefined;",
+													"    ",
+													"    pm.expect(scaMethods[0]).to.have.property('authenticationMethodId');",
+													"    pm.expect(scaMethods[0].authenticationMethodId) !== undefined;",
+													"    ",
+													"    pm.globals.set(\"authenticationMethodId\", scaMethods[0].authenticationMethodId);",
+													"});",
+													"",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_multiple}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"psuData\": {\n\t\t\"password\": \"{{psu_id_password}}\"\n\t}\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								},
+								{
+									"name": "5. Update PSU Data for consent choose SCA method",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2ca31ff1-6258-42c8-afe5-437deb27c0e0",
+												"exec": [
+													"pm.test('Status code is 200', () => {",
+													"   pm.response.to.have.status(200);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test('Sca status is scaMethodSelected', () => {",
+													"   pm.expect(jsonData.scaStatus).to.eql('scaMethodSelected');",
+													"});",
+													"",
+													"pm.test(\"Select authoriseTransaction method link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    pm.expect(_links).to.have.property('authoriseTransaction');",
+													"});",
+													"",
+													"pm.test(\"Select chosenScaMethod exist\", () => {",
+													"    pm.expect(jsonData).to.have.property('chosenScaMethod');",
+													"    const chosenScaMethod = jsonData.chosenScaMethod;",
+													"    ",
+													"    pm.expect(chosenScaMethod).to.have.property('authenticationType');",
+													"    pm.expect(chosenScaMethod.authenticationType) !== undefined;",
+													"    ",
+													"    pm.expect(chosenScaMethod).to.have.property('authenticationMethodId');",
+													"    pm.expect(chosenScaMethod.authenticationMethodId) !== undefined;",
+													"});",
+													"",
+													"pm.test(\"Challenge data exist\", () => {",
+													"    pm.expect(jsonData).to.have.property('challengeData');",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_multiple}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"authenticationMethodId\": \"{{authenticationMethodId}}\"        \n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								},
+								{
+									"name": "6. Update PSU Data for consents finalization",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "f55aa5dd-6413-484c-9354-827f1758c359",
+												"exec": [
+													"pm.test('Status code is 401', () => {",
+													"   pm.response.to.have.status(401);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Error code is PSU_CREDENTIALS_INVALID\", () => {",
+													"    const error = jsonData.tppMessages[0];",
+													"    ",
+													"    pm.expect(error).to.have.property('category');",
+													"    pm.expect(error).to.have.property('code');",
+													"    pm.expect(error).to.have.property('text');",
+													"       ",
+													"    pm.expect(error.category).to.eql('ERROR');",
+													"    pm.expect(error.code).to.eql('PSU_CREDENTIALS_INVALID');",
+													"    pm.expect(error.text).to.eql('You have 2 attempts to enter valid TAN');",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_multiple}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"scaAuthenticationData\": \"wrong\"\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								},
+								{
+									"name": "7. Update PSU Data for consents finalization",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "d77a3426-3170-4404-99c7-b26991a6a874",
+												"exec": [
+													"pm.test('Status code is 401', () => {",
+													"   pm.response.to.have.status(401);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Error code is PSU_CREDENTIALS_INVALID\", () => {",
+													"    const error = jsonData.tppMessages[0];",
+													"    ",
+													"    pm.expect(error).to.have.property('category');",
+													"    pm.expect(error).to.have.property('code');",
+													"    pm.expect(error).to.have.property('text');",
+													"       ",
+													"    pm.expect(error.category).to.eql('ERROR');",
+													"    pm.expect(error.code).to.eql('PSU_CREDENTIALS_INVALID');",
+													"    pm.expect(error.text).to.eql('You have 1 attempts to enter valid TAN');",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_multiple}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"scaAuthenticationData\": \"wrong\"\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								},
+								{
+									"name": "8. Read the SCA status of the consent authorisation",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "cdd1a402-27c1-405e-b7a6-371c41ffc3a1",
+												"exec": [
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Sca status is scaMethodSelected\", function(){",
+													"    pm.expect(jsonData.scaStatus).to.eql('scaMethodSelected');",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method returns the SCA status of a consent initiation's authorisation sub-resource. "
+									},
+									"response": []
+								},
+								{
+									"name": "9. Update PSU Data for consents finalization",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "de861892-31c4-400f-9cca-cbbb3923564f",
+												"exec": [
+													"pm.test('Status code is 401', () => {",
+													"   pm.response.to.have.status(401);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Error code is PSU_CREDENTIALS_INVALID\", () => {",
+													"    const error = jsonData.tppMessages[0];",
+													"    ",
+													"    pm.expect(error).to.have.property('category');",
+													"    pm.expect(error).to.have.property('code');",
+													"    pm.expect(error).to.have.property('text');",
+													"       ",
+													"    pm.expect(error.category).to.eql('ERROR');",
+													"    pm.expect(error.code).to.eql('PSU_CREDENTIALS_INVALID');",
+													"    pm.expect(error.text).to.eql('Your SCA authorization is FAILED please create a new one.');",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_multiple}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"scaAuthenticationData\": \"wrong\"\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								},
+								{
+									"name": "10. Read the SCA status of the consent authorisation",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "9fb018a6-3044-4c5f-80dd-06927d6594bc",
+												"exec": [
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Sca status is failed\", function(){",
+													"    pm.expect(jsonData.scaStatus).to.eql('failed');",
+													"})"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method returns the SCA status of a consent initiation's authorisation sub-resource. "
+									},
+									"response": []
+								}
+							],
+							"description": "Manual TAN copying required",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "73374595-7f1b-45ab-ab8f-c85cfa4bc99c",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "c53575d0-e849-4eac-ac96-7ea6041efb90",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "wrong Password and then correct Password",
+							"item": [
+								{
+									"name": "1. Set embedded SCA approach",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "61a69bd7-765b-4a69-87d5-8ab2347469d9",
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "[\n  \"EMBEDDED\",\n  \"REDIRECT\",\n  \"DECOUPLED\"\n]"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_aspsp_profile}}/api/v1/aspsp-profile/for-debug/sca-approaches",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_aspsp_profile}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"aspsp-profile",
+												"for-debug",
+												"sca-approaches"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2. create consent available accounts",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2bc18462-5843-414a-8ce1-b96290557082",
+												"exec": [
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Consent Id exists\", () => {",
+													"   pm.expect(jsonData).to.have.property('consentId');",
+													"});",
+													"",
+													"pm.test(\"Status code is 201\", () => {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"pm.test(\"Update PSU authentication link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    ",
+													"    var updatePsuAuthentication = _links.updatePsuAuthentication.href;",
+													"",
+													"    if (updatePsuAuthentication === undefined) {",
+													"       pm.expect().fail();",
+													"    }",
+													"});",
+													"",
+													"pm.test(\"Consent status is received\", () => {",
+													"    pm.expect(jsonData.consentStatus).to.eql('received');",
+													"});",
+													"",
+													"pm.globals.set(\"consent_id\", jsonData.consentId);",
+													"pm.globals.set(\"updatePsuAuthentication\", jsonData._links.updatePsuAuthentication);",
+													"",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "a3b60e04-41cd-4a19-9c2f-29dd1b6ad2f0",
+												"exec": [
+													"pm.globals.unset(\"consent_id\");"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_single}}",
+												"type": "text"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "psu-ip-address",
+												"value": "{{ip_address}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"access\": {\n    \"accounts\": [],\n    \"balances\": [],\n    \"availableAccounts\": \"allAccounts\",\n    \"transactions\": []\n  },\n  \"combinedServiceIndicator\": false,\n  \"frequencyPerDay\": 10,\n  \"recurringIndicator\": true,\n  \"validUntil\": \"2021-10-10\"\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "3. Start the authorisation process for a consent",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "f2081288-fda6-42f3-8e60-28635c70eca0",
+												"exec": [
+													"const jsonData = pm.response.json();",
+													"",
+													"const authorisationId = jsonData._links.updatePsuAuthentication.href.split('/').pop();",
+													"",
+													"pm.test(\"Status code is 201\", () => {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"pm.test(\"Start authorisation link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    ",
+													"    pm.expect(_links).to.have.property('updatePsuAuthentication');",
+													"});",
+													"",
+													"pm.test(\"Select scaStatus \", () => {",
+													"    pm.expect(jsonData).to.have.property('scaStatus');",
+													"    const scaStatus = jsonData.scaStatus;",
+													"    pm.expect(scaStatus).to.eql('psuIdentified');",
+													"});",
+													"",
+													"pm.globals.set(\"authorisation_id\", authorisationId);"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "76123358-0630-48ec-b210-3f8e00308e42",
+												"exec": [
+													"pm.globals.unset(\"authorisation_id\");"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_single}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations"
+											]
+										},
+										"description": "Create an authorisation sub-resource and start the authorisation process of a consent.  The message might in addition transmit authentication and authorisation related data.  his method is iterated n times for a n times SCA authorisation in a  corporate context, each creating an own authorisation sub-endpoint for  the corresponding PSU authorising the consent.  The ASPSP might make the usage of this access method unnecessary,  since the related authorisation resource will be automatically created by  the ASPSP after the submission of the consent data with the first POST consents call.  The start authorisation process is a process which is needed for creating a new authorisation  or cancellation sub-resource.   This applies in the following scenarios:    * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment      Initiation Response that an explicit start of the authorisation process is needed by the TPP.      The 'startAuthorisation' hyperlink can transport more information about data which needs to be      uploaded by using the extended forms.     * 'startAuthorisationWithPsuIdentfication',      * 'startAuthorisationWithPsuAuthentication'     * 'startAuthorisationWithAuthentciationMethodSelection'    * The related payment initiation cannot yet be executed since a multilevel SCA is mandated.   * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding      Payment Cancellation Response that an explicit start of the authorisation process is needed by the TPP.      The 'startAuthorisation' hyperlink can transport more information about data which needs to be uploaded      by using the extended forms as indicated above.   * The related payment cancellation request cannot be applied yet since a multilevel SCA is mandate for      executing the cancellation.   * The signing basket needs to be authorised yet. "
+									},
+									"response": []
+								},
+								{
+									"name": "4. Update PSU Data for consent",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "1af9f7fc-9a4a-48f7-bb46-c9fd5e14cd01",
+												"exec": [
+													"pm.test('Status code is 401', () => {",
+													"   pm.response.to.have.status(401);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Error code is PSU_CREDENTIALS_INVALID\", () => {",
+													"    const error = jsonData.tppMessages[0];",
+													"    ",
+													"    pm.expect(error).to.have.property('category');",
+													"    pm.expect(error).to.have.property('code');",
+													"    pm.expect(error).to.have.property('text');",
+													"       ",
+													"    pm.expect(error.category).to.eql('ERROR');",
+													"    pm.expect(error.code).to.eql('PSU_CREDENTIALS_INVALID');",
+													"    pm.expect(error.text).to.eql('You have 2 attempts to enter valid credentials');",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_single}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"psuData\": {\n\t\t\"password\": \"wrong\"\n\t}\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								},
+								{
+									"name": "5. Update PSU Data for consent with correct password",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "fdbaaac4-1368-4aa7-ab67-d4ceabe93dc8",
+												"exec": [
+													"pm.test('Status code is 200', () => {",
+													"   pm.response.to.have.status(200);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test('Sca status is scaMethodSelected', () => {",
+													"   pm.expect(jsonData.scaStatus).to.eql('scaMethodSelected');",
+													"});",
+													"",
+													"pm.test(\"Select authoriseTransaction method link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    pm.expect(_links).to.have.property('authoriseTransaction');",
+													"});",
+													"",
+													"pm.test(\"Select chosenScaMethod exist\", () => {",
+													"    pm.expect(jsonData).to.have.property('chosenScaMethod');",
+													"    const chosenScaMethod = jsonData.chosenScaMethod;",
+													"    ",
+													"    pm.expect(chosenScaMethod).to.have.property('authenticationType');",
+													"    pm.expect(chosenScaMethod.authenticationType) !== undefined;",
+													"    ",
+													"    pm.expect(chosenScaMethod).to.have.property('authenticationMethodId');",
+													"    pm.expect(chosenScaMethod.authenticationMethodId) !== undefined;",
+													"});",
+													"",
+													"pm.test(\"Challenge data exist\", () => {",
+													"    pm.expect(jsonData).to.have.property('challengeData');",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_single}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"psuData\": {\n\t\t\"password\": \"{{psu_id_password}}\"\n\t}\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								}
+							],
+							"description": "Manual TAN copying required",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "ea592c8d-99cf-49d8-8b84-daafb3c59a88",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "53e48970-4821-4f24-b0b5-00762c1ad86e",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "wrong TAN and then correct TAN",
+							"item": [
+								{
+									"name": "1. Set embedded SCA approach",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "87a8d83e-b910-4f43-a528-ffc24a21af03",
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "[\n  \"EMBEDDED\",\n  \"REDIRECT\",\n  \"DECOUPLED\"\n]"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_aspsp_profile}}/api/v1/aspsp-profile/for-debug/sca-approaches",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_aspsp_profile}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"aspsp-profile",
+												"for-debug",
+												"sca-approaches"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2. create consent available accounts",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "8d3b846e-a899-4123-a1ac-8e325ff81d35",
+												"exec": [
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Consent Id exists\", () => {",
+													"   pm.expect(jsonData).to.have.property('consentId');",
+													"});",
+													"",
+													"pm.test(\"Status code is 201\", () => {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"pm.test(\"Update PSU authentication link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    ",
+													"    var updatePsuAuthentication = _links.updatePsuAuthentication.href;",
+													"",
+													"    if (updatePsuAuthentication === undefined) {",
+													"       pm.expect().fail();",
+													"    }",
+													"});",
+													"",
+													"pm.test(\"Consent status is received\", () => {",
+													"    pm.expect(jsonData.consentStatus).to.eql('received');",
+													"});",
+													"",
+													"pm.globals.set(\"consent_id\", jsonData.consentId);",
+													"pm.globals.set(\"updatePsuAuthentication\", jsonData._links.updatePsuAuthentication);",
+													"",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "c0bd781f-b453-49ec-8ec1-fc89d4b65de9",
+												"exec": [
+													"pm.globals.unset(\"consent_id\");"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_single}}",
+												"type": "text"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "psu-ip-address",
+												"value": "{{ip_address}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"access\": {\n    \"accounts\": [],\n    \"balances\": [],\n    \"availableAccounts\": \"allAccounts\",\n    \"transactions\": []\n  },\n  \"combinedServiceIndicator\": false,\n  \"frequencyPerDay\": 10,\n  \"recurringIndicator\": true,\n  \"validUntil\": \"2021-10-10\"\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "3. Start the authorisation process for a consent",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "b8aee404-09b2-4858-87b7-84264e41266a",
+												"exec": [
+													"const jsonData = pm.response.json();",
+													"",
+													"const authorisationId = jsonData._links.updatePsuAuthentication.href.split('/').pop();",
+													"",
+													"pm.test(\"Status code is 201\", () => {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"pm.test(\"Start authorisation link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    ",
+													"    pm.expect(_links).to.have.property('updatePsuAuthentication');",
+													"});",
+													"",
+													"pm.test(\"Select scaStatus \", () => {",
+													"    pm.expect(jsonData).to.have.property('scaStatus');",
+													"    const scaStatus = jsonData.scaStatus;",
+													"    pm.expect(scaStatus).to.eql('psuIdentified');",
+													"});",
+													"",
+													"pm.globals.set(\"authorisation_id\", authorisationId);"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "67dbedc5-2c3b-403d-b2ab-07d14367dcc2",
+												"exec": [
+													"pm.globals.unset(\"authorisation_id\");"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_single}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations"
+											]
+										},
+										"description": "Create an authorisation sub-resource and start the authorisation process of a consent.  The message might in addition transmit authentication and authorisation related data.  his method is iterated n times for a n times SCA authorisation in a  corporate context, each creating an own authorisation sub-endpoint for  the corresponding PSU authorising the consent.  The ASPSP might make the usage of this access method unnecessary,  since the related authorisation resource will be automatically created by  the ASPSP after the submission of the consent data with the first POST consents call.  The start authorisation process is a process which is needed for creating a new authorisation  or cancellation sub-resource.   This applies in the following scenarios:    * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding Payment      Initiation Response that an explicit start of the authorisation process is needed by the TPP.      The 'startAuthorisation' hyperlink can transport more information about data which needs to be      uploaded by using the extended forms.     * 'startAuthorisationWithPsuIdentfication',      * 'startAuthorisationWithPsuAuthentication'     * 'startAuthorisationWithAuthentciationMethodSelection'    * The related payment initiation cannot yet be executed since a multilevel SCA is mandated.   * The ASPSP has indicated with an 'startAuthorisation' hyperlink in the preceding      Payment Cancellation Response that an explicit start of the authorisation process is needed by the TPP.      The 'startAuthorisation' hyperlink can transport more information about data which needs to be uploaded      by using the extended forms as indicated above.   * The related payment cancellation request cannot be applied yet since a multilevel SCA is mandate for      executing the cancellation.   * The signing basket needs to be authorised yet. "
+									},
+									"response": []
+								},
+								{
+									"name": "4. Update PSU Data for consent",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "5e3cc9d6-2a71-47f9-be3f-c63e4e36dc8c",
+												"exec": [
+													"pm.test('Status code is 200', () => {",
+													"   pm.response.to.have.status(200);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test('Sca status is scaMethodSelected', () => {",
+													"   pm.expect(jsonData.scaStatus).to.eql('scaMethodSelected');",
+													"});",
+													"",
+													"pm.test(\"Select authoriseTransaction method link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    pm.expect(_links).to.have.property('authoriseTransaction');",
+													"});",
+													"",
+													"pm.test(\"Select chosenScaMethod exist\", () => {",
+													"    pm.expect(jsonData).to.have.property('chosenScaMethod');",
+													"    const chosenScaMethod = jsonData.chosenScaMethod;",
+													"    ",
+													"    pm.expect(chosenScaMethod).to.have.property('authenticationType');",
+													"    pm.expect(chosenScaMethod.authenticationType) !== undefined;",
+													"    ",
+													"    pm.expect(chosenScaMethod).to.have.property('authenticationMethodId');",
+													"    pm.expect(chosenScaMethod.authenticationMethodId) !== undefined;",
+													"});",
+													"",
+													"pm.test(\"Challenge data exist\", () => {",
+													"    pm.expect(jsonData).to.have.property('challengeData');",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_single}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"psuData\": {\n\t\t\"password\": \"{{psu_id_password}}\"\n\t}\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								},
+								{
+									"name": "5. Update PSU Data for consents finalization",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "8c95d3b4-946c-4ccb-832d-09ea3e7d5222",
+												"exec": [
+													"pm.test('Status code is 401', () => {",
+													"   pm.response.to.have.status(401);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Error code is PSU_CREDENTIALS_INVALID\", () => {",
+													"    const error = jsonData.tppMessages[0];",
+													"    ",
+													"    pm.expect(error).to.have.property('category');",
+													"    pm.expect(error).to.have.property('code');",
+													"    pm.expect(error).to.have.property('text');",
+													"       ",
+													"    pm.expect(error.category).to.eql('ERROR');",
+													"    pm.expect(error.code).to.eql('PSU_CREDENTIALS_INVALID');",
+													"    pm.expect(error.text).to.eql('You have 2 attempts to enter valid TAN');",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_single}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"scaAuthenticationData\": \"wrong\"\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								},
+								{
+									"name": "6. Update PSU Data for consents finalization",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "8b5c581f-513b-40c8-838e-962482b14607",
+												"exec": [
+													"pm.test('Status code is 200', () => {",
+													"   pm.response.to.have.status(200);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test('Sca status is finalised', () => {",
+													"   pm.expect(jsonData.scaStatus).to.eql('finalised');",
+													"});",
+													"",
+													"pm.test(\"Select scaStatus link exists\", () => {",
+													"    pm.expect(jsonData).to.have.property('_links');",
+													"    const _links = jsonData._links;",
+													"    pm.expect(_links).to.have.property('scaStatus');",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "PSU-ID",
+												"value": "{{psu_id_single}}"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"scaAuthenticationData\": \"{{tanNumber}}\"\n}"
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v1/consents/{{consent_id}}/authorisations/{{authorisation_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v1",
+												"consents",
+												"{{consent_id}}",
+												"authorisations",
+												"{{authorisation_id}}"
+											]
+										},
+										"description": "This method update PSU data on the consents  resource if needed.  It may authorise a consent within the Embedded SCA Approach where needed.  Independently from the SCA Approach it supports e.g. the selection of  the authentication method and a non-SCA PSU authentication.  This methods updates PSU data on the cancellation authorisation resource if needed.   There are several possible Update PSU Data requests in the context of a consent request if needed,  which depends on the SCA approach:  * Redirect SCA Approach:   A specific Update PSU Data Request is applicable for      * the selection of authentication methods, before choosing the actual SCA approach. * Decoupled SCA Approach:   A specific Update PSU Data Request is only applicable for   * adding the PSU Identification, if not provided yet in the Payment Initiation Request or the Account Information Consent Request, or if no OAuth2 access token is used, or   * the selection of authentication methods. * Embedded SCA Approach:    The Update PSU Data Request might be used    * to add credentials as a first factor authentication data of the PSU and   * to select the authentication method and   * transaction authorisation.  The SCA Approach might depend on the chosen SCA method.  For that reason, the following possible Update PSU Data request can apply to all SCA approaches:  * Select an SCA method in case of several SCA methods are available for the customer.  There are the following request types on this access path:   * Update PSU Identification   * Update PSU Authentication   * Select PSU Autorization Method      WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change.   * Transaction Authorisation     WARNING: This method need a reduced header,      therefore many optional elements are not present.      Maybe in a later version the access path will change. "
+									},
+									"response": []
+								}
+							],
+							"description": "Manual TAN copying required",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "f169438e-7776-45f4-802a-61bfbfda4c85",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "ef46cd24-5810-4afc-b149-38d66bdbf627",
 										"type": "text/javascript",
 										"exec": [
 											""
