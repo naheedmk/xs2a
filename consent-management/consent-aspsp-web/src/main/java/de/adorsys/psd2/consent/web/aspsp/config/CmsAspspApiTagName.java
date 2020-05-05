@@ -22,8 +22,6 @@ public class CmsAspspApiTagName {
     public static final String ASPSP_PIIS_CONSENTS = "ASPSP PIIS, Consents";
     public static final String ASPSP_PIIS_CONSENTS_EXPORT = "ASPSP PIIS Consents Export";
     public static final String ASPSP_EXPORT_PAYMENTS = "ASPSP Export Payments";
-//    public static final String ASPSP_PIS_TRANSACTION_STATUS = "ASPSP PIS Transaction Status";
-//    public static final String ASPSP_PSU_CONSENT_MANAGEMENT = "ASPSP PSU consent management";
     public static final String ASPSP_TPP_STOP_LIST = "ASPSP TPP Stop List";
     public static final String ASPSP_TPP_INFO = "ASPSP TPP Info";
 

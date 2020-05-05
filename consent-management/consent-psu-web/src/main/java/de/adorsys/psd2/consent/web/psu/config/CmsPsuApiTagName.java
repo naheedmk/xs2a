@@ -17,11 +17,7 @@
 package de.adorsys.psd2.consent.web.psu.config;
 
 public class CmsPsuApiTagName {
-//    public static final String ASPSP_CONSENT_DATA = "Aspsp Consent Data";
-//    public static final String PSU_AIS_CONSENTS = "PSU AIS Consents";
     public static final String PSU_PIIS_CONSENTS = "PSU PIIS, Consents";
-//    public static final String PSU_PIS_PAYMENT = "PSU PIS Payment";
-
     private CmsPsuApiTagName() {
     }
 }
