@@ -25,10 +25,16 @@ import de.adorsys.psd2.xs2a.spi.domain.response.SpiResponse;
 import de.adorsys.psd2.xs2a.spi.service.SpiPayment;
 
 public interface PisExecutePaymentService {
-    SpiResponse<SpiPaymentResponse> verifyScaAuthorisationAndExecutePayment(SpiContextData contextData,
-                                                                            SpiScaConfirmation spiScaConfirmation,
-                                                                            SpiPayment payment,
-                                                                            SpiAspspConsentDataProvider spiAspspConsentDataProvider);
+    @Deprecated // TODO remove deprecated method in 6.7 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/-/issues/1270
+    SpiResponse<SpiPaymentExecutionResponse> verifyScaAuthorisationAndExecutePayment(SpiContextData contextData,
+                                                                                     SpiScaConfirmation spiScaConfirmation,
+                                                                                     SpiPayment payment,
+                                                                                     SpiAspspConsentDataProvider spiAspspConsentDataProvider);
+
+    SpiResponse<SpiPaymentResponse> verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(SpiContextData contextData,
+                                                                                               SpiScaConfirmation spiScaConfirmation,
+                                                                                               SpiPayment payment,
+                                                                                               SpiAspspConsentDataProvider spiAspspConsentDataProvider);
 
     SpiResponse<SpiPaymentExecutionResponse> executePaymentWithoutSca(SpiContextData contextData,
                                                                       SpiPayment payment,

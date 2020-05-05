@@ -107,17 +107,19 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends PaymentBas
     SpiResponse<SpiPaymentResponse> verifyScaAuthorisationAndExecutePayment(Authorisation authorisation,
                                                                                   SpiPayment payment, SpiScaConfirmation spiScaConfirmation,
                                                                                   SpiContextData contextData, SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
-        return paymentCancellationSpi.verifyScaAuthorisationAndCancelPayment(contextData, spiScaConfirmation, payment, spiAspspConsentDataProvider);
+        return paymentCancellationSpi.verifyScaAuthorisationAndCancelPaymentWithResponse(contextData, spiScaConfirmation, payment, spiAspspConsentDataProvider);
+    }
+
+    @Override
+    @Deprecated // TODO remove deprecated method in 6.7 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/-/issues/1270
+    SpiResponse<SpiPsuAuthorisationResponse> authorisePsu(Xs2aUpdatePisCommonPaymentPsuDataRequest request, SpiPayment payment, SpiAspspConsentDataProvider aspspConsentDataProvider, SpiPsuData spiPsuData, SpiContextData contextData) {
+        return paymentCancellationSpi.authorisePsu(contextData, spiPsuData, request.getPassword(), payment, aspspConsentDataProvider);
     }
 
     @Override
     SpiResponse<SpiPsuAuthorisationResponse> authorisePsu(Xs2aUpdatePisCommonPaymentPsuDataRequest request, SpiPayment payment, SpiAspspConsentDataProvider aspspConsentDataProvider, SpiPsuData spiPsuData, SpiContextData contextData, String authorisationId) {
-        return paymentCancellationSpi.authorisePsu(contextData,
-                                                   authorisationId,
-                                                   spiPsuData,
-                                                   request.getPassword(),
-                                                   payment,
-                                                   aspspConsentDataProvider);
+        return paymentCancellationSpi.authorisePsu(contextData, authorisationId, spiPsuData, request.getPassword(),
+                                                   payment, aspspConsentDataProvider);
     }
 
     @Override
@@ -155,7 +157,13 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends PaymentBas
     }
 
     @Override
-    void updatePaymentData(String paymentId, SpiResponse<SpiPaymentResponse> spiResponse) {
+    @Deprecated // TODO remove deprecated method in 6.7 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/-/issues/1270
+    void updatePaymentData(String paymentId, SpiResponse<Object> spiResponse) {
+        updatePaymentAfterSpiService.updatePaymentStatus(paymentId, TransactionStatus.CANC);
+    }
+
+    @Override
+    void updatePaymentDataByPaymentResponse(String paymentId, SpiResponse<SpiPaymentResponse> spiResponse) {
         updatePaymentAfterSpiService.updatePaymentStatus(paymentId, TransactionStatus.CANC);
     }
 

@@ -106,14 +106,27 @@ public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisati
     SpiResponse<SpiPaymentResponse> verifyScaAuthorisationAndExecutePayment(Authorisation authorisation,
                                                                                      SpiPayment payment, SpiScaConfirmation spiScaConfirmation,
                                                                                      SpiContextData contextData, SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
-        return pisExecutePaymentService.verifyScaAuthorisationAndExecutePayment(contextData,
-                                                                                spiScaConfirmation,
-                                                                                payment,
-                                                                                spiAspspConsentDataProvider);
+        return pisExecutePaymentService.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(contextData,
+                                                                                                   spiScaConfirmation,
+                                                                                                   payment,
+                                                                                                   spiAspspConsentDataProvider);
     }
 
     @Override
-    void updatePaymentData(String paymentId, SpiResponse<SpiPaymentResponse> spiResponse) {
+    @Deprecated // TODO remove deprecated method in 6.7 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/-/issues/1270
+    void updatePaymentData(String paymentId, SpiResponse<Object> spiResponse) {
+        SpiPaymentExecutionResponse payload = (SpiPaymentExecutionResponse) spiResponse.getPayload();
+        TransactionStatus paymentStatus = payload.getTransactionStatus();
+
+        if (paymentStatus == TransactionStatus.PATC) {
+            xs2aPisCommonPaymentService.updateMultilevelSca(paymentId, true);
+        }
+
+        updatePaymentAfterSpiService.updatePaymentStatus(paymentId, paymentStatus);
+    }
+
+    @Override
+    void updatePaymentDataByPaymentResponse(String paymentId, SpiResponse<SpiPaymentResponse> spiResponse) {
         SpiPaymentExecutionResponse payload = (SpiPaymentExecutionResponse) spiResponse.getPayload();
         TransactionStatus paymentStatus = payload.getTransactionStatus();
 
@@ -138,6 +151,14 @@ public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisati
     @Override
     SpiResponse<SpiAvailableScaMethodsResponse> requestAvailableScaMethods(SpiPayment payment, SpiAspspConsentDataProvider aspspConsentDataProvider, SpiContextData contextData) {
         return paymentAuthorisationSpi.requestAvailableScaMethods(contextData, payment, aspspConsentDataProvider);
+    }
+
+    @Override
+    @Deprecated // TODO remove deprecated method in 6.7 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/-/issues/1270
+    SpiResponse<SpiPsuAuthorisationResponse> authorisePsu(Xs2aUpdatePisCommonPaymentPsuDataRequest request, SpiPayment payment,
+                                                          SpiAspspConsentDataProvider aspspConsentDataProvider, SpiPsuData spiPsuData,
+                                                          SpiContextData contextData) {
+        return paymentAuthorisationSpi.authorisePsu(contextData, spiPsuData, request.getPassword(), payment, aspspConsentDataProvider);
     }
 
     @Override

@@ -43,10 +43,8 @@ public class PisExecutePaymentServiceSupportImpl implements PisExecutePaymentSer
     private final SpiPaymentMapper spiPaymentMapper;
 
     @Override
-    public SpiResponse<SpiPaymentResponse> verifyScaAuthorisationAndExecutePayment(SpiContextData contextData,
-                                                                                            SpiScaConfirmation spiScaConfirmation,
-                                                                                            SpiPayment payment,
-                                                                                            SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
+    @Deprecated // TODO remove deprecated method in 6.7 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/-/issues/1270
+    public SpiResponse<SpiPaymentExecutionResponse> verifyScaAuthorisationAndExecutePayment(SpiContextData contextData, SpiScaConfirmation spiScaConfirmation, SpiPayment payment, SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
         if (standardPaymentProductsResolver.isRawPaymentProduct(payment.getPaymentProduct())) {
             return verifyScaAndExecutePayment(commonPaymentSpi, (SpiPaymentInfo) payment, spiScaConfirmation, contextData, spiAspspConsentDataProvider);
         }
@@ -58,6 +56,25 @@ public class PisExecutePaymentServiceSupportImpl implements PisExecutePaymentSer
             return verifyScaAndExecutePayment(periodicPaymentSpi, spiPaymentMapper.mapToSpiPeriodicPayment(payment), spiScaConfirmation, contextData, spiAspspConsentDataProvider);
         } else {
             return verifyScaAndExecutePayment(bulkPaymentSpi, spiPaymentMapper.mapToSpiBulkPayment(payment), spiScaConfirmation, contextData, spiAspspConsentDataProvider);
+        }
+    }
+
+    @Override
+    public SpiResponse<SpiPaymentResponse> verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(SpiContextData contextData,
+                                                                                                      SpiScaConfirmation spiScaConfirmation,
+                                                                                                      SpiPayment payment,
+                                                                                                      SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
+        if (standardPaymentProductsResolver.isRawPaymentProduct(payment.getPaymentProduct())) {
+            return verifyScaAndExecutePaymentWithPaymentResponse(commonPaymentSpi, (SpiPaymentInfo) payment, spiScaConfirmation, contextData, spiAspspConsentDataProvider);
+        }
+
+        PaymentType paymentType = payment.getPaymentType();
+        if (PaymentType.SINGLE == paymentType) {
+            return verifyScaAndExecutePaymentWithPaymentResponse(singlePaymentSpi, spiPaymentMapper.mapToSpiSinglePayment(payment), spiScaConfirmation, contextData, spiAspspConsentDataProvider);
+        } else if (PaymentType.PERIODIC == paymentType) {
+            return verifyScaAndExecutePaymentWithPaymentResponse(periodicPaymentSpi, spiPaymentMapper.mapToSpiPeriodicPayment(payment), spiScaConfirmation, contextData, spiAspspConsentDataProvider);
+        } else {
+            return verifyScaAndExecutePaymentWithPaymentResponse(bulkPaymentSpi, spiPaymentMapper.mapToSpiBulkPayment(payment), spiScaConfirmation, contextData, spiAspspConsentDataProvider);
         }
     }
 
@@ -77,7 +94,16 @@ public class PisExecutePaymentServiceSupportImpl implements PisExecutePaymentSer
         }
     }
 
-    private <T extends SpiPayment> SpiResponse<SpiPaymentResponse> verifyScaAndExecutePayment(PaymentSpi<T, ? extends SpiPaymentInitiationResponse> paymentSpi,
+    private <T extends SpiPayment> SpiResponse<SpiPaymentResponse> verifyScaAndExecutePaymentWithPaymentResponse(PaymentSpi<T, ? extends SpiPaymentInitiationResponse> paymentSpi,
+                                                                                              T payment,
+                                                                                              SpiScaConfirmation spiScaConfirmation,
+                                                                                              SpiContextData contextData,
+                                                                                              SpiAspspConsentDataProvider spiAspspConsentDataProvider) {
+        return paymentSpi.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(contextData, spiScaConfirmation, payment, spiAspspConsentDataProvider);
+    }
+
+    @Deprecated // TODO remove deprecated method in 6.7 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/-/issues/1270
+    private <T extends SpiPayment> SpiResponse<SpiPaymentExecutionResponse> verifyScaAndExecutePayment(PaymentSpi<T, ? extends SpiPaymentInitiationResponse> paymentSpi,
                                                                                               T payment,
                                                                                               SpiScaConfirmation spiScaConfirmation,
                                                                                               SpiContextData contextData,

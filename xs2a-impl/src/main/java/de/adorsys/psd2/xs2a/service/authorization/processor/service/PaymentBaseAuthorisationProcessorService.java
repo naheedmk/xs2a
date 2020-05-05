@@ -58,6 +58,7 @@ import java.util.Optional;
 
 import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.*;
 
+@SuppressWarnings("PMD.TooManyMethods")
 abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisationProcessorService {
 
     private static final String EMBEDDED_SELECTING_SCA_METHOD_FAILED_MSG = "Proceed embedded approach when performs authorisation depending on selected SCA method has failed.";
@@ -156,11 +157,14 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
             return new Xs2aUpdatePisCommonPaymentPsuDataResponse(errorHolder, paymentId, authorisationId, psuData);
         }
 
-        updatePaymentData(paymentId, spiResponse);
+        updatePaymentDataByPaymentResponse(paymentId, spiResponse);
         return new Xs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, paymentId, authorisationId, psuData);
     }
 
-    abstract void updatePaymentData(String paymentId, SpiResponse<SpiPaymentResponse> spiResponse);
+    @Deprecated // TODO remove deprecated method in 6.7 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/-/issues/1270
+    abstract void updatePaymentData(String paymentId, SpiResponse<Object> spiResponse);
+
+    abstract void updatePaymentDataByPaymentResponse(String paymentId, SpiResponse<SpiPaymentResponse> spiResponse);
 
     abstract SpiResponse<SpiAuthorizationCodeResult> requestAuthorisationCode(SpiPayment payment, String authenticationMethodId,
                                                                               SpiContextData spiContextData,
@@ -171,6 +175,11 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
                                                                  SpiScaConfirmation spiScaConfirmation,
                                                                  SpiContextData contextData,
                                                                  SpiAspspConsentDataProvider spiAspspConsentDataProvider);
+
+    @Deprecated // TODO remove deprecated method in 6.7 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/-/issues/1270
+    abstract SpiResponse<SpiPsuAuthorisationResponse> authorisePsu(Xs2aUpdatePisCommonPaymentPsuDataRequest request, SpiPayment payment,
+                                                                   SpiAspspConsentDataProvider aspspConsentDataProvider, SpiPsuData spiPsuData,
+                                                                   SpiContextData contextData);
 
     abstract SpiResponse<SpiPsuAuthorisationResponse> authorisePsu(Xs2aUpdatePisCommonPaymentPsuDataRequest request, SpiPayment payment,
                                                                    SpiAspspConsentDataProvider aspspConsentDataProvider, SpiPsuData spiPsuData,

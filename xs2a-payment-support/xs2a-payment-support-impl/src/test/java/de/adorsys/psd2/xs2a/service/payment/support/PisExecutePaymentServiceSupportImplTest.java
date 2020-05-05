@@ -83,19 +83,19 @@ class PisExecutePaymentServiceSupportImplTest {
         SpiPaymentInfo rawSpiPayment = buildSpiPaymentInfo(RAW_PAYMENT_PRODUCT, PaymentType.SINGLE);
 
         SpiResponse<SpiPaymentResponse> expectedResponse = buildSpiResponse();
-        when(commonPaymentSpi.verifyScaAuthorisationAndExecutePayment(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, rawSpiPayment, mockSpiAspspConsentDataProvider))
+        when(commonPaymentSpi.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, rawSpiPayment, mockSpiAspspConsentDataProvider))
             .thenReturn(expectedResponse);
 
         // When
         SpiResponse<SpiPaymentResponse> spiConfirmationCodeCheckingResponseSpiResponse =
-            pisExecutePaymentServiceSupport.verifyScaAuthorisationAndExecutePayment(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, rawSpiPayment, mockSpiAspspConsentDataProvider);
+            pisExecutePaymentServiceSupport.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, rawSpiPayment, mockSpiAspspConsentDataProvider);
 
         // Then
         assertEquals(expectedResponse, spiConfirmationCodeCheckingResponseSpiResponse);
 
-        verify(singlePaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
-        verify(periodicPaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
-        verify(bulkPaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
+        verify(singlePaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
+        verify(periodicPaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
+        verify(bulkPaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
     }
 
     @Test
@@ -106,19 +106,19 @@ class PisExecutePaymentServiceSupportImplTest {
         when(spiPaymentMapper.mapToSpiSinglePayment(standardSpiPayment)).thenReturn(SPI_SINGLE_PAYMENT);
 
         SpiResponse<SpiPaymentResponse> expectedResponse = buildSpiResponse();
-        when(singlePaymentSpi.verifyScaAuthorisationAndExecutePayment(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, SPI_SINGLE_PAYMENT, mockSpiAspspConsentDataProvider))
+        when(singlePaymentSpi.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, SPI_SINGLE_PAYMENT, mockSpiAspspConsentDataProvider))
             .thenReturn(expectedResponse);
 
         // When
         SpiResponse<SpiPaymentResponse> spiConfirmationCodeCheckingResponseSpiResponse =
-            pisExecutePaymentServiceSupport.verifyScaAuthorisationAndExecutePayment(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, standardSpiPayment, mockSpiAspspConsentDataProvider);
+            pisExecutePaymentServiceSupport.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, standardSpiPayment, mockSpiAspspConsentDataProvider);
 
         // Then
         assertEquals(expectedResponse, spiConfirmationCodeCheckingResponseSpiResponse);
 
-        verify(commonPaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
-        verify(periodicPaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
-        verify(bulkPaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
+        verify(commonPaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
+        verify(periodicPaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
+        verify(bulkPaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
     }
 
     @Test
@@ -129,19 +129,19 @@ class PisExecutePaymentServiceSupportImplTest {
         when(spiPaymentMapper.mapToSpiPeriodicPayment(standardSpiPayment)).thenReturn(SPI_PERIODIC_PAYMENT);
 
         SpiResponse<SpiPaymentResponse> expectedResponse = buildSpiResponse();
-        when(periodicPaymentSpi.verifyScaAuthorisationAndExecutePayment(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, SPI_PERIODIC_PAYMENT, mockSpiAspspConsentDataProvider))
+        when(periodicPaymentSpi.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, SPI_PERIODIC_PAYMENT, mockSpiAspspConsentDataProvider))
             .thenReturn(expectedResponse);
 
         // When
         SpiResponse<SpiPaymentResponse> spiConfirmationCodeCheckingResponseSpiResponse =
-            pisExecutePaymentServiceSupport.verifyScaAuthorisationAndExecutePayment(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, standardSpiPayment, mockSpiAspspConsentDataProvider);
+            pisExecutePaymentServiceSupport.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(SPI_CONTEXT_DATA, SPI_SCA_CONFIRMATION, standardSpiPayment, mockSpiAspspConsentDataProvider);
 
         // Then
         assertEquals(expectedResponse, spiConfirmationCodeCheckingResponseSpiResponse);
 
-        verify(commonPaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
-        verify(singlePaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
-        verify(bulkPaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
+        verify(commonPaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
+        verify(singlePaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
+        verify(bulkPaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
     }
 
     @Test
@@ -153,19 +153,19 @@ class PisExecutePaymentServiceSupportImplTest {
 
         SpiScaConfirmation spiScaConfirmation = new SpiScaConfirmation();
         SpiResponse<SpiPaymentResponse> expectedResponse = buildSpiResponse();
-        when(bulkPaymentSpi.verifyScaAuthorisationAndExecutePayment(SPI_CONTEXT_DATA, spiScaConfirmation, SPI_BULK_PAYMENT, mockSpiAspspConsentDataProvider))
+        when(bulkPaymentSpi.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(SPI_CONTEXT_DATA, spiScaConfirmation, SPI_BULK_PAYMENT, mockSpiAspspConsentDataProvider))
             .thenReturn(expectedResponse);
 
         // When
         SpiResponse<SpiPaymentResponse> spiConfirmationCodeCheckingResponseSpiResponse =
-            pisExecutePaymentServiceSupport.verifyScaAuthorisationAndExecutePayment(SPI_CONTEXT_DATA, spiScaConfirmation, standardSpiPayment, mockSpiAspspConsentDataProvider);
+            pisExecutePaymentServiceSupport.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(SPI_CONTEXT_DATA, spiScaConfirmation, standardSpiPayment, mockSpiAspspConsentDataProvider);
 
         // Then
         assertEquals(expectedResponse, spiConfirmationCodeCheckingResponseSpiResponse);
 
-        verify(commonPaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
-        verify(singlePaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
-        verify(periodicPaymentSpi, never()).verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any());
+        verify(commonPaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
+        verify(singlePaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
+        verify(periodicPaymentSpi, never()).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any());
     }
 
     @Test

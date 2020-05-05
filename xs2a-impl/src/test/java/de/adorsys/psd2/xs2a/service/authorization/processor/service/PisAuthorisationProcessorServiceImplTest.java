@@ -1175,7 +1175,7 @@ class PisAuthorisationProcessorServiceImplTest {
         SpiResponse<SpiPaymentResponse> spiResponse = SpiResponse.<SpiPaymentResponse>builder()
                                                                    .payload(buildSpiPaymentExecutionResponse(TEST_TRANSACTION_STATUS_SUCCESS))
                                                                    .build();
-        when(pisExecutePaymentService.verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any())).thenReturn(spiResponse);
+        when(pisExecutePaymentService.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any())).thenReturn(spiResponse);
 
         // When
         AuthorisationProcessorResponse actual = pisAuthorisationProcessorService.doScaMethodSelected(buildAuthorisationProcessorRequest());
@@ -1197,7 +1197,7 @@ class PisAuthorisationProcessorServiceImplTest {
         SpiResponse<SpiPaymentResponse> spiResponse = SpiResponse.<SpiPaymentResponse>builder()
                                                                    .payload(buildSpiPaymentExecutionResponse(TEST_TRANSACTION_STATUS_MULTILEVEL_SCA))
                                                                    .build();
-        when(pisExecutePaymentService.verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any())).thenReturn(spiResponse);
+        when(pisExecutePaymentService.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any())).thenReturn(spiResponse);
 
         // When
         AuthorisationProcessorResponse actual = pisAuthorisationProcessorService.doScaMethodSelected(buildAuthorisationProcessorRequest());
@@ -1219,7 +1219,7 @@ class PisAuthorisationProcessorServiceImplTest {
         SpiResponse<SpiPaymentResponse> spiResponse = SpiResponse.<SpiPaymentResponse>builder()
                                                                    .error(new TppMessage(MessageErrorCode.INTERNAL_SERVER_ERROR, "Internal server error"))
                                                                    .build();
-        when(pisExecutePaymentService.verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any())).thenReturn(spiResponse);
+        when(pisExecutePaymentService.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any())).thenReturn(spiResponse);
         when(spiErrorMapper.mapToErrorHolder(eq(spiResponse), any())).thenReturn(ErrorHolder.builder(TEST_ERROR_TYPE_400)
                                                                                      .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR))
                                                                                      .build());
@@ -1240,7 +1240,7 @@ class PisAuthorisationProcessorServiceImplTest {
                                                           .payload(new SpiPaymentResponse(SpiAuthorisationStatus.ATTEMPT_FAILURE))
                                                           .error(new TppMessage(MessageErrorCode.INTERNAL_SERVER_ERROR, "Internal server error"))
                                                           .build();
-        when(pisExecutePaymentService.verifyScaAuthorisationAndExecutePayment(any(), any(), any(), any())).thenReturn(spiResponse);
+        when(pisExecutePaymentService.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(any(), any(), any(), any())).thenReturn(spiResponse);
         when(spiErrorMapper.mapToErrorHolder(eq(spiResponse), any())).thenReturn(ErrorHolder.builder(TEST_ERROR_TYPE_400)
                                                                                      .tppMessages(TppMessageInformation.of(MessageErrorCode.FORMAT_ERROR))
                                                                                      .build());

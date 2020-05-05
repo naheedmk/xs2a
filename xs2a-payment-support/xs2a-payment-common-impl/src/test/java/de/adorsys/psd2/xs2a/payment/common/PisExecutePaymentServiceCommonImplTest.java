@@ -57,17 +57,17 @@ class PisExecutePaymentServiceCommonImplTest {
         SpiResponse<SpiPaymentResponse> commonServiceResponse = SpiResponse.<SpiPaymentResponse>builder()
                                                                              .payload(new SpiPaymentExecutionResponse(TransactionStatus.ACSP))
                                                                              .build();
-        when(commonPaymentSpi.verifyScaAuthorisationAndExecutePayment(spiContextData, spiScaConfirmation, payment, spiAspspConsentDataProvider))
+        when(commonPaymentSpi.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(spiContextData, spiScaConfirmation, payment, spiAspspConsentDataProvider))
             .thenReturn(commonServiceResponse);
 
         // When
         SpiResponse<SpiPaymentResponse> actualResponse =
-            pisExecutePaymentServiceCommon.verifyScaAuthorisationAndExecutePayment(spiContextData, spiScaConfirmation, payment, spiAspspConsentDataProvider);
+            pisExecutePaymentServiceCommon.verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(spiContextData, spiScaConfirmation, payment, spiAspspConsentDataProvider);
 
         // Then
         assertEquals(commonServiceResponse, actualResponse);
 
-        verify(commonPaymentSpi).verifyScaAuthorisationAndExecutePayment(spiContextData, spiScaConfirmation, payment, spiAspspConsentDataProvider);
+        verify(commonPaymentSpi).verifyScaAuthorisationAndExecutePaymentWithPaymentResponse(spiContextData, spiScaConfirmation, payment, spiAspspConsentDataProvider);
     }
 
     @Test
