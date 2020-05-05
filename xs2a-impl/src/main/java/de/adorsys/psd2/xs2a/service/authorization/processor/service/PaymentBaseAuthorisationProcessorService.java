@@ -58,7 +58,7 @@ import java.util.Optional;
 
 import static de.adorsys.psd2.xs2a.core.sca.ScaStatus.*;
 
-@SuppressWarnings("PMD.TooManyMethods")
+@SuppressWarnings("PMD.TooManyMethods") // will be removed in 6.7 with extra deprecated methods
 abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisationProcessorService {
 
     private static final String EMBEDDED_SELECTING_SCA_METHOD_FAILED_MSG = "Proceed embedded approach when performs authorisation depending on selected SCA method has failed.";
