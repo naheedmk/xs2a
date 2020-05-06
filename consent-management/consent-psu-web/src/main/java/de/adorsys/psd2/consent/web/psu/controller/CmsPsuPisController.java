@@ -46,14 +46,14 @@ public class CmsPsuPisController implements CmsPsuPisApi {
     public ResponseEntity<Object> updatePsuInPayment(String authorisationId, String instanceId, PsuIdData psuIdData) {
         try {
             return cmsPsuPisService.updatePsuInPayment(psuIdData, authorisationId, instanceId)
-                       ? ResponseEntity.ok().build()
-                       : ResponseEntity.badRequest().build();
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.badRequest().build();
         } catch (AuthorisationIsExpiredException e) {
             return new ResponseEntity<>(new CmsPaymentResponse(e.getNokRedirectUri()), HttpStatus.REQUEST_TIMEOUT);
         }
     }
 
-   @Override
+    @Override
     public ResponseEntity<Object> getPaymentIdByRedirectId(String redirectId, String instanceId) {
         Optional<CmsPaymentResponse> response;
         try {
@@ -100,8 +100,8 @@ public class CmsPsuPisController implements CmsPsuPisApi {
     @Override
     public ResponseEntity<CmsPsuAuthorisation> getAuthorisationByAuthorisationId(String authorisationId, String instanceId) {
         return cmsPsuPisService.getAuthorisationByAuthorisationId(authorisationId, instanceId)
-                   .map(payment -> new ResponseEntity<>(payment, HttpStatus.OK))
-                   .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+            .map(payment -> new ResponseEntity<>(payment, HttpStatus.OK))
+            .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @Override
@@ -115,8 +115,8 @@ public class CmsPsuPisController implements CmsPsuPisApi {
         PsuIdData psuIdData = new PsuIdData(psuId, psuIdType, psuCorporateId, psuCorporateIdType, null);
         try {
             return cmsPsuPisService.updateAuthorisationStatus(psuIdData, paymentId, authorisationId, scaStatus, instanceId, authenticationDataHolder)
-                       ? ResponseEntity.ok().build()
-                       : ResponseEntity.badRequest().build();
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.badRequest().build();
         } catch (AuthorisationIsExpiredException e) {
             return new ResponseEntity<>(new CmsPaymentResponse(e.getNokRedirectUri()), HttpStatus.REQUEST_TIMEOUT);
         }
@@ -125,15 +125,15 @@ public class CmsPsuPisController implements CmsPsuPisApi {
     @Override
     public ResponseEntity<Void> updatePaymentStatus(String paymentId, String status, String instanceId) {
         return cmsPsuPisService.updatePaymentStatus(paymentId, TransactionStatus.valueOf(status), instanceId)
-                   ? ResponseEntity.ok().build()
-                   : ResponseEntity.badRequest().build();
+            ? ResponseEntity.ok().build()
+            : ResponseEntity.badRequest().build();
     }
 
     @Override
     public ResponseEntity<List<CmsPisPsuDataAuthorisation>> psuAuthorisationStatuses(String paymentId, String instanceId) {
         return cmsPsuPisService.getPsuDataAuthorisations(paymentId, instanceId)
-                   .map(ResponseEntity::ok)
-                   .orElse(ResponseEntity.notFound().build());
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @NotNull
@@ -142,7 +142,7 @@ public class CmsPsuPisController implements CmsPsuPisApi {
                                                       String paymentId, String instanceId) {
         PsuIdData psuIdData = new PsuIdData(psuId, psuIdType, psuCorporateId, psuCorporateIdType, null);
         return cmsPsuPisService.getPayment(psuIdData, paymentId, instanceId)
-                   .map(payment -> new ResponseEntity<>(payment, HttpStatus.OK))
-                   .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+            .map(payment -> new ResponseEntity<>(payment, HttpStatus.OK))
+            .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 }

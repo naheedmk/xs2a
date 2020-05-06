@@ -33,7 +33,6 @@
 
     <properties>
         <ruleset.basedir>../..</ruleset.basedir>
-        <pmd.skip>true</pmd.skip> <!-- This module uses generated sources, that we cannot adopt -->
     </properties>
 
     <dependencies>
@@ -47,6 +46,11 @@
             <groupId>de.adorsys.psd2</groupId>
             <artifactId>event-service-xs2a-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
         </dependency>
 
         <!--3rd party dependencies -->
@@ -69,14 +73,7 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-        </dependency>
+
     </dependencies>
 
     <build>

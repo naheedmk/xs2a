@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.consent.web.xs2a.controller;
 
-
 import de.adorsys.psd2.consent.api.CmsConsentApi;
 import de.adorsys.psd2.consent.api.CmsError;
 import de.adorsys.psd2.consent.api.CmsResponse;

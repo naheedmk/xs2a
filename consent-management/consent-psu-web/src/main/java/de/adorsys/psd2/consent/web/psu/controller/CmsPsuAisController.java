@@ -46,8 +46,8 @@ public class CmsPsuAisController implements CmsPsuAisApi {
     public ResponseEntity<Object> updatePsuDataInConsent(String consentId, String authorisationId, String instanceId, PsuIdData psuIdData) {
         try {
             return cmsPsuAisService.updatePsuDataInConsent(psuIdData, authorisationId, instanceId)
-                       ? ResponseEntity.ok().build()
-                       : ResponseEntity.badRequest().build();
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.badRequest().build();
         } catch (AuthorisationIsExpiredException e) {
             return new ResponseEntity<>(new CmsAisConsentResponse(e.getNokRedirectUri()), HttpStatus.REQUEST_TIMEOUT);
         }
@@ -65,8 +65,8 @@ public class CmsPsuAisController implements CmsPsuAisApi {
 
         try {
             return cmsPsuAisService.updateAuthorisationStatus(psuIdData, consentId, authorisationId, scaStatus, instanceId, authenticationDataHolder)
-                       ? ResponseEntity.ok().build()
-                       : ResponseEntity.badRequest().build();
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.badRequest().build();
         } catch (AuthorisationIsExpiredException e) {
             return new ResponseEntity<>(new CmsAisConsentResponse(e.getNokRedirectUri()), HttpStatus.REQUEST_TIMEOUT);
         }
@@ -82,7 +82,7 @@ public class CmsPsuAisController implements CmsPsuAisApi {
     }
 
     @Override
-    public ResponseEntity<Boolean> rejectConsent( String consentId, String instanceId) {
+    public ResponseEntity<Boolean> rejectConsent(String consentId, String instanceId) {
         try {
             return new ResponseEntity<>(cmsPsuAisService.rejectConsent(consentId, instanceId), HttpStatus.OK);
         } catch (WrongChecksumException e) {
@@ -135,15 +135,15 @@ public class CmsPsuAisController implements CmsPsuAisApi {
     public ResponseEntity<CmsAisAccountConsent> getConsentByConsentId(String consentId, String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType, String instanceId) {
         PsuIdData psuIdData = getPsuIdData(psuId, psuIdType, psuCorporateId, psuCorporateIdType);
         return cmsPsuAisService.getConsent(psuIdData, consentId, instanceId)
-                   .map(aisAccountConsent -> new ResponseEntity<>(aisAccountConsent, HttpStatus.OK))
-                   .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            .map(aisAccountConsent -> new ResponseEntity<>(aisAccountConsent, HttpStatus.OK))
+            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @Override
     public ResponseEntity<CmsPsuAuthorisation> getAuthorisationByAuthorisationId(String authorisationId, String instanceId) {
         return cmsPsuAisService.getAuthorisationByAuthorisationId(authorisationId, instanceId)
-                   .map(payment -> new ResponseEntity<>(payment, HttpStatus.OK))
-                   .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+            .map(payment -> new ResponseEntity<>(payment, HttpStatus.OK))
+            .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @Override
@@ -160,8 +160,8 @@ public class CmsPsuAisController implements CmsPsuAisApi {
     @Override
     public ResponseEntity<List<CmsAisPsuDataAuthorisation>> psuDataAuthorisations(String consentId, String instanceId) {
         return cmsPsuAisService.getPsuDataAuthorisations(consentId, instanceId)
-                   .map(ResponseEntity::ok)
-                   .orElse(ResponseEntity.notFound().build());
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     private PsuIdData getPsuIdData(String psuId, String psuIdType, String psuCorporateId, String psuCorporateIdType) {

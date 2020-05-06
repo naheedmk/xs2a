@@ -36,18 +36,18 @@ public class AspspConsentDataPsuApiController implements AspspConsentDataPsuApi 
     @Override
     public ResponseEntity<CmsAspspConsentDataBase64> getAspspConsentData(String encryptedConsentId) {
         return aspspDataService.readAspspConsentData(encryptedConsentId)
-                   .map(AspspConsentData::getAspspConsentData)
-                   .map(Base64.getEncoder()::encodeToString)
-                   .map(aspspConsentDataBase64 -> new CmsAspspConsentDataBase64(encryptedConsentId, aspspConsentDataBase64))
-                   .map(cmsAspspConsentDataBase64 -> new ResponseEntity<>(cmsAspspConsentDataBase64, HttpStatus.OK))
-                   .orElseGet(ResponseEntity.notFound()::build);
+            .map(AspspConsentData::getAspspConsentData)
+            .map(Base64.getEncoder()::encodeToString)
+            .map(aspspConsentDataBase64 -> new CmsAspspConsentDataBase64(encryptedConsentId, aspspConsentDataBase64))
+            .map(cmsAspspConsentDataBase64 -> new ResponseEntity<>(cmsAspspConsentDataBase64, HttpStatus.OK))
+            .orElseGet(ResponseEntity.notFound()::build);
     }
 
     @Override
     public ResponseEntity<Void> updateAspspConsentData(String encryptedConsentId, CmsAspspConsentDataBase64 request) {
         byte[] data = Optional.ofNullable(request.getAspspConsentDataBase64())
-                          .map(Base64.getDecoder()::decode)
-                          .orElse(null);
+            .map(Base64.getDecoder()::decode)
+            .orElse(null);
 
         AspspConsentData aspspConsentData = new AspspConsentData(data, encryptedConsentId);
         boolean updated = aspspDataService.updateAspspConsentData(aspspConsentData);

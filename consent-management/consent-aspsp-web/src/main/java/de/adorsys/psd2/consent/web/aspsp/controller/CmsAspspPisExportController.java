@@ -31,8 +31,6 @@ import java.util.Collection;
 @RestController
 @RequiredArgsConstructor
 public class CmsAspspPisExportController implements CmsAspspPisExportApi {
-    private static final String DEFAULT_SERVICE_INSTANCE_ID = "UNDEFINED";
-
     private final CmsAspspPisExportService cmsAspspPisExportService;
 
     @Override

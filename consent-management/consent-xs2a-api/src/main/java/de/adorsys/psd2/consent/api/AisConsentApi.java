@@ -16,51 +16,20 @@
 
 package de.adorsys.psd2.consent.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adorsys.psd2.consent.api.ais.AisAccountAccessInfo;
 import de.adorsys.psd2.consent.api.ais.AisConsentActionRequest;
 import de.adorsys.psd2.consent.api.config.InternalCmsXs2aApiTagName;
 import io.swagger.annotations.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
 
 @RequestMapping(path = "api/v1/ais/consent")
 @Api(value = "api/v1/ais/consent", tags = InternalCmsXs2aApiTagName.AIS_CONSENTS)
 public interface AisConsentApi {
-    Logger log = LoggerFactory.getLogger(AisConsentApi.class);
-
-    default Optional<ObjectMapper> getObjectMapper() {
-        return Optional.empty();
-    }
-
-    default Optional<HttpServletRequest> getRequest() {
-        return Optional.empty();
-    }
-
-    default Optional<String> getAcceptHeader() {
-        return getRequest().map(r -> r.getHeader("Accept"));
-    }
 
     @PostMapping(path = "/action")
     @ApiOperation(value = "Save information about uses of consent")
-    default ResponseEntity<Object> _saveConsentActionLog(@RequestBody AisConsentActionRequest request) {
-        return saveConsentActionLog(request);
-    }
-
-    // Override this method
-    default ResponseEntity<Object> saveConsentActionLog(AisConsentActionRequest request) {
-        if (getObjectMapper().isPresent() && getAcceptHeader().isPresent()) {
-        } else {
-            log.warn("ObjectMapper or HttpServletRequest not configured in default AisConsentApi interface so no example is generated");
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
+    ResponseEntity<Object> saveConsentActionLog(@RequestBody AisConsentActionRequest request);
 
     @PutMapping(path = "/{encrypted-consent-id}/access")
     @ApiOperation(value = "Update AccountAccess in the consent identified by given consent id.")
@@ -68,22 +37,11 @@ public interface AisConsentApi {
         @ApiResponse(code = 200, message = "OK"),
         @ApiResponse(code = 400, message = "Checksum verification failed"),
         @ApiResponse(code = 404, message = "Not Found")})
-    default ResponseEntity<Object> _updateAccountAccess(
+    ResponseEntity<Object> updateAccountAccess(
         @ApiParam(name = "consent-id",
             value = "The account consent identification assigned to the created account consent.",
             example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7",
             required = true)
         @PathVariable("encrypted-consent-id") String encryptedConsentId,
-        @RequestBody AisAccountAccessInfo request) {
-        return updateAccountAccess(encryptedConsentId, request);
-    }
-
-    // Override this method
-    default ResponseEntity<Object> updateAccountAccess(String encryptedConsentId, AisAccountAccessInfo request) {
-        if (getObjectMapper().isPresent() && getAcceptHeader().isPresent()) {
-        } else {
-            log.warn("ObjectMapper or HttpServletRequest not configured in default AisConsentApi interface so no example is generated");
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-    }
+        @RequestBody AisAccountAccessInfo request);
 }

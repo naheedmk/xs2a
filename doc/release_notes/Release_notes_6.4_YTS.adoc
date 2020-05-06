@@ -11,5 +11,4 @@ Added Postman tests for `cms-psu-api` controllers: `AspspConsentDataPsuApiContro
 
 == Provided interfaces for CMS web controllers in `consent-aspsp-web`, `consent-psu-web` and `consent-xs2a-web`
 
-Provided interfaces for CMS web controllers in `consent-aspsp-web`, `consent-psu-web` and `consent-xs2a-web`
-Currently controllers in consent-aspsp-web, consent-psu-web and consent-xs2a-web
+Provided interfaces for CMS web controllers in `consent-aspsp-web`, `consent-psu-web` and `consent-xs2a-web`.
