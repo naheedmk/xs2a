@@ -3065,7 +3065,7 @@
 									"script": {
 										"id": "39c392a0-5596-483d-97c9-dd88f0c154b4",
 										"exec": [
-											""
+											"pm.globals.set(\"wrong_id\", \"kljghdgflkhjf5w67437698gyuvg97fcr6ditof6r\");"
 										],
 										"type": "text/javascript"
 									}
