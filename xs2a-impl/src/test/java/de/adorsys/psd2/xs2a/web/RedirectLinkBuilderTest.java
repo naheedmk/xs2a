@@ -136,7 +136,7 @@ class RedirectLinkBuilderTest {
         assertEquals("cancellation/Authorisation123/{encrypted-consent-id}/Payment123/{encrypted-consent-id}/Authorisation123/Payment123/something-else/" + INTERNAL_REQUEST_ID + "?instanceId=bank1", redirectLink);
     }
 
-    @TestCreatePisAuthorisationLinks
+    @Test
     public void buildPisConfirmationLink() {
         String confirmationLink = redirectLinkBuilder.buildPisConfirmationLink("paymentService", "paymentProduct", "paymentID", "redirectID");
 
