@@ -83,6 +83,7 @@ public class CmsConsentMapper {
         entity.setValidUntil(cmsConsent.getValidUntil());
         entity.setExpireDate(cmsConsent.getExpireDate());
         entity.setPsuDataList(psuDataMapper.mapToPsuDataList(cmsConsent.getPsuIdDataList()));
+        entity.getPsuDataList().forEach(p -> p.setInstanceId(cmsConsent.getInstanceId()));
         entity.setAuthorisationTemplate(authorisationTemplateMapper.mapToAuthorisationTemplateEntity(cmsConsent.getAuthorisationTemplate()));
         entity.setRecurringIndicator(cmsConsent.isRecurringIndicator());
         entity.setLastActionDate(LocalDate.now());
@@ -91,6 +92,7 @@ public class CmsConsentMapper {
         AccountAccess tppAccountAccesses = cmsConsent.getTppAccountAccesses();
         entity.setTppAccountAccesses(accessMapper.mapToTppAccountAccess(tppAccountAccesses));
         entity.setAspspAccountAccesses(accessMapper.mapToAspspAccountAccess(cmsConsent.getAspspAccountAccesses()));
+        entity.setInstanceId(cmsConsent.getInstanceId());
 
         AdditionalInformationAccess additionalInformationAccess = tppAccountAccesses.getAdditionalInformationAccess();
         if (additionalInformationAccess != null) {
