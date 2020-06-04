@@ -9695,7 +9695,7 @@
 							"response": []
 						},
 						{
-							"name": "10. Get AIS consent object from CMS - 404 Not found",
+							"name": "10.1. Get AIS consent object from CMS - 404 Not found",
 							"event": [
 								{
 									"listen": "test",
@@ -9733,7 +9733,7 @@
 							"response": []
 						},
 						{
-							"name": "10. Get AIS consent object from CMS",
+							"name": "10.2. Get AIS consent object from CMS",
 							"event": [
 								{
 									"listen": "test",
@@ -12406,14 +12406,8 @@
 									"script": {
 										"id": "02e9f92a-aa7d-40f9-b927-e085509fd418",
 										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"",
-											"const jsonData = pm.response.json();",
-											"pm.test(\"Consent status is VALID\", () => {",
-											"    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
+											"pm.test(\"Status code is 404 without `Instance-ID`\", () => {",
+											"    pm.response.to.have.status(404);",
 											"});",
 											""
 										],
@@ -12449,8 +12443,14 @@
 									"script": {
 										"id": "a3a0a0aa-cbdd-47d1-8dd7-701200fe2a62",
 										"exec": [
-											"pm.test(\"Status code is 404 without `Instance-ID`\", () => {",
-											"    pm.response.to.have.status(404);",
+											"pm.test(\"Status code is 200\", () => {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"",
+											"const jsonData = pm.response.json();",
+											"pm.test(\"Consent status is VALID\", () => {",
+											"    pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
 											"});",
 											""
 										],

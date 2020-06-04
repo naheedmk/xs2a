@@ -67,6 +67,7 @@ public class CmsConsentMapper {
         cmsConsent.setAspspAccountAccesses(accessMapper.mapAspspAccessesToAccountAccess(entity.getAspspAccountAccesses(),
                                                                                         entity.getOwnerNameType(),
                                                                                         entity.getTrustedBeneficiariesType()));
+        cmsConsent.setInstanceId(entity.getInstanceId());
         return cmsConsent;
     }
 
