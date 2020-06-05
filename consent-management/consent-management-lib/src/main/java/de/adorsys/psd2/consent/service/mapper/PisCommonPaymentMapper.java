@@ -91,6 +91,7 @@ public class PisCommonPaymentMapper {
                        response.setAuthorisations(authorisationMapper.mapToAuthorisations(authorisations));
                        response.setCreationTimestamp(cmd.getCreationTimestamp());
                        response.setContentType(cmd.getContentType());
+                       response.setInstanceId(cmd.getInstanceId());
                        return response;
                    });
     }
