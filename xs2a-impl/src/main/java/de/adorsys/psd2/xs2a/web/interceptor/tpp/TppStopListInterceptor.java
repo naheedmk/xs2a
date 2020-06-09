@@ -22,7 +22,6 @@ import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.xs2a.core.domain.TppMessageInformation;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
-import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.discovery.ServiceTypeDiscoveryService;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorMapperContainer;
@@ -44,6 +43,7 @@ import static de.adorsys.psd2.xs2a.core.error.MessageErrorCode.CERTIFICATE_BLOCK
 @RequiredArgsConstructor
 public class TppStopListInterceptor extends HandlerInterceptorAdapter {
     private static final String STOP_LIST_ERROR_MESSAGE = "Signature/corporate seal certificate has been blocked by the ASPSP";
+    private static final String INSTANCE_ID = "Instance-ID";
 
     private final ErrorMapperContainer errorMapperContainer;
     private final TppService tppService;
@@ -51,12 +51,12 @@ public class TppStopListInterceptor extends HandlerInterceptorAdapter {
     private final ServiceTypeDiscoveryService serviceTypeDiscoveryService;
     private final ServiceTypeToErrorTypeMapper errorTypeMapper;
     private final Xs2aObjectMapper xs2aObjectMapper;
-    private final RequestProviderService requestProviderService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         TppInfo tppInfo = tppService.getTppInfo();
-        CmsResponse<Boolean> cmsResponse = tppStopListService.checkIfTppBlocked(tppInfo.getAuthorisationNumber(), requestProviderService.getInstanceId());
+        CmsResponse<Boolean> cmsResponse = tppStopListService.checkIfTppBlocked(tppInfo.getAuthorisationNumber(),
+                                                                                request.getHeader(INSTANCE_ID));
 
         if (cmsResponse.isSuccessful() && BooleanUtils.isTrue(cmsResponse.getPayload())) {
             response.getWriter().write(xs2aObjectMapper.writeValueAsString(createError()));
