@@ -39,8 +39,9 @@ public class TppStopListServiceInternal implements TppStopListService {
 
     @Override
     public CmsResponse<Boolean> checkIfTppBlocked(String tppAuthorisationNumber, String instanceId) {
-        instanceId = StringUtils.isBlank(instanceId) ? serviceInstanceId : instanceId;
-        Optional<TppStopListEntity> stopListEntityOptional = tppStopListRepository.findByTppAuthorisationNumberAndInstanceId(tppAuthorisationNumber, instanceId);
+        String requestedInstanceId = StringUtils.isBlank(instanceId) ? serviceInstanceId : instanceId;
+        Optional<TppStopListEntity> stopListEntityOptional = tppStopListRepository.findByTppAuthorisationNumberAndInstanceId(tppAuthorisationNumber,
+                                                                                                                             requestedInstanceId);
 
         Boolean blocked = stopListEntityOptional
                               .filter(TppStopListEntity::isBlocked)
