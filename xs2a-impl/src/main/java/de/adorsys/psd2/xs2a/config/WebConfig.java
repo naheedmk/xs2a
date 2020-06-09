@@ -31,6 +31,7 @@ import de.adorsys.psd2.xs2a.domain.InternalRequestIdHolder;
 import de.adorsys.psd2.xs2a.domain.RedirectIdHolder;
 import de.adorsys.psd2.xs2a.domain.ScaApproachHolder;
 import de.adorsys.psd2.xs2a.service.RedirectIdService;
+import de.adorsys.psd2.xs2a.service.RequestProviderService;
 import de.adorsys.psd2.xs2a.service.TppService;
 import de.adorsys.psd2.xs2a.service.discovery.ServiceTypeDiscoveryService;
 import de.adorsys.psd2.xs2a.service.mapper.psd2.ErrorMapperContainer;
@@ -87,6 +88,7 @@ public class WebConfig implements WebMvcConfigurer {
     private final Xs2aRestExceptionHandler xs2aRestExceptionHandler;
     private final PaymentParametersValidationInterceptor paymentParametersValidationInterceptor;
     private final InstanceIdInterceptor instanceIdInterceptor;
+    private final RequestProviderService requestProviderService;
 
     @Override
     public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
@@ -109,7 +111,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new PaymentLoggingInterceptor(tppService, redirectIdService, loggingContextService, pathParameterExtractor)).addPathPatterns(SINGLE_PAYMENTS_PATH, BULK_PAYMENTS_PATH, PERIODIC_PAYMENTS_PATH);
         registry.addInterceptor(new SigningBasketLoggingInterceptor(tppService, redirectIdService, pathParameterExtractor)).addPathPatterns(SIGNING_BASKETS_PATH);
         registry.addInterceptor(new RequestResponseLoggingInterceptor(requestResponseLogger)).addPathPatterns(getAllXs2aEndpointPaths());
-        registry.addInterceptor(new TppStopListInterceptor(errorMapperContainer, tppService, tppStopListService, serviceTypeDiscoveryService, errorTypeMapper, xs2aObjectMapper))
+        registry.addInterceptor(new TppStopListInterceptor(errorMapperContainer, tppService, tppStopListService, serviceTypeDiscoveryService, errorTypeMapper, xs2aObjectMapper, requestProviderService))
             .addPathPatterns(getAllXs2aEndpointPaths());
 
         // This interceptor cannot use some definite path from constants, as payment services have nothing common in
