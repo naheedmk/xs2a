@@ -137,15 +137,6 @@ class RedirectLinkBuilderTest {
     }
 
     @Test
-    void buildPaymentCancellationScaRedirectLinkWithInternalRequestIdAndInstanceId() {
-        doReturn("cancellation/{redirect-id}/{encrypted-consent-id}/{encrypted-payment-id}/{encrypted-consent-id}/{redirect-id}/{encrypted-payment-id}/something-else/{inr-id}").when(aspspProfileService).getPisPaymentCancellationRedirectUrlToAspsp();
-
-        String redirectLink = redirectLinkBuilder.buildPaymentCancellationScaRedirectLink("Payment123", "Authorisation123", INTERNAL_REQUEST_ID, "bank1");
-
-        assertEquals("cancellation/Authorisation123/{encrypted-consent-id}/Payment123/{encrypted-consent-id}/Authorisation123/Payment123/something-else/" + INTERNAL_REQUEST_ID + "?instanceId=bank1", redirectLink);
-    }
-
-    @Test
     public void buildPisConfirmationLink() {
         String confirmationLink = redirectLinkBuilder.buildPisConfirmationLink("paymentService", "paymentProduct", "paymentID", "redirectID");
 
