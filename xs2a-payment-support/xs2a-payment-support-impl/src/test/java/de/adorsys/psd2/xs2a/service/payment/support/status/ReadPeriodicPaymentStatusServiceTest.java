@@ -27,7 +27,7 @@ import de.adorsys.psd2.xs2a.core.pis.TransactionStatus;
 import de.adorsys.psd2.xs2a.domain.ContentType;
 import de.adorsys.psd2.xs2a.domain.pis.ReadPaymentStatusResponse;
 import de.adorsys.psd2.xs2a.service.mapper.MediaTypeMapper;
-import de.adorsys.psd2.xs2a.service.mapper.payment.SpiPaymentFactory;
+import de.adorsys.psd2.xs2a.service.payment.support.SpiPaymentFactoryImpl;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.payment.support.TestSpiDataProvider;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
@@ -70,7 +70,7 @@ class ReadPeriodicPaymentStatusServiceTest {
     private ReadPeriodicPaymentStatusService readPeriodicPaymentStatusService;
 
     @Mock
-    private SpiPaymentFactory spiPaymentFactory;
+    private SpiPaymentFactoryImpl spiPaymentFactory;
     @Mock
     private SpiErrorMapper spiErrorMapper;
     @Mock

@@ -31,7 +31,7 @@ import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PaymentInformationResponse;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
-import de.adorsys.psd2.xs2a.service.mapper.payment.SpiPaymentFactory;
+import de.adorsys.psd2.xs2a.service.payment.support.SpiPaymentFactoryImpl;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.payment.Xs2aUpdatePaymentAfterSpiService;
 import de.adorsys.psd2.xs2a.service.payment.support.TestSpiDataProvider;
@@ -84,7 +84,7 @@ class ReadPeriodicPaymentServiceTest {
     @Mock
     private SpiToXs2aPaymentMapperSupport spiToXs2aPaymentMapperSupport;
     @Mock
-    private SpiPaymentFactory spiPaymentFactory;
+    private SpiPaymentFactoryImpl spiPaymentFactory;
     @Mock
     private SpiErrorMapper spiErrorMapper;
     @Mock
