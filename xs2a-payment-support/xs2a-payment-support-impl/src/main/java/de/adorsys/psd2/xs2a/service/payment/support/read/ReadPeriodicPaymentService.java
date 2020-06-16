@@ -16,10 +16,9 @@
 
 package de.adorsys.psd2.xs2a.service.payment.support.read;
 
-import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.xs2a.domain.pis.CommonPayment;
 import de.adorsys.psd2.xs2a.service.context.SpiContextDataProvider;
-import de.adorsys.psd2.xs2a.service.payment.support.SpiPaymentFactoryImpl;
+import de.adorsys.psd2.xs2a.service.mapper.payment.SpiPaymentFactory;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.payment.Xs2aUpdatePaymentAfterSpiService;
 import de.adorsys.psd2.xs2a.service.payment.read.AbstractReadPaymentService;
@@ -33,29 +32,21 @@ import de.adorsys.psd2.xs2a.spi.service.PeriodicPaymentSpi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service("periodic-payments")
 public class ReadPeriodicPaymentService extends AbstractReadPaymentService {
 
     private PeriodicPaymentSpi periodicPaymentSpi;
     private SpiToXs2aPaymentMapperSupport spiToXs2aPaymentMapperSupport;
-    private SpiPaymentFactoryImpl spiPaymentFactory;
 
     @Autowired
     public ReadPeriodicPaymentService(PeriodicPaymentSpi periodicPaymentSpi, SpiToXs2aPaymentMapperSupport spiToXs2aPaymentMapperSupport,
                                       SpiErrorMapper spiErrorMapper, SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
                                       Xs2aUpdatePaymentAfterSpiService updatePaymentStatusAfterSpiService,
-                                      SpiContextDataProvider spiContextDataProvider, SpiPaymentFactoryImpl spiPaymentFactory) {
-        super(spiErrorMapper, aspspConsentDataProviderFactory, updatePaymentStatusAfterSpiService, spiContextDataProvider);
+                                      SpiContextDataProvider spiContextDataProvider, SpiPaymentFactory spiPaymentFactory) {
+        super(spiContextDataProvider, spiErrorMapper, aspspConsentDataProviderFactory, updatePaymentStatusAfterSpiService,
+              spiPaymentFactory);
         this.spiToXs2aPaymentMapperSupport = spiToXs2aPaymentMapperSupport;
         this.periodicPaymentSpi = periodicPaymentSpi;
-        this.spiPaymentFactory = spiPaymentFactory;
-    }
-
-    @Override
-    public Optional<SpiPeriodicPayment> createSpiPayment(CommonPaymentData commonPaymentData) {
-        return spiPaymentFactory.createSpiPeriodicPayment(commonPaymentData);
     }
 
     @Override

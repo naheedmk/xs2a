@@ -16,9 +16,8 @@
 
 package de.adorsys.psd2.xs2a.service.payment.support.status;
 
-import de.adorsys.psd2.consent.api.pis.CommonPaymentData;
 import de.adorsys.psd2.xs2a.service.mapper.MediaTypeMapper;
-import de.adorsys.psd2.xs2a.service.payment.support.SpiPaymentFactoryImpl;
+import de.adorsys.psd2.xs2a.service.mapper.payment.SpiPaymentFactory;
 import de.adorsys.psd2.xs2a.service.mapper.spi_xs2a_mappers.SpiErrorMapper;
 import de.adorsys.psd2.xs2a.service.payment.status.AbstractReadPaymentStatusService;
 import de.adorsys.psd2.xs2a.service.spi.SpiAspspConsentDataProviderFactory;
@@ -31,26 +30,17 @@ import de.adorsys.psd2.xs2a.spi.service.SinglePaymentSpi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service("status-payments")
 public class ReadSinglePaymentStatusService extends AbstractReadPaymentStatusService {
     private SinglePaymentSpi singlePaymentSpi;
-    private SpiPaymentFactoryImpl spiPaymentFactory;
 
     @Autowired
     public ReadSinglePaymentStatusService(SinglePaymentSpi singlePaymentSpi, SpiErrorMapper spiErrorMapper,
                                           SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
-                                          SpiPaymentFactoryImpl spiPaymentFactory,
+                                          SpiPaymentFactory spiPaymentFactory,
                                           MediaTypeMapper mediaTypeMapper) {
-        super(spiErrorMapper, aspspConsentDataProviderFactory, mediaTypeMapper);
-        this.spiPaymentFactory = spiPaymentFactory;
+        super(spiErrorMapper, aspspConsentDataProviderFactory, mediaTypeMapper, spiPaymentFactory);
         this.singlePaymentSpi = singlePaymentSpi;
-    }
-
-    @Override
-    public Optional<SpiSinglePayment> createSpiPayment(CommonPaymentData commonPaymentData) {
-        return spiPaymentFactory.createSpiSinglePayment(commonPaymentData);
     }
 
     @Override
