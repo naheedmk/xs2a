@@ -50,14 +50,6 @@ public abstract class AbstractReadPaymentStatusService implements ReadPaymentSta
     private final MediaTypeMapper mediaTypeMapper;
     private final SpiPaymentFactory spiPaymentFactory;
 
-//    public AbstractReadPaymentStatusService(SpiErrorMapper spiErrorMapper,
-//                                            SpiAspspConsentDataProviderFactory aspspConsentDataProviderFactory,
-//                                            MediaTypeMapper mediaTypeMapper) {
-//        this.spiErrorMapper = spiErrorMapper;
-//        this.aspspConsentDataProviderFactory = aspspConsentDataProviderFactory;
-//        this.mediaTypeMapper = mediaTypeMapper;
-//    }
-
     @Override
     public ReadPaymentStatusResponse readPaymentStatus(CommonPaymentData commonPaymentData, SpiContextData spiContextData, @NotNull String encryptedPaymentId, String acceptMediaType) {
         if (ArrayUtils.isEmpty(commonPaymentData.getPaymentData())) {
@@ -90,8 +82,6 @@ public abstract class AbstractReadPaymentStatusService implements ReadPaymentSta
         SpiGetPaymentStatusResponse payload = spiResponse.getPayload();
         return new ReadPaymentStatusResponse(payload.getTransactionStatus(), payload.getFundsAvailable(), mediaTypeMapper.mapToMediaType(payload.getResponseContentType()), payload.getPaymentStatusRaw(), payload.getPsuMessage());
     }
-
-//    protected abstract Optional createSpiPayment(CommonPaymentData commonPaymentData);
 
     protected abstract SpiResponse<SpiGetPaymentStatusResponse> getSpiPaymentStatusById(SpiContextData spiContextData, String acceptMediaType, Object spiPayment, SpiAspspConsentDataProvider aspspConsentDataProvider);
 }
