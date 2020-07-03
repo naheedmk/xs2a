@@ -1,0 +1,9 @@
+= Release notes v.5.10.4
+
+== Table of Contents
+
+* Change type of postCode to Max35Text for validator
+
+== Fix potential deadlock during updating tpp roles
+
+From now on, maximum length of postCode field in Address object was extended to 35 symbols for validator.
