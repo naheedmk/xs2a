@@ -19,7 +19,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet author="amu@adorsys.de" id="2020-07-031-1">
+    <changeSet author="amu@adorsys.de" id="2020-07-03-1">
         <comment>Increase size of postal_code column in pis_address table</comment>
         <modifyDataType tableName="pis_address" columnName="postal_code" newDataType="VARCHAR(35)"/>
     </changeSet>
