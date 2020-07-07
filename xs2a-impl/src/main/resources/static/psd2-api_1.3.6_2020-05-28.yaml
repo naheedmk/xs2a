@@ -1853,7 +1853,7 @@ paths:
             parameters:
                 #path # NO PATH PARAMETER
                 #query
-                - $ref: "#/components/parameters/accountId"
+                - $ref: "#/components/parameters/accountIdQuery"
                 #header
                 #common header parameter
                 - $ref: "#/components/parameters/X-Request-ID"
@@ -10996,6 +10996,17 @@ components:
             schema:
                 $ref: "#/components/schemas/accountId"
 
+        accountIdQuery:
+            name: account-id
+            in: query
+            description: |
+                Reference to a dedicated account, which where a list of trusted beneficiaries might be restricted to.
+                The reference is the corresponding URI resource identification of the /accounts endpoint.
+                This parameter might only be used by the TPP if the ASPSP is supporting dedicated lists of trusted
+                beneficiaries per PSU account.
+            required: false
+            schema:
+                type: string
 
         transactionId:
             name: transactionId
