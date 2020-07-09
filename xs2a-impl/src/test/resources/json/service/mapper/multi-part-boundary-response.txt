@@ -1,4 +1,7 @@
 --BOUNDARY
+Content-Disposition: form-data; name="xml_sct"
+Content-Type: application/xml
+
 <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
     <CstmrCdtTrfInitn>
         <GrpHdr>
@@ -32,6 +35,9 @@
     </CstmrCdtTrfInitn>
 </Document>
 --BOUNDARY
+Content-Disposition: form-data; name="json_standingorderType"
+Content-Type: application/json
+
 {
   "startDate": "2023-03-01",
   "endDate": "2025-03-01",

@@ -18,11 +18,14 @@ package de.adorsys.psd2.xs2a.web.mapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
@@ -30,7 +33,20 @@ import javax.servlet.http.HttpServletRequest;
 public class MultiPartBoundaryBuilder {
     static final String DEFAULT_BOUNDARY = "--AaaBbbCcc";
     private static final String BOUNDARY = "boundary=";
-    private static final String CONTENT_TEMPLATE = "{boundary}\n{xmlPart}\n{boundary}\n{jsonPart}\n{boundary}--";
+    private static final String BOUNDARY_PLACEHOLDER = "\\{BOUNDARY}";
+    private static final String XMLPART_PLACEHOLDER = "\\{XML_PART}";
+    private static final String JSONPART_PLACEHOLDER = "\\{JSON_PART}";
+    private static final String BOUNDARY_PREFIX = "--";
+
+    private static String contentTemplate = null;
+
+    static {
+        try {
+            contentTemplate = IOUtils.resourceToString("/template/multipart-payment-template.txt", StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            log.error("Reading multipart payment template failed: {}", e.getMessage());
+        }
+    }
 
     public String getMultiPartContent(HttpServletRequest request, String xmlSct, String jsonPart) {
         String contentTypeHeader = request.getHeader(HttpHeaders.CONTENT_TYPE);
@@ -40,11 +56,12 @@ public class MultiPartBoundaryBuilder {
                 && contentTypeHeader.contains(MediaType.MULTIPART_FORM_DATA_VALUE)
                 && contentTypeHeader.contains(BOUNDARY)) {
             String boundaryValue = contentTypeHeader.substring(contentTypeHeader.indexOf(BOUNDARY) + BOUNDARY.length());
-            boundary = boundaryValue.startsWith("--") ? boundaryValue : "--" + boundaryValue;
+            boundary = boundaryValue.startsWith(BOUNDARY_PREFIX) ? boundaryValue : BOUNDARY_PREFIX + boundaryValue;
         }
-        return CONTENT_TEMPLATE
-                   .replaceAll("\\{boundary}", boundary)
-                   .replaceAll("\\{xmlPart}", xmlSct)
-                   .replaceAll("\\{jsonPart}", jsonPart);
+        return contentTemplate
+                   .replaceAll(BOUNDARY_PLACEHOLDER, boundary)
+                   .replaceAll(XMLPART_PLACEHOLDER, xmlSct)
+                   .replaceAll(JSONPART_PLACEHOLDER, jsonPart)
+                   .trim();
     }
 }
