@@ -33,10 +33,10 @@ import org.jetbrains.annotations.NotNull;
 public interface PiisConsentSpi {
 
     /**
-     * Initiates AIS consent
+     * Initiates PIIS consent
      *
      * @param contextData              holder of call's context data (e.g. about PSU and TPP)
-     * @param spiPiisConsent           Account consent
+     * @param spiPiisConsent           PIIS consent
      * @param aspspConsentDataProvider Provides access to read/write encrypted data to be stored in the consent management system
      * @return Returns account access with Account's reference IDs. If Accounts/ReferenceIDs not know, returns empty Response object
      */
@@ -64,10 +64,10 @@ public interface PiisConsentSpi {
     }
 
     /**
-     * Revokes AIS consent
+     * Revokes PIIS consent
      *
      * @param contextData              holder of call's context data (e.g. about PSU and TPP)
-     * @param spiPiisConsent           Account consent
+     * @param spiPiisConsent           PIIS consent
      * @param aspspConsentDataProvider Provides access to read/write encrypted data to be stored in the consent management system
      * @return void response
      */
