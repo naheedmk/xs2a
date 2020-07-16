@@ -61,7 +61,7 @@ public class ConfirmationOfFundsConsentBodyValidatorImpl extends AbstractBodyVal
         checkFieldForMaxLength(confirmationOfFunds.getRegistrationInformation(), "registrationInformation", new ValidationObject(140), messageError);
 
         if (confirmationOfFunds.getAccount() == null) { //NOSONAR
-            errorBuildingService.enrichMessageError(messageError, TppMessageInformation.of(FORMAT_ERROR_NULL_VALUE, "access"));
+            errorBuildingService.enrichMessageError(messageError, TppMessageInformation.of(FORMAT_ERROR_NULL_VALUE, "account"));
         } else {
             accountReferenceValidator.validate(confirmationOfFunds.getAccount(), messageError);
         }

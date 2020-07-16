@@ -2294,7 +2294,7 @@
 													"       ",
 													"    pm.expect(error.category).to.eql('ERROR');",
 													"    pm.expect(error.code).to.eql('FORMAT_ERROR');",
-													"    pm.expect(error.text).to.eql('Value \\'access\\' should not be null');",
+													"    pm.expect(error.text).to.eql('Value \\'account\\' should not be null');",
 													"    ",
 													"});"
 												],
@@ -2330,6 +2330,87 @@
 										"body": {
 											"mode": "raw",
 											"raw": "{\n \n  \"cardNumber\": \"cardNumber\",\n  \"cardExpiryDate\": \"2030-10-10\",\n  \"cardInformation\": \"cardInformation\",\n  \"registrationInformation\": \"registrationInformation\"\n\n}",
+											"options": {
+												"raw": {}
+											}
+										},
+										"url": {
+											"raw": "{{protocol}}://{{url_xs2a}}/v2/consents/confirmation-of-funds",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_xs2a}}"
+											],
+											"path": [
+												"v2",
+												"consents",
+												"confirmation-of-funds"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "2. Create PIIS consent in XS2A Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ad4e828b-f93b-4eed-848c-1b85c3bd83f1",
+												"exec": [
+													"pm.test(\"Status code is 400\", () => {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test('TppMessages and error are exist', () => {",
+													"    ",
+													"    pm.expect(jsonData).to.have.property('tppMessages');",
+													"    ",
+													"    var error = jsonData.tppMessages[0];",
+													"       ",
+													"    pm.expect(error).to.have.property('category');",
+													"    pm.expect(error).to.have.property('code');",
+													"    pm.expect(error).to.have.property('text');",
+													"       ",
+													"    pm.expect(error.category).to.eql('ERROR');",
+													"    pm.expect(error.code).to.eql('FORMAT_ERROR');",
+													"    pm.expect(error.text).to.eql('Attribute PAN is not supported by the ASPSP');",
+													"    ",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "psu-id",
+												"type": "text",
+												"value": "{{psu_id_none}}"
+											},
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/json"
+											},
+											{
+												"key": "X-Request-ID",
+												"value": "{{x_request_id}}",
+												"type": "text"
+											},
+											{
+												"key": "TPP-Explicit-Authorisation-Preferred",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"account\": {\n    \"pan\": \"{{iban_none}}\",\n    \"currency\": \"EUR\"\n  },\n  \"cardNumber\": \"cardNumber\",\n  \"cardExpiryDate\": \"2030-10-10\",\n  \"cardInformation\": \"cardInformation\",\n  \"registrationInformation\": \"registrationInformation\"\n\n}",
 											"options": {
 												"raw": {}
 											}
