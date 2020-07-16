@@ -2350,7 +2350,7 @@
 									"response": []
 								},
 								{
-									"name": "2. Create PIIS consent in XS2A Copy",
+									"name": "8. Create PIIS consent in XS2A invalid account attribute",
 									"event": [
 										{
 											"listen": "test",
