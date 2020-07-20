@@ -171,7 +171,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
             return false;
         }
 
-        return consentAuthorisationServiceInternal.getAuthorisationByExternalId(authorisationId, instanceId)
+        return consentAuthorisationServiceInternal.getAuthorisationByAuthorisationId(authorisationId, instanceId)
                    .map(authorisation -> consentAuthorisationServiceInternal.updateScaStatusAndAuthenticationData(status, authorisation, authenticationDataHolder))
                    .orElseGet(() -> {
                        log.info("Authorisation ID [{}], Instance ID: [{}]. Update authorisation status failed, because authorisation not found",
@@ -429,7 +429,7 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
 
     private CmsAisAccountConsent mapToCmsAisAccountConsentWithAuthorisations(ConsentEntity entity) {
         List<AuthorisationEntity> authorisations =
-            authorisationRepository.findAllByParentExternalIdAndAuthorisationType(entity.getExternalId(), AuthorisationType.AIS);
+            consentAuthorisationServiceInternal.getAuthorisationsByParentExternalId(entity.getExternalId());
         return consentMapper.mapToCmsAisAccountConsent(entity, authorisations);
     }
 }

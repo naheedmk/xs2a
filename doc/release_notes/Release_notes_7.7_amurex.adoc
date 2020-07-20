@@ -3,11 +3,20 @@
 == Table of Contents
 
 * Add update authorisation status for confirmation of funds
+* Add get confirmation of fund consent by redirectId
 
 == Add update authorisation status for confirmation of funds
 
-Added resource to update authorisation status for confirmation of funds (PIIS v2) to `CMS-PSU_API`:
+Added resource to update authorisation status for confirmation of funds (PIIS v2) to `CMS-PSU-API`:
 
 ```
 PUT psu-api/v2/piis/consent/{consent-id}/authorisation/{authorisation-id}/status/{status}
+```
+
+== Add get confirmation of fund consent by redirectId
+
+Added resource for getting confirmation of funds consent by redirectId to `CMS-PSU-API`:
+
+```
+GET psu-api/v2/piis/consent/redirect/{redirect-id}
 ```
