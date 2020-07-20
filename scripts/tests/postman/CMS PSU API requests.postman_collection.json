@@ -5563,57 +5563,7 @@
 									"response": []
 								},
 								{
-									"name": "4. Get PIIS Consent object by its ID",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"id": "26ab2088-90df-4adb-ba04-351421c7da24",
-												"exec": [
-													"pm.test(\"Status code is 200\", () => {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"",
-													"const jsonData = pm.response.json();",
-													"",
-													"pm.test(\"Consent status is VALID\", () => {",
-													"        pm.expect(jsonData.consentStatus).to.eql(\"VALID\");",
-													"});",
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "PSU-ID",
-												"value": "{{psu_id_none}}",
-												"type": "text"
-											}
-										],
-										"url": {
-											"raw": "{{protocol}}://{{url_cms}}//psu-api/v2/piis/consent/{{piis_consent_id}}",
-											"protocol": "{{protocol}}",
-											"host": [
-												"{{url_cms}}"
-											],
-											"path": [
-												"",
-												"psu-api",
-												"v2",
-												"piis",
-												"consent",
-												"{{piis_consent_id}}"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "5. Get consent response object by redirect id",
+									"name": "4. Get consent response object by redirect id",
 									"event": [
 										{
 											"listen": "test",
@@ -5678,6 +5628,56 @@
 												"consent",
 												"redirect",
 												"{{redirect_id}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "5. Get PIIS Consent object by its ID",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "26ab2088-90df-4adb-ba04-351421c7da24",
+												"exec": [
+													"pm.test(\"Status code is 200\", () => {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"const jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Consent status is RECEIVED\", () => {",
+													"        pm.expect(jsonData.consentStatus).to.eql(\"RECEIVED\");",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "PSU-ID",
+												"type": "text",
+												"value": "{{psu_id_none}}"
+											}
+										],
+										"url": {
+											"raw": "{{protocol}}://{{url_cms}}//psu-api/v2/piis/consent/{{internal_consent_id}}",
+											"protocol": "{{protocol}}",
+											"host": [
+												"{{url_cms}}"
+											],
+											"path": [
+												"",
+												"psu-api",
+												"v2",
+												"piis",
+												"consent",
+												"{{internal_consent_id}}"
 											]
 										}
 									},

@@ -17,6 +17,7 @@
 package de.adorsys.psd2.consent.psu.api;
 
 import de.adorsys.psd2.consent.api.CmsConstant;
+import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
 import de.adorsys.psd2.consent.api.ais.CmsAisConsentResponse;
 import de.adorsys.psd2.consent.api.piis.v2.CmsConfirmationOfFundsResponse;
 import de.adorsys.psd2.consent.psu.api.config.CmsPsuApiTagName;
@@ -119,4 +120,22 @@ public interface CmsPsuConfirmationOfFundsApi {
         @PathVariable(CmsConstant.PATH.STATUS) String status,
         @RequestHeader(value = "instance-id", required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId);
 
+
+    @GetMapping(path = "/{consent-id}")
+    @ApiOperation(value = "Returns confirmation of funds consent object by its ID.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK", response = CmsAisAccountConsent.class),
+        @ApiResponse(code = 404, message = "Not Found")})
+    @PsuHeadersDescription
+    ResponseEntity<CmsConfirmationOfFundsConsent> getConsentByConsentId(
+        @ApiParam(name = CmsConstant.PATH.CONSENT_ID,
+            value = "The consent identification assigned to the created confirmation of funds consent.",
+            example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7",
+            required = true)
+        @PathVariable(CmsConstant.PATH.CONSENT_ID) String consentId,
+        @RequestHeader(value = CmsConstant.HEADERS.PSU_ID, required = false) String psuId,
+        @RequestHeader(value = CmsConstant.HEADERS.PSU_ID_TYPE, required = false) String psuIdType,
+        @RequestHeader(value = CmsConstant.HEADERS.PSU_CORPORATE_ID, required = false) String psuCorporateId,
+        @RequestHeader(value = CmsConstant.HEADERS.PSU_CORPORATE_ID_TYPE, required = false) String psuCorporateIdType,
+        @RequestHeader(value = CmsConstant.HEADERS.INSTANCE_ID, required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId);
 }
