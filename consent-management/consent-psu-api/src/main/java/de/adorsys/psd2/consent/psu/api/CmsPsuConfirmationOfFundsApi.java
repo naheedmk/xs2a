@@ -28,7 +28,7 @@ import static de.adorsys.psd2.consent.psu.api.config.CmsPsuApiDefaultValue.DEFAU
 
 @RequestMapping(path = "psu-api/v2/piis/consent")
 @Api(value = "psu-api/v2/piis/consent", tags = CmsPsuApiTagName.CONFIRMATION_OF_FUNDS)
-public interface CmsPsuConfirmationOfFundsControllerApi {
+public interface CmsPsuConfirmationOfFundsApi {
 
     @PutMapping(path = "/{consent-id}/authorisation/{authorisation-id}/status/{status}")
     @ApiOperation(value = "Updates a Status of Confirmation of Funds Consent Authorisation by its ID and PSU ID")

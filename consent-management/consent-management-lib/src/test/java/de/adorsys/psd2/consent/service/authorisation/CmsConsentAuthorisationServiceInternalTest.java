@@ -39,7 +39,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CmsConsentAuthorisationServiceInternalTest {
@@ -140,8 +140,6 @@ class CmsConsentAuthorisationServiceInternalTest {
         assertEquals(authenticationDataHolder.getAuthenticationData(), authorisationEntity.getScaAuthenticationData());
         assertEquals(authenticationDataHolder.getAuthenticationMethodId(), authorisationEntity.getAuthenticationMethodId());
         assertEquals(ScaStatus.RECEIVED, authorisationEntity.getScaStatus());
-
-        verify(authorisationRepository, times(1)).save(authorisationEntity);
     }
 
     @Test

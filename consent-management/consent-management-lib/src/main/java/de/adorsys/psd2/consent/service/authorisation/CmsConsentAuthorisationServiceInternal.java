@@ -67,7 +67,6 @@ public class CmsConsentAuthorisationServiceInternal {
             enrichAuthorisationWithAuthenticationData(authorisation, authenticationDataHolder);
         }
 
-        authorisationRepository.save(authorisation);
         return true;
     }
 

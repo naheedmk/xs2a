@@ -17,7 +17,7 @@
 package de.adorsys.psd2.consent.web.psu.controller;
 
 import de.adorsys.psd2.consent.api.piis.v2.CmsConfirmationOfFundsResponse;
-import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsControllerApi;
+import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsApi;
 import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsService;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class CmsPsuConfirmationOfFundsController implements CmsPsuConfirmationOfFundsControllerApi {
+public class CmsPsuConfirmationOfFunds implements CmsPsuConfirmationOfFundsApi {
     private final CmsPsuConfirmationOfFundsService cmsPsuConfirmationOfFundsService;
 
     @Override
