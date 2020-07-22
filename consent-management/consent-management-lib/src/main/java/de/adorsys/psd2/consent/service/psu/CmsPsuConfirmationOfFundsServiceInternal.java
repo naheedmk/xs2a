@@ -18,6 +18,7 @@ package de.adorsys.psd2.consent.service.psu;
 
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsService;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.ConfirmationOfFundsConsentSpecification;
 import de.adorsys.psd2.consent.service.authorisation.CmsConsentAuthorisationServiceInternal;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
@@ -37,6 +38,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CmsPsuConfirmationOfFundsServiceInternal implements CmsPsuConfirmationOfFundsService {
+    private final ConsentJpaRepository consentJpaRepository;
     private final CmsConsentAuthorisationServiceInternal consentAuthorisationService;
     private final ConfirmationOfFundsConsentSpecification confirmationOfFundsConsentSpecification;
 
@@ -62,6 +64,7 @@ public class CmsPsuConfirmationOfFundsServiceInternal implements CmsPsuConfirmat
     }
 
     private Optional<ConsentEntity> getActualConsent(String consentId, String instanceId) {
-        return consentAuthorisationService.getActualConsent(confirmationOfFundsConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId));
+        return consentJpaRepository.findOne(confirmationOfFundsConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId))
+                   .filter(c -> !c.getConsentStatus().isFinalisedStatus());
     }
 }

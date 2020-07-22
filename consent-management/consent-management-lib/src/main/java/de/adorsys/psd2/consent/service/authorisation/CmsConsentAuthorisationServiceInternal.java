@@ -17,9 +17,7 @@
 package de.adorsys.psd2.consent.service.authorisation;
 
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
-import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.AuthorisationRepository;
-import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.AuthorisationSpecification;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
 import de.adorsys.psd2.xs2a.core.sca.AuthenticationDataHolder;
@@ -27,7 +25,6 @@ import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -36,14 +33,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CmsConsentAuthorisationServiceInternal {
-    private final ConsentJpaRepository consentJpaRepository;
     private final AuthorisationRepository authorisationRepository;
     private final AuthorisationSpecification authorisationSpecification;
-
-    public Optional<ConsentEntity> getActualConsent(Specification<ConsentEntity> specification) {
-        return consentJpaRepository.findOne(specification)
-                   .filter(c -> !c.getConsentStatus().isFinalisedStatus());
-    }
 
     public Optional<AuthorisationEntity> getAuthorisationByExternalId(@NotNull String authorisationId, @NotNull String instanceId) throws AuthorisationIsExpiredException {
         Optional<AuthorisationEntity> authorisation = authorisationRepository.findOne(authorisationSpecification.byExternalIdAndInstanceId(authorisationId, instanceId));

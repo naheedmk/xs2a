@@ -71,7 +71,7 @@ class CmsPsuConfirmationOfFundsControllerTest {
     private CmsPsuConfirmationOfFundsService cmsPsuConfirmationOfFundsService;
 
     @InjectMocks
-    private CmsPsuConfirmationOfFunds cmsPsuConfirmationOfFundsController;
+    private CmsPsuConfirmationOfFundsController cmsPsuConfirmationOfFundsController;
 
     private PsuIdData psuIdData;
     private AuthenticationDataHolder authenticationDataHolder;

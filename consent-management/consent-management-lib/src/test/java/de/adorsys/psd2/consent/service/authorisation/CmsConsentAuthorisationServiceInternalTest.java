@@ -19,9 +19,7 @@ package de.adorsys.psd2.consent.service.authorisation;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.AuthorisationRepository;
-import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.AuthorisationSpecification;
-import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
 import de.adorsys.psd2.xs2a.core.sca.AuthenticationDataHolder;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
@@ -51,13 +49,9 @@ class CmsConsentAuthorisationServiceInternalTest {
     private CmsConsentAuthorisationServiceInternal cmsConsentAuthorisationServiceInternal;
 
     @Mock
-    private ConsentJpaRepository consentJpaRepository;
-    @Mock
     private AuthorisationRepository authorisationRepository;
     @Mock
     private AuthorisationSpecification authorisationSpecification;
-    @Mock
-    private Specification<ConsentEntity> specification;
 
     private JsonReader jsonReader = new JsonReader();
     private ConsentEntity consentEntity;
@@ -69,24 +63,6 @@ class CmsConsentAuthorisationServiceInternalTest {
         consentEntity = jsonReader.getObjectFromFile("json/consent-entity.json", ConsentEntity.class);
         authorisationEntity = jsonReader.getObjectFromFile("json/authorisation-entity.json", AuthorisationEntity.class);
         authenticationDataHolder = jsonReader.getObjectFromFile("json/authentication-data-holder.json", AuthenticationDataHolder.class);
-    }
-
-    @Test
-    void getActualConsent_consentStatusIsNotFinalised() {
-        consentEntity.setConsentStatus(ConsentStatus.RECEIVED);
-        when(consentJpaRepository.findOne(specification)).thenReturn(Optional.of(consentEntity));
-
-        Optional<ConsentEntity> actualConsent = cmsConsentAuthorisationServiceInternal.getActualConsent(specification);
-        assertTrue(actualConsent.isPresent());
-    }
-
-    @Test
-    void getActualConsent_consentStatusIsFinalised() {
-        consentEntity.setConsentStatus(ConsentStatus.REVOKED_BY_PSU);
-        when(consentJpaRepository.findOne(specification)).thenReturn(Optional.of(consentEntity));
-
-        Optional<ConsentEntity> actualConsent = cmsConsentAuthorisationServiceInternal.getActualConsent(specification);
-        assertTrue(actualConsent.isEmpty());
     }
 
     @Test
