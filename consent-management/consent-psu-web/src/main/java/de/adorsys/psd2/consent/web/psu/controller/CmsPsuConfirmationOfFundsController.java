@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class CmsPsuConfirmationOfFunds implements CmsPsuConfirmationOfFundsApi {
+public class CmsPsuConfirmationOfFundsController implements CmsPsuConfirmationOfFundsApi {
     private final CmsPsuConfirmationOfFundsService cmsPsuConfirmationOfFundsService;
 
     @Override
