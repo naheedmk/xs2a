@@ -18,6 +18,7 @@ package de.adorsys.psd2.consent.service.psu;
 
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
+import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.ConfirmationOfFundsConsentSpecification;
 import de.adorsys.psd2.consent.service.authorisation.CmsConsentAuthorisationServiceInternal;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
@@ -56,6 +57,8 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
     private CmsConsentAuthorisationServiceInternal consentAuthorisationService;
     @Mock
     private ConfirmationOfFundsConsentSpecification confirmationOfFundsConsentSpecification;
+    @Mock
+    private ConsentJpaRepository consentJpaRepository;
 
     private JsonReader jsonReader = new JsonReader();
     private PsuIdData psuIdData;
@@ -74,9 +77,9 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
     void updateAuthorisationStatus() throws AuthorisationIsExpiredException {
         when(confirmationOfFundsConsentSpecification.byConsentIdAndInstanceId(CONSENT_ID, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        when(consentAuthorisationService.getActualConsent(any(Specification.class)))
+        when(consentJpaRepository.findOne(any(Specification.class)))
             .thenReturn(Optional.of(consentEntity));
-        when(consentAuthorisationService.getAuthorisationByExternalId(AUTHORISATION_ID, INSTANCE_ID))
+        when(consentAuthorisationService.getAuthorisationByAuthorisationId(AUTHORISATION_ID, INSTANCE_ID))
             .thenReturn(Optional.of(authorisationEntity));
         when(consentAuthorisationService.updateScaStatusAndAuthenticationData(ScaStatus.RECEIVED, authorisationEntity, authenticationDataHolder))
             .thenReturn(true);
@@ -92,9 +95,9 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
         // Given
         when(confirmationOfFundsConsentSpecification.byConsentIdAndInstanceId(CONSENT_ID, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        when(consentAuthorisationService.getActualConsent(any(Specification.class)))
+        when(consentJpaRepository.findOne(any(Specification.class)))
             .thenReturn(Optional.of(consentEntity));
-        when(consentAuthorisationService.getAuthorisationByExternalId(AUTHORISATION_ID, INSTANCE_ID))
+        when(consentAuthorisationService.getAuthorisationByAuthorisationId(AUTHORISATION_ID, INSTANCE_ID))
             .thenReturn(Optional.empty());
 
         // When
@@ -110,7 +113,7 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
         // Given
         when(confirmationOfFundsConsentSpecification.byConsentIdAndInstanceId(CONSENT_ID, INSTANCE_ID))
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
-        when(consentAuthorisationService.getActualConsent(any(Specification.class)))
+        when(consentJpaRepository.findOne(any(Specification.class)))
             .thenReturn(Optional.empty());
 
         // When
@@ -118,7 +121,7 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
                                                                                             INSTANCE_ID, authenticationDataHolder);
 
         assertFalse(result);
-        verify(consentAuthorisationService, never()).getAuthorisationByExternalId(any(), any());
+        verify(consentAuthorisationService, never()).getAuthorisationByAuthorisationId(any(), any());
         verify(consentAuthorisationService, never()).updateScaStatusAndAuthenticationData(any(), any(), any());
     }
 }
