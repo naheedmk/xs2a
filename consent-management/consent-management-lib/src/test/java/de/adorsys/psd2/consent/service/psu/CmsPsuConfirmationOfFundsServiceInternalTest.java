@@ -22,6 +22,7 @@ import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.ConfirmationOfFundsConsentSpecification;
 import de.adorsys.psd2.consent.service.authorisation.CmsConsentAuthorisationServiceInternal;
+import de.adorsys.psd2.xs2a.core.consent.ConsentType;
 import de.adorsys.psd2.consent.service.mapper.AuthorisationTemplateMapperImpl;
 import de.adorsys.psd2.consent.service.mapper.CmsConfirmationOfFundsMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
@@ -66,6 +67,8 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
     private CmsConsentAuthorisationServiceInternal consentAuthorisationService;
     @Mock
     private ConfirmationOfFundsConsentSpecification confirmationOfFundsConsentSpecification;
+    @Mock
+    private CmsPsuConsentServiceInternal cmsPsuConsentServiceInternal;
     @Mock
     private ConsentJpaRepository consentJpaRepository;
 
@@ -189,6 +192,43 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
 
         verify(consentJpaRepository, never()).findByExternalId(anyString());
         verify(consentAuthorisationService, never()).getAuthorisationsByParentExternalId(anyString());
+    }
+
+    @Test
+    void updatePsuDataInConsent_success() throws AuthorisationIsExpiredException {
+        //Given
+        when(consentAuthorisationService.getAuthorisationByExternalId(AUTHORISATION_ID, INSTANCE_ID))
+            .thenReturn(Optional.of(authorisationEntity));
+        when(cmsPsuConsentServiceInternal.updatePsuData(authorisationEntity, psuIdData, ConsentType.PIIS_ASPSP))
+            .thenReturn(true);
+        //When
+        boolean updatePsuDataInConsent = cmsPsuConfirmationOfFundsServiceInternal.updatePsuDataInConsent(psuIdData, AUTHORISATION_ID, INSTANCE_ID);
+        //Then
+        assertTrue(updatePsuDataInConsent);
+    }
+
+    @Test
+    void updatePsuDataInConsent_authorisationNotFound() throws AuthorisationIsExpiredException {
+        //Given
+        when(consentAuthorisationService.getAuthorisationByExternalId(AUTHORISATION_ID, INSTANCE_ID))
+            .thenReturn(Optional.empty());
+        //When
+        boolean updatePsuDataInConsent = cmsPsuConfirmationOfFundsServiceInternal.updatePsuDataInConsent(psuIdData, AUTHORISATION_ID, INSTANCE_ID);
+        //Then
+        assertFalse(updatePsuDataInConsent);
+    }
+
+    @Test
+    void updatePsuDataInConsent_updateFailed() throws AuthorisationIsExpiredException {
+        //Given
+        when(consentAuthorisationService.getAuthorisationByExternalId(AUTHORISATION_ID, INSTANCE_ID))
+            .thenReturn(Optional.of(authorisationEntity));
+        when(cmsPsuConsentServiceInternal.updatePsuData(authorisationEntity, psuIdData, ConsentType.PIIS_ASPSP))
+            .thenReturn(false);
+        //When
+        boolean updatePsuDataInConsent = cmsPsuConfirmationOfFundsServiceInternal.updatePsuDataInConsent(psuIdData, AUTHORISATION_ID, INSTANCE_ID);
+        //Then
+        assertFalse(updatePsuDataInConsent);
     }
 
 }

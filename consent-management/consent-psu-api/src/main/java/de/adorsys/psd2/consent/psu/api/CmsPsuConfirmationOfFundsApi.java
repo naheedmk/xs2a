@@ -17,8 +17,10 @@
 package de.adorsys.psd2.consent.psu.api;
 
 import de.adorsys.psd2.consent.api.CmsConstant;
+import de.adorsys.psd2.consent.api.ais.CmsAisConsentResponse;
 import de.adorsys.psd2.consent.api.piis.v2.CmsConfirmationOfFundsResponse;
 import de.adorsys.psd2.consent.psu.api.config.CmsPsuApiTagName;
+import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.AuthenticationDataHolder;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -58,5 +60,21 @@ public interface CmsPsuConfirmationOfFundsApi {
         @RequestHeader(value = CmsConstant.HEADERS.PSU_CORPORATE_ID_TYPE, required = false) String psuCorporateIdType,
         @RequestHeader(value = CmsConstant.HEADERS.INSTANCE_ID, required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId,
         @RequestBody(required = false) AuthenticationDataHolder authenticationDataHolder);
+
+    @PutMapping(path = "/{consent-id}/authorisation/{authorisation-id}/psu-data")
+    @ApiOperation(value = "Updates PSU Data in Confirmation of Funds Consent, based on the trusted information about PSU known to ASPSP (i.e. after authorisation).")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 408, message = "Request Timeout", response = CmsAisConsentResponse.class)
+    })
+    ResponseEntity<Object> updatePsuDataInConsent(
+        @SuppressWarnings("unused")
+        @ApiParam(name = CmsConstant.PATH.CONSENT_ID, value = "The consent identifier", example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7", required = true)
+        @PathVariable(CmsConstant.PATH.CONSENT_ID) String consentId,
+        @ApiParam(name = CmsConstant.PATH.AUTHORISATION_ID, value = "The authorisation identifier of the current authorisation session", example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7", required = true)
+        @PathVariable(CmsConstant.PATH.AUTHORISATION_ID) String authorisationId,
+        @RequestHeader(value = CmsConstant.HEADERS.INSTANCE_ID, required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId,
+        @RequestBody PsuIdData psuIdData);
 
 }
