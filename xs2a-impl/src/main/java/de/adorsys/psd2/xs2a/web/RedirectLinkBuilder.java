@@ -50,7 +50,7 @@ public class RedirectLinkBuilder {
      */
     public String buildConsentScaRedirectLink(String encryptedConsentId, String redirectId, String internalRequestId,
                                               String instanceId, ConsentType consentType) {
-        String redirectUrl = consentType == ConsentType.AIS ? aspspProfileService.getAisRedirectUrlToAspsp() : aspspProfileService.getPiisRedirectUrlToAspsp();
+        String redirectUrl = getRedirectUrlByConsentType(consentType);
 
         String scaRedirectLink = redirectUrl
                                      .replace(REDIRECT_URL, redirectId)
@@ -194,5 +194,13 @@ public class RedirectLinkBuilder {
         return link + (StringUtils.isNotBlank(instanceId) ?
                            "?instanceId=" + instanceId :
                            StringUtils.EMPTY);
+    }
+
+    private String getRedirectUrlByConsentType(ConsentType consentType) {
+        switch (consentType) {
+            case AIS: return aspspProfileService.getAisRedirectUrlToAspsp();
+            case PIIS_TPP: return aspspProfileService.getPiisRedirectUrlToAspsp();
+            default: throw new UnsupportedOperationException("Can't find redirect url by consent type " + consentType);
+        }
     }
 }
