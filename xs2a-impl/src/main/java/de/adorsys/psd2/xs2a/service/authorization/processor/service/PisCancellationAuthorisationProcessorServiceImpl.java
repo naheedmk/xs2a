@@ -205,6 +205,13 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends PaymentBas
         return pisCommonDecoupledService.proceedDecoupledCancellation(request, payment, authenticationMethodId);
     }
 
+    @Override
+    Xs2aUpdatePisCommonPaymentPsuDataResponse getXs2aUpdatePisCommonPaymentPsuDataResponse(ScaStatus scaStatus, SpiPayment payment, SpiContextData contextData, SpiAspspConsentDataProvider spiAspspConsentDataProvider, PsuIdData psuData, String authorisationId) {
+
+
+        return new Xs2aUpdatePisCommonPaymentPsuDataResponse(scaStatus, payment.getPaymentId(), authorisationId, psuData);
+    }
+
     private boolean isPsuDataCorrect(String paymentId, PsuIdData psuData) {
         List<PsuIdData> psuIdDataList = pisPsuDataService.getPsuDataByPaymentId(paymentId);
 

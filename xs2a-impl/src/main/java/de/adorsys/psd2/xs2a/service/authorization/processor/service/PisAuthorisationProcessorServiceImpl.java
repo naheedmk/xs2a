@@ -244,4 +244,17 @@ public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisati
                                                     spiToXs2aCurrencyConversionInfoMapper
                                                         .toXs2aCurrencyConversionInfo(spiCurrencyConversionInfo));
     }
+
+    @Override
+    Xs2aUpdatePisCommonPaymentPsuDataResponse getXs2aUpdatePisCommonPaymentPsuDataResponse(ScaStatus scaStatus, SpiPayment payment, SpiContextData contextData, SpiAspspConsentDataProvider spiAspspConsentDataProvider, PsuIdData psuData, String authorisationId) {
+        SpiResponse<SpiCurrencyConversionInfo> conversionInfoSpiResponse =
+            currencyConversionInfoSpi.getCurrencyConversionInfo(contextData, payment, authorisationId, spiAspspConsentDataProvider);
+        SpiCurrencyConversionInfo spiCurrencyConversionInfo = conversionInfoSpiResponse.getPayload();
+
+        return Xs2aUpdatePisCommonPaymentPsuDataResponse
+                   .buildWithCurrencyConversionInfo(scaStatus, payment.getPaymentId(), authorisationId, psuData,
+                                                    spiToXs2aCurrencyConversionInfoMapper
+                                                        .toXs2aCurrencyConversionInfo(spiCurrencyConversionInfo)
+                   );
+    }
 }

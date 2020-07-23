@@ -191,14 +191,7 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
 
         updatePaymentDataByPaymentResponse(paymentId, spiResponse);
 
-        SpiResponse<SpiCurrencyConversionInfo> conversionInfoSpiResponse =
-            currencyConversionInfoSpi.getCurrencyConversionInfo(contextData, payment, authorisationId, aspspConsentDataProvider);
-
-        SpiCurrencyConversionInfo conversionInfo = conversionInfoSpiResponse.getPayload();
-
-        return Xs2aUpdatePisCommonPaymentPsuDataResponse
-                   .buildWithCurrencyConversionInfo(FINALISED, paymentId, authorisationId, psuData,
-                                                    spiToXs2aCurrencyConversionInfoMapper.toXs2aCurrencyConversionInfo(conversionInfo));
+        return getXs2aUpdatePisCommonPaymentPsuDataResponse(FINALISED, payment, contextData, aspspConsentDataProvider, psuData, authorisationId);
     }
 
     @Deprecated // TODO remove deprecated method in 6.7 https://git.adorsys.de/adorsys/xs2a/aspsp-xs2a/-/issues/1270
@@ -436,21 +429,13 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
         AuthenticationObject authenticationObject = authorizationCodeResult.getSelectedScaMethod();
         ChallengeData challengeData = mapToChallengeData(authorizationCodeResult);
 
-        SpiResponse<SpiCurrencyConversionInfo> conversionInfoSpiResponse =
-            currencyConversionInfoSpi.getCurrencyConversionInfo(contextData, payment, authorisationId, spiAspspConsentDataProvider);
-        SpiCurrencyConversionInfo spiCurrencyConversionInfo = conversionInfoSpiResponse.getPayload();
-
-        Xs2aUpdatePisCommonPaymentPsuDataResponse response =
-            Xs2aUpdatePisCommonPaymentPsuDataResponse
-                .buildWithCurrencyConversionInfo(SCAMETHODSELECTED, payment.getPaymentId(), authorisationId, psuData,
-                                                 spiToXs2aCurrencyConversionInfoMapper
-                                                     .toXs2aCurrencyConversionInfo(spiCurrencyConversionInfo)
-                );
-
+        Xs2aUpdatePisCommonPaymentPsuDataResponse response = getXs2aUpdatePisCommonPaymentPsuDataResponse(SCAMETHODSELECTED, payment, contextData, spiAspspConsentDataProvider, psuData, authorisationId);
         response.setChosenScaMethod(authenticationObject);
         response.setChallengeData(challengeData);
         return response;
     }
+
+    abstract Xs2aUpdatePisCommonPaymentPsuDataResponse getXs2aUpdatePisCommonPaymentPsuDataResponse(ScaStatus scaStatus, SpiPayment payment, SpiContextData contextData, SpiAspspConsentDataProvider spiAspspConsentDataProvider, PsuIdData psuData, String authorisationId);
 
     private boolean isDecoupledApproach(String authorisationId, String authenticationMethodId) {
         return xs2aAuthorisationService.isAuthenticationMethodDecoupled(authorisationId, authenticationMethodId);
@@ -497,19 +482,7 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
         AuthenticationObject authenticationObject = authorizationCodeResult.getSelectedScaMethod();
         ChallengeData challengeData = authorizationCodeResult.getChallengeData();
 
-        SpiResponse<SpiCurrencyConversionInfo> conversionInfoSpiResponse =
-            currencyConversionInfoSpi.getCurrencyConversionInfo(
-                contextData, payment, authorisationId, aspspConsentDataProvider
-            );
-
-        SpiCurrencyConversionInfo spiCurrencyConversionInfo = conversionInfoSpiResponse.getPayload();
-
-        Xs2aUpdatePisCommonPaymentPsuDataResponse response =
-            Xs2aUpdatePisCommonPaymentPsuDataResponse
-                .buildWithCurrencyConversionInfo(SCAMETHODSELECTED, paymentId, authorisationId, psuData,
-                                                 spiToXs2aCurrencyConversionInfoMapper
-                                                     .toXs2aCurrencyConversionInfo(spiCurrencyConversionInfo));
-
+        Xs2aUpdatePisCommonPaymentPsuDataResponse response = getXs2aUpdatePisCommonPaymentPsuDataResponse(SCAMETHODSELECTED, payment, contextData, aspspConsentDataProvider, psuData, authorisationId);
         response.setChosenScaMethod(authenticationObject);
         response.setChallengeData(challengeData);
         return response;

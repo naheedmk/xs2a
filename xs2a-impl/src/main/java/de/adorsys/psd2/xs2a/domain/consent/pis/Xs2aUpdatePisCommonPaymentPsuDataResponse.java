@@ -45,7 +45,7 @@ public class Xs2aUpdatePisCommonPaymentPsuDataResponse extends AuthorisationProc
         this.xs2aCurrencyConversionInfo = xs2aCurrencyConversionInfo;
     }
 
-    private Xs2aUpdatePisCommonPaymentPsuDataResponse(ScaStatus scaStatus, String paymentId, String authorisationId, PsuIdData psuData) {
+    public Xs2aUpdatePisCommonPaymentPsuDataResponse(ScaStatus scaStatus, String paymentId, String authorisationId, PsuIdData psuData) {
         this.scaStatus = scaStatus;
         this.paymentId = paymentId;
         this.authorisationId = authorisationId;

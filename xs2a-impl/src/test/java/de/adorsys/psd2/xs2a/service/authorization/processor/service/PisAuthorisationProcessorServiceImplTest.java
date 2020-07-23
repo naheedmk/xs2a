@@ -1099,6 +1099,12 @@ class PisAuthorisationProcessorServiceImplTest {
             .thenReturn(SpiResponse.<SpiCurrencyConversionInfo>builder()
                             .payload(spiCurrencyConversionInfo)
                             .build());
+        PisCommonPaymentResponse pisCommonPaymentResponse = new PisCommonPaymentResponse();
+        when(xs2aPisCommonPaymentService.getPisCommonPaymentById(TEST_PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentResponse));
+        SpiSinglePayment spiPayment = new SpiSinglePayment("sepa-credit-transfers");
+        spiPayment.setPaymentId(TEST_PAYMENT_ID);
+        when(xs2aToSpiPaymentMapper.mapToSpiPayment(pisCommonPaymentResponse)).thenReturn(spiPayment);
+
         // When
         AuthorisationProcessorResponse actual = pisAuthorisationProcessorService.doScaPsuAuthenticated(processorRequest);
 
@@ -1288,6 +1294,12 @@ class PisAuthorisationProcessorServiceImplTest {
             .thenReturn(SpiResponse.<SpiCurrencyConversionInfo>builder()
                             .payload(spiCurrencyConversionInfo)
                             .build());
+        PisCommonPaymentResponse pisCommonPaymentResponse = new PisCommonPaymentResponse();
+        when(xs2aPisCommonPaymentService.getPisCommonPaymentById(TEST_PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentResponse));
+        SpiSinglePayment spiPayment = new SpiSinglePayment("sepa-credit-transfers");
+        spiPayment.setPaymentId(TEST_PAYMENT_ID);
+        when(xs2aToSpiPaymentMapper.mapToSpiPayment(pisCommonPaymentResponse)).thenReturn(spiPayment);
+
         // When
         AuthorisationProcessorResponse actual = pisAuthorisationProcessorService.doScaMethodSelected(buildAuthorisationProcessorRequest());
 
@@ -1316,6 +1328,12 @@ class PisAuthorisationProcessorServiceImplTest {
             .thenReturn(SpiResponse.<SpiCurrencyConversionInfo>builder()
                             .payload(spiCurrencyConversionInfo)
                             .build());
+        PisCommonPaymentResponse pisCommonPaymentResponse = new PisCommonPaymentResponse();
+        when(xs2aPisCommonPaymentService.getPisCommonPaymentById(TEST_PAYMENT_ID)).thenReturn(Optional.of(pisCommonPaymentResponse));
+        SpiSinglePayment spiPayment = new SpiSinglePayment("sepa-credit-transfers");
+        spiPayment.setPaymentId(TEST_PAYMENT_ID);
+        when(xs2aToSpiPaymentMapper.mapToSpiPayment(pisCommonPaymentResponse)).thenReturn(spiPayment);
+
         // When
         AuthorisationProcessorResponse actual = pisAuthorisationProcessorService.doScaMethodSelected(buildAuthorisationProcessorRequest());
 
