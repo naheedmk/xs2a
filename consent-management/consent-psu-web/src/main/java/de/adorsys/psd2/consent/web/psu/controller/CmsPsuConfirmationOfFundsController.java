@@ -20,6 +20,7 @@ import de.adorsys.psd2.consent.api.ais.CmsAisConsentResponse;
 import de.adorsys.psd2.consent.api.piis.v2.CmsConfirmationOfFundsResponse;
 import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsApi;
 import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsService;
+import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
 import de.adorsys.psd2.xs2a.core.exception.RedirectUrlIsExpiredException;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -92,5 +93,17 @@ public class CmsPsuConfirmationOfFundsController implements CmsPsuConfirmationOf
         } catch (AuthorisationIsExpiredException e) {
             return new ResponseEntity<>(new CmsConfirmationOfFundsResponse(e.getNokRedirectUri()), HttpStatus.REQUEST_TIMEOUT);
         }
+    }
+
+    @Override
+    public ResponseEntity<Void> updateConsentStatus(String consentId, String status, String instanceId) {
+        Optional<ConsentStatus> consentStatusOptional = ConsentStatus.fromValue(status.toLowerCase());
+        if (consentStatusOptional.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return cmsPsuConfirmationOfFundsService.updateConsentStatus(consentId, consentStatusOptional.get(), instanceId)
+                   ? ResponseEntity.ok().build()
+                   : ResponseEntity.badRequest().build();
     }
 }

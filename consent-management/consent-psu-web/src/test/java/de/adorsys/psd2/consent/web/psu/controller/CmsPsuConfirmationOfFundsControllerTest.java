@@ -21,8 +21,8 @@ import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsAuthorisation;
 import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsService;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.mapper.config.ObjectMapperConfig;
+import de.adorsys.psd2.xs2a.core.consent.ConsentStatus;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
-import de.adorsys.psd2.xs2a.core.exception.RedirectUrlIsExpiredException;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.sca.AuthenticationDataHolder;
 import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
@@ -274,6 +274,52 @@ class CmsPsuConfirmationOfFundsControllerTest {
 
         // Then
         verify(cmsPsuConfirmationOfFundsService).getAuthorisationByAuthorisationId(AUTHORISATION_ID, INSTANCE_ID);
+    }
+
+    @Test
+    void updateConsentStatus_shouldReturnOk() throws Exception {
+        //Given
+        ConsentStatus consentStatus = ConsentStatus.VALID;
+        when(cmsPsuConfirmationOfFundsService.updateConsentStatus(CONSENT_ID, consentStatus, INSTANCE_ID))
+            .thenReturn(true);
+        //When
+        mockMvc.perform(put("/psu-api/v2/piis/consent/{consent-id}/status/{status}", CONSENT_ID, consentStatus)
+                            .headers(INSTANCE_ID_HEADERS)
+                            .headers(PSU_HEADERS)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        // Then
+        verify(cmsPsuConfirmationOfFundsService).updateConsentStatus(CONSENT_ID, consentStatus, INSTANCE_ID);
+    }
+
+    @Test
+    void updateConsentStatus_withInvalidStatus_shouldReturnBadRequest() throws Exception {
+        // Given
+        String invalidStatus = "invalid status";
+        // When
+        mockMvc.perform(put("/psu-api/v2/piis/consent/{consent-id}/status/{status}", CONSENT_ID, invalidStatus)
+                            .headers(INSTANCE_ID_HEADERS)
+                            .headers(PSU_HEADERS)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+        // Then
+        verify(cmsPsuConfirmationOfFundsService, never()).updateConsentStatus(anyString(), any(ConsentStatus.class), anyString());
+    }
+
+    @Test
+    void updateConsentStatus_consentNotFound_shouldReturnOk() throws Exception {
+        //Given
+        ConsentStatus consentStatus = ConsentStatus.VALID;
+        when(cmsPsuConfirmationOfFundsService.updateConsentStatus(CONSENT_ID, consentStatus, INSTANCE_ID))
+            .thenReturn(false);
+        //When
+        mockMvc.perform(put("/psu-api/v2/piis/consent/{consent-id}/status/{status}", CONSENT_ID, consentStatus)
+                            .headers(INSTANCE_ID_HEADERS)
+                            .headers(PSU_HEADERS)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+        // Then
+        verify(cmsPsuConfirmationOfFundsService).updateConsentStatus(CONSENT_ID, consentStatus, INSTANCE_ID);
     }
 
     private static HttpHeaders buildInstanceIdHeaders() {
