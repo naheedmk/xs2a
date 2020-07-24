@@ -61,6 +61,17 @@ public interface CmsPsuConfirmationOfFundsApi {
         @RequestHeader(value = CmsConstant.HEADERS.INSTANCE_ID, required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId,
         @RequestBody(required = false) AuthenticationDataHolder authenticationDataHolder);
 
+    @GetMapping(path = "/redirect/{redirect-id}")
+    @ApiOperation(value = "Gets consent response by redirect ID")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "OK", response = CmsAisConsentResponse.class),
+        @ApiResponse(code = 404, message = "Not Found"),
+        @ApiResponse(code = 408, message = "Request Timeout", response = CmsAisConsentResponse.class)})
+    ResponseEntity<CmsConfirmationOfFundsResponse> getConsentIdByRedirectId(
+        @ApiParam(name = CmsConstant.PATH.REDIRECT_ID, value = "The redirect identification assigned to the created consent", required = true, example = "bf489af6-a2cb-4b75-b71d-d66d58b934d7")
+        @PathVariable(CmsConstant.PATH.REDIRECT_ID) String redirectId,
+        @RequestHeader(value = CmsConstant.HEADERS.INSTANCE_ID, required = false, defaultValue = DEFAULT_SERVICE_INSTANCE_ID) String instanceId);
+
     @PutMapping(path = "/{consent-id}/authorisation/{authorisation-id}/psu-data")
     @ApiOperation(value = "Updates PSU Data in Confirmation of Funds Consent, based on the trusted information about PSU known to ASPSP (i.e. after authorisation).")
     @ApiResponses(value = {

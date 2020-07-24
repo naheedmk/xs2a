@@ -91,9 +91,8 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
     private final ConsentDataMapper consentDataMapper;
     private final AisConsentLazyMigrationService aisConsentLazyMigrationService;
     private final AccessMapper accessMapper;
-    private final CmsConsentAuthorisationServiceInternal consentAuthorisationServiceInternal;
-    private final CmsPsuConsentServiceInternal cmsPsuConsentServiceInternal;
     private final CmsConsentAuthorisationServiceInternal consentAuthorisationService;
+    private final CmsPsuConsentServiceInternal cmsPsuConsentServiceInternal;
 
     @Override
     @Transactional

@@ -75,7 +75,7 @@ public class CmsPsuConfirmationOfFundsServiceInternal implements CmsPsuConfirmat
     @Override
     @Transactional
     public boolean updatePsuDataInConsent(@NotNull PsuIdData psuIdData, @NotNull String authorisationId, @NotNull String instanceId) throws AuthorisationIsExpiredException {
-        return consentAuthorisationService.getAuthorisationByExternalId(authorisationId, instanceId)
+        return consentAuthorisationService.getAuthorisationByAuthorisationId(authorisationId, instanceId)
                    .map(auth -> cmsPsuConsentServiceInternal.updatePsuData(auth, psuIdData, ConsentType.PIIS_ASPSP))
                    .orElseGet(() -> {
                        log.info("Authorisation ID [{}], Instance ID: [{}]. Update PSU  in consent failed, because authorisation not found",
