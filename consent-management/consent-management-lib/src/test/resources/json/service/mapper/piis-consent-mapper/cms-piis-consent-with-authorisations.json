@@ -49,8 +49,5 @@
       },
       "scaStatus": "received"
     }
-  ],
-  "usageCounterMap": {
-    "/confirmation-of-funds": 9
-  }
+  ]
 }

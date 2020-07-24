@@ -50,10 +50,7 @@
         },
         "scaStatus": "received"
       }
-    ],
-    "usageCounterMap": {
-      "/confirmation-of-funds": 9
-    }
+    ]
   },
   "authorisationId": "ed1d8022-1c38-49ae-898e-78f29234557c",
   "tppOkRedirectUri": "redirect uri",

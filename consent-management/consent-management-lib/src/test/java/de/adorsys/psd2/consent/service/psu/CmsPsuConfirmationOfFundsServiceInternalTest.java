@@ -21,10 +21,9 @@ import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.ConfirmationOfFundsConsentSpecification;
-import de.adorsys.psd2.consent.service.AisConsentUsageService;
 import de.adorsys.psd2.consent.service.authorisation.CmsConsentAuthorisationServiceInternal;
 import de.adorsys.psd2.consent.service.mapper.AuthorisationTemplateMapperImpl;
-import de.adorsys.psd2.consent.service.mapper.ConfirmationOfFundsMapper;
+import de.adorsys.psd2.consent.service.mapper.CmsConfirmationOfFundsMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.mapper.TppInfoMapperImpl;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
@@ -69,10 +68,8 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
     private ConfirmationOfFundsConsentSpecification confirmationOfFundsConsentSpecification;
     @Mock
     private ConsentJpaRepository consentJpaRepository;
-    @Mock
-    private AisConsentUsageService consentUsageService;
 
-    private ConfirmationOfFundsMapper confirmationOfFundsMapper;
+    private CmsConfirmationOfFundsMapper confirmationOfFundsMapper;
 
 
     private JsonReader jsonReader = new JsonReader();
@@ -87,7 +84,7 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
         consentEntity = jsonReader.getObjectFromFile("json/consent-entity.json", ConsentEntity.class);
         authorisationEntity = jsonReader.getObjectFromFile("json/authorisation-entity.json", AuthorisationEntity.class);
 
-        confirmationOfFundsMapper = new ConfirmationOfFundsMapper(new PsuDataMapper(), new TppInfoMapperImpl(), new AuthorisationTemplateMapperImpl(), consentUsageService);
+        confirmationOfFundsMapper = new CmsConfirmationOfFundsMapper(new PsuDataMapper(), new TppInfoMapperImpl(), new AuthorisationTemplateMapperImpl());
         cmsPsuConfirmationOfFundsServiceInternal = new CmsPsuConfirmationOfFundsServiceInternal(consentJpaRepository, consentAuthorisationService,
                                                                                                 confirmationOfFundsConsentSpecification, confirmationOfFundsMapper);
     }

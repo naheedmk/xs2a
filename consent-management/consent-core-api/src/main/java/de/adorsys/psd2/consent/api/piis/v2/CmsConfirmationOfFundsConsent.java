@@ -27,7 +27,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -43,7 +42,6 @@ public class CmsConfirmationOfFundsConsent {
     private TppInfo tppInfo;
     private AuthorisationTemplate authorisationTemplate;
     private boolean multilevelScaRequired;
-    private Map<String, Integer> usageCounterMap;
     private OffsetDateTime creationTimestamp;
     private OffsetDateTime statusChangeTimestamp;
     private List<CmsConfirmationOfFundsAuthorisation> authorisations;

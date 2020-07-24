@@ -21,27 +21,24 @@ import de.adorsys.psd2.consent.api.piis.v2.CmsConfirmationOfFundsConsent;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.domain.consent.ConsentTppInformationEntity;
-import de.adorsys.psd2.consent.service.AisConsentUsageService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class ConfirmationOfFundsMapper {
+public class CmsConfirmationOfFundsMapper {
     private final PsuDataMapper psuDataMapper;
     private final TppInfoMapper tppInfoMapper;
     private final AuthorisationTemplateMapper authorisationTemplateMapper;
-    private final AisConsentUsageService aisConsentUsageService;
 
-    public CmsConfirmationOfFundsConsent mapToCmsConfirmationOfFundsConsent(ConsentEntity consent, List<AuthorisationEntity> authorisations) {
+    public CmsConfirmationOfFundsConsent mapToCmsConfirmationOfFundsConsent(ConsentEntity consent,
+                                                                            List<AuthorisationEntity> authorisations) {
         ConsentTppInformationEntity tppInformation = consent.getTppInformation();
-        Map<String, Integer> usageCounterMap = aisConsentUsageService.getUsageCounterMap(consent);
 
         return new CmsConfirmationOfFundsConsent(
             consent.getExternalId(),
@@ -54,7 +51,6 @@ public class ConfirmationOfFundsMapper {
             tppInfoMapper.mapToTppInfo(tppInformation.getTppInfo()),
             authorisationTemplateMapper.mapToAuthorisationTemplate(consent.getAuthorisationTemplate()),
             consent.isMultilevelScaRequired(),
-            usageCounterMap,
             consent.getCreationTimestamp(),
             consent.getStatusChangeTimestamp(),
             mapToAuthorisations(authorisations)

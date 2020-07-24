@@ -24,7 +24,7 @@ import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsService;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.ConfirmationOfFundsConsentSpecification;
 import de.adorsys.psd2.consent.service.authorisation.CmsConsentAuthorisationServiceInternal;
-import de.adorsys.psd2.consent.service.mapper.ConfirmationOfFundsMapper;
+import de.adorsys.psd2.consent.service.mapper.CmsConfirmationOfFundsMapper;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
 import de.adorsys.psd2.xs2a.core.exception.RedirectUrlIsExpiredException;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -47,7 +47,7 @@ public class CmsPsuConfirmationOfFundsServiceInternal implements CmsPsuConfirmat
     private final ConsentJpaRepository consentJpaRepository;
     private final CmsConsentAuthorisationServiceInternal consentAuthorisationService;
     private final ConfirmationOfFundsConsentSpecification confirmationOfFundsConsentSpecification;
-    private final ConfirmationOfFundsMapper consentMapper;
+    private final CmsConfirmationOfFundsMapper consentMapper;
 
     @Override
     @Transactional
