@@ -126,7 +126,6 @@ public class CmsPsuConfirmationOfFundsServiceInternal implements CmsPsuConfirmat
 
         ConsentEntity consentEntity = consentEntityOptional.get();
         consentEntity.setConsentStatus(status);
-        consentJpaRepository.save(consentEntity);
         return true;
     }
 
