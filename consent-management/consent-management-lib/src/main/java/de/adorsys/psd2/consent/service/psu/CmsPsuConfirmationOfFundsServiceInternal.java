@@ -88,8 +88,6 @@ public class CmsPsuConfirmationOfFundsServiceInternal implements CmsPsuConfirmat
     private Optional<ConsentEntity> getActualConsent(String consentId, String instanceId) {
         return consentJpaRepository.findOne(confirmationOfFundsConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId))
                    .filter(c -> !c.getConsentStatus().isFinalisedStatus());
-        return consentJpaRepository.findOne(confirmationOfFundsConsentSpecification.byConsentIdAndInstanceId(consentId, instanceId))
-                   .filter(c -> !c.getConsentStatus().isFinalisedStatus());
     }
 
     private Optional<CmsConfirmationOfFundsResponse> createCmsConsentResponseFromAuthorisation(AuthorisationEntity authorisation, String redirectId) {

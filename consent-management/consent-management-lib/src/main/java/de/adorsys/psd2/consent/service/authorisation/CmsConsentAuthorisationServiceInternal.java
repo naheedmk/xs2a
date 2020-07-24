@@ -39,7 +39,7 @@ public class CmsConsentAuthorisationServiceInternal {
     private final AuthorisationRepository authorisationRepository;
     private final AuthorisationSpecification authorisationSpecification;
 
-    public Optional<AuthorisationEntity> getAuthorisationByExternalId(@NotNull String authorisationId, @NotNull String instanceId) throws AuthorisationIsExpiredException {
+    public Optional<AuthorisationEntity> getAuthorisationByAuthorisationId(@NotNull String authorisationId, @NotNull String instanceId) throws AuthorisationIsExpiredException {
         Optional<AuthorisationEntity> authorisation = authorisationRepository.findOne(authorisationSpecification.byExternalIdAndInstanceId(authorisationId, instanceId));
 
         if (authorisation.isPresent() && !authorisation.get().isAuthorisationNotExpired()) {
