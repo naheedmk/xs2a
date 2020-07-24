@@ -106,7 +106,7 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         when(consentJpaRepository.findOne(any(Specification.class)))
             .thenReturn(Optional.of(consentEntity));
-        when(consentAuthorisationService.getAuthorisationByExternalId(AUTHORISATION_ID, INSTANCE_ID))
+        when(consentAuthorisationService.getAuthorisationByAuthorisationId(AUTHORISATION_ID, INSTANCE_ID))
             .thenReturn(Optional.of(authorisationEntity));
         when(consentAuthorisationService.updateScaStatusAndAuthenticationData(ScaStatus.RECEIVED, authorisationEntity, authenticationDataHolder))
             .thenReturn(true);
@@ -124,7 +124,7 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
             .thenReturn((root, criteriaQuery, criteriaBuilder) -> null);
         when(consentJpaRepository.findOne(any(Specification.class)))
             .thenReturn(Optional.of(consentEntity));
-        when(consentAuthorisationService.getAuthorisationByExternalId(AUTHORISATION_ID, INSTANCE_ID))
+        when(consentAuthorisationService.getAuthorisationByAuthorisationId(AUTHORISATION_ID, INSTANCE_ID))
             .thenReturn(Optional.empty());
 
         // When
@@ -148,7 +148,7 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
                                                                                             INSTANCE_ID, authenticationDataHolder);
 
         assertFalse(result);
-        verify(consentAuthorisationService, never()).getAuthorisationByExternalId(any(), any());
+        verify(consentAuthorisationService, never()).getAuthorisationByAuthorisationId(any(), any());
         verify(consentAuthorisationService, never()).updateScaStatusAndAuthenticationData(any(), any(), any());
     }
 
