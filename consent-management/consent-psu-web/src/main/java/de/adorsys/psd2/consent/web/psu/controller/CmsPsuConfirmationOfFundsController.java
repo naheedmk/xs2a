@@ -31,8 +31,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
-
 @RestController
 @RequiredArgsConstructor
 public class CmsPsuConfirmationOfFundsController implements CmsPsuConfirmationOfFundsApi {
@@ -97,12 +95,14 @@ public class CmsPsuConfirmationOfFundsController implements CmsPsuConfirmationOf
 
     @Override
     public ResponseEntity<Void> updateConsentStatus(String consentId, String status, String instanceId) {
-        Optional<ConsentStatus> consentStatusOptional = ConsentStatus.fromValue(status.toLowerCase());
-        if (consentStatusOptional.isEmpty()) {
+        ConsentStatus consentStatus;
+        try {
+            consentStatus = ConsentStatus.valueOf(status);
+        } catch (IllegalArgumentException exception) {
             return ResponseEntity.badRequest().build();
         }
 
-        return cmsPsuConfirmationOfFundsService.updateConsentStatus(consentId, consentStatusOptional.get(), instanceId)
+        return cmsPsuConfirmationOfFundsService.updateConsentStatus(consentId, consentStatus, instanceId)
                    ? ResponseEntity.ok().build()
                    : ResponseEntity.badRequest().build();
     }

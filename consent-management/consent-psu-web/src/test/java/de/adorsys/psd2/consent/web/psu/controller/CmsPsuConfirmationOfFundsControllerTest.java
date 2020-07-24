@@ -30,6 +30,8 @@ import de.adorsys.xs2a.reader.JsonReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -276,14 +278,14 @@ class CmsPsuConfirmationOfFundsControllerTest {
         verify(cmsPsuConfirmationOfFundsService).getAuthorisationByAuthorisationId(AUTHORISATION_ID, INSTANCE_ID);
     }
 
-    @Test
-    void updateConsentStatus_shouldReturnOk() throws Exception {
+    @ParameterizedTest
+    @EnumSource(ConsentStatus.class)
+    void updateConsentStatus_shouldReturnOk(ConsentStatus consentStatus) throws Exception {
         //Given
-        ConsentStatus consentStatus = ConsentStatus.VALID;
         when(cmsPsuConfirmationOfFundsService.updateConsentStatus(CONSENT_ID, consentStatus, INSTANCE_ID))
             .thenReturn(true);
         //When
-        mockMvc.perform(put("/psu-api/v2/piis/consent/{consent-id}/status/{status}", CONSENT_ID, consentStatus)
+        mockMvc.perform(put("/psu-api/v2/piis/consent/{consent-id}/status/{status}", CONSENT_ID, consentStatus.toString())
                             .headers(INSTANCE_ID_HEADERS)
                             .headers(PSU_HEADERS)
                             .contentType(MediaType.APPLICATION_JSON))
