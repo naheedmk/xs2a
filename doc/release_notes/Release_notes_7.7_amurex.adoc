@@ -7,7 +7,7 @@
 
 == Add update authorisation status for confirmation of funds
 
-Added resource to update authorisation status for confirmation of funds (PIIS v2) to `CMS-PSU-API`:
+Added resource to update authorisation status for confirmation of funds to `CMS-PSU-API`:
 
 ```
 PUT psu-api/v2/piis/consent/{consent-id}/authorisation/{authorisation-id}/status/{status}
