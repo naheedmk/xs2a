@@ -96,6 +96,7 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
         confirmationOfFundsMapper = new CmsConfirmationOfFundsMapper(new PsuDataMapper(), new TppInfoMapperImpl(), new AuthorisationTemplateMapperImpl());
         cmsPsuConfirmationOfFundsServiceInternal = new CmsPsuConfirmationOfFundsServiceInternal(consentJpaRepository, consentAuthorisationService,
                                                                                                 confirmationOfFundsConsentSpecification, confirmationOfFundsMapper, cmsPsuConsentServiceInternal);
+                                                                                                confirmationOfFundsConsentSpecification, confirmationOfFundsMapper, cmsPsuAuthorisationMapper);
     }
 
     @Test
@@ -240,7 +241,7 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
     @Test
     void getAuthorisationByAuthorisationId()  throws AuthorisationIsExpiredException {
         //Given
-        when(consentAuthorisationService.getAuthorisationByExternalId(AUTHORISATION_ID, INSTANCE_ID))
+        when(consentAuthorisationService.getAuthorisationByAuthorisationId(AUTHORISATION_ID, INSTANCE_ID))
             .thenReturn(Optional.of(authorisationEntity));
         when(cmsPsuAuthorisationMapper.mapToCmsPsuConfirmationOfFundsAuthorisation(authorisationEntity))
             .thenReturn(cmsPsuConfirmationOfFundsAuthorisation);
@@ -254,7 +255,7 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
     @Test
     void getAuthorisationByAuthorisationId_authorisationNotFound()  throws AuthorisationIsExpiredException {
         //Given
-        when(consentAuthorisationService.getAuthorisationByExternalId(AUTHORISATION_ID, INSTANCE_ID))
+        when(consentAuthorisationService.getAuthorisationByAuthorisationId(AUTHORISATION_ID, INSTANCE_ID))
             .thenReturn(Optional.empty());
         //When
         Optional<CmsPsuConfirmationOfFundsAuthorisation> authorisationByAuthorisationId = cmsPsuConfirmationOfFundsServiceInternal.getAuthorisationByAuthorisationId(AUTHORISATION_ID, INSTANCE_ID);

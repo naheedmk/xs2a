@@ -104,7 +104,7 @@ public class CmsPsuConfirmationOfFundsServiceInternal implements CmsPsuConfirmat
 
     @Override
     public @NotNull Optional<CmsPsuConfirmationOfFundsAuthorisation> getAuthorisationByAuthorisationId(@NotNull String authorisationId, @NotNull String instanceId) throws AuthorisationIsExpiredException {
-        Optional<CmsPsuConfirmationOfFundsAuthorisation> cmsPsuConfirmationOfFundsAuthorisation = consentAuthorisationService.getAuthorisationByExternalId(authorisationId, instanceId)
+        Optional<CmsPsuConfirmationOfFundsAuthorisation> cmsPsuConfirmationOfFundsAuthorisation = consentAuthorisationService.getAuthorisationByAuthorisationId(authorisationId, instanceId)
                                                                                                       .map(cmsPsuAuthorisationMapper::mapToCmsPsuConfirmationOfFundsAuthorisation);
         if (cmsPsuConfirmationOfFundsAuthorisation.isEmpty()) {
             log.info("Authorisation ID [{}], Instance ID: [{}]. Get authorisation failed, because authorisation not found", authorisationId, instanceId);
