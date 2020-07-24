@@ -45,6 +45,7 @@ import de.adorsys.psd2.consent.service.mapper.AisConsentMapper;
 import de.adorsys.psd2.consent.service.mapper.CmsPsuAuthorisationMapper;
 import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
 import de.adorsys.psd2.consent.service.migration.AisConsentLazyMigrationService;
+import de.adorsys.psd2.consent.service.psu.util.PsuDataUpdater;
 import de.adorsys.psd2.core.data.AccountAccess;
 import de.adorsys.psd2.core.data.ais.AisConsentData;
 import de.adorsys.psd2.core.mapper.ConsentDataMapper;
@@ -136,6 +137,8 @@ class CmsPsuAisServiceInternalTest {
     private CmsConsentAuthorisationServiceInternal consentAuthorisationService;
     @Mock
     private CmsPsuConsentServiceInternal cmsPsuConsentServiceInternal;
+    @Mock
+    private PsuDataUpdater psuDataUpdater;
 
     private ConsentEntity consentEntity;
     private List<ConsentEntity> consentEntityList;
@@ -244,6 +247,11 @@ class CmsPsuAisServiceInternalTest {
         //noinspection unchecked
         when(authorisationRepository.findOne(any(Specification.class)))
             .thenReturn(Optional.of(authorisationEntityWithPsuData));
+        when(psuDataMapper.mapToPsuData(psuIdData, DEFAULT_SERVICE_INSTANCE_ID))
+            .thenReturn(psuData);
+        PsuData psuDataFromAuth = new PsuData();
+        psuDataFromAuth.setId(psuDataId);
+        when(psuDataUpdater.updatePsuDataEntity(psuDataFromAuth, psuData)).thenReturn(psuData);
         when(cmsPsuConsentServiceInternal.updatePsuData(authorisationEntityWithPsuData, psuIdData, ConsentType.AIS))
             .thenReturn(true);
 
@@ -262,12 +270,17 @@ class CmsPsuAisServiceInternalTest {
         //noinspection unchecked
         when(authorisationRepository.findOne(any(Specification.class)))
             .thenReturn(Optional.ofNullable(authorisationEntity));
+        when(psuDataMapper.mapToPsuData(psuIdData, DEFAULT_SERVICE_INSTANCE_ID))
+            .thenReturn(psuData);
+        when(consentJpaRepository.findByExternalId(EXTERNAL_CONSENT_ID))
+            .thenReturn(Optional.empty());
 
         // When
         boolean updatePsuDataInConsent = cmsPsuAisService.updatePsuDataInConsent(psuIdData, AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID);
 
         // Then
         assertFalse(updatePsuDataInConsent);
+        verify(authorisationRepository, never()).save(any());
     }
 
     @Test
