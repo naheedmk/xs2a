@@ -57,7 +57,7 @@ public class CmsPsuConfirmationOfFundsController implements CmsPsuConfirmationOf
     }
 
     @Override
-    public ResponseEntity<CmsConfirmationOfFundsResponse> getConsentIdByRedirectId(String redirectId, String instanceId) {
+    public ResponseEntity<CmsConfirmationOfFundsResponse> getConsentByRedirectId(String redirectId, String instanceId) {
         Optional<CmsConfirmationOfFundsResponse> response;
         try {
             response = cmsPsuConfirmationOfFundsService.checkRedirectAndGetConsent(redirectId, instanceId);
