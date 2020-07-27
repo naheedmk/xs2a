@@ -16,7 +16,6 @@
 
 package de.adorsys.psd2.consent.web.psu.controller;
 
-import de.adorsys.psd2.consent.api.ais.CmsAisConsentResponse;
 import de.adorsys.psd2.consent.api.piis.v2.CmsConfirmationOfFundsResponse;
 import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsApi;
 import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsService;
@@ -80,7 +79,7 @@ public class CmsPsuConfirmationOfFundsController implements CmsPsuConfirmationOf
                        ? ResponseEntity.ok().build()
                        : ResponseEntity.badRequest().build();
         } catch (AuthorisationIsExpiredException e) {
-            return new ResponseEntity<>(new CmsAisConsentResponse(e.getNokRedirectUri()), HttpStatus.REQUEST_TIMEOUT);
+            return new ResponseEntity<>(new CmsConfirmationOfFundsResponse(e.getNokRedirectUri()), HttpStatus.REQUEST_TIMEOUT);
         }
     }
 
