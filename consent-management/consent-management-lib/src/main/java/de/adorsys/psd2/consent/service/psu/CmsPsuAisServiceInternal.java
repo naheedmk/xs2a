@@ -24,7 +24,6 @@ import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
 import de.adorsys.psd2.consent.api.ais.CmsAisConsentResponse;
 import de.adorsys.psd2.consent.api.service.ConsentService;
 import de.adorsys.psd2.consent.domain.AuthorisationEntity;
-import de.adorsys.psd2.consent.domain.PsuData;
 import de.adorsys.psd2.consent.domain.account.AspspAccountAccess;
 import de.adorsys.psd2.consent.domain.consent.ConsentEntity;
 import de.adorsys.psd2.consent.psu.api.CmsPsuAisService;
@@ -61,7 +60,6 @@ import de.adorsys.psd2.xs2a.core.sca.ScaStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -363,42 +361,6 @@ public class CmsPsuAisServiceInternal implements CmsPsuAisService {
         consent.setConsentStatus(status);
 
         return aisConsentRepository.verifyAndSave(consent) != null;
-    }
-
-    private boolean updatePsuData(AuthorisationEntity authorisation, PsuIdData psuIdData) {
-        PsuData newPsuData = psuDataMapper.mapToPsuData(psuIdData, authorisation.getInstanceId());
-
-        if (newPsuData == null || StringUtils.isBlank(newPsuData.getPsuId())) {
-            log.info("Authorisation ID : [{}]. Update PSU data in consent failed in updatePsuData method, because newPsuData or psuId in newPsuData is empty or null.",
-                     authorisation.getExternalId());
-            return false;
-        }
-
-        Optional<PsuData> optionalPsuData = Optional.ofNullable(authorisation.getPsuData());
-        if (optionalPsuData.isPresent()) {
-            newPsuData = psuDataUpdater.updatePsuDataEntity(optionalPsuData.get(), newPsuData);
-        } else {
-            log.info("Authorisation ID [{}]. No PSU data available in the authorisation.", authorisation.getExternalId());
-
-            Optional<ConsentEntity> consentOptional = consentJpaRepository.findByExternalId(authorisation.getParentExternalId());
-            if (consentOptional.isEmpty()) {
-                log.info("Authorisation ID [{}]. Update PSU data in consent failed, couldn't find consent by the parent ID in the authorisation.",
-                         authorisation.getExternalId());
-                return false;
-            }
-
-            ConsentEntity aisConsent = consentOptional.get();
-            aisConsent = aisConsentLazyMigrationService.migrateIfNeeded(aisConsent);
-
-            List<PsuData> psuDataList = aisConsent.getPsuDataList();
-            Optional<PsuData> psuDataOptional = cmsPsuService.definePsuDataForAuthorisation(newPsuData, psuDataList);
-            if (psuDataOptional.isPresent()) {
-                newPsuData = psuDataOptional.get();
-                aisConsent.setPsuDataList(cmsPsuService.enrichPsuData(newPsuData, psuDataList));
-            }
-        }
-        authorisation.setPsuData(newPsuData);
-        return true;
     }
 
     private Optional<CmsAisConsentResponse> createCmsAisConsentResponseFromAuthorisation(AuthorisationEntity authorisation, String redirectId) {
