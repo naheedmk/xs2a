@@ -247,11 +247,8 @@ class CmsPsuAisServiceInternalTest {
         //noinspection unchecked
         when(authorisationRepository.findOne(any(Specification.class)))
             .thenReturn(Optional.of(authorisationEntityWithPsuData));
-        when(psuDataMapper.mapToPsuData(psuIdData, DEFAULT_SERVICE_INSTANCE_ID))
-            .thenReturn(psuData);
         PsuData psuDataFromAuth = new PsuData();
         psuDataFromAuth.setId(psuDataId);
-        when(psuDataUpdater.updatePsuDataEntity(psuDataFromAuth, psuData)).thenReturn(psuData);
         when(cmsPsuConsentServiceInternal.updatePsuData(authorisationEntityWithPsuData, psuIdData, ConsentType.AIS))
             .thenReturn(true);
 
@@ -270,10 +267,6 @@ class CmsPsuAisServiceInternalTest {
         //noinspection unchecked
         when(authorisationRepository.findOne(any(Specification.class)))
             .thenReturn(Optional.ofNullable(authorisationEntity));
-        when(psuDataMapper.mapToPsuData(psuIdData, DEFAULT_SERVICE_INSTANCE_ID))
-            .thenReturn(psuData);
-        when(consentJpaRepository.findByExternalId(EXTERNAL_CONSENT_ID))
-            .thenReturn(Optional.empty());
 
         // When
         boolean updatePsuDataInConsent = cmsPsuAisService.updatePsuDataInConsent(psuIdData, AUTHORISATION_ID, DEFAULT_SERVICE_INSTANCE_ID);
