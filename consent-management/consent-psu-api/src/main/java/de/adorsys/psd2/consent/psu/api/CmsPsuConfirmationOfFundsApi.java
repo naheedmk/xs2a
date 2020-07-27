@@ -19,6 +19,7 @@ package de.adorsys.psd2.consent.psu.api;
 import de.adorsys.psd2.consent.api.CmsConstant;
 import de.adorsys.psd2.consent.api.ais.CmsAisAccountConsent;
 import de.adorsys.psd2.consent.api.ais.CmsAisConsentResponse;
+import de.adorsys.psd2.consent.api.piis.v2.CmsConfirmationOfFundsConsent;
 import de.adorsys.psd2.consent.api.piis.v2.CmsConfirmationOfFundsResponse;
 import de.adorsys.psd2.consent.psu.api.config.CmsPsuApiTagName;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
