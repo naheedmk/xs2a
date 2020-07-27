@@ -17,6 +17,7 @@
 package de.adorsys.psd2.consent.web.psu.controller;
 
 import de.adorsys.psd2.consent.api.piis.v2.CmsConfirmationOfFundsResponse;
+import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsAuthorisation;
 import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsService;
 import de.adorsys.psd2.mapper.Xs2aObjectMapper;
 import de.adorsys.psd2.mapper.config.ObjectMapperConfig;
