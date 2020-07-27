@@ -23,12 +23,8 @@ import de.adorsys.psd2.consent.psu.api.CmsPsuConfirmationOfFundsAuthorisation;
 import de.adorsys.psd2.consent.repository.ConsentJpaRepository;
 import de.adorsys.psd2.consent.repository.specification.ConfirmationOfFundsConsentSpecification;
 import de.adorsys.psd2.consent.service.authorisation.CmsConsentAuthorisationServiceInternal;
-import de.adorsys.psd2.consent.service.mapper.AuthorisationTemplateMapperImpl;
-import de.adorsys.psd2.consent.service.mapper.CmsConfirmationOfFundsMapper;
-import de.adorsys.psd2.consent.service.mapper.PsuDataMapper;
-import de.adorsys.psd2.consent.service.mapper.TppInfoMapperImpl;
+import de.adorsys.psd2.consent.service.mapper.*;
 import de.adorsys.psd2.xs2a.core.consent.ConsentType;
-import de.adorsys.psd2.consent.service.mapper.CmsPsuAuthorisationMapper;
 import de.adorsys.psd2.xs2a.core.exception.AuthorisationIsExpiredException;
 import de.adorsys.psd2.xs2a.core.exception.RedirectUrlIsExpiredException;
 import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
@@ -95,8 +91,8 @@ class CmsPsuConfirmationOfFundsServiceInternalTest {
 
         confirmationOfFundsMapper = new CmsConfirmationOfFundsMapper(new PsuDataMapper(), new TppInfoMapperImpl(), new AuthorisationTemplateMapperImpl());
         cmsPsuConfirmationOfFundsServiceInternal = new CmsPsuConfirmationOfFundsServiceInternal(consentJpaRepository, consentAuthorisationService,
-                                                                                                confirmationOfFundsConsentSpecification, confirmationOfFundsMapper, cmsPsuConsentServiceInternal);
-                                                                                                confirmationOfFundsConsentSpecification, confirmationOfFundsMapper, cmsPsuAuthorisationMapper);
+                                                                                                confirmationOfFundsConsentSpecification, confirmationOfFundsMapper,
+                                                                                                cmsPsuConsentServiceInternal, cmsPsuAuthorisationMapper);
     }
 
     @Test
