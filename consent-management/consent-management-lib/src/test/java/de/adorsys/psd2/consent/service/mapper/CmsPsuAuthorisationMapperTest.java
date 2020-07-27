@@ -119,7 +119,7 @@ class CmsPsuAuthorisationMapperTest {
 
     private AuthorisationEntity buildPiisAuthorisation() {
         AuthorisationEntity piisAuthorization = new AuthorisationEntity();
-        piisAuthorization.setAuthorisationType(AuthorisationType.AIS);
+        piisAuthorization.setAuthorisationType(AuthorisationType.CONSENT);
         piisAuthorization.setExternalId(EXTERNAL_ID);
         piisAuthorization.setParentExternalId(PARENT_ID);
         piisAuthorization.setScaStatus(ScaStatus.RECEIVED);
@@ -163,7 +163,7 @@ class CmsPsuAuthorisationMapperTest {
     @NotNull
     private AuthorisationEntity buildAisConsentAuthorisation() {
         AuthorisationEntity authorization = new AuthorisationEntity();
-        authorization.setAuthorisationType(AuthorisationType.AIS);
+        authorization.setAuthorisationType(AuthorisationType.CONSENT);
         authorization.setExternalId(EXTERNAL_ID);
         authorization.setScaStatus(ScaStatus.RECEIVED);
         authorization.setPsuData(new PsuData("PSU ID", "PSU ID type", "", "", ""));

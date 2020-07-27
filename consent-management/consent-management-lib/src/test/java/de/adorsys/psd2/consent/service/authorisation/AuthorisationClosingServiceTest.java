@@ -48,7 +48,7 @@ class AuthorisationClosingServiceTest {
     private static final String PARENT_ID = "parent id";
     private static final String AUTHORISATION_ID = "authorisation id";
     private static final String PREVIOUS_AUTHORISATION_ID = "previous authorisation id";
-    private static final AuthorisationType AUTHORISATION_TYPE = AuthorisationType.AIS;
+    private static final AuthorisationType AUTHORISATION_TYPE = AuthorisationType.CONSENT;
     private static final AuthorisationType WRONG_AUTHORISATION_TYPE = AuthorisationType.PIS_CREATION;
 
     @Mock
