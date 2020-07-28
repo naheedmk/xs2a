@@ -18,7 +18,6 @@ package de.adorsys.psd2.xs2a.web.controller;
 
 import de.adorsys.psd2.api.v2.ConfirmationOfFundsApi;
 import de.adorsys.psd2.core.data.piis.v1.PiisConsent;
-import de.adorsys.psd2.model.Authorisations;
 import de.adorsys.psd2.model.ConsentsConfirmationOfFunds;
 import de.adorsys.psd2.model.ScaStatusResponse;
 import de.adorsys.psd2.model.StartScaprocessResponse;
@@ -31,6 +30,7 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.domain.HrefType;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.consent.ConsentStatusResponse;
+import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthorisationSubResources;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aConfirmationOfFundsResponse;
 import de.adorsys.psd2.xs2a.domain.fund.CreatePiisConsentRequest;
 import de.adorsys.psd2.xs2a.service.PiisConsentService;
@@ -39,6 +39,7 @@ import de.adorsys.psd2.xs2a.service.mapper.psd2.ResponseErrorMapper;
 import de.adorsys.psd2.xs2a.service.profile.AspspProfileServiceWrapper;
 import de.adorsys.psd2.xs2a.web.header.ConsentHeadersBuilder;
 import de.adorsys.psd2.xs2a.web.header.ResponseHeaders;
+import de.adorsys.psd2.xs2a.web.mapper.AuthorisationMapper;
 import de.adorsys.psd2.xs2a.web.mapper.PiisConsentModelMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +62,7 @@ public class ConfirmationOfFundsController implements ConfirmationOfFundsApi {
     private final ResponseMapper responseMapper;
     private final AspspProfileServiceWrapper profileService;
     private final ConsentHeadersBuilder consentHeadersBuilder;
+    private final AuthorisationMapper authorisationMapper;
 
     @Override
     public ResponseEntity createConsentConfirmationOfFunds(UUID xRequestID, ConsentsConfirmationOfFunds body, String digest, String signature, byte[] tpPSignatureCertificate,
@@ -115,8 +117,11 @@ public class ConfirmationOfFundsController implements ConfirmationOfFundsApi {
     }
 
     @Override
-    public ResponseEntity<Authorisations> getConsentAuthorisation(String consentId, UUID xRequestID, String digest, String signature, byte[] tpPSignatureCertificate, String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
-        return null;
+    public ResponseEntity getConsentAuthorisation(String consentId, UUID xRequestID, String digest, String signature, byte[] tpPSignatureCertificate, String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
+        ResponseObject<Xs2aAuthorisationSubResources> consentInitiationAuthorisationsResponse = piisConsentService.getConsentInitiationAuthorisations(consentId);
+        return consentInitiationAuthorisationsResponse.hasError()
+                   ? responseErrorMapper.generateErrorResponse(consentInitiationAuthorisationsResponse.getError())
+                   : responseMapper.ok(consentInitiationAuthorisationsResponse, authorisationMapper::mapToAuthorisations);
     }
 
     @Override

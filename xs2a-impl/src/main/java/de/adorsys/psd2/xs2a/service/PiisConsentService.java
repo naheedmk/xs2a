@@ -31,6 +31,7 @@ import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aCreatePiisConsentResponse;
 import de.adorsys.psd2.xs2a.domain.consent.ConsentStatusResponse;
+import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthorisationSubResources;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aConfirmationOfFundsResponse;
 import de.adorsys.psd2.xs2a.domain.fund.CreatePiisConsentRequest;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
@@ -82,6 +83,7 @@ public class PiisConsentService {
     private final CreatePiisConsentValidator createPiisConsentValidator;
     private final AuthorisationMethodDecider authorisationMethodDecider;
     private final PiisScaAuthorisationServiceResolver piisScaAuthorisationServiceResolver;
+    private final ConsentAuthorisationService consentAuthorisationService;
 
     public ResponseObject<Xs2aConfirmationOfFundsResponse> createPiisConsentWithResponse(CreatePiisConsentRequest request, PsuIdData psuData, boolean explicitPreferred) {
         xs2aEventService.recordTppRequest(EventType.CREATE_PIIS_CONSENT_REQUEST_RECEIVED, request);
@@ -198,6 +200,10 @@ public class PiisConsentService {
                    .build();
     }
 
+    public ResponseObject<Xs2aAuthorisationSubResources> getConsentInitiationAuthorisations(String consentId) {
+        return consentAuthorisationService.getConsentInitiationAuthorisations(consentId);
+    }
+
     private SpiResponse<SpiConsentStatusResponse> getConsentStatusFromSpi(PiisConsent piisConsent, String consentId) {
         SpiPiisConsent spiPiisConsent = xs2aToSpiPiisConsentMapper.mapToSpiPiisConsent(piisConsent);
         SpiAspspConsentDataProvider aspspDataProvider = aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(consentId);
@@ -217,5 +223,4 @@ public class PiisConsentService {
                 response.setAuthorizationId(a.getAuthorisationId());
             });
     }
-
 }
