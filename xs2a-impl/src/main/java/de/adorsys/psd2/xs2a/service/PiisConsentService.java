@@ -30,9 +30,8 @@ import de.adorsys.psd2.xs2a.core.psu.PsuIdData;
 import de.adorsys.psd2.xs2a.core.tpp.TppInfo;
 import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.account.Xs2aCreatePiisConsentResponse;
-import de.adorsys.psd2.xs2a.domain.consent.ConsentStatusResponse;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthorisationSubResources;
-import de.adorsys.psd2.xs2a.domain.consent.Xs2aConfirmationOfFundsResponse;
+import de.adorsys.psd2.xs2a.domain.authorisation.AuthorisationResponse;
+import de.adorsys.psd2.xs2a.domain.consent.*;
 import de.adorsys.psd2.xs2a.domain.fund.CreatePiisConsentRequest;
 import de.adorsys.psd2.xs2a.service.authorization.AuthorisationMethodDecider;
 import de.adorsys.psd2.xs2a.service.authorization.ais.PiisScaAuthorisationServiceResolver;
@@ -202,6 +201,22 @@ public class PiisConsentService {
 
     public ResponseObject<Xs2aAuthorisationSubResources> getConsentInitiationAuthorisations(String consentId) {
         return consentAuthorisationService.getConsentInitiationAuthorisations(consentId);
+    }
+
+    public ResponseObject<Xs2aScaStatusResponse> getConsentAuthorisationScaStatus(String consentId, String authorisationId) {
+        ResponseObject<ConsentScaStatus> consentScaStatusResponse = consentAuthorisationService.getConsentAuthorisationScaStatus(consentId, authorisationId);
+        if (consentScaStatusResponse.hasError()) {
+            return ResponseObject.<Xs2aScaStatusResponse>builder()
+                       .fail(consentScaStatusResponse.getError())
+                       .build();
+        }
+
+        ConsentScaStatus consentScaStatus = consentScaStatusResponse.getBody();
+        Xs2aScaStatusResponse response = new Xs2aScaStatusResponse(consentScaStatus.getScaStatus(), null);
+
+        return ResponseObject.<Xs2aScaStatusResponse>builder()
+                   .body(response)
+                   .build();
     }
 
     private SpiResponse<SpiConsentStatusResponse> getConsentStatusFromSpi(PiisConsent piisConsent, String consentId) {

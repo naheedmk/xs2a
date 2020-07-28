@@ -19,7 +19,6 @@ package de.adorsys.psd2.xs2a.web.controller;
 import de.adorsys.psd2.api.v2.ConfirmationOfFundsApi;
 import de.adorsys.psd2.core.data.piis.v1.PiisConsent;
 import de.adorsys.psd2.model.ConsentsConfirmationOfFunds;
-import de.adorsys.psd2.model.ScaStatusResponse;
 import de.adorsys.psd2.model.StartScaprocessResponse;
 import de.adorsys.psd2.xs2a.core.error.ErrorType;
 import de.adorsys.psd2.xs2a.core.error.MessageError;
@@ -32,6 +31,7 @@ import de.adorsys.psd2.xs2a.domain.ResponseObject;
 import de.adorsys.psd2.xs2a.domain.consent.ConsentStatusResponse;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aAuthorisationSubResources;
 import de.adorsys.psd2.xs2a.domain.consent.Xs2aConfirmationOfFundsResponse;
+import de.adorsys.psd2.xs2a.domain.consent.Xs2aScaStatusResponse;
 import de.adorsys.psd2.xs2a.domain.fund.CreatePiisConsentRequest;
 import de.adorsys.psd2.xs2a.service.PiisConsentService;
 import de.adorsys.psd2.xs2a.service.mapper.ResponseMapper;
@@ -125,8 +125,11 @@ public class ConfirmationOfFundsController implements ConfirmationOfFundsApi {
     }
 
     @Override
-    public ResponseEntity<ScaStatusResponse> getConsentScaStatus(String consentId, String authorisationId, UUID xRequestID, String digest, String signature, byte[] tpPSignatureCertificate, String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
-        return null;
+    public ResponseEntity getConsentScaStatus(String consentId, String authorisationId, UUID xRequestID, String digest, String signature, byte[] tpPSignatureCertificate, String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
+        ResponseObject<Xs2aScaStatusResponse> consentAuthorisationScaStatusResponse = piisConsentService.getConsentAuthorisationScaStatus(consentId, authorisationId);
+        return consentAuthorisationScaStatusResponse.hasError()
+                   ? responseErrorMapper.generateErrorResponse(consentAuthorisationScaStatusResponse.getError())
+                   : responseMapper.ok(consentAuthorisationScaStatusResponse, authorisationMapper::mapToScaStatusResponse);
     }
 
     @Override
