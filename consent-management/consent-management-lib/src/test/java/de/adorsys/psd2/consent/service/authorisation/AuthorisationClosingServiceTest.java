@@ -69,7 +69,7 @@ class AuthorisationClosingServiceTest {
         when(authServiceResolver.getAuthService(AUTHORISATION_TYPE)).thenReturn(authService);
 
         AuthorisationEntity previousAisAuthorisation = new AuthorisationEntity();
-        previousAisAuthorisation.setAuthorisationType(AUTHORISATION_TYPE);
+        previousAisAuthorisation.setType(AUTHORISATION_TYPE);
         previousAisAuthorisation.setPsuData(PSU_DATA);
         when(authService.getAuthorisationsByParentId(PARENT_ID)).thenReturn(Collections.singletonList(previousAisAuthorisation));
 
@@ -125,7 +125,7 @@ class AuthorisationClosingServiceTest {
         when(authServiceResolver.getAuthService(AUTHORISATION_TYPE)).thenReturn(authService);
 
         AuthorisationEntity previousAuthorisation = new AuthorisationEntity();
-        previousAuthorisation.setAuthorisationType(WRONG_AUTHORISATION_TYPE);
+        previousAuthorisation.setType(WRONG_AUTHORISATION_TYPE);
         previousAuthorisation.setPsuData(PSU_DATA);
         when(authService.getAuthorisationsByParentId(PARENT_ID)).thenReturn(Collections.singletonList(previousAuthorisation));
 
@@ -144,7 +144,7 @@ class AuthorisationClosingServiceTest {
         when(authServiceResolver.getAuthService(AUTHORISATION_TYPE)).thenReturn(authService);
 
         AuthorisationEntity previousAuthorisation = new AuthorisationEntity();
-        previousAuthorisation.setAuthorisationType(AUTHORISATION_TYPE);
+        previousAuthorisation.setType(AUTHORISATION_TYPE);
         previousAuthorisation.setPsuData(WRONG_PSU_DATA);
         when(authService.getAuthorisationsByParentId(PARENT_ID)).thenReturn(Collections.singletonList(previousAuthorisation));
 
@@ -267,7 +267,7 @@ class AuthorisationClosingServiceTest {
         AuthorisationEntity authorisation = new AuthorisationEntity();
         authorisation.setExternalId(externalId);
         authorisation.setParentExternalId(PARENT_ID);
-        authorisation.setAuthorisationType(authorisationType);
+        authorisation.setType(authorisationType);
         authorisation.setPsuData(psuData);
         return authorisation;
     }

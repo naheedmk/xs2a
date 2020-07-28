@@ -77,7 +77,7 @@ public class CmsConsentAuthorisationServiceInternal {
     }
 
     public List<AuthorisationEntity> getAuthorisationsByParentExternalId(String externalId) {
-        return authorisationRepository.findAllByParentExternalIdAndAuthorisationType(externalId, AuthorisationType.CONSENT);
+        return authorisationRepository.findAllByParentExternalIdAndType(externalId, AuthorisationType.CONSENT);
     }
 
     private void enrichAuthorisationWithAuthenticationData(AuthorisationEntity authorisation, AuthenticationDataHolder authenticationDataHolder) {

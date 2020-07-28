@@ -170,7 +170,7 @@ class AuthorisationServiceInternalTest {
     void updateAuthorisation() {
         // Given
         AuthorisationEntity authorisationEntity = new AuthorisationEntity();
-        authorisationEntity.setAuthorisationType(AuthorisationType.CONSENT);
+        authorisationEntity.setType(AuthorisationType.CONSENT);
         authorisationEntity.setScaStatus(ScaStatus.RECEIVED);
         when(authorisationRepository.findByExternalId(AUTHORISATION_ID)).thenReturn(Optional.of(authorisationEntity));
 
@@ -219,7 +219,7 @@ class AuthorisationServiceInternalTest {
     void updateAuthorisation_finalisedStatus() {
         // Given
         AuthorisationEntity authorisationEntity = new AuthorisationEntity();
-        authorisationEntity.setAuthorisationType(AuthorisationType.CONSENT);
+        authorisationEntity.setType(AuthorisationType.CONSENT);
         authorisationEntity.setScaStatus(ScaStatus.FINALISED);
         when(authorisationRepository.findByExternalId(AUTHORISATION_ID)).thenReturn(Optional.of(authorisationEntity));
 

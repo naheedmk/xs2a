@@ -335,7 +335,7 @@ public class CmsPsuAisControllerIT {
     @Test
     void psuDataAuthorisations() throws Exception {
         given(consentJpaRepository.findOne(any(Specification.class))).willReturn(Optional.of(consentEntity));
-        given(authorisationRepository.findAllByParentExternalIdAndAuthorisationType(consentEntity.getExternalId(), AuthorisationType.CONSENT))
+        given(authorisationRepository.findAllByParentExternalIdAndType(consentEntity.getExternalId(), AuthorisationType.CONSENT))
             .willReturn(Collections.singletonList(authorisationEntity));
 
         MockHttpServletRequestBuilder requestBuilder = get(UrlBuilder.psuDataAuthorisationsUrl(CONSENT_ID));
