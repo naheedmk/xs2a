@@ -245,12 +245,11 @@ public class PisAuthorisationProcessorServiceImpl extends PaymentBaseAuthorisati
     @Override
     Xs2aUpdatePisCommonPaymentPsuDataResponse buildUpdateResponseWhenScaMethodsAreMultiple(Xs2aUpdatePisCommonPaymentPsuDataRequest request,
                                                                                            PsuIdData psuData,
-                                                                                           List<AuthenticationObject> spiScaMethods) {
+                                                                                           List<AuthenticationObject> spiScaMethods,
+                                                                                           SpiPayment payment,
+                                                                                           SpiAspspConsentDataProvider aspspConsentDataProvider,
+                                                                                           SpiContextData contextData) {
         xs2aAuthorisationService.saveAuthenticationMethods(request.getAuthorisationId(), spiScaMethods);
-
-        SpiPayment payment = getSpiPayment(request.getPaymentId());
-        SpiContextData contextData = spiContextDataProvider.provideWithPsuIdData(psuData);
-        SpiAspspConsentDataProvider aspspConsentDataProvider = aspspConsentDataProviderFactory.getSpiAspspDataProviderFor(request.getPaymentId());
 
         SpiResponse<SpiCurrencyConversionInfo> conversionInfoSpiResponse =
             currencyConversionInfoSpi

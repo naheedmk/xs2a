@@ -208,7 +208,10 @@ public class PisCancellationAuthorisationProcessorServiceImpl extends PaymentBas
     @Override
     Xs2aUpdatePisCommonPaymentPsuDataResponse buildUpdateResponseWhenScaMethodsAreMultiple(Xs2aUpdatePisCommonPaymentPsuDataRequest request,
                                                                                            PsuIdData psuData,
-                                                                                           List<AuthenticationObject> spiScaMethods) {
+                                                                                           List<AuthenticationObject> spiScaMethods,
+                                                                                           SpiPayment payment,
+                                                                                           SpiAspspConsentDataProvider aspspConsentDataProvider,
+                                                                                           SpiContextData contextData) {
         xs2aAuthorisationService.saveAuthenticationMethods(request.getAuthorisationId(), spiScaMethods);
 
         Xs2aUpdatePisCommonPaymentPsuDataResponse response = new Xs2aUpdatePisCommonPaymentPsuDataResponse

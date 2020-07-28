@@ -307,7 +307,7 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
         } else if (isSingleScaMethod(spiScaMethods)) {
             return buildUpdateResponseWhenScaMethodIsSingle(authorisationProcessorRequest, psuData, payment, aspspConsentDataProvider, contextData, spiScaMethods);
         } else if (isMultipleScaMethods(spiScaMethods)) {
-            return buildUpdateResponseWhenScaMethodsAreMultiple(request, psuData, spiScaMethods);
+            return buildUpdateResponseWhenScaMethodsAreMultiple(request, psuData, spiScaMethods, payment, aspspConsentDataProvider, contextData);
         }
 
         SpiResponse<SpiCurrencyConversionInfo> conversionInfoSpiResponse =
@@ -356,7 +356,10 @@ abstract class PaymentBaseAuthorisationProcessorService extends BaseAuthorisatio
 
     abstract Xs2aUpdatePisCommonPaymentPsuDataResponse buildUpdateResponseWhenScaMethodsAreMultiple(Xs2aUpdatePisCommonPaymentPsuDataRequest request,
                                                                                                     PsuIdData psuData,
-                                                                                                    List<AuthenticationObject> spiScaMethods);
+                                                                                                    List<AuthenticationObject> spiScaMethods,
+                                                                                                    SpiPayment payment,
+                                                                                                    SpiAspspConsentDataProvider aspspConsentDataProvider,
+                                                                                                    SpiContextData contextData);
 
     Xs2aUpdatePisCommonPaymentPsuDataResponse buildUpdateResponseWhenScaMethodIsSingle(AuthorisationProcessorRequest authorisationProcessorRequest, PsuIdData psuData, SpiPayment payment, SpiAspspConsentDataProvider aspspConsentDataProvider, SpiContextData contextData, List<AuthenticationObject> scaMethods) {
         Xs2aUpdatePisCommonPaymentPsuDataRequest request = (Xs2aUpdatePisCommonPaymentPsuDataRequest) authorisationProcessorRequest.getUpdateAuthorisationRequest();
