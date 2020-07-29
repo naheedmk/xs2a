@@ -66,7 +66,7 @@ public class ConfirmationOfFundsController implements ConfirmationOfFundsApi {
 
     @Override
     public ResponseEntity createConsentConfirmationOfFunds(UUID xRequestID, ConsentsConfirmationOfFunds body, String digest, String signature, byte[] tpPSignatureCertificate,
-                                                           String PSU_ID, String psUIDType, String psUCorporateID, String psUCorporateIDType,
+                                                           String psuId, String psUIDType, String psUCorporateID, String psUCorporateIDType,
                                                            String tpPRedirectPreferred, String tpPRedirectURI, String tpPNokRedirectURI, String tpPExplicitAuthorisationPreferred,
                                                            String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage,
                                                            String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
@@ -76,7 +76,7 @@ public class ConfirmationOfFundsController implements ConfirmationOfFundsApi {
             return responseErrorMapper.generateErrorResponse(messageError);
         }
 
-        PsuIdData psuData = new PsuIdData(PSU_ID, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress,
+        PsuIdData psuData = new PsuIdData(psuId, psUIDType, psUCorporateID, psUCorporateIDType, psUIPAddress,
                                           new AdditionalPsuIdData(psUIPPort, psUUserAgent, psUGeoLocation, psUAccept, psUAcceptCharset, psUAcceptEncoding, psUAcceptLanguage, psUHttpMethod, psUDeviceID));
 
         CreatePiisConsentRequest createPiisConsentRequest = piisConsentModelMapper.toCreatePiisConsentRequest(body);
@@ -133,12 +133,12 @@ public class ConfirmationOfFundsController implements ConfirmationOfFundsApi {
     }
 
     @Override
-    public ResponseEntity<StartScaprocessResponse> startConsentAuthorisation(UUID xRequestID, String consentId, Object body, String digest, String signature, byte[] tpPSignatureCertificate, String PSU_ID, String psUIDType, String psUCorporateID, String psUCorporateIDType, String tpPRedirectPreferred, String tpPRedirectURI, String tpPNokRedirectURI, String tpPNotificationURI, String tpPNotificationContentPreferred, String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
+    public ResponseEntity<StartScaprocessResponse> startConsentAuthorisation(UUID xRequestID, String consentId, Object body, String digest, String signature, byte[] tpPSignatureCertificate, String psuId, String psUIDType, String psUCorporateID, String psUCorporateIDType, String tpPRedirectPreferred, String tpPRedirectURI, String tpPNokRedirectURI, String tpPNotificationURI, String tpPNotificationContentPreferred, String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
         return null;
     }
 
     @Override
-    public ResponseEntity<Object> updateConsentsPsuData(UUID xRequestID, String consentId, String authorisationId, Object body, String digest, String signature, byte[] tpPSignatureCertificate, String PSU_ID, String psUIDType, String psUCorporateID, String psUCorporateIDType, String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
+    public ResponseEntity<Object> updateConsentsPsuData(UUID xRequestID, String consentId, String authorisationId, Object body, String digest, String signature, byte[] tpPSignatureCertificate, String psuId, String psUIDType, String psUCorporateID, String psUCorporateIDType, String psUIPAddress, String psUIPPort, String psUAccept, String psUAcceptCharset, String psUAcceptEncoding, String psUAcceptLanguage, String psUUserAgent, String psUHttpMethod, UUID psUDeviceID, String psUGeoLocation) {
         return null;
     }
 }
